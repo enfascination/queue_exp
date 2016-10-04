@@ -13,8 +13,10 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
     });
 
     TurkServer.initialize(function() {
-        var clickObj = {count: 0, queueID: 'A'};
-        Queues.insert(clickObj);
+        var clickObjA = {count: 0, queueID: 'A'};
+        var clickObjB = {count: 0, queueID: 'B'};
+        Queues.insert(clickObjA);
+        Queues.insert(clickObjB);
     });
 
     Meteor.publish('clicks', function() {
@@ -25,8 +27,13 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
         goToExitSurvey: function() {
             TurkServer.Instance.currentInstance().teardown(returnToLobby = true);
         },
-        incClicks: function() {
+        incClicksA: function() {
             Queues.update({queueID: 'A'}, {$inc: {count: 1}});
+            var asst = TurkServer.Assignment.currentAssignment();
+            asst.addPayment(0.1);
+        },
+        incClicksB: function() {
+            Queues.update({queueID: 'B'}, {$inc: {count: 1}});
             var asst = TurkServer.Assignment.currentAssignment();
             asst.addPayment(0.1);
         },

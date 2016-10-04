@@ -15,7 +15,7 @@
   </body>
 </template>
 
-<template name="design">
+<template name="design_deprecated">
   <button id="clickMe">Click Me</button>
   <p>You've pressed the button {{counter}} times.</p>
 
@@ -30,4 +30,54 @@
     <textarea name="feedback" rows="3"></textarea><br/>
     <button type="submit">Submit the HIT</button>
   </form>
+</template>
+
+<template name="design">
+    <p> 
+    You are playing a game with other turkers that simulates waiting in line. You are the {{counterNet}} person to have this choice, out of 99.  You are not yet in line, and the game is currently paused while you make your choice to enter the line. This game will end when 99 people have joined the line, and everyone will recieve their earnings at the same time. 
+    </p> 
+    <p> 
+        You are being endowed with $1.00.   You will earn additional money for joining the line based on your final position in it. Specifically, you will earn an additional $1.00 minus your final position in the line.  
+    </p> 
+    <p> 
+        The line consists of two groups, A and B.  Joining group B puts you behind everyone who joined B before you and behind everyone who joins group A.  Joining group A puts you ahead of everyone in group B, and behind those who have joined group A before you.  However, joining group A will cost 50 cents from your $1.00 dollar endowment, while joining group B costs nothing. Below you can see the current membership in each group.
+    </p>
+    <p>
+    Based on your position in this experiment, joining group A will guarantee you earings of {{earningsA}}, while joining group B will result in a minimum of {{earningsBMin}} and a maximum of {{earningsBMax}}. 
+    </p>
+    <table>
+        <tr>
+            <td>
+                <p>
+                Your position in line: {{counterNet}}
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>
+                Your group: {{choiceChecked}}
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>
+                Your endowment: {{currentEndowment}}
+                </p>
+            </td>
+        </tr>
+    </table>
+    <div>
+        <p>
+            Make you selection here:
+        </p>
+        <div>
+            <button class="experimentChoices {{checkedA}}" id="clickMeA" >Join Group A ({{counterA}} members)</button>
+            <button class="experimentChoices {{checkedB}}" id="clickMeB" >Join Group B ({{counterB}} members)</button>
+        </div>
+    </div>
+    <p> 
+        <button id="exitSurvey">Exit Survey</button>
+    </p> 
 </template>

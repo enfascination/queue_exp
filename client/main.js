@@ -25,19 +25,37 @@ Tracker.autorun(function() {
 });
 
 Template.design.helpers({
-    counter: function () {
-        var clickObj = Queues.findOne({queueID: 'A'});
-        return clickObj && clickObj.count;
-    }
+    counterA: function () {
+        var clickObjA = Queues.findOne({queueID: "A"});
+        return clickObjA && clickObjA.count;
+    },
+    counterB: function () {
+        var clickObjB = Queues.findOne({queueID: "B"});
+        return clickObjB && clickObjB.count;
+    },
 });
 
 Template.design.events({
-    'click button#clickMe': function () {
-        Meteor.call('incClicks');
-    }
-});
-
-Template.design.events({
+	'click button#clickMeA': function (event) {
+        console.log(event.target.id);
+	    Meteor.call('incClicksA', event.target.id);
+        if (choiceChecked.get() === "A") {
+            choiceChecked.set("");
+        } 
+        else {
+            choiceChecked.set("A");
+        }
+	}, 
+	'click button#clickMeB': function (event) {
+        console.log(event.target.id);
+	    Meteor.call('incClicksB', event.target.id);
+        if (choiceChecked.get() === "B") {
+            choiceChecked.set("");
+        } 
+        else {
+            choiceChecked.set("B");
+        }
+	},
     'click button#exitSurvey': function () {
         Meteor.call('goToExitSurvey');
     }
