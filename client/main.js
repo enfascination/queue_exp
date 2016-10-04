@@ -24,6 +24,10 @@ Tracker.autorun(function() {
     Meteor.subscribe('clicks', group);
 });
 
+Tracker.autorun(function() {
+    choiceChecked = new ReactiveVar("");
+});
+
 Template.design.helpers({
     counterA: function () {
         let clickObjA = Queues.findOne({queueID: "A"});
@@ -32,6 +36,25 @@ Template.design.helpers({
     counterB: function () {
         let clickObjB = Queues.findOne({queueID: "B"});
         return clickObjB && clickObjB.count;
+    },
+    choiceChecked: function () {
+        return choiceChecked.get();
+    },
+    checkedA: function() {
+        console.log("checkedA");
+        let rVal = "";
+        if (choiceChecked.get() === "A") {
+            rVal = "checked";
+        }
+        return rVal;
+    },
+    checkedB: function() {
+        console.log("checkedB");
+        let rVal = "";
+        if (choiceChecked.get() === "B") {
+            rVal = "checked";
+        }
+        return rVal;
     },
 });
 
