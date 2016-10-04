@@ -10,44 +10,44 @@ import { TurkServer } from 'meteor/mizzao:turkserver';
 
 import './main.html';
 
-    Tracker.autorun(function() {
-        if (TurkServer.inExperiment()) {
-            Router.go('/experiment');
-        } else if (TurkServer.inExitSurvey()) {
-            Router.go('/survey');
-        } 
-    });
+Tracker.autorun(function() {
+    if (TurkServer.inExperiment()) {
+        Router.go('/experiment');
+    } else if (TurkServer.inExitSurvey()) {
+        Router.go('/survey');
+    } 
+});
 
-    Tracker.autorun(function() {
-        var group = TurkServer.group();
-        if (group == null) return;
-        Meteor.subscribe('clicks', group);
-    });
+Tracker.autorun(function() {
+    var group = TurkServer.group();
+    if (group === null) return;
+    Meteor.subscribe('clicks', group);
+});
 
-    Template.hello.helpers({
-        counter: function () {
-            var clickObj = Clicks.findOne();
-            return clickObj && clickObj.count;
-        }
-    });
+Template.design.helpers({
+    counter: function () {
+        var clickObj = Queues.findOne({queueID: 'A'});
+        return clickObj && clickObj.count;
+    }
+});
 
-    Template.hello.events({
-        'click button#clickMe': function () {
-            Meteor.call('incClicks');
-        }
-    });
+Template.design.events({
+    'click button#clickMe': function () {
+        Meteor.call('incClicks');
+    }
+});
 
-    Template.hello.events({
-        'click button#exitSurvey': function () {
-            Meteor.call('goToExitSurvey');
-        }
-    });
+Template.design.events({
+    'click button#exitSurvey': function () {
+        Meteor.call('goToExitSurvey');
+    }
+});
 
-    Template.survey.events({
-        'submit .survey': function (e) {
-            e.preventDefault();
-            var results = {confusing: e.target.confusing.value,
-                           feedback: e.target.feedback.value};
-            TurkServer.submitExitSurvey(results);
-        }
-    });
+Template.survey.events({
+    'submit .survey': function (e) {
+        e.preventDefault();
+        var results = {confusing: e.target.confusing.value,
+            feedback: e.target.feedback.value};
+        TurkServer.submitExitSurvey(results);
+    }
+});

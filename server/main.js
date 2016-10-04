@@ -9,16 +9,16 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
     Meteor.startup(function () {
         Batches.upsert({name: "main"}, {name: "main", active: true});
         var batch = TurkServer.Batch.getBatchByName("main");
-        batch.setAssigner(new TurkServer.Assigners.SimpleAssigner);
+        batch.setAssigner(new TurkServer.Assigners.SimpleAssigner());
     });
 
     TurkServer.initialize(function() {
-        var clickObj = {count: 0};
-        Clicks.insert(clickObj);
+        var clickObj = {count: 0, queueID: 'A'};
+        Queues.insert(clickObj);
     });
 
     Meteor.publish('clicks', function() {
-        return Clicks.find();
+        return Queues.find();
     });
 
     Meteor.methods({
@@ -26,7 +26,7 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
             TurkServer.Instance.currentInstance().teardown(returnToLobby = true);
         },
         incClicks: function() {
-            Clicks.update({}, {$inc: {count: 1}});
+            Queues.update({queueID: 'A'}, {$inc: {count: 1}});
             var asst = TurkServer.Assignment.currentAssignment();
             asst.addPayment(0.1);
         },
