@@ -13,7 +13,7 @@ Schemas.Queues = new SimpleSchema({
         label: "QueueID",
     },
 });
-Schemas.QueueVote = new SimpleSchema({
+Schemas.QueueVotes = new SimpleSchema({
     queuePicked: {
         type: String,
         label: "Queue",
@@ -34,11 +34,11 @@ Schemas.QueueVote = new SimpleSchema({
 });
 
 Queues = new Mongo.Collection('queues');
-QueueVote = new Mongo.Collection('queueVote');
+QueueVotes = new Mongo.Collection('queueVotes');
 /*TurkServer.partitionCollection(Clicks);*/
 
 Queues.attachSchema(Schemas.Queues);
-QueueVote.attachSchema(Schemas.QueueVote);
+QueueVotes.attachSchema(Schemas.QueueVotes);
 
     
 

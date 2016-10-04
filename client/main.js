@@ -1,6 +1,7 @@
 /*jshint esversion: 6 */
 
 import '../imports/startup/client/routes.js';
+import { Helper } from '../imports/lib/helper.js';
 
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
@@ -9,6 +10,8 @@ import { Router } from 'meteor/iron:router';
 import { TurkServer } from 'meteor/mizzao:turkserver';
 
 import './main.html';
+
+Design = {}
 
 Tracker.autorun(function() {
     if (TurkServer.inExperiment()) {
@@ -21,11 +24,22 @@ Tracker.autorun(function() {
 Tracker.autorun(function() {
     let group = TurkServer.group();
     if (group === null) return;
-    Meteor.subscribe('clicks', group);
+    Meteor.subscribe('queues', group);
+    Meteor.subscribe('queueVotes', group);
 });
 
 Tracker.autorun(function() {
-    choiceChecked = new ReactiveVar("");
+    Design.choiceChecked = new ReactiveVar("");
+});
+Tracker.autorun(function() {
+    Design.pleaseMakeChoice = new ReactiveVar(false);
+});
+
+Template.survey.helpers({
+    userSelection: function () {
+        let userObj = QueueVotes.findOne({user: Meteor.userId()}, {}, Helper.err_func);
+        return(userObj.queuePicked);
+    },
 });
 
 Template.design.helpers({
@@ -38,49 +52,60 @@ Template.design.helpers({
         return clickObjB && clickObjB.count;
     },
     choiceChecked: function () {
-        return choiceChecked.get();
+        return Design.choiceChecked.get();
     },
     checkedA: function() {
-        console.log("checkedA");
+        //console.log("checkedA");
         let rVal = "";
-        if (choiceChecked.get() === "A") {
+        if (Design.choiceChecked.get() === "A") {
             rVal = "checked";
         }
         return rVal;
     },
     checkedB: function() {
-        console.log("checkedB");
+        //console.log("checkedB");
         let rVal = "";
-        if (choiceChecked.get() === "B") {
+        if (Design.choiceChecked.get() === "B") {
             rVal = "checked";
         }
         return rVal;
     },
 });
+Template.experiment.helpers({
+    testIncomplete: function() {
+        return( Design.pleaseMakeChoice.get() );
+    },
+});
 
 Template.design.events({
 	'click button#clickMeA': function (event) {
-        console.log(event.target.id);
-	    Meteor.call('incClicksA', event.target.id);
-        if (choiceChecked.get() === "A") {
-            choiceChecked.set("");
+        //console.log(event.target.id);
+        if (Design.choiceChecked.get() === "A") {
+            Design.choiceChecked.set("");
         } 
         else {
-            choiceChecked.set("A");
+            Design.choiceChecked.set("A");
+            Design.pleaseMakeChoice.set( false);
         }
 	}, 
 	'click button#clickMeB': function (event) {
-        console.log(event.target.id);
-	    Meteor.call('incClicksB', event.target.id);
-        if (choiceChecked.get() === "B") {
-            choiceChecked.set("");
+        //console.log(event.target.id);
+        if (Design.choiceChecked.get() === "B") {
+            Design.choiceChecked.set("");
         } 
         else {
-            choiceChecked.set("B");
+            Design.choiceChecked.set("B");
+            Design.pleaseMakeChoice.set( false );
         }
 	},
     'click button#exitSurvey': function () {
-        Meteor.call('goToExitSurvey');
+        if (Design.choiceChecked.get()) {
+            Meteor.call('submitQueueChoice', Design.choiceChecked.get());
+            Meteor.call('goToExitSurvey');
+        }
+        else {
+            Design.pleaseMakeChoice.set(true);
+        }
     }
 });
 

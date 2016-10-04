@@ -12,24 +12,22 @@
     <h1>Welcome to Meteor!</h1>
 
     {{> design}}
+    {{#if testIncomplete }}
+        {{> incomplete}}
+    {{/if}}
   </body>
 </template>
 
-<template name="design_deprecated">
-  <button id="clickMe">Click Me</button>
-  <p>You've pressed the button {{counter}} times.</p>
-
-  <button id="exitSurvey">Exit Survey</button>
-</template>
-
 <template name="survey">
-  <form class="survey">
-    <p>Was there anything confusing about this HIT?</p>
-    <textarea name="confusing" rows="3"></textarea><br/>
-    <p>Do you have any feedback for us?</p>
-    <textarea name="feedback" rows="3"></textarea><br/>
-    <button type="submit">Submit the HIT</button>
-  </form>
+    <form class="survey">
+        <p>You chose {{userSelection}}</p>
+        <p></p><br>
+        <p>Was there anything confusing about this HIT?</p>
+        <textarea name="confusing" rows="3"></textarea><br/>
+        <p>Do you have any feedback for us?</p>
+        <textarea name="feedback" rows="3"></textarea><br/>
+        <button type="submit">Submit the HIT</button>
+    </form>
 </template>
 
 <template name="design">
@@ -70,14 +68,18 @@
     </table>
     <div>
         <p>
-            Make you selection here:
+            Make your selection here:
         </p>
         <div>
-            <button class="experimentChoices {{checkedA}}" id="clickMeA" >Join Group A ({{counterA}} members)</button>
-            <button class="experimentChoices {{checkedB}}" id="clickMeB" >Join Group B ({{counterB}} members)</button>
+            <button class="experimentChoices {{checkedA}}" id="clickMeA" >Join Group A</button>
+            <button class="experimentChoices {{checkedB}}" id="clickMeB" >Join Group B</button>
         </div>
     </div>
     <p> 
         <button id="exitSurvey">Exit Survey</button>
     </p> 
+</template>
+
+<template name="incomplete">
+    <div class="warning">You did not complete the form</div>
 </template>
