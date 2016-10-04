@@ -19,18 +19,18 @@ Tracker.autorun(function() {
 });
 
 Tracker.autorun(function() {
-    var group = TurkServer.group();
+    let group = TurkServer.group();
     if (group === null) return;
     Meteor.subscribe('clicks', group);
 });
 
 Template.design.helpers({
     counterA: function () {
-        var clickObjA = Queues.findOne({queueID: "A"});
+        let clickObjA = Queues.findOne({queueID: "A"});
         return clickObjA && clickObjA.count;
     },
     counterB: function () {
-        var clickObjB = Queues.findOne({queueID: "B"});
+        let clickObjB = Queues.findOne({queueID: "B"});
         return clickObjB && clickObjB.count;
     },
 });
@@ -64,7 +64,7 @@ Template.design.events({
 Template.survey.events({
     'submit .survey': function (e) {
         e.preventDefault();
-        var results = {confusing: e.target.confusing.value,
+        let results = {confusing: e.target.confusing.value,
             feedback: e.target.feedback.value};
         TurkServer.submitExitSurvey(results);
     }

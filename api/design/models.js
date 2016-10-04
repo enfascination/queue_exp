@@ -2,7 +2,7 @@
 
 import { TurkServer } from 'meteor/mizzao:turkserver';
 
-var Schemas = {};
+let Schemas = {};
 Schemas.Queues = new SimpleSchema({
     count: {
         type: SimpleSchema.Integer,
