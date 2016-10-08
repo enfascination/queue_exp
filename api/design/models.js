@@ -3,41 +3,19 @@
 import { TurkServer } from 'meteor/mizzao:turkserver';
 
 let Schemas = {};
-Schemas.Queues = new SimpleSchema({
-    count: {
-        type: SimpleSchema.Integer,
-        label: "Count",
-    },
-    queueID: {
-        type: String,
-        label: "QueueID",
-    },
-});
-Schemas.QueueVotes = new SimpleSchema({
-    queuePicked: {
-        type: String,
-        label: "Queue",
-        max: 1,
-    },
-    userID: {
-        type: String,
-        label: "User",
-    },/*
-    timestamp: {
-        type: Date,
-        label: "Timestamp",
-    },
-    timestampEpoch: {
-        type: Number,
-        label: "Epoch",
-    },*/
-});
 Schemas.Subjects = new SimpleSchema({
-    userID: {
+    // this is the TurkServer asstId. 
+        // it's the finest grain one and the one I shoudl use in data nalayssi.
+    userId: {
         type: String,
         label: "User",
     },
-    cohortID: {
+    // this is the Meteor.userId for identifying user in-game. 
+    meteorUserId: {
+        type: String,
+        label: "Meteor User",
+    },
+    cohortId: {
         type: SimpleSchema.Integer,
         label: "group number",
     },
@@ -56,27 +34,35 @@ Schemas.Subjects = new SimpleSchema({
     completedExperiment: {
         type: Boolean,
         label: "completed experiment?",
+    }, 
+    queueCountA: {
+        type: SimpleSchema.Integer,
+        label: "Size of Queue A",
     },
+    queueCountB: {
+        type: SimpleSchema.Integer,
+        label: "Size of Queue B",
+    },/*
+    timestamp: {
+        type: Date,
+        label: "Timestamp",
+    },
+    timestampEpoch: {
+        type: Number,
+        label: "Epoch",
+    },*/
 });
 
 Design = {
-    maxPlayersInCohort : 50,
+    maxPlayersInCohort : 10,
     endowment : 1.00,
     queueNames : ['A', 'B'],
-    queueCosts : [0.50, 0.00],
-}
+    queueCosts : {A:0.50, B:0.00},
+    positionCosts : 0.10,
+};
 
-Queues = new Mongo.Collection('queues');
-QueueVotes = new Mongo.Collection('queueVotes');
 Subjects = new Mongo.Collection('subjects');
-/*TurkServer.partitionCollection(Clicks);*/
-
-Queues.attachSchema(Schemas.Queues);
-QueueVotes.attachSchema(Schemas.QueueVotes);
 Subjects.attachSchema(Schemas.Subjects);
-
-Queues.insert({count: 0, queueID: 'A'});
-Queues.insert({count: 0, queueID: 'B'});
-    
+/*TurkServer.partitionCollection(Clicks);*/
 
 

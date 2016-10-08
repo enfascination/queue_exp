@@ -6,12 +6,13 @@ import { Helper } from '../imports/lib/helper.js';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { Router } from 'meteor/iron:router';
 import { TurkServer } from 'meteor/mizzao:turkserver';
 
 import './main.html';
 
-Design = {}
+DesignLocal = {};
 
 Tracker.autorun(function() {
     if (TurkServer.inExperiment()) {
@@ -24,13 +25,14 @@ Tracker.autorun(function() {
 Tracker.autorun(function() {
     let group = TurkServer.group();
     if (group === null) return;
-    Meteor.subscribe('queues', group);
-    Meteor.subscribe('queueVotes', group);
     Meteor.subscribe('subjects', group);
 });
 
 Tracker.autorun(function() {
     Design.choiceChecked = new ReactiveVar("");
+});
+Tracker.autorun(function() {
+    DesignLocal.choiceCounts = new ReactiveDict();
 });
 Tracker.autorun(function() {
     Design.pleaseMakeChoice = new ReactiveVar(false);
@@ -47,30 +49,41 @@ Template.experiment.helpers({
 
 Template.queueInstructions.helpers({
     counterA: function () {
-        let clickObjA = Queues.findOne({queueID: "A"});
-        return clickObjA && clickObjA.count;
+        return Subjects.findOne({meteorUserId: Meteor.userId()}).queueCountA;
     },
     counterB: function () {
-        let clickObjB = Queues.findOne({queueID: "B"});
-        return clickObjB && clickObjB.count;
+        return Subjects.findOne({meteorUserId: Meteor.userId()}).queueCountB;
     },
     choiceChecked: function () {
         return Design.choiceChecked.get();
     },
     counterNet: function () {
-        return( "XXX" );
+        return Subjects.findOne({meteorUserId: Meteor.userId()}).queuePosition;
     },
     userAccount: function () {
         return Design.userAccount.get();
     },
-    earningsA: function () {
-        return( "XXX" );
+    earningsAMin: function () {
+        let sub = Subjects.findOne({meteorUserId: Meteor.userId()});
+        let qPos = sub.queuePosition * Design.positionCosts;
+        return( Design.endowment - Design.queueCosts.A + 1.00 - qPos);
+    },
+    earningsAMax: function () {
+        return( Design.endowment - Design.queueCosts.A + 1.00);
     },
     earningsBMin: function () {
-        return( "XXX" );
+        return( Design.endowment - Design.queueCosts.B);
     },
     earningsBMax: function () {
-        return( "XXX" );
+        let sub = Subjects.findOne({meteorUserId: Meteor.userId()});
+        let qPos = sub.queuePosition * Design.positionCosts;
+        return( Design.endowment - Design.queueCosts.B + 1.00 - qPos);
+    },
+    groupSize: function () {
+        return( Design.maxPlayersInCohort);
+    },
+    positionCosts: function () {
+        return( Design.positionCosts);
     },
 });
 Template.queueSelections.helpers({
@@ -121,7 +134,7 @@ Template.queueSelections.events({
 Template.experimentSubmit.events({
     'click button#exitSurvey': function () {
         if (Design.choiceChecked.get()) {
-            Meteor.call('submitQueueChoice', Design.choiceChecked.get());
+            Meteor.call('submitQueueChoice', Meteor.userId(), Design.choiceChecked.get());
             Meteor.call('goToExitSurvey');
         }
         else {
@@ -132,8 +145,8 @@ Template.experimentSubmit.events({
 
 Template.survey.helpers({
     userSelection: function () {
-        let userObj = QueueVotes.findOne({userID: Meteor.userId()}, {}, Helper.err_func);
-        return(userObj.queuePicked);
+        let userObj = Subjects.findOne({meteorUserId: Meteor.userId()});
+        return(userObj.choice);
     },
 });
 Template.survey.events({

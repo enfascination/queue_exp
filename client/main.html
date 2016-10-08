@@ -34,16 +34,16 @@
 
 <template name="queueInstructions">
     <p> 
-    You are playing a game with other turkers that simulates waiting in line. You are the 0: {{counterNetStaticRobust}} 1: {{counterNetStatic}} 2:{{counterNet}} person to have this choice, out of 100.  You are not yet in line, and the game is currently paused while you make your choice to enter the line (though if you refresh your screen you may lose your current position ). This game will end when 100 people have joined the line, and everyone will recieve their earnings at the same time. 
+    You are playing a game with other turkers that simulates waiting in line. You are person #{{counterNet}} out of a series of {{groupSize}} people making the same decision and with whom your choices will interact.  You are not yet in line, and the game is currently paused while you make your choice to enter the line. This game will end when 100 people have joined the line, and everyone will recieve their earnings at this time. 
     </p> 
     <p> 
-        You are being endowed with $1.00.   You will earn additional money for joining the line based on your final position in it. Specifically, you will earn an additional $1.00 minus your final position in the line.  
+    You are being endowed with a $1.00 account.   You will earn additional money for joining the line based on your final position in it. Specifically, you will earn an additional $1.00 minus ${{positionCosts}} for each person ahead of your position in the line.  
     </p> 
     <p> 
-        The line consists of two groups, A and B.  Joining group B puts you behind everyone who joined B before you and behind everyone who joins group A.  Joining group A puts you ahead of everyone in group B, and behind those who have joined group A before you.  However, joining group A will cost 50 cents from your $1.00 dollar endowment, while joining group B costs nothing. Below you can see the current membership in each group.
+        The line consists of two groups, A and B.  Joining group B puts you behind everyone who joined B before you and behind everyone who will chose to join group A.  Joining group A puts you ahead of everyone in group B, and behind those who have joined group A before you.  However, joining group A will cost 50 cents from your $1.00 dollar account, while joining group B costs nothing. Below you can see the current membership in each group.
     </p>
     <p>
-    Based on your position in this experiment, joining group A will guarantee you earings of {{earningsA}}, while joining group B will result in a minimum of {{earningsBMin}} and a maximum of {{earningsBMax}}. 
+    Based on your position in this experiment, joining group A will result in a minimum of {{earningsAMin}} and a maximum of {{earningsAMax}}, while joining group B will result in a minimum of {{earningsBMin}} and a maximum of {{earningsBMax}}. 
     </p>
     <table>
         <tr>
@@ -56,7 +56,7 @@
         <tr>
             <td>
                 <p>
-                Your group: {{choiceChecked}}
+                Your chosen group: {{choiceChecked}}
                 </p>
             </td>
         </tr>

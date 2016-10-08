@@ -9,14 +9,14 @@ let Design = {};
 
     TurkServer.initialize(function() {
         // initialize click objects
-        let clickObjA = Queues.findOne({ queueID: 'A'});
-        let clickObjB = Queues.findOne({ queueID: 'B'});
+        let clickObjA = Queues.findOne({ queueId: 'A'});
+        let clickObjB = Queues.findOne({ queueId: 'B'});
         if (!clickObjA) {
-            clickObjA = {count: 0, queueID: 'A'};
+            clickObjA = {count: 0, queueId: 'A'};
             Queues.insert(clickObjA);
         }
         if (!clickObjB) {
-            clickObjB = {count: 0, queueID: 'B'};
+            clickObjB = {count: 0, queueId: 'B'};
             Queues.insert(clickObjB);
         }
         console.log("ASDFASDFAS" + clickObjA.count);
