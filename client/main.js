@@ -26,6 +26,7 @@ Tracker.autorun(function() {
     if (group === null) return;
     Meteor.subscribe('queues', group);
     Meteor.subscribe('queueVotes', group);
+    Meteor.subscribe('subjects', group);
 });
 
 Tracker.autorun(function() {
@@ -34,15 +35,17 @@ Tracker.autorun(function() {
 Tracker.autorun(function() {
     Design.pleaseMakeChoice = new ReactiveVar(false);
 });
+Tracker.autorun(function() {
+    Design.userAccount = new ReactiveVar(1.0);
+});
 
-Template.survey.helpers({
-    userSelection: function () {
-        let userObj = QueueVotes.findOne({user: Meteor.userId()}, {}, Helper.err_func);
-        return(userObj.queuePicked);
+Template.experiment.helpers({
+    testIncomplete: function() {
+        return( Design.pleaseMakeChoice.get() );
     },
 });
 
-Template.design.helpers({
+Template.queueInstructions.helpers({
     counterA: function () {
         let clickObjA = Queues.findOne({queueID: "A"});
         return clickObjA && clickObjA.count;
@@ -54,6 +57,23 @@ Template.design.helpers({
     choiceChecked: function () {
         return Design.choiceChecked.get();
     },
+    counterNet: function () {
+        return( "XXX" );
+    },
+    userAccount: function () {
+        return Design.userAccount.get();
+    },
+    earningsA: function () {
+        return( "XXX" );
+    },
+    earningsBMin: function () {
+        return( "XXX" );
+    },
+    earningsBMax: function () {
+        return( "XXX" );
+    },
+});
+Template.queueSelections.helpers({
     checkedA: function() {
         //console.log("checkedA");
         let rVal = "";
@@ -71,20 +91,17 @@ Template.design.helpers({
         return rVal;
     },
 });
-Template.experiment.helpers({
-    testIncomplete: function() {
-        return( Design.pleaseMakeChoice.get() );
-    },
-});
 
-Template.design.events({
+Template.queueSelections.events({
 	'click button#clickMeA': function (event) {
         //console.log(event.target.id);
         if (Design.choiceChecked.get() === "A") {
             Design.choiceChecked.set("");
+            Design.userAccount.set(1.0);
         } 
         else {
             Design.choiceChecked.set("A");
+            Design.userAccount.set(0.5);
             Design.pleaseMakeChoice.set( false);
         }
 	}, 
@@ -95,9 +112,13 @@ Template.design.events({
         } 
         else {
             Design.choiceChecked.set("B");
+            Design.userAccount.set(1.0);
             Design.pleaseMakeChoice.set( false );
         }
 	},
+});
+
+Template.experimentSubmit.events({
     'click button#exitSurvey': function () {
         if (Design.choiceChecked.get()) {
             Meteor.call('submitQueueChoice', Design.choiceChecked.get());
@@ -109,6 +130,12 @@ Template.design.events({
     }
 });
 
+Template.survey.helpers({
+    userSelection: function () {
+        let userObj = QueueVotes.findOne({userID: Meteor.userId()}, {}, Helper.err_func);
+        return(userObj.queuePicked);
+    },
+});
 Template.survey.events({
     'submit .survey': function (e) {
         e.preventDefault();

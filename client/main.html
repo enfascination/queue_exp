@@ -9,9 +9,11 @@
   </head>
 
   <body>
-    <h1>Welcome to Meteor!</h1>
+    <h1>Welcome to the queue.</h1>
 
-    {{> design}}
+    {{> queueInstructions}}
+    {{> queueSelections}}
+    {{> experimentSubmit}}
     {{#if testIncomplete }}
         {{> incomplete}}
     {{/if}}
@@ -30,9 +32,9 @@
     </form>
 </template>
 
-<template name="design">
+<template name="queueInstructions">
     <p> 
-    You are playing a game with other turkers that simulates waiting in line. You are the {{counterNet}} person to have this choice, out of 99.  You are not yet in line, and the game is currently paused while you make your choice to enter the line. This game will end when 99 people have joined the line, and everyone will recieve their earnings at the same time. 
+    You are playing a game with other turkers that simulates waiting in line. You are the 0: {{counterNetStaticRobust}} 1: {{counterNetStatic}} 2:{{counterNet}} person to have this choice, out of 100.  You are not yet in line, and the game is currently paused while you make your choice to enter the line (though if you refresh your screen you may lose your current position ). This game will end when 100 people have joined the line, and everyone will recieve their earnings at the same time. 
     </p> 
     <p> 
         You are being endowed with $1.00.   You will earn additional money for joining the line based on your final position in it. Specifically, you will earn an additional $1.00 minus your final position in the line.  
@@ -61,11 +63,13 @@
         <tr>
             <td>
                 <p>
-                Your endowment: {{currentEndowment}}
+                Your account: {{userAccount}}
                 </p>
             </td>
         </tr>
     </table>
+</template>
+<template name="queueSelections">
     <div>
         <p>
             Make your selection here:
@@ -75,6 +79,8 @@
             <button class="experimentChoices {{checkedB}}" id="clickMeB" >Join Group B</button>
         </div>
     </div>
+</template>
+<template name="experimentSubmit">
     <p> 
         <button id="exitSurvey">Exit Survey</button>
     </p> 
