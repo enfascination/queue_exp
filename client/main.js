@@ -47,6 +47,11 @@ Template.experiment.helpers({
     },
 });
 
+Template.queueInstructions.onCreated( function(){
+
+    console.log(Subjects.findOne({meteorUserId: Meteor.userId()}));
+});
+
 Template.queueInstructions.helpers({
     counterA: function () {
         return Subjects.findOne({meteorUserId: Meteor.userId()}).queueCountA;
