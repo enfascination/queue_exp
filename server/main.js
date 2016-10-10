@@ -28,7 +28,7 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
             if (choice === "A") {
                 asst.addPayment(0.5);
                 Subjects.update({meteorUserId: muid }, {
-                    $set: {choice: "A", earnings: 0.50},
+                    $set: {choice: "A", earnings1: 0.50},
                 });
             }
             else if (choice === "B") {
@@ -50,11 +50,13 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                 subjectPos = lastSubject.queuePosition + 1;
                 countInA = Subjects.find({cohortId: subjectCohort, choice: "A"}).fetch().length;
                 countInB = Subjects.find({cohortId: subjectCohort, choice: "B"}).fetch().length;
+                countInNoChoice = Subjects.find({cohortId: subjectCohort, choice: "X"}).fetch().length - 1;
             } else {
                 subjectCohort = 1;
                 subjectPos = 1;
                 countInA = 0;
                 countInB = 0;
+                countInNoChoice = 0;
             }
 
             // rollover at max
@@ -63,6 +65,7 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                 subjectCohort = subjectCohort + 1;
                 countInA = 0;
                 countInB = 0;
+                countInNoChoice = 0;
             }
 
             Subjects.insert( {
@@ -70,11 +73,38 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                 meteorUserId: idObj.userId,
                 cohortId: subjectCohort,
                 queuePosition: subjectPos,
+                queuePositionFinal: -1,
                 choice: 'X',
                 queueCountA: countInA,
                 queueCountB: countInB,
-                earnings: Design.endowment,
+                queueCountNoChoice: countInNoChoice,
+                earnings1: Design.endowment,
+                earnings2: 0,
                 completedExperiment: false,
             } );
+        },
+        calculateQueueEarnings: function(queueId) {
+            let lastSubject = Subjects.findOne( {cohortId : queueId}, {sort : { queuePosition : -1 } } ) ;
+            if ( lastSubject.queuePosition === Design.maxPlayersInCohort ) {
+                let queueASubjects = Subjects.find( {cohortId : queueId, choice:"A"}, {sort : { queuePosition : -1 } } ) ;
+                let queueBSubjects = Subjects.find( {cohortId : queueId, choice:"B"}, {sort : { queuePosition : -1 } } ) ;
+                let decrement = Design.positionCosts;
+                let earnings = Design.pot;
+                let positionFinal = 0;
+                for ( sub in queueASubjects ) {
+                    // maybe figure out here how to recover assignment from an old passed subject;
+                    Subjects.update({cohortId: queueId, userId : sub.userId}, {
+                        $set: { earnings2: earnings - ( positionFinal * decrement ), queuePositionFinal : positionFinal },
+                    });
+                    positionFinal += 1;
+                }
+                for ( sub in queueBSubjects ) {
+                    // maybe figure out here how to recover assignment from an old passed subject;
+                    Subjects.update({cohortId: queueId, userId : sub.userId}, {
+                        $set: { earnings2: earnings - ( positionFinal * decrement ) },
+                    });
+                    positionFinal += 1;
+                }
+            }
         },
     });

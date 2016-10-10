@@ -1,7 +1,5 @@
 /*jshint esversion: 6 */
-
-import '../imports/startup/client/routes.js';
-import { Helper } from '../imports/lib/helper.js';
+/*global amplify */
 
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
@@ -9,7 +7,12 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Router } from 'meteor/iron:router';
 import { TurkServer } from 'meteor/mizzao:turkserver';
+import { Helper } from '../imports/lib/helper.js';
+import { Sess } from '../imports/lib/quick-session.js';
 
+import '../imports/startup/client/routes.js';
+import './templates/experimenter-view.html';
+import './templatejs/experimenter-view.js';
 import './main.html';
 
 DesignLocal = {};
@@ -41,35 +44,42 @@ Tracker.autorun(function() {
     Design.userAccount = new ReactiveVar(1.0);
 });
 
+Template.experiment.onCreated( function(){
+    // make client side subject available
+    Sess.setClientSub(Subjects.findOne({meteorUserId: Meteor.userId()}));
+});
+
 Template.experiment.helpers({
     testIncomplete: function() {
         return( Design.pleaseMakeChoice.get() );
     },
-});
-
-Template.queueInstructions.onCreated( function(){
-
-    console.log(Subjects.findOne({meteorUserId: Meteor.userId()}));
+    showExperimenterView: function() {
+        return( Design.experimenterView );
+    },
+    queueComplete: function() {
+        // the last queue is complete when the next shows it's first subject.
+        return( Sess.sub().queuePosition === 1 );
+    },
 });
 
 Template.queueInstructions.helpers({
     counterA: function () {
-        return Subjects.findOne({meteorUserId: Meteor.userId()}).queueCountA;
+        return Sess.sub().queueCountA;
     },
     counterB: function () {
-        return Subjects.findOne({meteorUserId: Meteor.userId()}).queueCountB;
+        return Sess.sub().queueCountB;
     },
     choiceChecked: function () {
         return Design.choiceChecked.get();
     },
     counterNet: function () {
-        return Subjects.findOne({meteorUserId: Meteor.userId()}).queuePosition;
+        return Sess.sub().queuePosition;
     },
     userAccount: function () {
         return Design.userAccount.get();
     },
     earningsAMin: function () {
-        let sub = Subjects.findOne({meteorUserId: Meteor.userId()});
+        let sub = Sess.sub();
         let qPos = sub.queuePosition * Design.positionCosts;
         return( Design.endowment - Design.queueCosts.A + 1.00 - qPos);
     },
@@ -80,7 +90,7 @@ Template.queueInstructions.helpers({
         return( Design.endowment - Design.queueCosts.B);
     },
     earningsBMax: function () {
-        let sub = Subjects.findOne({meteorUserId: Meteor.userId()});
+        let sub = Sess.sub();
         let qPos = sub.queuePosition * Design.positionCosts;
         return( Design.endowment - Design.queueCosts.B + 1.00 - qPos);
     },
@@ -150,8 +160,9 @@ Template.experimentSubmit.events({
 
 Template.survey.helpers({
     userSelection: function () {
-        let userObj = Subjects.findOne({meteorUserId: Meteor.userId()});
-        return(userObj.choice);
+        /// return(Sess.sub().choice);
+        // Outside of lobby, Session stops working.  good to know.
+        return(Subjects.findOne({meteorUserId: Meteor.userId()}).choice);
     },
 });
 Template.survey.events({

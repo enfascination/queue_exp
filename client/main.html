@@ -17,13 +17,25 @@
     {{#if testIncomplete }}
         {{> incomplete}}
     {{/if}}
+    {{#if showExperimenterView }}
+        {{> experimenterViewCurrentSubject}}
+        <br/>
+        {{> experimenterView}}
+        <br/>
+        {{> experimenterViewPayouts}}
+        {{#if queueComplete }}
+            {{> experimenterViewPayouts}}
+        {{else}}
+            <li>After experiment ends, payoffs listed here</li>
+        {{/if}}
+    {{/if}}
   </body>
 </template>
 
 <template name="survey">
     <form class="survey">
-        <p>You chose {{userSelection}}</p>
-        <p></p><br>
+        <!--<p>You chose {{userSelection}}</p>
+        <p></p><br>-->
         <p>Was there anything confusing about this HIT?</p>
         <textarea name="confusing" rows="3"></textarea><br/>
         <p>Do you have any feedback for us?</p>
@@ -44,6 +56,9 @@
     </p>
     <p>
     Based on your position in this experiment, joining group A will result in a minimum of {{earningsAMin}} and a maximum of {{earningsAMax}}, while joining group B will result in a minimum of {{earningsBMin}} and a maximum of {{earningsBMax}}. 
+    </p>
+    <p> 
+    DESIGN QUESTION: Subjects may not always submit their choices.  there are a few ways to deal with this. We can give all subjects a default choice of B.  we can kick people out and bump people after them further up the queue (but their decisio will have been based on where they were twhen they decided, and not where they wer when they ended up), or if #5 bails but 50 peeople sign up in the mean time, I can tell the 51st person to come that they are #5 and the 52nd that they are #51.  Preferences?
     </p>
     <table>
         <tr>
@@ -89,3 +104,4 @@
 <template name="incomplete">
     <div class="warning">You did not complete the form</div>
 </template>
+

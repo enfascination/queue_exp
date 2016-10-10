@@ -27,9 +27,13 @@ Schemas.Subjects = new SimpleSchema({
         type: String,
         label: "Choice of queue",
     },
-    earnings: {
+    earnings1: {
         type: SimpleSchema.Integer,
-        label: "Experiment earnings",
+        label: "Experiment earnings from before and during choice",
+    },
+    earnings2: {
+        type: SimpleSchema.Integer,
+        label: "Experiment earnings from after experiment",
     },
     completedExperiment: {
         type: Boolean,
@@ -42,6 +46,14 @@ Schemas.Subjects = new SimpleSchema({
     queueCountB: {
         type: SimpleSchema.Integer,
         label: "Size of Queue B",
+    },
+    queueCountNoChoice: {
+        type: SimpleSchema.Integer,
+        label: "Number of null choices",
+    },
+    queuePositionFinal: {
+        type: SimpleSchema.Integer,
+        label: "Ultimate order in line",
     },/*
     timestamp: {
         type: Date,
@@ -56,9 +68,11 @@ Schemas.Subjects = new SimpleSchema({
 Design = {
     maxPlayersInCohort : 10,
     endowment : 1.00,
+    pot : 1.00,
     queueNames : ['A', 'B'],
     queueCosts : {A:0.50, B:0.00},
     positionCosts : 0.10,
+    experimenterView : true,
 };
 
 Subjects = new Mongo.Collection('subjects');

@@ -1,0 +1,106 @@
+<template name="experimenterView">
+    <div class="experimenter-view">
+        <h3> Experimenter view into background state. </h3> 
+        <table>
+            <tbody>
+            <tr>
+                <td>
+                    Current position: {{queuePosition}}
+                </td>
+                <td>
+                    Current queue: {{cohortId}}
+                </td>
+                <td>
+                    Max per queue: {{maxPlayersInCohort}}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    People in A: {{queueCountA}}
+                </td>
+                <td>
+                    People in B: {{queueCountB}}
+                </td>
+                <td>
+                    Defaulted people: {{queueCountNoChoice}}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</template>
+<template name="experimenterViewPayouts">
+    <div class="experimenter-view">
+        <h3> Experimenter view into subject payoffs. </h3> 
+        <table class="payoffs-list">
+                <tr>
+                    <th>
+                        User ID
+                    </th>
+                    <th>
+                        Final position
+                    </th>
+                    <th>
+                        Initial position
+                    </th>
+                    <th>
+                        Choice
+                    </th>
+                    <th>
+                        Queue Earnings
+                    </th>
+                    <th>
+                        Total Payoff
+                    </th>
+                </tr>
+            {{#each subject in subjects}}
+                {{> experimenterViewPayout subject=subject}}
+            {{else}}
+                <tr><td>No subjects</td></tr>
+            {{/each}}
+        </table>
+    </div>
+</template>
+
+<template name="experimenterViewPayout">
+                <tr>
+                    <td>
+                        {{subject.userId}}
+                    </td>
+                    <td>
+                        {{subject.queuePositionFinal}}
+                    </td>
+                    <td>
+                        {{subject.queuePosition}}
+                    </td>
+                    <td>
+                        {{subject.choice}}
+                    </td>
+                    <td>
+                        {{subject.earnings2}}
+                    </td>
+                    <td>
+                        {{earningsTotal}}
+                    </td>
+                </tr>
+</template>
+
+<template name="experimenterViewCurrentSubject">
+    <div class="experimenter-view">
+    <h3> Experimenter view into more of current subject's state. </h3> 
+    <table>
+        <tr>
+            <td>
+                Assignment Id: {{userId}}
+            </td>
+            <td>
+                Meteor Id: {{meteorUserId}}
+            </td>
+            <td>
+                cohort Id: {{cohortId}}
+            </td>
+        </tr>
+    </table>
+    </div>
+</template>
+
