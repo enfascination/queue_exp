@@ -56,7 +56,6 @@ Template.experimenterViewPayout.helpers({
         return Sess.sub().userId;
     },
     earningsTotal: function (subject) {
-        console.log( subject);
         return subject.earnings1 + subject.earnings2;
     },
 });
