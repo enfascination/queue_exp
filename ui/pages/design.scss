@@ -1,3 +1,5 @@
+@import "../../../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
+
 .checked {
     background-color: red;
 }
@@ -10,4 +12,8 @@
 .experimenter-view table td, .experimenter-view table th {
     border: 1px solid black;
     padding: 3px;
+}
+.dropdown__menu {
+    background-color: white;
+    border: 1px solid black;
 }

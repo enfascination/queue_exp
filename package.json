@@ -6,6 +6,8 @@
   },
   "dependencies": {
     "bcrypt": "^0.8.7",
+    "bootstrap": "^3.3.7",
+    "bootstrap-sass": "^3.3.7",
     "meteor-node-stubs": "~0.2.0",
     "mrt": "^0.4.7",
     "session-store": "0.0.6"

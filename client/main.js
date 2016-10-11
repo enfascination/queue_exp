@@ -5,10 +5,12 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
+import { Session } from 'meteor/session';
 import { Router } from 'meteor/iron:router';
 import { TurkServer } from 'meteor/mizzao:turkserver';
 import { Helper } from '../imports/lib/helper.js';
 import { Sess } from '../imports/lib/quick-session.js';
+import 'bootstrap-sass';
 
 import '../imports/startup/client/routes.js';
 import './templates/experimenter-view.html';
@@ -54,11 +56,7 @@ Template.experiment.helpers({
         return( Design.pleaseMakeChoice.get() );
     },
     showExperimenterView: function() {
-        return( Design.experimenterView );
-    },
-    queueComplete: function() {
-        // the last queue is complete when the next shows it's first subject.
-        return( Sess.sub().queuePosition === 1 );
+        return( Design.experimenterView || TurkServer.isAdmin() );
     },
 });
 

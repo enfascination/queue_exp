@@ -1,8 +1,22 @@
 <template name="experimenterView">
     <div class="experimenter-view">
-        <h3> Experimenter view into background state. </h3> 
-        <table>
-            <tbody>
+        <h3> Experimenter View </h3> 
+        <h4> Underlying background state. </h4> 
+        {{> experimenterViewState }}
+        <h4> Underlying subject's state. </h4> 
+        {{> experimenterViewCurrentSubject }}
+        <h4> Final payoffs. </h4> 
+        {{> experimenterViewPayouts }}
+    </div>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+</template>
+
+<template name="experimenterViewState">
+    <table>
+        <tbody>
             <tr>
                 <td>
                     Current position: {{queuePosition}}
@@ -25,41 +39,60 @@
                     Defaulted people: {{queueCountNoChoice}}
                 </td>
             </tr>
-            </tbody>
-        </table>
-    </div>
+        </tbody>
+    </table>
 </template>
+
+<template name="experimenterViewCurrentSubject">
+    <table>
+        <tr>
+            <td>
+                Assignment Id: {{userId}}
+            </td>
+            <td>
+                Meteor Id: {{meteorUserId}}
+            </td>
+            <td>
+                cohort Id: {{cohortId}}
+            </td>
+        </tr>
+    </table>
+</template>
+
 <template name="experimenterViewPayouts">
-    <div class="experimenter-view">
-        <h3> Experimenter view into subject payoffs. </h3> 
-        <table class="payoffs-list">
-                <tr>
-                    <th>
-                        User ID
-                    </th>
-                    <th>
-                        Final position
-                    </th>
-                    <th>
-                        Initial position
-                    </th>
-                    <th>
-                        Choice
-                    </th>
-                    <th>
-                        Queue Earnings
-                    </th>
-                    <th>
-                        Total Payoff
-                    </th>
-                </tr>
-            {{#each subject in subjects}}
-                {{> experimenterViewPayout subject=subject}}
-            {{else}}
-                <tr><td>No subjects</td></tr>
-            {{/each}}
-        </table>
-    </div>
+        <p>Pick a queue to calculate payoffs for.</p>
+        {{> queueSelection}}
+        {{#if showQueueCalc }}
+            <table class="payoffs-list">
+                    <tr>
+                        <th>
+                            User ID
+                        </th>
+                        <th>
+                            Final position
+                        </th>
+                        <th>
+                            Initial position
+                        </th>
+                        <th>
+                            Choice
+                        </th>
+                        <th>
+                            Queue Earnings
+                        </th>
+                        <th>
+                            Total Payoff
+                        </th>
+                    </tr>
+                {{#each subject in subjects}}
+                    {{> experimenterViewPayout subject=subject}}
+                {{else}}
+                    <tr><td>No subjects</td></tr>
+                {{/each}}
+            </table>
+        {{else}}
+            <li>After experiment ends, payoffs listed here</li>
+        {{/if}}
 </template>
 
 <template name="experimenterViewPayout">
@@ -80,27 +113,16 @@
                         {{subject.earnings2}}
                     </td>
                     <td>
-                        {{earningsTotal}}
+                        {{earningsTotal subject}}
                     </td>
                 </tr>
 </template>
 
-<template name="experimenterViewCurrentSubject">
-    <div class="experimenter-view">
-    <h3> Experimenter view into more of current subject's state. </h3> 
-    <table>
-        <tr>
-            <td>
-                Assignment Id: {{userId}}
-            </td>
-            <td>
-                Meteor Id: {{meteorUserId}}
-            </td>
-            <td>
-                cohort Id: {{cohortId}}
-            </td>
-        </tr>
-    </table>
-    </div>
+<template name="queueSelection">
+    <select class="dropdown__menu" id="category-select">
+        <option disabled="disabled" selected="selected">Please Select</option> 
+        {{#each items}}
+            <option value="{{this}}">{{this}}</option>
+        {{/each}}
+    </select>
 </template>
-

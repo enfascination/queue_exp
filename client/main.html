@@ -18,16 +18,7 @@
         {{> incomplete}}
     {{/if}}
     {{#if showExperimenterView }}
-        {{> experimenterViewCurrentSubject}}
-        <br/>
         {{> experimenterView}}
-        <br/>
-        {{> experimenterViewPayouts}}
-        {{#if queueComplete }}
-            {{> experimenterViewPayouts}}
-        {{else}}
-            <li>After experiment ends, payoffs listed here</li>
-        {{/if}}
     {{/if}}
   </body>
 </template>

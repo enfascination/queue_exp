@@ -84,24 +84,24 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
             } );
         },
         calculateQueueEarnings: function(queueId) {
-            let lastSubject = Subjects.findOne( {cohortId : queueId}, {sort : { queuePosition : -1 } } ) ;
-            if ( lastSubject.queuePosition === Design.maxPlayersInCohort ) {
-                let queueASubjects = Subjects.find( {cohortId : queueId, choice:"A"}, {sort : { queuePosition : -1 } } ) ;
-                let queueBSubjects = Subjects.find( {cohortId : queueId, choice:"B"}, {sort : { queuePosition : -1 } } ) ;
+            let validChoiceCount = Subjects.find( {cohortId : queueId, choice: { $ne: 'X' } } ).fetch().length ;
+            if ( validChoiceCount === Design.maxPlayersInCohort ) {
+                let queueASubjects = Subjects.find( {cohortId : queueId, choice:"A"}, {sort : { queuePosition : 1 } } ).fetch() ;
+                let queueBSubjects = Subjects.find( {cohortId : queueId, choice:"B"}, {sort : { queuePosition : 1 } } ).fetch() ;
                 let decrement = Design.positionCosts;
                 let earnings = Design.pot;
-                let positionFinal = 0;
-                for ( sub in queueASubjects ) {
+                let positionFinal = 1;
+                for ( sub of queueASubjects ) {
                     // maybe figure out here how to recover assignment from an old passed subject;
                     Subjects.update({cohortId: queueId, userId : sub.userId}, {
-                        $set: { earnings2: earnings - ( positionFinal * decrement ), queuePositionFinal : positionFinal },
+                        $set: { earnings2: earnings - ( (positionFinal-1) * decrement ), queuePositionFinal : positionFinal },
                     });
                     positionFinal += 1;
                 }
-                for ( sub in queueBSubjects ) {
+                for ( sub of queueBSubjects ) {
                     // maybe figure out here how to recover assignment from an old passed subject;
                     Subjects.update({cohortId: queueId, userId : sub.userId}, {
-                        $set: { earnings2: earnings - ( positionFinal * decrement ) },
+                        $set: { earnings2: earnings - ( (positionFinal-1) * decrement ), queuePositionFinal : positionFinal  },
                     });
                     positionFinal += 1;
                 }
