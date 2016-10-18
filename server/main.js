@@ -50,7 +50,7 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                 subjectPos = lastSubject.queuePosition + 1;
                 countInA = Subjects.find({cohortId: subjectCohort, choice: "A"}).fetch().length;
                 countInB = Subjects.find({cohortId: subjectCohort, choice: "B"}).fetch().length;
-                countInNoChoice = Subjects.find({cohortId: subjectCohort, choice: "X"}).fetch().length - 1;
+                countInNoChoice = Subjects.find({cohortId: subjectCohort, choice: "X"}).fetch().length;
             } else {
                 subjectCohort = 1;
                 subjectPos = 1;

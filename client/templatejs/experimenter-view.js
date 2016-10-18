@@ -1,8 +1,10 @@
 /*jshint esversion: 6 */
 
+import { Session } from 'meteor/session';
 import { Sess } from '../../imports/lib/quick-session.js';
+import { Helper } from '../../imports/lib/helper.js';
 
-Template.experimenterView.helpers({
+Template.experimenterViewState.helpers({
     queuePosition: function () {
         return Sess.sub().queuePosition;
     },
@@ -55,8 +57,15 @@ Template.experimenterViewPayout.helpers({
     userId: function () {
         return Sess.sub().userId;
     },
+    earningsQueue: function (subject) {
+        return Helper.toCash( subject.earnings2 );
+    },
     earningsTotal: function (subject) {
-        return subject.earnings1 + subject.earnings2;
+        if ( !_.isNumber( subject.earnings1 ) || !_.isNumber( subject.earnings2 ) ) {
+            return("error");
+        } else {
+            return Helper.toCash( subject.earnings1 + subject.earnings2 );
+        }
     },
 });
 

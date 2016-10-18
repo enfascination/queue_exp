@@ -1,23 +1,21 @@
 /*jshint esversion: 6 */
-/*global amplify */
 
+var _ = require('lodash');
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import { Session } from 'meteor/session';
 import { Router } from 'meteor/iron:router';
 import { TurkServer } from 'meteor/mizzao:turkserver';
 import { Helper } from '../imports/lib/helper.js';
 import { Sess } from '../imports/lib/quick-session.js';
 import 'bootstrap-sass';
 
+
 import '../imports/startup/client/routes.js';
 import './templates/experimenter-view.html';
 import './templatejs/experimenter-view.js';
 import './main.html';
-
-DesignLocal = {};
 
 Tracker.autorun(function() {
     if (TurkServer.inExperiment()) {
@@ -35,14 +33,7 @@ Tracker.autorun(function() {
 
 Tracker.autorun(function() {
     Design.choiceChecked = new ReactiveVar("");
-});
-Tracker.autorun(function() {
-    DesignLocal.choiceCounts = new ReactiveDict();
-});
-Tracker.autorun(function() {
     Design.pleaseMakeChoice = new ReactiveVar(false);
-});
-Tracker.autorun(function() {
     Design.userAccount = new ReactiveVar(1.0);
 });
 
@@ -74,29 +65,35 @@ Template.queueInstructions.helpers({
         return Sess.sub().queuePosition;
     },
     userAccount: function () {
-        return Design.userAccount.get();
+        return( Helper.toCash( Design.userAccount.get() ) );
     },
     earningsAMin: function () {
         let sub = Sess.sub();
         let qPos = sub.queuePosition * Design.positionCosts;
-        return( Design.endowment - Design.queueCosts.A + 1.00 - qPos);
+        return( Helper.toCash( Design.endowment - Design.queueCosts.A + 1.00 - qPos ) );
     },
     earningsAMax: function () {
-        return( Design.endowment - Design.queueCosts.A + 1.00);
+        return( Helper.toCash( Design.endowment - Design.queueCosts.A + 1.00 ) );
     },
     earningsBMin: function () {
-        return( Design.endowment - Design.queueCosts.B);
+        return( Helper.toCash( Design.endowment - Design.queueCosts.B ) );
     },
     earningsBMax: function () {
         let sub = Sess.sub();
         let qPos = sub.queuePosition * Design.positionCosts;
-        return( Design.endowment - Design.queueCosts.B + 1.00 - qPos);
+        return( Helper.toCash( Design.endowment - Design.queueCosts.B + 1.00 - qPos ) );
     },
     groupSize: function () {
         return( Design.maxPlayersInCohort);
     },
     positionCosts: function () {
-        return( Design.positionCosts);
+        return( Helper.toCash( Design.positionCosts ) );
+    },
+    endowment: function () {
+        return( Helper.toCash( Design.endowment ) );
+    },
+    pot: function () {
+        return( Helper.toCash( Design.pot ) );
     },
 });
 Template.queueSelections.helpers({
