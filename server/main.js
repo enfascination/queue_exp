@@ -80,17 +80,23 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
 
             Subjects.insert( {
                 userId: idObj.assignmentId,
-                meteorUserId: idObj.userId,
                 cohortId: subjectCohort,
                 queuePosition: subjectPos,
                 queuePositionFinal: -1,
                 choice: 'X',
-                queueCountA: countInA,
-                queueCountB: countInB,
-                queueCountNoChoice: countInNoChoice,
                 earnings1: aDesign.endowment,
                 earnings2: 0,
                 completedExperiment: false,
+                theTimestamp: Date.now(),
+                queueCountA: countInA,
+                queueCountB: countInB,
+                queueCountNoChoice: countInNoChoice,
+                tsAsstId: idObj.asstId,
+                tsBatchId: idObj.batchId,
+                meteorUserId: idObj.userId,
+                mtHitId: idObj.hitId,
+                mtAssignmentId: idObj.assignmentId,
+                mtWorkerId: idObj.workerId,
             } );
         },
         calculateQueueEarnings: function(queueId) {

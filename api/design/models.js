@@ -10,11 +10,6 @@ Schemas.Subjects = new SimpleSchema({
         type: String,
         label: "User",
     },
-    // this is the Meteor.userId for identifying user in-game. 
-    meteorUserId: {
-        type: String,
-        label: "Meteor User",
-    },
     cohortId: {
         type: SimpleSchema.Integer,
         label: "group number",
@@ -22,6 +17,10 @@ Schemas.Subjects = new SimpleSchema({
     queuePosition: {
         type: SimpleSchema.Integer,
         label: "Position in queue",
+    },
+    queuePositionFinal: {
+        type: SimpleSchema.Integer,
+        label: "Ultimate order in line",
     },
     choice: {
         type: String,
@@ -39,6 +38,10 @@ Schemas.Subjects = new SimpleSchema({
         type: Boolean,
         label: "completed experiment?",
     }, 
+    theTimestamp: {
+        type: Date,
+        label: "Timestamp",
+    },
     queueCountA: {
         type: SimpleSchema.Integer,
         label: "Size of Queue A",
@@ -51,25 +54,31 @@ Schemas.Subjects = new SimpleSchema({
         type: SimpleSchema.Integer,
         label: "Number of null choices",
     },
-    queuePositionFinal: {
-        type: SimpleSchema.Integer,
-        label: "Ultimate order in line",
+    tsAsstId: {
+        type: String,
+        label: "TS asstId",
     },
-    /*
-    timestamp: {
-        type: Date,
-        label: "Timestamp",
+    tsBatchId: {
+        type: String,
+        label: "TS batchId",
     },
-    timestampEpoch: {
-        type: Number,
-        label: "Epoch",
+    // this is the Meteor.userId for identifying user in-game. 
+    meteorUserId: {
+        type: String,
+        label: "Meteor User",
     },
-    group (turkserver.group)
-    batchid
-    asstid
-    assignemtnid
-    alltheotherids
-    */
+    mtHitId: {
+        type: String,
+        label: "MT Hit Id",
+    },
+    mtAssignmentId: {
+        type: String,
+        label: "MT Assignment Id",
+    },
+    mtWorkerId: {
+        type: String,
+        label: "MT Worker Id",
+    },
 });
 Schemas.CohortSettings = new SimpleSchema({
     cohortId: {
@@ -107,7 +116,7 @@ Schemas.CohortSettings = new SimpleSchema({
 
 Design = {
     maxPlayersInCohort : 5,
-    endowment : 1.10,
+    endowment : 1.00,
     pot : 1.00,
     queueNames : [ 'A', 'B' ],
     queueCosts : { "A": 0.50, 'B': 0.00 },
