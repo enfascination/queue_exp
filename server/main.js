@@ -39,14 +39,14 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                 countInB = Subjects.find({ cohortId: subjectCohort, choice: "B" }).fetch().length;
                 countInNoChoice = Subjects.find({ cohortId: subjectCohort, choice: "X" }).fetch().length;
                 aDesign = CohortSettings.findOne({ cohortId: subjectCohort });
-                // for bad contingenecies that shold only happened during development
-                if (typeof aDesign === 'undefined') {
-                    aDesign = Design;
-                }
             } else {
                 // for very very first subject
                 firstSubjectEver = true;
                 subjectCohort = 0;
+            }
+            // for rare contingenecies that shold only happened during development
+            if (typeof aDesign === 'undefined') {
+                aDesign = Design;
             }
 
             // rollover at max
@@ -78,16 +78,20 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                 queueCountNoChoice: countInNoChoice,
                 tsAsstId: idObj.asstId,
                 tsBatchId: idObj.batchId,
+                tsGroupId: "undefined",
                 meteorUserId: idObj.userId,
                 mtHitId: idObj.hitId,
                 mtAssignmentId: idObj.assignmentId,
                 mtWorkerId: idObj.workerId,
             } );
         },
-        submitQueueChoice: function(muid, choice) {
+        addGroupId: function( meteorUserId, groupId ) {
+            let res = Subjects.update({meteorUserId: meteorUserId}, { $set: {tsGroupId : groupId} });
+            //console.log(res);
+        },
+        submitQueueChoice: function(muid, choice, design) {
             let asst = TurkServer.Assignment.currentAssignment();
             let sub = Subjects.findOne({ meteorUserId: muid });
-            let design = CohortSettings.findOne({ cohortId: sub.cohortId });
             if (choice === "A") {
                 Subjects.update({meteorUserId: muid }, {
                     $set: {
@@ -107,6 +111,31 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                 });
             }
         },
+        completeCohort: function(cohortId, design) {
+            let cohortFin = Subjects.find({
+                cohortId : cohortId, 
+                completedChoice: true,
+            });
+            let cohortUnfin = Subjects.find({
+                cohortId : cohortId, 
+                completedChoice: false,
+            });
+            if (cohortFin.count() === design.maxPlayersInCohort ) {
+                Subjects.update({ cohortId: cohortId }, {
+                    $set: { 
+                        completedCohort: true,
+                    },
+                }, {multi: true}
+                );
+            } else if ( cohortFin.count() + cohortUnfin.count() === design.maxPlayersInCohort) {
+                for ( let sub of cohortUnfin.fetch() ) {
+                    // print out subjects that, later, I'll want (need) to address manually.
+                    //console.log( sub.userId );
+                }
+            } else {
+                // experiment still in progress
+            }
+        },
         calculateQueueEarnings: function(cohortId, aDesign) {
             let queueasubjects, queuebsubjects, positionfinal, earnings2, totalpayment, asst;
             queueASubjects = Subjects.find( {cohortId : cohortId, choice : "A"}, {sort : { queuePosition : 1 } } ).fetch() ;
@@ -121,7 +150,6 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                         earnings2: earnings2, 
                         totalPayment: totalPayment, 
                         queuePositionFinal : positionFinal,
-                        completedCohort: true,
                     },
                 });
                 asst = TurkServer.Assignment.getAssignment( sub.tsAsstId );

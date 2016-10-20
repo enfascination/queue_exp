@@ -73,6 +73,10 @@ Schemas.Subjects = new SimpleSchema({
         type: String,
         label: "TS batchId",
     },
+    tsGroupId: {
+        type: String,
+        label: "TS Group/partitionId",
+    },
     // this is the Meteor.userId for identifying user in-game. 
     meteorUserId: {
         type: String,
@@ -141,6 +145,7 @@ Subjects = new Mongo.Collection('subjects');
 Subjects.attachSchema(Schemas.Subjects);
 CohortSettings = new Mongo.Collection('designs');
 //CohortSettings.attachSchema(Schemas.CohortSettings);
-/*TurkServer.partitionCollection(Clicks);*/
+//TurkServer.partitionCollection(Subjects);
+//TurkServer.partitionCollection(CohortSettings);
 
 

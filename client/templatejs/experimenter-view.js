@@ -5,9 +5,9 @@ import { Sess } from '../../imports/lib/quick-session.js';
 import { Helper } from '../../imports/lib/helper.js';
 
 Template.experimenterViewState.onCreated( function(){
-    let group = TurkServer.group();
-    if (group === null) return;
-    Meteor.subscribe('designs', group);
+    //let group = TurkServer.group();
+    //if (group === null) return;
+    //Meteor.subscribe('designs', group);
 });
 Template.experimenterViewState.helpers({
     queuePosition: function () {
@@ -44,6 +44,9 @@ Template.experimenterViewCurrentSubject.helpers({
 });
 
 Template.experimenterViewPayouts.onCreated( function() {
+    //let group = TurkServer.group();
+    //if (group === null) return;
+    //Meteor.subscribe('subjects', group);
     Session.set('showQueueCalc', false);
 });
 
@@ -75,6 +78,11 @@ Template.experimenterViewPayout.helpers({
     },
 });
 
+Template.queueSelection.onCreated( function(){
+    //let group = TurkServer.group();
+    //if (group === null) return;
+    //Meteor.subscribe('subjects', group);
+});
 // https://github.com/lookback/meteor-dropdowns
 Template.queueSelection.helpers({
     //items: ['Foo', 'Bar', 'Baz'],
@@ -97,7 +105,8 @@ Template.queueSelection.events({
             choice: { $ne: 'X' } 
         });
         let design = CohortSettings.findOne( {cohortId: queueToCalculate } );
-        if ( cohort.fetch().length === design.maxPlayersInCohort ) {
+        Meteor.call('completeCohort', queueToCalculate, design );
+        if ( Subjects.findOne({ cohortId : queueToCalculate }).completedCohort ) {
             Meteor.call( 'calculateQueueEarnings', queueToCalculate, design );
         }
         Session.set('showQueueCalc', true);

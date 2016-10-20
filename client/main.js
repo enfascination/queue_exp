@@ -27,6 +27,7 @@ Tracker.autorun(function() {
 
 Tracker.autorun(function() {
     let group = TurkServer.group();
+    //console.log("group", group);
     if (group === null) return;
     Meteor.subscribe('subjects', group);
     Meteor.subscribe('designs', group);
@@ -39,6 +40,12 @@ Tracker.autorun(function() {
 });
 
 Template.experiment.onCreated( function(){
+    let group = TurkServer.group();
+    //if (group === null) return;
+    //Meteor.subscribe('subjects', group);
+    //Meteor.subscribe('designs', group);
+    // record groupid
+    Meteor.call("addGroupId", Meteor.userId(), group );
     // make client side subject available
     sub = Subjects.findOne({meteorUserId: Meteor.userId()});
     if (sub) {
@@ -166,17 +173,14 @@ Template.queueSelections.events({
 Template.experimentSubmit.events({
     'click button#exitSurvey': function () {
         if (UserElements.choiceChecked.get()) {
-            Meteor.call('submitQueueChoice', Meteor.userId(), UserElements.choiceChecked.get());
-            //if end of queue, calculate all earnings
-            let cohortId = Sess.sub().cohortId;
             let design = Sess.design();
-            let cohort = Subjects.find({
-                cohortId : cohortId, 
-                choice: { $ne: 'X' } 
-            });
-            // plus one because the current player is an X
-            // greater-than because life can be crazy
-            if ( cohort.fetch().length + 1 >= design.maxPlayersInCohort ) {
+            let cohortId = design.cohortId;
+            Meteor.call('submitQueueChoice', Meteor.userId(), UserElements.choiceChecked.get(), design);
+            // determine if end of queue
+            Meteor.call('completeCohort', cohortId, design );
+            let aSub = Sess.sub();
+            //if end of queue, calculate all earnings
+            if ( aSub.completedCohort ) {
                 Meteor.call( 'calculateQueueEarnings', cohortId, design );
             }
             Meteor.call('goToExitSurvey');
