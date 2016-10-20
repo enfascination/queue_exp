@@ -54,7 +54,8 @@ Schemas.Subjects = new SimpleSchema({
     queuePositionFinal: {
         type: SimpleSchema.Integer,
         label: "Ultimate order in line",
-    },/*
+    },
+    /*
     timestamp: {
         type: Date,
         label: "Timestamp",
@@ -62,21 +63,64 @@ Schemas.Subjects = new SimpleSchema({
     timestampEpoch: {
         type: Number,
         label: "Epoch",
-    },*/
+    },
+    group (turkserver.group)
+    batchid
+    asstid
+    assignemtnid
+    alltheotherids
+    */
+});
+Schemas.CohortSettings = new SimpleSchema({
+    cohortId: {
+        type: SimpleSchema.Integer,
+        label: "group number",
+    },
+    maxPlayersInCohort: {
+        type: SimpleSchema.Integer,
+        label: "Max size of queue",
+    },
+    endowment: {
+        type: Number,
+        label: "Initial earnings",
+        decimal: true,
+    },
+    pot: {
+        type: Number,
+        label: "Max potential queue earnings",
+        decimal: true,
+    },
+    positionCosts: {
+        type: Number,
+        label: "Per person queue earnings penalty",
+        decimal: true,
+    },
+    queueNames: {
+        type: [String],
+        label: "List of queues",
+    },
+    queueCosts: {
+        type: Object,
+        label: "Costs of queues",
+    },
 });
 
 Design = {
-    maxPlayersInCohort : 10,
-    endowment : 1.00,
+    maxPlayersInCohort : 5,
+    endowment : 1.10,
     pot : 1.00,
-    queueNames : ['A', 'B'],
-    queueCosts : {A:0.50, B:0.00},
-    positionCosts : 0.10,
+    queueNames : [ 'A', 'B' ],
+    queueCosts : { "A": 0.50, 'B': 0.00 },
+    positionCosts : 0.20,
+};
+UserElements = {
     experimenterView : true,
 };
 
 Subjects = new Mongo.Collection('subjects');
 Subjects.attachSchema(Schemas.Subjects);
+CohortSettings = new Mongo.Collection('designs');
+//CohortSettings.attachSchema(Schemas.CohortSettings);
 /*TurkServer.partitionCollection(Clicks);*/
 
 

@@ -4,6 +4,11 @@ import { Session } from 'meteor/session';
 import { Sess } from '../../imports/lib/quick-session.js';
 import { Helper } from '../../imports/lib/helper.js';
 
+Template.experimenterViewState.onCreated( function(){
+    let group = TurkServer.group();
+    if (group === null) return;
+    Meteor.subscribe('designs', group);
+});
 Template.experimenterViewState.helpers({
     queuePosition: function () {
         return Sess.sub().queuePosition;
@@ -12,7 +17,8 @@ Template.experimenterViewState.helpers({
         return Sess.sub().cohortId;
     },
     maxPlayersInCohort: function () {
-        return Design.maxPlayersInCohort;
+        let aDesign = Sess.design();
+        return aDesign.maxPlayersInCohort;
     },
     queueCountA: function () {
         return Sess.sub().queueCountA;

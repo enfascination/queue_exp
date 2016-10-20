@@ -10,5 +10,11 @@ export const Sess = {
     setClientSub : function (sub) {
         amplify.store("subject", sub);
     },
+    design : function () {
+        return amplify.store("design");
+    },
+    setClientDesign : function (des) {
+        amplify.store("design", des);
+    },
 }
 

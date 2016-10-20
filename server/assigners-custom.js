@@ -9,6 +9,7 @@ export let QueueAssigner = class extends TurkServer.Assigners.SimpleAssigner {
       // has to be before the super call.
     if (asst.getInstances().length <= 0) {
       Meteor.call("initializeSubject", asst);
+      //console.log(asst);// asst.userId is the meteor userid
     }
     super.userJoined(asst);
   }

@@ -29,28 +29,35 @@ Tracker.autorun(function() {
     let group = TurkServer.group();
     if (group === null) return;
     Meteor.subscribe('subjects', group);
+    Meteor.subscribe('designs', group);
 });
 
 Tracker.autorun(function() {
-    Design.choiceChecked = new ReactiveVar("");
-    Design.pleaseMakeChoice = new ReactiveVar(false);
-    Design.userAccount = new ReactiveVar(1.0);
+    UserElements.choiceChecked = new ReactiveVar("");
+    UserElements.pleaseMakeChoice = new ReactiveVar(false);
+    UserElements.userAccount = new ReactiveVar();
 });
 
 Template.experiment.onCreated( function(){
     // make client side subject available
-    Sess.setClientSub(Subjects.findOne({meteorUserId: Meteor.userId()}));
+    sub = Subjects.findOne({meteorUserId: Meteor.userId()});
+    if (sub) {
+        Sess.setClientSub( sub );
+        Sess.setClientDesign(CohortSettings.findOne({ cohortId: sub.cohortId }));
+    }
 });
 
 Template.experiment.helpers({
     testIncomplete: function() {
-        return( Design.pleaseMakeChoice.get() );
+        return( UserElements.pleaseMakeChoice.get() );
     },
     showExperimenterView: function() {
-        return( Design.experimenterView || TurkServer.isAdmin() );
+        return( UserElements.experimenterView || TurkServer.isAdmin() );
     },
 });
 
+Template.queueInstructions.onCreated( function(){
+});
 Template.queueInstructions.helpers({
     counterA: function () {
         return Sess.sub().queueCountA;
@@ -59,48 +66,60 @@ Template.queueInstructions.helpers({
         return Sess.sub().queueCountB;
     },
     choiceChecked: function () {
-        return Design.choiceChecked.get();
+        return UserElements.choiceChecked.get();
     },
     counterNet: function () {
         return Sess.sub().queuePosition;
     },
     userAccount: function () {
-        return( Helper.toCash( Design.userAccount.get() ) );
+        if (!UserElements.userAccount.get()) {
+            let des = Sess.design();
+            UserElements.userAccount.set(des.endowment);
+        }
+        return( Helper.toCash( UserElements.userAccount.get() ) );
     },
     earningsAMin: function () {
         let sub = Sess.sub();
-        let qPos = sub.queuePosition * Design.positionCosts;
-        return( Helper.toCash( Design.endowment - Design.queueCosts.A + 1.00 - qPos ) );
+        let aDesign = Sess.design();
+        let qPos = sub.queuePosition * aDesign.positionCosts;
+        return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.A + 1.00 - qPos ) );
     },
     earningsAMax: function () {
-        return( Helper.toCash( Design.endowment - Design.queueCosts.A + 1.00 ) );
+        let aDesign = Sess.design();
+        return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.A + 1.00 ) );
     },
     earningsBMin: function () {
-        return( Helper.toCash( Design.endowment - Design.queueCosts.B ) );
+        let aDesign = Sess.design();
+        return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.B ) );
     },
     earningsBMax: function () {
         let sub = Sess.sub();
-        let qPos = sub.queuePosition * Design.positionCosts;
-        return( Helper.toCash( Design.endowment - Design.queueCosts.B + 1.00 - qPos ) );
+        let aDesign = Sess.design();
+        let qPos = sub.queuePosition * aDesign.positionCosts;
+        return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.B + 1.00 - qPos ) );
     },
     groupSize: function () {
-        return( Design.maxPlayersInCohort);
+        let aDesign = Sess.design();
+        return( aDesign.maxPlayersInCohort);
     },
     positionCosts: function () {
-        return( Helper.toCash( Design.positionCosts ) );
+        let aDesign = Sess.design();
+        return( Helper.toCash( aDesign.positionCosts ) );
     },
     endowment: function () {
-        return( Helper.toCash( Design.endowment ) );
+        let aDesign = Sess.design();
+        return( Helper.toCash( aDesign.endowment ) );
     },
     pot: function () {
-        return( Helper.toCash( Design.pot ) );
+        let aDesign = Sess.design();
+        return( Helper.toCash( aDesign.pot ) );
     },
 });
 Template.queueSelections.helpers({
     checkedA: function() {
         //console.log("checkedA");
         let rVal = "";
-        if (Design.choiceChecked.get() === "A") {
+        if (UserElements.choiceChecked.get() === "A") {
             rVal = "checked";
         }
         return rVal;
@@ -108,7 +127,7 @@ Template.queueSelections.helpers({
     checkedB: function() {
         //console.log("checkedB");
         let rVal = "";
-        if (Design.choiceChecked.get() === "B") {
+        if (UserElements.choiceChecked.get() === "B") {
             rVal = "checked";
         }
         return rVal;
@@ -118,37 +137,40 @@ Template.queueSelections.helpers({
 Template.queueSelections.events({
 	'click button#clickMeA': function (event) {
         //console.log(event.target.id);
-        if (Design.choiceChecked.get() === "A") {
-            Design.choiceChecked.set("");
-            Design.userAccount.set(1.0);
+        let des = Sess.design();
+        if (UserElements.choiceChecked.get() === "A") {
+            UserElements.choiceChecked.set("");
+            UserElements.userAccount.set(des.endowment);
         } 
         else {
-            Design.choiceChecked.set("A");
-            Design.userAccount.set(0.5);
-            Design.pleaseMakeChoice.set( false);
+            UserElements.choiceChecked.set("A");
+            UserElements.userAccount.set(des.endowment - des.queueCosts['A']);
+            UserElements.pleaseMakeChoice.set( false);
         }
 	}, 
 	'click button#clickMeB': function (event) {
         //console.log(event.target.id);
-        if (Design.choiceChecked.get() === "B") {
-            Design.choiceChecked.set("");
+        let des = Sess.design();
+        if (UserElements.choiceChecked.get() === "B") {
+            UserElements.choiceChecked.set("");
+            UserElements.userAccount.set(des.endowment);
         } 
         else {
-            Design.choiceChecked.set("B");
-            Design.userAccount.set(1.0);
-            Design.pleaseMakeChoice.set( false );
+            UserElements.choiceChecked.set("B");
+            UserElements.userAccount.set(des.endowment - des.queueCosts['B']);
+            UserElements.pleaseMakeChoice.set( false );
         }
 	},
 });
 
 Template.experimentSubmit.events({
     'click button#exitSurvey': function () {
-        if (Design.choiceChecked.get()) {
-            Meteor.call('submitQueueChoice', Meteor.userId(), Design.choiceChecked.get());
+        if (UserElements.choiceChecked.get()) {
+            Meteor.call('submitQueueChoice', Meteor.userId(), UserElements.choiceChecked.get());
             Meteor.call('goToExitSurvey');
         }
         else {
-            Design.pleaseMakeChoice.set(true);
+            UserElements.pleaseMakeChoice.set(true);
         }
     }
 });
