@@ -3,18 +3,22 @@
     <br/>
     <br/>
     <br/>
+    <section>
     <div class="experimenter-view">
         <h3> Experimenter View </h3> 
-        <h4> Underlying background state. </h4> 
-        {{> experimenterViewState }}
-        <h4> Underlying subject's state. </h4> 
-        {{> experimenterViewCurrentSubject }}
-        <h4> Final payoffs. </h4> 
-        {{> experimenterViewPayouts }}
+        <div class="container-fluid">
+            <h4> Underlying background state. </h4> 
+            {{> experimenterViewState }}
+            <h4> Underlying subject's state. </h4> 
+            {{> experimenterViewCurrentSubject }}
+            <h4> Final payoffs. </h4> 
+            {{> experimenterViewPayouts }}
+        </div>
         <br/>
         <p> 
         </p>
     </div>
+    </section>
     <br/>
     <br/>
     <br/>
@@ -22,7 +26,7 @@
 </template>
 
 <template name="experimenterViewState">
-    <table>
+    <table class="table table-bordered">
         <tbody>
             <tr>
                 <td>
@@ -51,7 +55,7 @@
 </template>
 
 <template name="experimenterViewCurrentSubject">
-    <table>
+    <table class="table table-bordered">
         <tr>
             <td>
                 Assignment Id: {{userId}}
@@ -70,7 +74,8 @@
         <p>Pick a queue to calculate payoffs for.</p>
         {{> queueSelection}}
         {{#if showQueueCalc }}
-            <table class="payoffs-list">
+            <table class="table table-striped payoffs-list">
+                <thead>
                     <tr>
                         <th>
                             User ID
@@ -97,14 +102,17 @@
                             Total Payoff
                         </th>
                     </tr>
-                {{#each subject in subjects}}
-                    {{> experimenterViewPayout subject=subject}}
-                {{else}}
-                    <tr><td>No subjects</td></tr>
-                {{/each}}
+                </thead>
+                <tbody>
+                    {{#each subject in subjects}}
+                        {{> experimenterViewPayout subject=subject}}
+                    {{else}}
+                        <tr><td>No subjects</td></tr>
+                    {{/each}}
+                </tbody>
             </table>
         {{else}}
-            <li>After experiment ends, payoffs listed here</li>
+            <div class="alert alert-info">After experiment ends, payoffs listed here</div>
         {{/if}}
 </template>
 

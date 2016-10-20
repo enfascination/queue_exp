@@ -29,6 +29,7 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
     Meteor.methods({
         initializeSubject: function( idObj ) {
             let subjectPos, subjectCohort, countInA, countInB, aDesign, firstSubjectEver;
+
             // initialize player objects
             if ( Subjects.find({cohortId: { $exists: true } }).fetch().length > 0) {
                 /// previous subject may belong to previous cohort. that is what i have to determine
@@ -39,6 +40,10 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                 countInB = Subjects.find({ cohortId: subjectCohort, choice: "B" }).fetch().length;
                 countInNoChoice = Subjects.find({ cohortId: subjectCohort, choice: "X" }).fetch().length;
                 aDesign = CohortSettings.findOne({ cohortId: subjectCohort });
+                // do a collision test for something that may never happen and I won't be able to see it when it does (premature optimization).
+                if ( Subjects.find({mtWorkerId : idObj.workerId, cohortId : subjectCohort }).count() > 0 ) {
+                    Meteor.call("goToExitSurvey");
+                }
             } else {
                 // for very very first subject
                 firstSubjectEver = true;
@@ -48,6 +53,7 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
             if (typeof aDesign === 'undefined') {
                 aDesign = Design;
             }
+
 
             // rollover at max
             if ( ( subjectPos > aDesign.maxPlayersInCohort ) || firstSubjectEver ) {
@@ -84,10 +90,16 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                 mtAssignmentId: idObj.assignmentId,
                 mtWorkerId: idObj.workerId,
             } );
+
+            //ensure uniqueness
+            CohortSettings._ensureIndex({cohortId : 1}, { unique : true } );
+            Subjects._ensureIndex({mtWorkerId : 1, cohortId : 1}, { unique : true } );
         },
         addGroupId: function( meteorUserId, groupId ) {
-            let res = Subjects.update({meteorUserId: meteorUserId}, { $set: {tsGroupId : groupId} });
-            //console.log(res);
+            if ("undefined" in Subjects.find({meteorUserId: meteorUserId}, { fields: {'tsGroupId':1} }).fetch()) {
+                let res = Subjects.update({meteorUserId: meteorUserId}, { $set: {tsGroupId : groupId} });
+                //console.log(res);
+            }
         },
         submitQueueChoice: function(muid, choice, design) {
             let asst = TurkServer.Assignment.currentAssignment();
