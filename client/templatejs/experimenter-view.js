@@ -89,12 +89,18 @@ Template.queueSelection.helpers({
 // http://stackoverflow.com/questions/28528660/meteor-dropdown-list-get-and-set
 Template.queueSelection.events({
     "change .dropdown__menu": function (event, template) {
-        var queueToCalculate = +$(event.currentTarget).val();
-        if (Subjects.find( { cohortId: queueToCalculate } ).fetch().length > 0 ) {
-            Meteor.call( 'calculateQueueEarnings', queueToCalculate );
-            Session.set('selectedQueue', queueToCalculate);
-            Session.set('showQueueCalc', true);
+        let queueToCalculate = +$(event.currentTarget).val();
+        Session.set('selectedQueue', queueToCalculate);
+        // (re)calculate earnings
+        let cohort = Subjects.find({
+            cohortId : queueToCalculate, 
+            choice: { $ne: 'X' } 
+        });
+        let design = CohortSettings.findOne( {cohortId: queueToCalculate } );
+        if ( cohort.fetch().length === design.maxPlayersInCohort ) {
+            Meteor.call( 'calculateQueueEarnings', queueToCalculate, design );
         }
+        Session.set('showQueueCalc', true);
     }
 });
 

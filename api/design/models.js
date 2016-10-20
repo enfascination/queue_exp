@@ -27,14 +27,25 @@ Schemas.Subjects = new SimpleSchema({
         label: "Choice of queue",
     },
     earnings1: {
-        type: SimpleSchema.Integer,
+        type: Number,
         label: "Experiment earnings from before and during choice",
+        decimal: true,
     },
     earnings2: {
-        type: SimpleSchema.Integer,
+        type: Number,
         label: "Experiment earnings from after experiment",
+        decimal: true,
     },
-    completedExperiment: {
+    totalPayment: {
+        type: Number,
+        label: "Total experiment earnings",
+        decimal: true,
+    },
+    completedChoice: {
+        type: Boolean,
+        label: "completed survey?",
+    }, 
+    completedCohort: {
         type: Boolean,
         label: "completed experiment?",
     }, 
@@ -115,12 +126,12 @@ Schemas.CohortSettings = new SimpleSchema({
 });
 
 Design = {
-    maxPlayersInCohort : 5,
+    maxPlayersInCohort : 4,
     endowment : 1.00,
     pot : 1.00,
     queueNames : [ 'A', 'B' ],
     queueCosts : { "A": 0.50, 'B': 0.00 },
-    positionCosts : 0.20,
+    positionCosts : 0.25,
 };
 UserElements = {
     experimenterView : true,

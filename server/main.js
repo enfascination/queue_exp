@@ -1,5 +1,6 @@
 /*jshint esversion: 6 */
 
+var _ = require('lodash');
 import '../api/design/models.js';
 import { QueueAssigner } from '../server/assigners-custom.js';
 import { Helper } from '../imports/lib/helper.js';
@@ -26,24 +27,6 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
     });
 
     Meteor.methods({
-        submitQueueChoice: function(muid, choice) {
-            let asst = TurkServer.Assignment.currentAssignment();
-            if (choice === "A") {
-                asst.addPayment(0.5);
-                Subjects.update({meteorUserId: muid }, {
-                    $set: {choice: "A", earnings1: 0.50},
-                });
-            }
-            else if (choice === "B") {
-                asst.addPayment(1.0);
-                Subjects.update({meteorUserId: muid }, {
-                    $set: {choice: "B"},
-                });
-            }
-        },
-        goToExitSurvey: function() {
-            TurkServer.Instance.currentInstance().teardown(returnToLobby = true);
-        },
         initializeSubject: function( idObj ) {
             let subjectPos, subjectCohort, countInA, countInB, aDesign, firstSubjectEver;
             // initialize player objects
@@ -86,7 +69,9 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                 choice: 'X',
                 earnings1: aDesign.endowment,
                 earnings2: 0,
-                completedExperiment: false,
+                totalPayment: 0,
+                completedChoice: false,
+                completedCohort: false,
                 theTimestamp: Date.now(),
                 queueCountA: countInA,
                 queueCountB: countInB,
@@ -99,31 +84,52 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                 mtWorkerId: idObj.workerId,
             } );
         },
-        calculateQueueEarnings: function(queueId) {
-            let aCohort, aDesign, validChoiceCount, queueASubjects, queueBSubjects, decrement, earnings, positionFinal;
-            aCohort = Subjects.find( {cohortId : queueId, choice: { $ne: 'X' } }, {sort : { queuePosition : 1 } } ).fetch() ;
-            aDesign = CohortSettings.findOne({cohortId: aCohort[0].cohortId});
-            validChoiceCount = aCohort.length ;
-            if ( validChoiceCount === aDesign.maxPlayersInCohort ) {
-                queueASubjects = Subjects.find( {cohortId : queueId, choice:"A"}, {sort : { queuePosition : 1 } } ).fetch() ;
-                queueBSubjects = Subjects.find( {cohortId : queueId, choice:"B"}, {sort : { queuePosition : 1 } } ).fetch() ;
-                decrement = aDesign.positionCosts;
-                earnings = aDesign.pot;
-                positionFinal = 1;
-                for ( let sub of queueASubjects ) {
-                    // maybe figure out here how to recover assignment from an old passed subject;
-                    Subjects.update({cohortId: queueId, userId : sub.userId}, {
-                        $set: { earnings2: earnings - ( (positionFinal-1) * decrement ), queuePositionFinal : positionFinal },
-                    });
-                    positionFinal += 1;
-                }
-                for ( let sub of queueBSubjects ) {
-                    // maybe figure out here how to recover assignment from an old passed subject;
-                    Subjects.update({cohortId: queueId, userId : sub.userId}, {
-                        $set: { earnings2: earnings - ( (positionFinal-1) * decrement ), queuePositionFinal : positionFinal  },
-                    });
-                    positionFinal += 1;
-                }
+        submitQueueChoice: function(muid, choice) {
+            let asst = TurkServer.Assignment.currentAssignment();
+            let sub = Subjects.findOne({ meteorUserId: muid });
+            let design = CohortSettings.findOne({ cohortId: sub.cohortId });
+            if (choice === "A") {
+                Subjects.update({meteorUserId: muid }, {
+                    $set: {
+                        choice: "A", 
+                        earnings1: design.endowment - design.queueCosts.A,
+                        completedChoice: true,
+                    },
+                });
             }
+            else if (choice === "B") {
+                Subjects.update({meteorUserId: muid }, {
+                    $set: {
+                        choice: "B", 
+                        earnings1: design.endowment - design.queueCosts.B,
+                        completedChoice: true,
+                    },
+                });
+            }
+        },
+        calculateQueueEarnings: function(cohortId, aDesign) {
+            let queueasubjects, queuebsubjects, positionfinal, earnings2, totalpayment, asst;
+            queueASubjects = Subjects.find( {cohortId : cohortId, choice : "A"}, {sort : { queuePosition : 1 } } ).fetch() ;
+            queueBSubjects = Subjects.find( {cohortId : cohortId, choice : "B"}, {sort : { queuePosition : 1 } } ).fetch() ;
+            positionFinal = 1;
+            for ( let sub of _.concat(queueASubjects, queueBSubjects ) ) {
+                // maybe figure out here how to recover assignment from an old passed subject;
+                earnings2 = aDesign.pot - ( (positionFinal-1) * aDesign.positionCosts );
+                totalPayment = sub.earnings1 + earnings2;
+                Subjects.update({cohortId: cohortId, userId : sub.userId}, {
+                    $set: { 
+                        earnings2: earnings2, 
+                        totalPayment: totalPayment, 
+                        queuePositionFinal : positionFinal,
+                        completedCohort: true,
+                    },
+                });
+                asst = TurkServer.Assignment.getAssignment( sub.tsAsstId );
+                asst.setPayment( totalPayment );
+                positionFinal += 1;
+            }
+        },
+        goToExitSurvey: function() {
+            TurkServer.Instance.currentInstance().teardown(returnToLobby = true);
         },
     });

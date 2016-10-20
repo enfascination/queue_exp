@@ -144,7 +144,7 @@ Template.queueSelections.events({
         } 
         else {
             UserElements.choiceChecked.set("A");
-            UserElements.userAccount.set(des.endowment - des.queueCosts['A']);
+            UserElements.userAccount.set(des.endowment - des.queueCosts.A);
             UserElements.pleaseMakeChoice.set( false);
         }
 	}, 
@@ -157,7 +157,7 @@ Template.queueSelections.events({
         } 
         else {
             UserElements.choiceChecked.set("B");
-            UserElements.userAccount.set(des.endowment - des.queueCosts['B']);
+            UserElements.userAccount.set(des.endowment - des.queueCosts.B);
             UserElements.pleaseMakeChoice.set( false );
         }
 	},
@@ -167,6 +167,18 @@ Template.experimentSubmit.events({
     'click button#exitSurvey': function () {
         if (UserElements.choiceChecked.get()) {
             Meteor.call('submitQueueChoice', Meteor.userId(), UserElements.choiceChecked.get());
+            //if end of queue, calculate all earnings
+            let cohortId = Sess.sub().cohortId;
+            let design = Sess.design();
+            let cohort = Subjects.find({
+                cohortId : cohortId, 
+                choice: { $ne: 'X' } 
+            });
+            // plus one because the current player is an X
+            // greater-than because life can be crazy
+            if ( cohort.fetch().length + 1 >= design.maxPlayersInCohort ) {
+                Meteor.call( 'calculateQueueEarnings', cohortId, design );
+            }
             Meteor.call('goToExitSurvey');
         }
         else {
