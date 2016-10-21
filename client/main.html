@@ -18,12 +18,15 @@
 
     <section>
     {{> queueInstructions}}
-    {{> queueSelections}}
-    <br/>
-    {{> experimentSubmit}}
-    {{#if testIncomplete }}
-        {{> incomplete}}
-    {{/if}}
+    <br />
+    <div class="exp-info container-fluid">
+        {{> queueSelections}}
+        <br/>
+        {{> experimentSubmit}}
+        {{#if testIncomplete }}
+            {{> incomplete}}
+        {{/if}}
+    </div>
     </section>
     {{#if showExperimenterView }}
         {{> experimenterView}}
@@ -55,12 +58,13 @@
 
 <template name="queueInstructions">
     <ul class="nav nav-tabs">
-        <li role="presentation" class="active"><a href="#">Home</a></li>
-        <li role="presentation"><a href="#">Profile</a></li>
-        <li role="presentation"><a href="#">Messages</a></li>
+        <li role="presentation"><a href="#">Eligibility</a></li>
+        <li role="presentation" class="active"><a href="#">Experiment</a></li>
+        <li role="presentation"><a href="#">Surveys</a></li>
+        <li role="presentation"><a href="#">Submit</a></li>
     </ul>
     <p class="center-block"> 
-    You are playing a game with other turkers that simulates waiting in line. You are person #{{counterNet}} out of a series of {{groupSize}} people making the same decision and with whom your choices will interact.  You are not yet in line, and the game is currently paused while you make your choice to enter the line. This game will end when 100 people have joined the line, and everyone will recieve their earnings at this time. 
+    This experiment consists of one choice.  You are playing a game with other Turkers that simulates waiting in line. You are person #{{counterNet}} out of a series of {{groupSize}} people making the same decision and with whom your choices will interact.  You are not yet in line, and the game is currently paused while you make your choice to enter the line. This game will end when {{groupSize}} people have joined the line, and everyone will recieve their earnings at this time. 
     </p> 
     <p> 
     You are being endowed with a {{endowment}} account.   You will earn additional money for joining the line based on your final position in it. Specifically, you will earn an additional {{pot}} minus {{positionCosts}} for each person ahead of your position in the line.  
@@ -71,28 +75,30 @@
     <p>
     Based on your position in this experiment, joining group A will result in a minimum of {{earningsAMin}} and a maximum of {{earningsAMax}}, while joining group B will result in a minimum of {{earningsBMin}} and a maximum of {{earningsBMax}}. 
     </p>
-    <ul class="list-group">
-        <li class="list-group-item">
-                <p>
-                Your position in line: {{counterNet}} / {{groupSize}}
-                </p>
-        </li>
-        <li class="list-group-item">
-                <p>
-                Your chosen group: {{choiceChecked}}
-                </p>
-        </li>
-        <li class="list-group-item">
-                <p>
-                Your account: {{userAccount}}
-                </p>
-        </li>
-    </ul>
+    <div class="exp-info container-fluid">
+        <ul class="list-group">
+            <li class="list-group-item">
+                    <p>
+                    Your position in line: {{counterNet}} / {{groupSize}}
+                    </p>
+            </li>
+            <li class="list-group-item">
+                    <p>
+                    Your chosen group: {{choiceChecked}}
+                    </p>
+            </li>
+            <li class="list-group-item">
+                    <p>
+                    Your account: {{userAccount}}
+                    </p>
+            </li>
+        </ul>
+    </div>
 </template>
 <template name="queueSelections">
     <div>
         <p>
-            Make your selection here:
+            <b>Make your selection here:</b>
         </p>
         <div class="btn-group btn-group-lg" role="group">
             <button class="btn btn-primary btn-lg experimentChoices {{checkedA}}" id="clickMeA" >Join Group A</button>
