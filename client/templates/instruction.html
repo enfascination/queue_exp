@@ -1,0 +1,23 @@
+<template name="instruction">
+    These are the instructions.
+    <br/>
+    <!--{{instructionOptions}}-->
+    <br/>
+    {{instructionSubmit}}
+</template>
+<template name="instructionOptions">
+    <div>
+        <p>
+            <b>Make your selection here:</b>
+        </p>
+        <div class="btn-group btn-group-lg" role="group">
+            <button class="btn btn-primary btn-lg experimentChoices {{checkedA}}" id="clickMeA" >Join Group A</button>
+            <button class="btn btn-primary btn-lg experimentChoices {{checkedB}}" id="clickMeB" >Join Group B</button>
+        </div>
+    </div>
+</template>
+<template name="instructionSubmit">
+    <div> 
+        <button class="btn btn-success" id="exitQuiz">Submit Quiz</button>
+    </div> 
+</template>

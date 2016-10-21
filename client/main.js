@@ -15,11 +15,17 @@ import 'bootstrap-sass';
 import '../imports/startup/client/routes.js';
 import './templates/experimenter-view.html';
 import './templatejs/experimenter-view.js';
+import './templates/instruction.html';
 import './main.html';
 
 Tracker.autorun(function() {
     if (TurkServer.inExperiment()) {
-        Router.go('/experiment');
+        //var subject = Subjects.findOne({ meteorUserId:Meteor.userId() });
+        //if (subject.status === 'instruction'){
+            //Router.go('/instruction');
+        //} else{
+            Router.go('/experiment');
+        //}
     } else if (TurkServer.inExitSurvey()) {
         Router.go('/survey');
     } 

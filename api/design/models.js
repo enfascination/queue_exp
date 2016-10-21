@@ -14,6 +14,10 @@ Schemas.Subjects = new SimpleSchema({
         type: SimpleSchema.Integer,
         label: "group number",
     },
+    status: {
+        type: String,
+        label: "State in experiment",
+    },
     queuePosition: {
         type: SimpleSchema.Integer,
         label: "Position in queue",

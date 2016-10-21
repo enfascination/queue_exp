@@ -70,6 +70,7 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
             Subjects.insert( {
                 userId: idObj.assignmentId,
                 cohortId: subjectCohort,
+                status: "instructions",
                 queuePosition: subjectPos,
                 queuePositionFinal: -1,
                 choice: 'X',
