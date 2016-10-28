@@ -19,8 +19,19 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
     TurkServer.initialize( function() {
     });
 
-    Meteor.publish('subjects', function() {
-        return Subjects.find();
+    Meteor.publish('s_data', function() {
+        if ( UserElements.experimenterView || TurkServer.isAdmin() ) {
+            return SubjectsData.find();
+        } else {
+            return SubjectsData.find({ meteorUserId: this.userId });
+        }
+    });
+    Meteor.publish('s_status', function() {
+        if ( UserElements.experimenterView || TurkServer.isAdmin() ) {
+            return SubjectsStatus.find();
+        } else {
+            return SubjectsData.find({ meteorUserId: this.userId });
+        }
     });
     Meteor.publish('designs', function() {
         return CohortSettings.find();
@@ -31,17 +42,17 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
             let subjectPos, subjectCohort, countInA, countInB, aDesign, firstSubjectEver;
 
             // initialize player objects
-            if ( Subjects.find({cohortId: { $exists: true } }).fetch().length > 0) {
+            if ( SubjectsData.find({cohortId: { $exists: true } }).fetch().length > 0) {
                 /// previous subject may belong to previous cohort. that is what i have to determine
-                let previousSubject = Subjects.findOne( {}, { sort : {  cohortId : -1, queuePosition : -1 } });
+                let previousSubject = SubjectsData.findOne( {}, { sort : {  cohortId : -1, queuePosition : -1 } });
                 subjectCohort = previousSubject.cohortId;
                 subjectPos = previousSubject.queuePosition + 1;
-                countInA = Subjects.find({ cohortId: subjectCohort, choice: "A" }).fetch().length;
-                countInB = Subjects.find({ cohortId: subjectCohort, choice: "B" }).fetch().length;
-                countInNoChoice = Subjects.find({ cohortId: subjectCohort, choice: "X" }).fetch().length;
+                countInA = SubjectsData.find({ cohortId: subjectCohort, choice: "A" }).fetch().length;
+                countInB = SubjectsData.find({ cohortId: subjectCohort, choice: "B" }).fetch().length;
+                countInNoChoice = SubjectsData.find({ cohortId: subjectCohort, choice: "X" }).fetch().length;
                 aDesign = CohortSettings.findOne({ cohortId: subjectCohort });
                 // do a collision test for something that may never happen and I won't be able to see it when it does (premature optimization).
-                if ( Subjects.find({mtWorkerId : idObj.workerId, cohortId : subjectCohort }).count() > 0 ) {
+                if ( SubjectsStatus.find({mtWorkerId : idObj.workerId, cohortId : subjectCohort }).count() > 0 ) {
                     Meteor.call("goToExitSurvey");
                 }
             } else {
@@ -67,26 +78,32 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                 CohortSettings.insert( aDesign );
             }
 
-            Subjects.insert( {
+            SubjectsData.insert( {
                 userId: idObj.assignmentId,
+                meteorUserId: idObj.userId,
                 cohortId: subjectCohort,
-                status: "instructions",
                 queuePosition: subjectPos,
                 queuePositionFinal: -1,
                 choice: 'X',
                 earnings1: aDesign.endowment,
                 earnings2: 0,
                 totalPayment: 0,
-                completedChoice: false,
-                completedCohort: false,
                 theTimestamp: Date.now(),
                 queueCountA: countInA,
                 queueCountB: countInB,
                 queueCountNoChoice: countInNoChoice,
+            } );
+            SubjectsStatus.insert( {
+                userId: idObj.assignmentId,
+                meteorUserId: idObj.userId,
+                cohortId: subjectCohort,
+                tookQuiz: 3,  // set back to 0
+                passedQuiz: true,  ///SET  back to false
+                completedChoice: false,
+                completedCohort: false,
                 tsAsstId: idObj.asstId,
                 tsBatchId: idObj.batchId,
                 tsGroupId: "undefined",
-                meteorUserId: idObj.userId,
                 mtHitId: idObj.hitId,
                 mtAssignmentId: idObj.assignmentId,
                 mtWorkerId: idObj.workerId,
@@ -94,47 +111,56 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
 
             //ensure uniqueness
             CohortSettings._ensureIndex({cohortId : 1}, { unique : true } );
-            Subjects._ensureIndex({mtWorkerId : 1, cohortId : 1}, { unique : true } );
+            SubjectsData._ensureIndex({userId : 1, cohortId : 1}, { unique : true } );
+            SubjectsStatus._ensureIndex({mtWorkerId : 1, cohortId : 1}, { unique : true } );
         },
         addGroupId: function( meteorUserId, groupId ) {
-            if ("undefined" in Subjects.find({meteorUserId: meteorUserId}, { fields: {'tsGroupId':1} }).fetch()) {
-                let res = Subjects.update({meteorUserId: meteorUserId}, { $set: {tsGroupId : groupId} });
+            if ("undefined" in SubjectsStatus.find({meteorUserId: meteorUserId}, { fields: {'tsGroupId':1} }).fetch()) {
+                let res = SubjectsStatus.update({meteorUserId: meteorUserId}, { $set: {tsGroupId : groupId} });
                 //console.log(res);
             }
         },
         submitQueueChoice: function(muid, choice, design) {
             let asst = TurkServer.Assignment.currentAssignment();
-            let sub = Subjects.findOne({ meteorUserId: muid });
+            let sub = SubjectsData.findOne({ meteorUserId: muid });
             if (choice === "A") {
-                Subjects.update({meteorUserId: muid }, {
+                SubjectsData.update({meteorUserId: muid }, {
                     $set: {
                         choice: "A", 
                         earnings1: design.endowment - design.queueCosts.A,
+                    },
+                });
+                SubjectsStatus.update({meteorUserId: muid }, {
+                    $set: {
                         completedChoice: true,
                     },
                 });
             }
             else if (choice === "B") {
-                Subjects.update({meteorUserId: muid }, {
+                SubjectsData.update({meteorUserId: muid }, {
                     $set: {
                         choice: "B", 
                         earnings1: design.endowment - design.queueCosts.B,
+                    },
+                });
+                SubjectsStatus.update({meteorUserId: muid }, {
+                    $set: {
                         completedChoice: true,
                     },
                 });
             }
         },
         completeCohort: function(cohortId, design) {
-            let cohortFin = Subjects.find({
+            let cohortFin = SubjectsStatus.find({
                 cohortId : cohortId, 
                 completedChoice: true,
             });
-            let cohortUnfin = Subjects.find({
+            let cohortUnfin = SubjectsStatus.find({
                 cohortId : cohortId, 
                 completedChoice: false,
             });
             if (cohortFin.count() === design.maxPlayersInCohort ) {
-                Subjects.update({ cohortId: cohortId }, {
+                SubjectsStatus.update({ cohortId: cohortId }, {
                     $set: { 
                         completedCohort: true,
                     },
@@ -151,21 +177,22 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
         },
         calculateQueueEarnings: function(cohortId, aDesign) {
             let queueasubjects, queuebsubjects, positionfinal, earnings2, totalpayment, asst;
-            queueASubjects = Subjects.find( {cohortId : cohortId, choice : "A"}, {sort : { queuePosition : 1 } } ).fetch() ;
-            queueBSubjects = Subjects.find( {cohortId : cohortId, choice : "B"}, {sort : { queuePosition : 1 } } ).fetch() ;
+            queueASubjects = SubjectsData.find( {cohortId : cohortId, choice : "A"}, {sort : { queuePosition : 1 } } ).fetch() ;
+            queueBSubjects = SubjectsData.find( {cohortId : cohortId, choice : "B"}, {sort : { queuePosition : 1 } } ).fetch() ;
             positionFinal = 1;
             for ( let sub of _.concat(queueASubjects, queueBSubjects ) ) {
                 // maybe figure out here how to recover assignment from an old passed subject;
                 earnings2 = aDesign.pot - ( (positionFinal-1) * aDesign.positionCosts );
                 totalPayment = sub.earnings1 + earnings2;
-                Subjects.update({cohortId: cohortId, userId : sub.userId}, {
+                SubjectsData.update({cohortId: cohortId, userId : sub.userId}, {
                     $set: { 
                         earnings2: earnings2, 
                         totalPayment: totalPayment, 
                         queuePositionFinal : positionFinal,
                     },
                 });
-                asst = TurkServer.Assignment.getAssignment( sub.tsAsstId );
+                subbk = SubjectsStatus.findOne({ meteorUserId: sub.meteorUserId });
+                asst = TurkServer.Assignment.getAssignment( subbk.tsAsstId );
                 asst.setPayment( totalPayment );
                 positionFinal += 1;
             }

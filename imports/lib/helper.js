@@ -35,3 +35,22 @@ export const Helper = {
         return symbol + negative + (j ? i.substr(0, j) + thousand : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousand) + (places ? decimal + Math.abs(number - i).toFixed(places).slice(2) : "");
     }
 };
+
+TurkServer.inInstruction = function() {
+  return Session.equals("turkserver.state", "instruction");
+};
+TurkServer.setInstruction = function(asst) {
+    Meteor.users.update(asst.userId, {
+      $set: {
+        "turkserver.state": "instruction"
+      }
+    });
+};
+TurkServer.leaveInstruction = function(asst) {
+    Meteor.users.update(asst.userId, {
+      $set: {
+        "turkserver.state": "experiment"
+      }
+    });
+};
+

@@ -26,6 +26,8 @@ Tracker.autorun(function() {
         //} else{
             Router.go('/experiment');
         //}
+    } else if (TurkServer.inInstruction()) {
+        Router.go('/instruction');
     } else if (TurkServer.inExitSurvey()) {
         Router.go('/survey');
     } 
@@ -35,7 +37,8 @@ Tracker.autorun(function() {
     let group = TurkServer.group();
     //console.log("group", group);
     if (group === null) return;
-    Meteor.subscribe('subjects', group);
+    Meteor.subscribe('s_data', group);
+    Meteor.subscribe('s_status', group);
     Meteor.subscribe('designs', group);
 });
 
@@ -48,14 +51,15 @@ Tracker.autorun(function() {
 Template.experiment.onCreated( function(){
     let group = TurkServer.group();
     //if (group === null) return;
-    //Meteor.subscribe('subjects', group);
+    //Meteor.subscribe('s_data', group);
     //Meteor.subscribe('designs', group);
     // record groupid
     Meteor.call("addGroupId", Meteor.userId(), group );
     // make client side subject available
-    sub = Subjects.findOne({meteorUserId: Meteor.userId()});
+    sub = SubjectsData.findOne({meteorUserId: Meteor.userId()});
     if (sub) {
-        Sess.setClientSub( sub );
+        subbk = SubjectsStatus.findOne({meteorUserId: Meteor.userId()});
+        Sess.setClientSub( _.assign(sub, subbk) );
         Sess.setClientDesign(CohortSettings.findOne({ cohortId: sub.cohortId }));
     }
 });
@@ -201,7 +205,7 @@ Template.survey.helpers({
     userSelection: function () {
         /// return(Sess.sub().choice);
         // Outside of lobby, Session stops working.  good to know.
-        return(Subjects.findOne({meteorUserId: Meteor.userId()}).choice);
+        return(SubjectsData.findOne({meteorUserId: Meteor.userId()}).choice);
     },
 });
 Template.survey.events({

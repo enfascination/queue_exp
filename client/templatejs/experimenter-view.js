@@ -53,7 +53,10 @@ Template.experimenterViewPayouts.onCreated( function() {
 Template.experimenterViewPayouts.helpers({
 
     subjects() {
-        return Subjects.find({ cohortId: Session.get('selectedQueue') }, { sort: { queuePositionFinal: 1, queuePosition: 1 } });
+        return SubjectsData.find({ cohortId: Session.get('selectedQueue') }, { sort: { queuePositionFinal: 1, queuePosition: 1 } });
+    },
+    subjectstracking() {
+        return SubjectsStatus.find({ cohortId: Session.get('selectedQueue') }, { sort: { queuePositionFinal: 1, queuePosition: 1 } });
     },
 
     showQueueCalc: function() {
@@ -65,6 +68,14 @@ Template.experimenterViewPayouts.helpers({
 Template.experimenterViewPayout.helpers({
     userId: function () {
         return Sess.sub().userId;
+    },
+    completedChoice: function (subject) {
+        subbk = SubjectsStatus.findOne({ meteorUserId : subject.meteorUserId });
+        return(subbk.completedChoice);
+    },
+    completedCohort: function (subject) {
+        subbk = SubjectsStatus.findOne({ meteorUserId : subject.meteorUserId });
+        return(subbk.completedCohort);
     },
     earningsQueue: function (subject) {
         return Helper.toCash( subject.earnings2 );
@@ -88,7 +99,7 @@ Template.queueSelection.helpers({
     //items: ['Foo', 'Bar', 'Baz'],
     //https://coderwall.com/p/o9np9q/get-unique-values-from-a-collection-in-meteor
     items: function() {
-        let allSubs = Subjects.find().fetch();
+        let allSubs = SubjectsData.find().fetch();
         let allQueuesObj = _.uniq(allSubs, true, (d) => {return(d.cohortId);});
         let allQueueIds = _.pluck(allQueuesObj, "cohortId");
         return(allQueueIds);
@@ -100,13 +111,13 @@ Template.queueSelection.events({
         let queueToCalculate = +$(event.currentTarget).val();
         Session.set('selectedQueue', queueToCalculate);
         // (re)calculate earnings
-        let cohort = Subjects.find({
+        let cohort = SubjectsData.find({
             cohortId : queueToCalculate, 
             choice: { $ne: 'X' } 
         });
         let design = CohortSettings.findOne( {cohortId: queueToCalculate } );
         Meteor.call('completeCohort', queueToCalculate, design );
-        if ( Subjects.findOne({ cohortId : queueToCalculate }).completedCohort ) {
+        if ( SubjectsStatus.findOne({ cohortId : queueToCalculate }).completedCohort ) {
             Meteor.call( 'calculateQueueEarnings', queueToCalculate, design );
         }
         Session.set('showQueueCalc', true);

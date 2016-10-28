@@ -3,20 +3,21 @@
 import { TurkServer } from 'meteor/mizzao:turkserver';
 
 let Schemas = {};
-Schemas.Subjects = new SimpleSchema({
+Schemas.SubjectsData = new SimpleSchema({
     // this is the TurkServer asstId. 
         // it's the finest grain one and the one I shoudl use in data nalayssi.
     userId: {
         type: String,
         label: "User",
     },
+    // this is the Meteor.userId for identifying user in-game. 
+    meteorUserId: {
+        type: String,
+        label: "Meteor User",
+    },
     cohortId: {
         type: SimpleSchema.Integer,
         label: "group number",
-    },
-    status: {
-        type: String,
-        label: "State in experiment",
     },
     queuePosition: {
         type: SimpleSchema.Integer,
@@ -45,14 +46,6 @@ Schemas.Subjects = new SimpleSchema({
         label: "Total experiment earnings",
         decimal: true,
     },
-    completedChoice: {
-        type: Boolean,
-        label: "completed survey?",
-    }, 
-    completedCohort: {
-        type: Boolean,
-        label: "completed experiment?",
-    }, 
     theTimestamp: {
         type: Date,
         label: "Timestamp",
@@ -69,6 +62,38 @@ Schemas.Subjects = new SimpleSchema({
         type: SimpleSchema.Integer,
         label: "Number of null choices",
     },
+});
+
+Schemas.SubjectsStatus = new SimpleSchema({
+    userId: {
+        type: String,
+        label: "User",
+    },
+    // this is the Meteor.userId for identifying user in-game. 
+    meteorUserId: {
+        type: String,
+        label: "Meteor User",
+    },
+    cohortId: {
+        type: SimpleSchema.Integer,
+        label: "group number",
+    },
+    tookQuiz: {
+        type: SimpleSchema.Integer,
+        label: "Number of times quizzed",
+    },
+    passedQuiz: {
+        type: Boolean,
+        label: "Passed quiz",
+    },
+    completedChoice: {
+        type: Boolean,
+        label: "completed survey?",
+    }, 
+    completedCohort: {
+        type: Boolean,
+        label: "completed experiment?",
+    }, 
     tsAsstId: {
         type: String,
         label: "TS asstId",
@@ -80,11 +105,6 @@ Schemas.Subjects = new SimpleSchema({
     tsGroupId: {
         type: String,
         label: "TS Group/partitionId",
-    },
-    // this is the Meteor.userId for identifying user in-game. 
-    meteorUserId: {
-        type: String,
-        label: "Meteor User",
     },
     mtHitId: {
         type: String,
@@ -99,6 +119,7 @@ Schemas.Subjects = new SimpleSchema({
         label: "MT Worker Id",
     },
 });
+
 Schemas.CohortSettings = new SimpleSchema({
     cohortId: {
         type: SimpleSchema.Integer,
@@ -145,11 +166,13 @@ UserElements = {
     experimenterView : true,
 };
 
-Subjects = new Mongo.Collection('subjects');
-Subjects.attachSchema(Schemas.Subjects);
+SubjectsData = new Mongo.Collection('s_data');
+SubjectsStatus = new Mongo.Collection('s_status');
+SubjectsData.attachSchema(Schemas.SubjectsData);
+SubjectsStatus.attachSchema(Schemas.SubjectsStatus);
 CohortSettings = new Mongo.Collection('designs');
 //CohortSettings.attachSchema(Schemas.CohortSettings);
-//TurkServer.partitionCollection(Subjects);
+//TurkServer.partitionCollection(SubjectsData);
 //TurkServer.partitionCollection(CohortSettings);
 
 
