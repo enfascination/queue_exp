@@ -197,7 +197,7 @@ Design = {
     pot : 1.00,
     queueNames : [ 'A', 'B' ],
     queueCosts : { "A": 0.50, 'B': 0.00 },
-    sequence : { 0: {name:"experiment", "rounds":2, "stages" : 1 }, 1: {name:"done", "rounds":1, "stages" : 1 } },
+    sequence : { 0: {name:"experiment", "rounds":4, "stages" : 1 }, 1: {name:"done", "rounds":1, "stages" : 1 } },
     //sequence : { 0: {name:"quiz", "rounds":1 }, 1: {name:"experiment", "rounds":2 }, 2: {name:"survey", "rounds":1 } },
     positionCosts : 0.25,
 };

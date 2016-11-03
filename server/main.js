@@ -66,6 +66,9 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
         // this will createa a new SubjectStatus object
         initializeSubject: function( idObj ) {
 
+            // experiment-specific logic
+           
+
             SubjectsStatus.insert( {
                 userId: idObj.assignmentId,
                 meteorUserId: idObj.userId,
@@ -102,6 +105,7 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
             dat = Meteor.call("findSubsCohort", sub, lastDesign);
             design = dat.design;
 
+            // experiment-specific logic
             // some state below depends on if the design object I got back was new or old
             if (dat.familiarSubject) {
                 /// previous subject  who isn't the main player
@@ -115,9 +119,12 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                     throw( "something is seriously the matter: you can't play against yourself, but there isn't someone else" );
                 }
                 subjectPos = previousSubject.queuePosition + 1;
-                countInA = SubjectsData.find({ cohortId: design.cohortId, choice: "A" }).fetch().length;
-                countInB = SubjectsData.find({ cohortId: design.cohortId, choice: "B" }).fetch().length;
-                countInNoChoice = SubjectsData.find({ cohortId: design.cohortId, choice: "X" }).fetch().length;
+                countInA = SubjectsData.find({ cohortId: design.cohortId, 
+                    sec : design.sec, sec_rnd : design.sec_rnd, choice: "A" }).fetch().length;
+                countInB = SubjectsData.find({ cohortId: design.cohortId, 
+                    sec : design.sec, sec_rnd : design.sec_rnd, choice: "B" }).fetch().length;
+                countInNoChoice = SubjectsData.find({ cohortId: design.cohortId, 
+                    sec : design.sec, sec_rnd : design.sec_rnd, choice: "X" }).fetch().length;
             } else {
                 subjectPos = 1;
                 countInA = 0;
@@ -155,9 +162,10 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                 },
             });
 
-            let ss = SubjectsStatus.findOne({ meteorUserId: sub.meteorUserId });
-            let sd = SubjectsData.findOne({ meteorUserId: sub.meteorUserId, cohortId: design.cohortId, sec: design.sec, sec_rnd : design.sec_rnd });
-            let ct = CohortSettings.findOne({ cohortId: design.cohortId, sec: design.sec, sec_rnd : design.sec_rnd });
+            let ss, sd, ct;
+            ss = SubjectsStatus.findOne({ meteorUserId: sub.meteorUserId });
+            sd = SubjectsData.findOne({ meteorUserId: sub.meteorUserId, cohortId: design.cohortId, sec: design.sec, sec_rnd : design.sec_rnd });
+            ct = CohortSettings.findOne({ cohortId: design.cohortId, sec: design.sec, sec_rnd : design.sec_rnd });
             return( { "s_status" : ss, "s_data" : sd, "design" : ct } );
         },
         findSubsCohort: function(sub, lastDesign) {
@@ -207,6 +215,7 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
             // various tests
             try {
                 console.assert( _.isNil( lastDesign ) || sub.sec_rnd_now > 0 , "sanity1");
+                // there is a missing test here because i'm letting you be in different cohorts in different roudns
                 console.assert( sub.sec_now === design.sec, "sanity7");
                 console.assert( sub.sec_rnd_now === design.sec_rnd, "sanity8");
                 console.assert( !_.isNil( design ) , "design is null?");
@@ -236,8 +245,9 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
         submitQueueChoice: function(muid, cohortId, section, round, choice, design) {
             let next_section, next_round, theChoice, theEarnings;
 
-            //console.log("submitchoice", muid, cohortId, round, section, next_round, next_section, design.sequence, choice );
 
+            // experiment-specific logic
+            //console.log("submitchoice", muid, cohortId, round, section, next_round, next_section, design.sequence, choice );
             if (choice === "A") {
                 theChoice = "A";
                 theEarnings = design.endowment - design.queueCosts.A;
@@ -273,12 +283,14 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                     sec_rnd_now: next_round,
                 },
             });
-            return( SubjectsStatus.findOne({meteorUserId: muid }));
+            return( SubjectsStatus.findOne({ meteorUserId: muid }));
         },
         // updates a CohortSettings object
         tryToCompleteCohort: function(design) {
             let completedCohort = false;
             let cohortId = design.cohortId;
+            
+            // experiment-specific logic
             let cohortFin = SubjectsData.find({
                 cohortId : cohortId, 
                 sec: design.sec,
@@ -291,6 +303,7 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                 sec_rnd: design.sec_rnd,
                 completedChoice: false,
             });
+
             if (cohortFin.count() >= design.maxPlayersInCohort ) {
                 // get rid of old cohort (make it outdated/complete)
                 completedCohort = true;
@@ -326,6 +339,8 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
         calculateQueueEarnings: function(aDesign) {
             let queueasubjects, queuebsubjects, positionfinal, earnings2, totalpayment, asst, cohortId;
             cohortId = aDesign.cohortId;
+
+            // experiment-specific logic
             queueASubjects = SubjectsData.find( {
                 cohortId : cohortId, choice : "A", sec : aDesign.sec, sec_rnd : aDesign.sec_rnd 
                 }, {sort : { queuePosition : 1 } } ).fetch() ;
@@ -333,10 +348,14 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                 cohortId : cohortId, choice : "B", sec : aDesign.sec, sec_rnd : aDesign.sec_rnd 
                 }, {sort : { queuePosition : 1 } } ).fetch() ;
             positionFinal = 1;
+
             for ( let sub of _.concat(queueASubjects, queueBSubjects ) ) {
+
+                // experiment-specific logic
                 // maybe figure out here how to recover assignment from an old passed subject;
                 earnings2 = aDesign.pot - ( (positionFinal-1) * aDesign.positionCosts );
                 totalPayment = sub.earnings1 + earnings2;
+
                 SubjectsData.update({cohortId: cohortId, userId : sub.userId, sec : aDesign.sec, sec_rnd : aDesign.sec_rnd }, {
                     $set: { 
                         earnings2: earnings2, 

@@ -110,8 +110,8 @@ Template.queueSelection.helpers({
     //https://coderwall.com/p/o9np9q/get-unique-values-from-a-collection-in-meteor
     items: function() {
         let allSubs = SubjectsData.find().fetch();
-        let allQueuesObj = _.sortedUniqBy(allSubs, (d) =>  d.cohortId );
-        let allQueueIds = _.map(allQueuesObj, "cohortId");
+        let allQueuesObj = _.uniqBy(allSubs, (d) =>  parseInt(d.cohortId) );
+        let allQueueIds = _.map(allQueuesObj, "cohortId").sort();
         return(allQueueIds);
   },
 });
@@ -123,7 +123,7 @@ Template.queueSelection.events({
         // (re)calculate earnings
         let designs = CohortSettings.find( {cohortId: queueToCalculate }, { sort : { sec : -1, sec_rnd : -1 } } ).fetch();
         for ( let design of designs) {
-            Meteor.call('completeCohort', queueToCalculate, design );
+            Meteor.call('tryToCompleteCohort', queueToCalculate, design );
         }
         Session.set('showQueueCalc', true);
     }

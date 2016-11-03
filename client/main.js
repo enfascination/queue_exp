@@ -66,6 +66,7 @@ Template.experiment.onCreated( function(){
             let newSub, newCohort;
             if ( _.isEmpty( sData ) ) { // player is new to me
                 // record groupid, in case I need it one day
+                //console.log("new sub");
                 Meteor.call("addGroupId", muid, group );
                 Meteor.call('initializeRound', sub=muid, lastDesign=null, asyncCallback=function(err, data) {
                     if (err) { throw( err ); }
@@ -73,9 +74,11 @@ Template.experiment.onCreated( function(){
                     newCohort = data.design;
                 } );
             } else { // player is refreshing or reconnecting
+                //console.log("returning sub");
                 newSub = _.assign( SubjectsStatus.findOne( {meteorUserId : muid }), sData );
                 newCohort = CohortSettings.findOne( { cohortId : sData.cohortId, sec : sData.sec, sec_rnd : sData.sec_rnd });
             }
+            //console.log("setting client side");
             Sess.setClientSub( newSub );
             Sess.setClientDesign( newCohort );
         });
@@ -170,32 +173,18 @@ Template.queueSelections.helpers({
 });
 
 Template.queueSelections.events({
-	'click button#clickMeA': function (event) {
-        //console.log(event.target.id);
+	'click button.expChoice': function (event) {
         let des = Sess.design();
-        if (UserElements.choiceChecked.get() === "A") {
+        if (UserElements.choiceChecked.get() === event.target.getAttribute("choice") ) {
             UserElements.choiceChecked.set("");
             UserElements.userAccount.set(des.endowment);
         } 
         else {
-            UserElements.choiceChecked.set("A");
-            UserElements.userAccount.set(des.endowment - des.queueCosts.A);
+            UserElements.choiceChecked.set(event.target.getAttribute("choice"));
+            UserElements.userAccount.set(des.endowment - des.queueCosts[ event.target.getAttribute("choice") ]);
             UserElements.pleaseMakeChoice.set( false);
         }
 	}, 
-	'click button#clickMeB': function (event) {
-        //console.log(event.target.id);
-        let des = Sess.design();
-        if (UserElements.choiceChecked.get() === "B") {
-            UserElements.choiceChecked.set("");
-            UserElements.userAccount.set(des.endowment);
-        } 
-        else {
-            UserElements.choiceChecked.set("B");
-            UserElements.userAccount.set(des.endowment - des.queueCosts.B);
-            UserElements.pleaseMakeChoice.set( false );
-        }
-	},
 });
 
 Template.experimentSubmit.events({
@@ -203,7 +192,7 @@ Template.experimentSubmit.events({
         if (UserElements.choiceChecked.get()) {
             let design = Sess.design();
             let cohortId = design.cohortId;
-            let sub = Sess.sub();
+            let sub = SubjectsStatus.findOne({ meteorUserId : Meteor.userId() });
 
             // game-specific logic here
             // the minus one is to correct for zero indexing: round zero should be abel to o be the first and only round
@@ -215,7 +204,8 @@ Template.experimentSubmit.events({
                 // determine if end of queue
                 Meteor.call('tryToCompleteCohort', design);
 
-                Meteor.call('advanceSubjectState', Meteor.userId(), sub.sec_now, sub.sec_rnd_now, lastGameRound, function(err, updatedSub) {
+                Meteor.call('advanceSubjectState', Meteor.userId(), sub.sec_now, sub.sec_rnd_now, lastGameRound, 
+                    function(err, updatedSub) {
 
                     // experiment navigation
                     if ( !lastGameRound ) {  // calculate the logic for this out of the callbacks because things get confusing
