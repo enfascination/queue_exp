@@ -3,9 +3,8 @@
 import { TurkServer } from 'meteor/mizzao:turkserver';
 
 let Schemas = {};
-Schemas.SubjectsData = new SimpleSchema({
-    // this is the TurkServer asstId. 
-        // it's the finest grain one and the one I shoudl use in data nalayssi.
+
+Schemas.SubjectsStatus = new SimpleSchema({
     userId: {
         type: String,
         label: "User",
@@ -15,7 +14,69 @@ Schemas.SubjectsData = new SimpleSchema({
         type: String,
         label: "Meteor User",
     },
-    cohortId: {
+    tookQuiz: {
+        type: SimpleSchema.Integer,
+        label: "Number of times quizzed",
+    },
+    passedQuiz: {
+        type: Boolean,
+        label: "Passed quiz",
+    },
+    completedExperiment: {
+        type: Boolean,
+        label: "completed survey?",
+    }, 
+    tsAsstId: {
+        type: String,
+        label: "TS asstId",
+    },
+    tsBatchId: {
+        type: String,
+        label: "TS batchId",
+    },
+    tsGroupId: {
+        type: String,
+        label: "TS Group/partitionId",
+    },
+    mtHitId: {
+        type: String,
+        label: "MT Hit Id",
+    },
+    mtAssignmentId: {
+        type: String,
+        label: "MT Assignment Id",
+    },
+    mtWorkerId: {
+        type: String,
+        label: "MT Worker Id",
+    },
+    sec_now: {
+        type: SimpleSchema.Integer,
+        label: "current section",
+    },
+    sec_rnd_now: {
+        type: SimpleSchema.Integer,
+        label: "current round",
+    },
+    sec_rnd_stg_now: {
+        type: SimpleSchema.Integer,
+        label: "current stage",
+    },
+});
+
+Schemas.SubjectsData = new SimpleSchema({
+    // this is the TurkServer asstId. 
+        // it's the finest grain one and the one I shoudl use in data nalayssi.
+    userId: {
+        type: String,
+        label: "User",
+    },
+    // this is the Meteor.userId for identifying user in-game. 
+    meteorUserId: {  // with better hygeine, this wouldn't be in this collection
+        type: String,
+        label: "Meteor User",
+    },
+    cohortId: {  
         type: SimpleSchema.Integer,
         label: "group number",
     },
@@ -62,62 +123,18 @@ Schemas.SubjectsData = new SimpleSchema({
         type: SimpleSchema.Integer,
         label: "Number of null choices",
     },
-});
-
-Schemas.SubjectsStatus = new SimpleSchema({
-    userId: {
-        type: String,
-        label: "User",
-    },
-    // this is the Meteor.userId for identifying user in-game. 
-    meteorUserId: {
-        type: String,
-        label: "Meteor User",
-    },
-    cohortId: {
+    sec: {
         type: SimpleSchema.Integer,
-        label: "group number",
+        label: "gross section of the experiment",
     },
-    tookQuiz: {
+    sec_rnd: {
         type: SimpleSchema.Integer,
-        label: "Number of times quizzed",
-    },
-    passedQuiz: {
-        type: Boolean,
-        label: "Passed quiz",
+        label: "round in the section",
     },
     completedChoice: {
         type: Boolean,
-        label: "completed survey?",
+        label: "completed round?",
     }, 
-    completedCohort: {
-        type: Boolean,
-        label: "completed experiment?",
-    }, 
-    tsAsstId: {
-        type: String,
-        label: "TS asstId",
-    },
-    tsBatchId: {
-        type: String,
-        label: "TS batchId",
-    },
-    tsGroupId: {
-        type: String,
-        label: "TS Group/partitionId",
-    },
-    mtHitId: {
-        type: String,
-        label: "MT Hit Id",
-    },
-    mtAssignmentId: {
-        type: String,
-        label: "MT Assignment Id",
-    },
-    mtWorkerId: {
-        type: String,
-        label: "MT Worker Id",
-    },
 });
 
 Schemas.CohortSettings = new SimpleSchema({
@@ -125,6 +142,14 @@ Schemas.CohortSettings = new SimpleSchema({
         type: SimpleSchema.Integer,
         label: "group number",
     },
+    filledCohort: {
+        type: Boolean,
+        label: "completed experiment?",
+    }, 
+    completedCohort: {
+        type: Boolean,
+        label: "completed experiment?",
+    }, 
     maxPlayersInCohort: {
         type: SimpleSchema.Integer,
         label: "Max size of queue",
@@ -152,6 +177,18 @@ Schemas.CohortSettings = new SimpleSchema({
         type: Object,
         label: "Costs of queues",
     },
+    sequence: {
+        type: Object,
+        label: "sequence of the experiment",
+    },
+    sec: {
+        type: SimpleSchema.Integer,
+        label: "gross section of the experiment",
+    },
+    sec_rnd: {
+        type: SimpleSchema.Integer,
+        label: "round in the section",
+    },
 });
 
 Design = {
@@ -160,6 +197,8 @@ Design = {
     pot : 1.00,
     queueNames : [ 'A', 'B' ],
     queueCosts : { "A": 0.50, 'B': 0.00 },
+    sequence : { 0: {name:"experiment", "rounds":2, "stages" : 1 }, 1: {name:"done", "rounds":1, "stages" : 1 } },
+    //sequence : { 0: {name:"quiz", "rounds":1 }, 1: {name:"experiment", "rounds":2 }, 2: {name:"survey", "rounds":1 } },
     positionCosts : 0.25,
 };
 UserElements = {

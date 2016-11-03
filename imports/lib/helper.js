@@ -1,8 +1,9 @@
 /*jshint esversion: 6 */
 
+var _ = require('lodash');
 /* boilerplate blank error return function for validated inputs */
 export const Helper = {
-    err_func : function err_func(error, result) {}, 
+    err_func : function err_func(error, result) { console.log( error ); }, 
 
     /* http://stackoverflow.com/questions/17732969/javascript-introspection-that-is-complete */
     findProperties : function(obj) {
@@ -33,7 +34,7 @@ export const Helper = {
             i = parseInt(number = Math.abs(+number || 0).toFixed(places), 10) + "",
             j = (j = i.length) > 3 ? j % 3 : 0;
         return symbol + negative + (j ? i.substr(0, j) + thousand : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousand) + (places ? decimal + Math.abs(number - i).toFixed(places).slice(2) : "");
-    }
+    },
 };
 
 TurkServer.inInstruction = function() {

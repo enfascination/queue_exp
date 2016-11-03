@@ -11,7 +11,6 @@ import { Helper } from '../imports/lib/helper.js';
 import { Sess } from '../imports/lib/quick-session.js';
 import 'bootstrap-sass';
 
-
 import '../imports/startup/client/routes.js';
 import './templates/experimenter-view.html';
 import './templatejs/experimenter-view.js';
@@ -36,10 +35,13 @@ Tracker.autorun(function() {
 Tracker.autorun(function() {
     let group = TurkServer.group();
     //console.log("group", group);
-    if (group === null) return;
-    Meteor.subscribe('s_data', group);
-    Meteor.subscribe('s_status', group);
-    Meteor.subscribe('designs', group);
+    if (_.isNil(group) ) return;
+    //Meteor.subscribe('s_data', group);
+    //Meteor.subscribe('s_status', group);
+    //Meteor.subscribe('designs', group);
+    Meteor.subscribe('s_data');
+    Meteor.subscribe('s_status');
+    Meteor.subscribe('designs');
 });
 
 Tracker.autorun(function() {
@@ -48,19 +50,40 @@ Tracker.autorun(function() {
     UserElements.userAccount = new ReactiveVar();
 });
 
+Tracker.autorun(function() {
+    let group = TurkServer.group();
+    if (_.isNil(group) ) return;
+});
+
 Template.experiment.onCreated( function(){
     let group = TurkServer.group();
-    //if (group === null) return;
+    if (_.isNil(group) ) return;
     //Meteor.subscribe('s_data', group);
     //Meteor.subscribe('designs', group);
-    // record groupid
-    Meteor.call("addGroupId", Meteor.userId(), group );
     // make client side subject available
-    sub = SubjectsData.findOne({meteorUserId: Meteor.userId()});
-    if (sub) {
-        subbk = SubjectsStatus.findOne({meteorUserId: Meteor.userId()});
-        Sess.setClientSub( _.assign(sub, subbk) );
-        Sess.setClientDesign(CohortSettings.findOne({ cohortId: sub.cohortId }));
+    if (Meteor.userId()) {
+        // is player refreshing, reconnecting, or somehow already up to date in the system?
+        Meteor.call("playerHasConnected",Meteor.userId(), function(err,data) { // this of this as an if statement
+            let liveRound = data;
+            // console.log(liveRound);
+            if ( _.isEmpty( liveRound ) ) { // player is new to me
+                // console.log("new player", SubjectsData.find({}).fetch());
+                // record groupid, in case I need it one day
+                Meteor.call("addGroupId", Meteor.userId(), group );
+                Meteor.call('initializeRound', sub=Meteor.userId(), lastDesign=null, asyncCallback=function(err, data) {
+                    if (err) { throw( err ); }
+                    // console.log("client got set during load", data.s_status.userId, data.s_status.meteorUserId );
+                    Sess.setClientSub( _.assign( data.s_status, data.s_data) );
+                    Sess.setClientDesign( data.design );
+                } );
+            } else { // player is refreshing or reconnecting
+                // console.log("reconnecting");
+                ss = SubjectsStatus.findOne( {meteorUserId : Meteor.userId() });
+                cs = CohortSettings.findOne( { cohortId : liveRound.cohortId, sec : liveRound.sec, sec_rnd : liveRound.sec_rnd });
+                Sess.setClientSub( _.assign( ss, liveRound ) );
+                Sess.setClientDesign( cs );
+            }
+        });
     }
 });
 
@@ -77,16 +100,16 @@ Template.queueInstructions.onCreated( function(){
 });
 Template.queueInstructions.helpers({
     counterA: function () {
-        return Sess.sub().queueCountA;
+        return Sess.sub().queueCountA || "XXX";
     },
     counterB: function () {
-        return Sess.sub().queueCountB;
+        return Sess.sub().queueCountB || "XXX";
     },
     choiceChecked: function () {
         return UserElements.choiceChecked.get();
     },
     counterNet: function () {
-        return Sess.sub().queuePosition;
+        return Sess.sub().queuePosition || "XXX";
     },
     userAccount: function () {
         if (!UserElements.userAccount.get()) {
@@ -117,7 +140,7 @@ Template.queueInstructions.helpers({
     },
     groupSize: function () {
         let aDesign = Sess.design();
-        return( aDesign.maxPlayersInCohort);
+        return( aDesign.maxPlayersInCohort || "XXX");
     },
     positionCosts: function () {
         let aDesign = Sess.design();
@@ -185,18 +208,47 @@ Template.experimentSubmit.events({
         if (UserElements.choiceChecked.get()) {
             let design = Sess.design();
             let cohortId = design.cohortId;
-            Meteor.call('submitQueueChoice', Meteor.userId(), UserElements.choiceChecked.get(), design);
-            // determine if end of queue
-            Meteor.call('completeCohort', cohortId, design );
-            let aSub = Sess.sub();
-            //if end of queue, calculate all earnings
-            if ( aSub.completedCohort ) {
-                Meteor.call( 'calculateQueueEarnings', cohortId, design );
-            }
-            Meteor.call('goToExitSurvey');
+            let sub = Sess.sub();
+            //console.log("TESTTT", sub.sec_rnd, sub.sec_rnd_now, gameRound);
+            // the minus one is to correct for zero indexing: round zero should be abel to o be the first and only round
+            let lastGameRound = ( sub.sec_rnd_now >= ( design.sequence[sub.sec_now].rounds - 1 ) );
+            // DEVELOPMENT if no mongo state but yes client state, wipe client state
+            //if (typeof SubjectsStatus.findOne({ meteorUserId : sub.meteorUserId }) === "undefined") {
+                //Sess.wipeClientState();
+            //}
+            Meteor.call('submitQueueChoice', Meteor.userId(), cohortId, sub.sec_now, sub.sec_rnd_now, UserElements.choiceChecked.get(), lastGameRound, design, asyncCallback=function(err, data) {
+                if (err) { throw( err ); }
+                // determine if end of queue
+                Meteor.call('completeCohort', design, asyncCallback=function(err, data) {
+                    if (err) { throw( err ); }
+                    //if end of queue, calculate all earnings
+                    let design = data;
+                    let completedCohort = data.completedCohort ;
+                    if ( completedCohort ) {
+                        Meteor.call( 'calculateQueueEarnings', design );
+                    }
+
+                    // experiment navigation
+                    if ( !lastGameRound ) {  // calculate the logic for this out of the callbacks because things get confusing
+                        // go to the next round
+                        // get fresh subject
+                        sub = SubjectsStatus.findOne({ meteorUserId : sub.meteorUserId });
+                        // create the next cohort object (which might have no members actually);
+                        Meteor.call('initializeRound', sub=sub, lastDesign=design, asyncCallback=function(err, data) {
+                            if (err) { console.log( err ); }
+                            Sess.setClientSub( _.assign( data.s_status, data.s_data) );
+                            Sess.setClientDesign( data.design );
+                        });
+                        // routing?
+                        //Router.go('/experiment');
+                    } else {
+                        Meteor.call('goToExitSurvey');
+                    }
+                } );
+            });
         }
         else {
-            UserElements.pleaseMakeChoice.set(true);
+            UserElements.pleaseMakeChoice.set( true );
         }
     }
 });
@@ -205,7 +257,7 @@ Template.survey.helpers({
     userSelection: function () {
         /// return(Sess.sub().choice);
         // Outside of lobby, Session stops working.  good to know.
-        return(SubjectsData.findOne({meteorUserId: Meteor.userId()}).choice);
+        return(SubjectsData.findOne({meteorUserId: Meteor.userId()}, { sort : { sec : -1, sec_rnd : -1 } } ).choice);
     },
 });
 Template.survey.events({

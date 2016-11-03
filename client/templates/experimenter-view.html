@@ -30,16 +30,22 @@
         <tbody>
             <tr>
                 <td>
-                    Current position: {{queuePosition}}
+                    Current queue: {{cohortId}}
                 </td>
                 <td>
-                    Current queue: {{cohortId}}
+                    Current section: {{section}}
+                </td>
+                <td>
+                    Current round: {{round}}
                 </td>
                 <td>
                     Max per queue: {{maxPlayersInCohort}}
                 </td>
             </tr>
             <tr>
+                <td>
+                    Current position: {{queuePosition}}
+                </td>
                 <td>
                     People in A: {{queueCountA}}
                 </td>
@@ -81,7 +87,19 @@
                             User ID
                         </th>
                         <th>
+                            Queue
+                        </th>
+                        <th>
+                            Section
+                        </th>
+                        <th>
+                            Round
+                        </th>
+                        <th>
                             Choice done
+                        </th>
+                        <th>
+                            Experiment done
                         </th>
                         <th>
                             Cohort done
@@ -122,7 +140,19 @@
                         {{subject.userId}}
                     </td>
                     <td>
+                        {{subject.cohortId}}
+                    </td>
+                    <td>
+                        {{subject.sec}}
+                    </td>
+                    <td>
+                        {{subject.sec_rnd}}
+                    </td>
+                    <td>
                         {{completedChoice subject}}
+                    </td>
+                    <td>
+                        {{completedExperiment subject}}
                     </td>
                     <td>
                         {{completedCohort subject}}

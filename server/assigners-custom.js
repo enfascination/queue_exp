@@ -14,6 +14,7 @@ export let QueueAssigner = class extends TurkServer.Assigners.SimpleAssigner {
             // this will be for the instructions in the lobby before the experiment
             // to get out of this it'll be neessary to institiualze the user and/or create a passedquiz flag
             if(!currentUser){
+                console.log("created new user", asst.userId, asst.assignmentId );
                 Meteor.call("initializeSubject", asst);
                 currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
             }

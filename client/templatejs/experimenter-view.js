@@ -1,24 +1,33 @@
 /*jshint esversion: 6 */
 
+var _ = require('lodash');
 import { Session } from 'meteor/session';
 import { Sess } from '../../imports/lib/quick-session.js';
 import { Helper } from '../../imports/lib/helper.js';
 
-Template.experimenterViewState.onCreated( function(){
-    //let group = TurkServer.group();
-    //if (group === null) return;
-    //Meteor.subscribe('designs', group);
+Template.experimenterView.onCreated( function(){
+    let group = TurkServer.group();
+    if (_.isNil(group) ) return;
+    Meteor.subscribe('s_data_full');
+    Meteor.subscribe('s_status_full');
+    Meteor.subscribe('designs');
 });
 Template.experimenterViewState.helpers({
-    queuePosition: function () {
-        return Sess.sub().queuePosition;
-    },
     cohortId: function () {
-        return Sess.sub().cohortId;
+        return Sess.design().cohortId;
+    },
+    section: function () {
+        return Sess.sub().sec_now;
+    },
+    round: function () {
+        return Sess.sub().sec_rnd_now;
     },
     maxPlayersInCohort: function () {
         let aDesign = Sess.design();
         return aDesign.maxPlayersInCohort;
+    },
+    queuePosition: function () {
+        return Sess.sub().queuePosition;
     },
     queueCountA: function () {
         return Sess.sub().queueCountA;
@@ -39,24 +48,18 @@ Template.experimenterViewCurrentSubject.helpers({
         return Meteor.userId();
     },
     cohortId: function () {
-        return Sess.sub().cohortId;
+        return Sess.design().cohortId;
     },
 });
 
 Template.experimenterViewPayouts.onCreated( function() {
-    //let group = TurkServer.group();
-    //if (group === null) return;
-    //Meteor.subscribe('subjects', group);
     Session.set('showQueueCalc', false);
 });
 
 Template.experimenterViewPayouts.helpers({
 
     subjects() {
-        return SubjectsData.find({ cohortId: Session.get('selectedQueue') }, { sort: { queuePositionFinal: 1, queuePosition: 1 } });
-    },
-    subjectstracking() {
-        return SubjectsStatus.find({ cohortId: Session.get('selectedQueue') }, { sort: { queuePositionFinal: 1, queuePosition: 1 } });
+        return SubjectsData.find( { cohortId: Session.get('selectedQueue') }, { sort: { sec: 1 , sec_rnd : 1, queuePositionFinal: 1, queuePosition: 1 } } );
     },
 
     showQueueCalc: function() {
@@ -70,12 +73,15 @@ Template.experimenterViewPayout.helpers({
         return Sess.sub().userId;
     },
     completedChoice: function (subject) {
+        return(subject.completedChoice);
+    },
+    completedExperiment: function (subject) {
         subbk = SubjectsStatus.findOne({ meteorUserId : subject.meteorUserId });
-        return(subbk.completedChoice);
+        return(subbk.completedExperiment);
     },
     completedCohort: function (subject) {
-        subbk = SubjectsStatus.findOne({ meteorUserId : subject.meteorUserId });
-        return(subbk.completedCohort);
+        cohort = CohortSettings.findOne({ cohortId : subject.cohortId, sec : subject.sec , sec_rnd : subject.sec_rnd });
+        return(cohort.completedCohort);
     },
     earningsQueue: function (subject) {
         return Helper.toCash( subject.earnings2 );
@@ -91,8 +97,12 @@ Template.experimenterViewPayout.helpers({
 
 Template.queueSelection.onCreated( function(){
     //let group = TurkServer.group();
-    //if (group === null) return;
-    //Meteor.subscribe('subjects', group);
+    //if (_.isNil(group) ) return;
+    //Meteor.subscribe('s_data_full');
+    //Meteor.subscribe('s_status_full');
+    //Meteor.subscribe('designs');
+    //let allSubs = SubjectsData.find().fetch();
+    //console.log("from sub sub top" ,_.map(allSubs, (s) => s.cohortId));
 });
 // https://github.com/lookback/meteor-dropdowns
 Template.queueSelection.helpers({
@@ -100,8 +110,8 @@ Template.queueSelection.helpers({
     //https://coderwall.com/p/o9np9q/get-unique-values-from-a-collection-in-meteor
     items: function() {
         let allSubs = SubjectsData.find().fetch();
-        let allQueuesObj = _.uniq(allSubs, true, (d) => {return(d.cohortId);});
-        let allQueueIds = _.pluck(allQueuesObj, "cohortId");
+        let allQueuesObj = _.sortedUniqBy(allSubs, (d) =>  d.cohortId );
+        let allQueueIds = _.map(allQueuesObj, "cohortId");
         return(allQueueIds);
   },
 });
@@ -111,14 +121,17 @@ Template.queueSelection.events({
         let queueToCalculate = +$(event.currentTarget).val();
         Session.set('selectedQueue', queueToCalculate);
         // (re)calculate earnings
-        let cohort = SubjectsData.find({
-            cohortId : queueToCalculate, 
-            choice: { $ne: 'X' } 
-        });
-        let design = CohortSettings.findOne( {cohortId: queueToCalculate } );
-        Meteor.call('completeCohort', queueToCalculate, design );
-        if ( SubjectsStatus.findOne({ cohortId : queueToCalculate }).completedCohort ) {
-            Meteor.call( 'calculateQueueEarnings', queueToCalculate, design );
+        let designs = CohortSettings.find( {cohortId: queueToCalculate }, { sort : { sec : -1, sec_rnd : -1 } } ).fetch();
+        for ( let design of designs) {
+            Meteor.call('completeCohort', queueToCalculate, design, function(err, data) {
+                if (err) { console.log( err ); }
+                let aDesign = CohortSettings.find( { cohortId: design.cohortId, sec: design.sec, sec_rnd: design.sec_rnd }, 
+                        { sort : { sec : -1, sec_rnd : -1 } } 
+                    ).fetch();
+                if ( aDesign.completedCohort ) {
+                    Meteor.call( 'calculateQueueEarnings', aDesign );
+                }
+            } );
         }
         Session.set('showQueueCalc', true);
     }
