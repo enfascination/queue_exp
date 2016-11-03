@@ -7,7 +7,6 @@ import { Helper } from '../imports/lib/helper.js';
 
 import { Meteor } from 'meteor/meteor';
 import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
-import { Partitioner } from 'meteor/mizzao:partitioner';
 
 
     Meteor.startup(function () {
