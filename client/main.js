@@ -58,31 +58,26 @@ Tracker.autorun(function() {
 Template.experiment.onCreated( function(){
     let group = TurkServer.group();
     if (_.isNil(group) ) return;
-    //Meteor.subscribe('s_data', group);
-    //Meteor.subscribe('designs', group);
     // make client side subject available
-    if (Meteor.userId()) {
+    let muid = Meteor.userId();
+    if ( muid ) {
         // is player refreshing, reconnecting, or somehow already up to date in the system?
-        Meteor.call("playerHasConnected",Meteor.userId(), function(err,data) { // this of this as an if statement
-            let liveRound = data;
-            // console.log(liveRound);
-            if ( _.isEmpty( liveRound ) ) { // player is new to me
-                // console.log("new player", SubjectsData.find({}).fetch());
+        Meteor.call("playerHasConnectedBefore", muid, function(err,sData) { // think of this cb as an if statement
+            let newSub, newCohort;
+            if ( _.isEmpty( sData ) ) { // player is new to me
                 // record groupid, in case I need it one day
-                Meteor.call("addGroupId", Meteor.userId(), group );
-                Meteor.call('initializeRound', sub=Meteor.userId(), lastDesign=null, asyncCallback=function(err, data) {
+                Meteor.call("addGroupId", muid, group );
+                Meteor.call('initializeRound', sub=muid, lastDesign=null, asyncCallback=function(err, data) {
                     if (err) { throw( err ); }
-                    // console.log("client got set during load", data.s_status.userId, data.s_status.meteorUserId );
-                    Sess.setClientSub( _.assign( data.s_status, data.s_data) );
-                    Sess.setClientDesign( data.design );
+                    newSub = _.assign( data.s_status, data.s_data);
+                    newCohort = data.design;
                 } );
             } else { // player is refreshing or reconnecting
-                // console.log("reconnecting");
-                ss = SubjectsStatus.findOne( {meteorUserId : Meteor.userId() });
-                cs = CohortSettings.findOne( { cohortId : liveRound.cohortId, sec : liveRound.sec, sec_rnd : liveRound.sec_rnd });
-                Sess.setClientSub( _.assign( ss, liveRound ) );
-                Sess.setClientDesign( cs );
+                newSub = _.assign( SubjectsStatus.findOne( {meteorUserId : muid }), sData );
+                newCohort = CohortSettings.findOne( { cohortId : sData.cohortId, sec : sData.sec, sec_rnd : sData.sec_rnd });
             }
+            Sess.setClientSub( newSub );
+            Sess.setClientDesign( newCohort );
         });
     }
 });
@@ -209,32 +204,24 @@ Template.experimentSubmit.events({
             let design = Sess.design();
             let cohortId = design.cohortId;
             let sub = Sess.sub();
-            //console.log("TESTTT", sub.sec_rnd, sub.sec_rnd_now, gameRound);
+
+            // game-specific logic here
             // the minus one is to correct for zero indexing: round zero should be abel to o be the first and only round
             let lastGameRound = ( sub.sec_rnd_now >= ( design.sequence[sub.sec_now].rounds - 1 ) );
-            // DEVELOPMENT if no mongo state but yes client state, wipe client state
-            //if (typeof SubjectsStatus.findOne({ meteorUserId : sub.meteorUserId }) === "undefined") {
-                //Sess.wipeClientState();
-            //}
-            Meteor.call('submitQueueChoice', Meteor.userId(), cohortId, sub.sec_now, sub.sec_rnd_now, UserElements.choiceChecked.get(), lastGameRound, design, asyncCallback=function(err, data) {
+
+            // submit choice and do clean up on previousness
+            Meteor.call('submitQueueChoice', Meteor.userId(), cohortId, sub.sec_now, sub.sec_rnd_now, UserElements.choiceChecked.get(), design, asyncCallback=function(err, data) {
                 if (err) { throw( err ); }
                 // determine if end of queue
-                Meteor.call('completeCohort', design, asyncCallback=function(err, data) {
-                    if (err) { throw( err ); }
-                    //if end of queue, calculate all earnings
-                    let design = data;
-                    let completedCohort = data.completedCohort ;
-                    if ( completedCohort ) {
-                        Meteor.call( 'calculateQueueEarnings', design );
-                    }
+                Meteor.call('tryToCompleteCohort', design);
+
+                Meteor.call('advanceSubjectState', Meteor.userId(), sub.sec_now, sub.sec_rnd_now, lastGameRound, function(err, updatedSub) {
 
                     // experiment navigation
                     if ( !lastGameRound ) {  // calculate the logic for this out of the callbacks because things get confusing
                         // go to the next round
-                        // get fresh subject
-                        sub = SubjectsStatus.findOne({ meteorUserId : sub.meteorUserId });
                         // create the next cohort object (which might have no members actually);
-                        Meteor.call('initializeRound', sub=sub, lastDesign=design, asyncCallback=function(err, data) {
+                        Meteor.call('initializeRound', sub=updatedSub, lastDesign=design, asyncCallback=function(err, data) {
                             if (err) { console.log( err ); }
                             Sess.setClientSub( _.assign( data.s_status, data.s_data) );
                             Sess.setClientDesign( data.design );
@@ -242,9 +229,9 @@ Template.experimentSubmit.events({
                         // routing?
                         //Router.go('/experiment');
                     } else {
-                        Meteor.call('goToExitSurvey');
+                        Meteor.call('goToExitSurvey', Meteor.userId());
                     }
-                } );
+                });
             });
         }
         else {

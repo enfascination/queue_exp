@@ -123,15 +123,7 @@ Template.queueSelection.events({
         // (re)calculate earnings
         let designs = CohortSettings.find( {cohortId: queueToCalculate }, { sort : { sec : -1, sec_rnd : -1 } } ).fetch();
         for ( let design of designs) {
-            Meteor.call('completeCohort', queueToCalculate, design, function(err, data) {
-                if (err) { console.log( err ); }
-                let aDesign = CohortSettings.find( { cohortId: design.cohortId, sec: design.sec, sec_rnd: design.sec_rnd }, 
-                        { sort : { sec : -1, sec_rnd : -1 } } 
-                    ).fetch();
-                if ( aDesign.completedCohort ) {
-                    Meteor.call( 'calculateQueueEarnings', aDesign );
-                }
-            } );
+            Meteor.call('completeCohort', queueToCalculate, design );
         }
         Session.set('showQueueCalc', true);
     }
