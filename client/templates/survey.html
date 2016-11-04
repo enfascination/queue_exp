@@ -1,0 +1,28 @@
+
+<template name="survey">
+    <br/>
+    <br/>
+    {{#if testQuizPassed }}
+        <b>One of your previous answers:</b>
+        {{userSelection}}
+    {{else}}
+        <div class="alert alert-info">You failed the test.  You may not participate in the experiment, but you may submit the HIT.</div>
+    {{/if}}
+    <br/>
+    <br/>
+    <form class="survey">
+        <!--<p>You chose {{userSelection}}</p>
+            <p></p><br>-->
+            <div class="center-block">
+                <label>
+                    Do you have any feedback for us? <br/>
+                    Did you encounter any confusion, bugs, or ambiguities in the instructions?
+                </label>
+                <br/>
+                <textarea name="feedback" rows="3"></textarea>
+            </div>
+            <br/>
+            <button type="submit" class="btn btn-success" autofocus >Submit the HIT</button>
+    </form>
+</template>
+

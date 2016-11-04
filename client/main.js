@@ -12,10 +12,13 @@ import { Sess } from '../imports/lib/quick-session.js';
 import 'bootstrap-sass';
 
 import '../imports/startup/client/routes.js';
-import './templates/experimenter-view.html';
+import './templatejs/quiz.js';
 import './templatejs/experimenter-view.js';
-import './templates/instruction.html';
+import './templatejs/survey.js';
 import './main.html';
+import './templates/quiz.html';
+import './templates/experimenter-view.html';
+import './templates/survey.html';
 
 Tracker.autorun(function() {
     if (TurkServer.inExperiment()) {
@@ -185,38 +188,6 @@ Template.binaryForcedChoice.events({
 	}, 
 });
 
-Template.quiz.onCreated( function(){
-    let answer;
-    if ( _.random() === 0 ) {
-        answer = "A";
-    } else {
-        answer = "B";
-    }
-    answer = "A"; //tmp
-
-    let muid = Meteor.userId();
-    UserElements.quizQuestion = new ReactiveVar(answer);
-    UserElements.quizAnswer = new ReactiveVar(answer);
-    UserElements.quizFailed = new ReactiveVar(false);
-    UserElements.quizTriesLeft = new ReactiveVar( Design.maxQuizFails - Sess.quizTries( muid ) );
-});
-Template.quiz.helpers({
-    question: function() { return( UserElements.quizQuestion.get() ); },
-    //answer: function() { return( UserElements.quizAnswer.get() ) },
-    testQuizWrong: function() {
-        return( UserElements.quizFailed.get() );
-    },
-    quizTriesLeft: function() {
-        let muid = Meteor.userId();
-        return( Design.maxQuizFails - Sess.quizTries( muid ) );
-    },
-});
-Template.quizWrong.helpers({
-    quizTriesLeft: function() {
-        let muid = Meteor.userId();
-        return( Design.maxQuizFails - Sess.quizTries( muid ) );
-    },
-});
 Template.proceedButton.helpers({
     testIncomplete: function() {
         return( UserElements.pleaseMakeChoice.get() );
@@ -297,28 +268,3 @@ Template.proceedButton.events({
     },
 });
 
-
-Template.survey.helpers({
-    userSelection: function () {
-        let muid = Meteor.userId();
-        let sd = SubjectsData.findOne({ meteorUserId: Meteor.userId() } );
-        if (muid && sd ) {
-            return( sd.choice );
-        }
-    },
-    "testQuizPassed": function() {
-        let muid = Meteor.userId();
-        let sub = SubjectsStatus.findOne({ meteorUserId: Meteor.userId() } );
-        if (muid && sub ) {
-            return( sub.quiz.passed );
-        }
-},
-});
-Template.survey.events({
-    'submit .survey': function (e) {
-        let results = null;
-        e.preventDefault();
-        results = { feedback: e.target.feedback.value };
-        TurkServer.submitExitSurvey(results);
-    }
-});
