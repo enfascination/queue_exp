@@ -41,6 +41,11 @@ export const Sess = {
             amplify.store("design", des);
         }
     },
+    quizTries : function (uid) {
+        if( SubjectsStatus.findOne({ "meteorUserId" : uid }) ) {
+            return( SubjectsStatus.findOne({ "meteorUserId" : uid }).quiz.tries );
+        }
+    },
     wipeClientState : function() {
         amplify.store("subject", null);
         amplify.store("design", null);

@@ -7,8 +7,8 @@ Router.route('/', function() {
 });
 
 
-Router.route('/instruction', function() {
-        this.render('instruction');
+Router.route('/start', function() {
+        this.render('quiz');
 });
 Router.route('/experiment', function() {
         this.render('experiment');

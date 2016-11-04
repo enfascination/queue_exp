@@ -19,20 +19,22 @@ export let QueueAssigner = class extends TurkServer.Assigners.SimpleAssigner {
                 currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
             }
 
-            if ( (currentUser.tookQuiz < 2) && !currentUser.passedQuiz ) {
+            if ( !currentUser.quiz.passed && !currentUser.quiz.failed ) {
                 //console.log("in1");
                 this.lobby.pluckUsers([asst.userId]);
-                TurkServer.setInstruction(asst);
-            } else if ( currentUser.passedQuiz ) {
-                //console.log("in2");
+                TurkServer.setQuizState(asst);
+            } else if ( currentUser.quiz.passed && !currentUser.quiz.failed ) {
+                //console.log("in2", asst );// asst.userId is the meteor userid
                 // if user hasn't yet been sent to experiment, create them an id based on the ids of preceding subjects
-                //console.log( asst );// asst.userId is the meteor userid
                 const treatments = this.batch.getTreatments() || [];
                 this.assignToNewInstance([asst], treatments);
-            } else { //failed quiz too many times
+                TurkServer.setExperimentState(asst, this);
+            } else if ( currentUser.quiz.failed ) { //failed quiz too many times
                 //console.log("in3");
                 this.lobby.pluckUsers([asst.userId]);
                 asst.showExitSurvey();
+            } else {
+                console.log("in4 PROBLEM");
             }
         }
     }

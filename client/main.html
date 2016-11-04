@@ -20,12 +20,12 @@
     {{> queueInstructions}}
     <br />
     <div class="exp-info container-fluid">
-        {{> queueSelections}}
+        <p>
+            <b>Make your selection here:</b>
+        </p>
+        {{> binaryForcedChoice texta="Queue A" textb="Queue B"}}
         <br/>
-        {{> experimentSubmit}}
-        {{#if testIncomplete }}
-            {{> incomplete}}
-        {{/if}}
+        {{> proceedButton id="nextStage" }}
     </div>
     </section>
     {{#if showExperimenterView }}
@@ -35,18 +35,23 @@
 </template>
 
 <template name="survey">
+    <br/>
+    <br/>
+    {{#if testQuizPassed }}
+        <b>One of your previous answers:</b>
+        {{userSelection}}
+    {{else}}
+        <div class="alert alert-info">You failed the test.  You may not participate in the experiment, but you may submit the HIT.</div>
+    {{/if}}
+    <br/>
+    <br/>
     <form class="survey">
         <!--<p>You chose {{userSelection}}</p>
             <p></p><br>-->
             <div class="center-block">
                 <label>
-                    Was there anything confusing about this HIT?
-                </label>
-                <br/>
-                <textarea name="confusing" rows="3"></textarea>
-                <br/>
-                <label>
-                    Do you have any feedback for us?
+                    Do you have any feedback for us? <br/>
+                    Did you encounter any confusion, bugs, or ambiguities in the instructions?
                 </label>
                 <br/>
                 <textarea name="feedback" rows="3"></textarea>
@@ -95,23 +100,23 @@
         </ul>
     </div>
 </template>
-<template name="queueSelections">
+<template name="binaryForcedChoice" >
     <div>
-        <p>
-            <b>Make your selection here:</b>
-        </p>
         <div class="btn-group btn-group-lg" role="group">
-            <button class="btn btn-primary btn-lg experimentChoices expChoice {{checkedA}}" choice="A" >Join Group A</button>
-            <button class="btn btn-primary btn-lg experimentChoices expChoice {{checkedB}}" choice="B" >Join Group B</button>
+            <button class="btn btn-primary btn-lg experimentChoices expChoice {{checked 'A'}}" choice="A" >{{texta}}</button>
+            <button class="btn btn-primary btn-lg experimentChoices expChoice {{checked 'B'}}" choice="B" >{{textb}}</button>
         </div>
     </div>
 </template>
-<template name="experimentSubmit">
+<template name="proceedButton">
     <div> 
-        <button class="btn btn-success" id="exitSurvey">Submit Choice</button>
+        <button class="btn btn-success" id={{id}}>Proceed</button>
     </div> 
+    {{#if testIncomplete }}
+        {{> choiceIncomplete}}
+    {{/if}}
 </template>
 
-<template name="incomplete">
+<template name="choiceIncomplete">
     <div class="alert alert-danger">You did not select a choice</div>
 </template>

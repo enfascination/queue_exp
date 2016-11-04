@@ -19,29 +19,38 @@ import './main.html';
 
 Tracker.autorun(function() {
     if (TurkServer.inExperiment()) {
-        //var subject = Subjects.findOne({ meteorUserId:Meteor.userId() });
-        //if (subject.status === 'instruction'){
-            //Router.go('/instruction');
-        //} else{
-            Router.go('/experiment');
-        //}
-    } else if (TurkServer.inInstruction()) {
-        Router.go('/instruction');
+        Router.go('/experiment');
+    } else if (TurkServer.inQuiz()) {
+        Router.go('/start');
     } else if (TurkServer.inExitSurvey()) {
         Router.go('/survey');
-    } 
+    } else {
+        //console.log("failed into lobby");
+    }
 });
 
 Tracker.autorun(function() {
-    let group = TurkServer.group();
-    //console.log("group", group);
-    if (_.isNil(group) ) return;
-    //Meteor.subscribe('s_data', group);
-    //Meteor.subscribe('s_status', group);
-    //Meteor.subscribe('designs', group);
-    Meteor.subscribe('s_data');
-    Meteor.subscribe('s_status');
-    Meteor.subscribe('designs');
+    //let state;
+    //if ( Meteor.users.findOne( Meteor.userId() )) {
+        //state = Meteor.users.findOne( Meteor.userId().turkserver.state );
+    //}
+    //console.log( "state", state );
+    if ( TurkServer.inQuiz() ) {
+        Meteor.subscribe('s_status');
+    } else if ( TurkServer.inExitSurvey() ) {
+        Meteor.subscribe('s_status');
+        Meteor.subscribe('s_data');
+    } else if ( TurkServer.inExperiment() ) {
+        let group = TurkServer.group();
+        console.log("group", group);
+        if (_.isNil(group) ) return;
+        //Meteor.subscribe('s_data', group);
+        //Meteor.subscribe('s_status', group);
+        //Meteor.subscribe('designs', group);
+        Meteor.subscribe('s_data');
+        Meteor.subscribe('s_status');
+        Meteor.subscribe('designs');
+    }
 });
 
 Tracker.autorun(function() {
@@ -86,9 +95,6 @@ Template.experiment.onCreated( function(){
 });
 
 Template.experiment.helpers({
-    testIncomplete: function() {
-        return( UserElements.pleaseMakeChoice.get() );
-    },
     showExperimenterView: function() {
         return( UserElements.experimenterView || TurkServer.isAdmin() );
     },
@@ -153,26 +159,18 @@ Template.queueInstructions.helpers({
         return( Helper.toCash( aDesign.pot ) );
     },
 });
-Template.queueSelections.helpers({
-    checkedA: function() {
-        //console.log("checkedA");
+Template.binaryForcedChoice.helpers({
+    checked: function( cInput ) {
+        //console.log("checked", cInput);
         let rVal = "";
-        if (UserElements.choiceChecked.get() === "A") {
-            rVal = "checked";
-        }
-        return rVal;
-    },
-    checkedB: function() {
-        //console.log("checkedB");
-        let rVal = "";
-        if (UserElements.choiceChecked.get() === "B") {
+        if (UserElements.choiceChecked.get() === cInput) {
             rVal = "checked";
         }
         return rVal;
     },
 });
 
-Template.queueSelections.events({
+Template.binaryForcedChoice.events({
 	'click button.expChoice': function (event) {
         let des = Sess.design();
         if (UserElements.choiceChecked.get() === event.target.getAttribute("choice") ) {
@@ -187,16 +185,85 @@ Template.queueSelections.events({
 	}, 
 });
 
-Template.experimentSubmit.events({
-    'click button#exitSurvey': function () {
+Template.quiz.onCreated( function(){
+    let answer;
+    if ( _.random() === 0 ) {
+        answer = "A";
+    } else {
+        answer = "B";
+    }
+    answer = "A"; //tmp
+
+    let muid = Meteor.userId();
+    UserElements.quizQuestion = new ReactiveVar(answer);
+    UserElements.quizAnswer = new ReactiveVar(answer);
+    UserElements.quizFailed = new ReactiveVar(false);
+    UserElements.quizTriesLeft = new ReactiveVar( Design.maxQuizFails - Sess.quizTries( muid ) );
+});
+Template.quiz.helpers({
+    question: function() { return( UserElements.quizQuestion.get() ); },
+    //answer: function() { return( UserElements.quizAnswer.get() ) },
+    testQuizWrong: function() {
+        return( UserElements.quizFailed.get() );
+    },
+    quizTriesLeft: function() {
+        let muid = Meteor.userId();
+        return( Design.maxQuizFails - Sess.quizTries( muid ) );
+    },
+});
+Template.quizWrong.helpers({
+    quizTriesLeft: function() {
+        let muid = Meteor.userId();
+        return( Design.maxQuizFails - Sess.quizTries( muid ) );
+    },
+});
+Template.proceedButton.helpers({
+    testIncomplete: function() {
+        return( UserElements.pleaseMakeChoice.get() );
+    },
+});
+Template.proceedButton.events({
+    'click button#exitQuiz': function ( e ) {
+        let passed;
+        let muid = Meteor.userId();
+        let choice = UserElements.choiceChecked.get();
+        let answer = UserElements.quizQuestion.get();
+        let triesLeft = Design.maxQuizFails - Sess.quizTries( muid ) - 1;
+        if (choice) {
+            if (choice === answer) {
+                passed = true;
+                UserElements.quizFailed.set( !passed );
+            } else {
+                passed = false;
+                UserElements.quizFailed.set( !passed );
+                //Router.go('/survey');
+            }
+        UserElements.quizTriesLeft.set( triesLeft );
+        Meteor.call('updateQuiz', muid, passed, triesLeft );
+
+        }
+        else {
+            UserElements.pleaseMakeChoice.set( true );
+        }
+    },
+    'click button#nextStage': function ( e ) {
         if (UserElements.choiceChecked.get()) {
             let design = Sess.design();
             let cohortId = design.cohortId;
             let sub = SubjectsStatus.findOne({ meteorUserId : Meteor.userId() });
+            //console.log("nextStage", Meteor.userId(), sub);
+            let next_section, next_round, lastGameRound;
 
             // game-specific logic here
-            // the minus one is to correct for zero indexing: round zero should be abel to o be the first and only round
-            let lastGameRound = ( sub.sec_rnd_now >= ( design.sequence[sub.sec_now].rounds - 1 ) );
+            // the minus one is to correct for zero indexing: round zero should be able to be the first and only round
+            lastGameRound = ( sub.sec_rnd_now >= ( design.sequence[ sub.sec_now ].rounds - 1 ) );
+            if ( lastGameRound ) {
+                next_section = sub.sec_now + 1;
+                next_round = 0;
+            } else {
+                next_section = sub.sec_now;
+                next_round = sub.sec_rnd_now + 1;
+            }
 
             // submit choice and do clean up on previousness
             Meteor.call('submitQueueChoice', Meteor.userId(), cohortId, sub.sec_now, sub.sec_rnd_now, UserElements.choiceChecked.get(), design, asyncCallback=function(err, data) {
@@ -204,7 +271,7 @@ Template.experimentSubmit.events({
                 // determine if end of queue
                 Meteor.call('tryToCompleteCohort', design);
 
-                Meteor.call('advanceSubjectState', Meteor.userId(), sub.sec_now, sub.sec_rnd_now, lastGameRound, 
+                Meteor.call('advanceSubjectState', Meteor.userId(), next_section, next_round, 
                     function(err, updatedSub) {
 
                     // experiment navigation
@@ -227,21 +294,31 @@ Template.experimentSubmit.events({
         else {
             UserElements.pleaseMakeChoice.set( true );
         }
-    }
+    },
 });
+
 
 Template.survey.helpers({
     userSelection: function () {
-        /// return(Sess.sub().choice);
-        // Outside of lobby, Session stops working.  good to know.
-        return(SubjectsData.findOne({meteorUserId: Meteor.userId()}, { sort : { sec : -1, sec_rnd : -1 } } ).choice);
+        let muid = Meteor.userId();
+        let sd = SubjectsData.findOne({ meteorUserId: Meteor.userId() } );
+        if (muid && sd ) {
+            return( sd.choice );
+        }
     },
+    "testQuizPassed": function() {
+        let muid = Meteor.userId();
+        let sub = SubjectsStatus.findOne({ meteorUserId: Meteor.userId() } );
+        if (muid && sub ) {
+            return( sub.quiz.passed );
+        }
+},
 });
 Template.survey.events({
     'submit .survey': function (e) {
+        let results = null;
         e.preventDefault();
-        let results = {confusing: e.target.confusing.value,
-            feedback: e.target.feedback.value};
+        results = { feedback: e.target.feedback.value };
         TurkServer.submitExitSurvey(results);
     }
 });

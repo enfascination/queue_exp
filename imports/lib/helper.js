@@ -37,21 +37,34 @@ export const Helper = {
     },
 };
 
-TurkServer.inInstruction = function() {
-  return Session.equals("turkserver.state", "instruction");
+
+// I'd like to get these somewhere else.  inQuiz is used client side
+TurkServer.inQuiz = function() {
+  return Session.equals("turkserver.state", "quiz");
 };
-TurkServer.setInstruction = function(asst) {
+
+TurkServer.setQuizState = function(asst) {
+    //console.log("set quiz");
+    // This does not emit an event to lobby, so you'd better already be there if you 
+    //   want something to happen.  Otherwise, if you're on the client, 
+    //   you can call router explicitly
     Meteor.users.update(asst.userId, {
       $set: {
-        "turkserver.state": "instruction"
+        "turkserver.state": "quiz"
       }
     });
 };
-TurkServer.leaveInstruction = function(asst) {
+TurkServer.setExperimentState = function(asst) {
+    //console.log("set experiment");
+    // this does not emit an event to lobby, so you'd better already be there
     Meteor.users.update(asst.userId, {
       $set: {
         "turkserver.state": "experiment"
       }
     });
+};
+TurkServer.setLobbyState = function(asst, batch) {
+    // this emits an event to lobby
+    batch.lobby.addAssignment( asst );
 };
 

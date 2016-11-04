@@ -14,13 +14,17 @@ Schemas.SubjectsStatus = new SimpleSchema({
         type: String,
         label: "Meteor User",
     },
-    tookQuiz: {
-        type: SimpleSchema.Integer,
-        label: "Number of times quizzed",
-    },
-    passedQuiz: {
+    "quiz.passed": { // pass and fail are not opposites during the quiz, but they are for the rest of the experiment
         type: Boolean,
         label: "Passed quiz",
+    },
+    "quiz.failed": {
+        type: Boolean,
+        label: "failed quiz",
+    },
+    "quiz.tries": {
+        type: SimpleSchema.Integer,
+        label: "Attempts at quiz",
     },
     completedExperiment: {
         type: Boolean,
@@ -71,7 +75,7 @@ Schemas.SubjectsData = new SimpleSchema({
         type: String,
         label: "User",
     },
-    // this is the Meteor.userId for identifying user in-game. 
+    // this is the Meteor.userId ( and the asst.userId ) for identifying user in-game. 
     meteorUserId: {  // with better hygeine, this wouldn't be in this collection
         type: String,
         label: "Meteor User",
@@ -197,9 +201,11 @@ Design = {
     pot : 1.00,
     queueNames : [ 'A', 'B' ],
     queueCosts : { "A": 0.50, 'B': 0.00 },
-    sequence : { 0: {name:"experiment", "rounds":4, "stages" : 1 }, 1: {name:"done", "rounds":1, "stages" : 1 } },
+    maxQuizFails : 2,
+    sequence : { 0: {name:"experiment", "rounds":1, "stages" : 1 }, 1: {name:"done", "rounds":1, "stages" : 1 } },
     //sequence : { 0: {name:"quiz", "rounds":1 }, 1: {name:"experiment", "rounds":2 }, 2: {name:"survey", "rounds":1 } },
     positionCosts : 0.25,
+    batchName : "main",
 };
 UserElements = {
     experimenterView : true,

@@ -10,8 +10,8 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
 
 
     Meteor.startup(function () {
-        Batches.upsert({name: "main"}, {name: "main", active: true});
-        let batch = TurkServer.Batch.getBatchByName("main");
+        Batches.upsert({name: Design.batchName }, {name: Design.batchName , active: true});
+        let batch = TurkServer.Batch.getBatchByName( Design.batchName );
         //batch.setAssigner(new TurkServer.Assigners.SimpleAssigner());
         batch.setAssigner( new QueueAssigner() );
     });
@@ -72,8 +72,7 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
             SubjectsStatus.insert( {
                 userId: idObj.assignmentId,
                 meteorUserId: idObj.userId,
-                tookQuiz: 3,  // set back to 0
-                passedQuiz: true,  ///SET  back to false
+                quiz: {"passed" : false, "failed" : false, "tries" : 0 },
                 completedExperiment: false,
                 tsAsstId: idObj.asstId,
                 tsBatchId: idObj.batchId,
@@ -243,11 +242,10 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
         },
         // this updates a SubjectsData object
         submitQueueChoice: function(muid, cohortId, section, round, choice, design) {
-            let next_section, next_round, theChoice, theEarnings;
+            let theChoice, theEarnings;
 
 
             // experiment-specific logic
-            //console.log("submitchoice", muid, cohortId, round, section, next_round, next_section, design.sequence, choice );
             if (choice === "A") {
                 theChoice = "A";
                 theEarnings = design.endowment - design.queueCosts.A;
@@ -268,22 +266,16 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
             //return({ "s_status" : ss, "s_data" : sd });
         },
         // this updates a SubjectsStatus object
-        advanceSubjectState : function(muid, section, round, lastRound) {
-            let next_section, next_round, theChoice, theEarnings;
-            if ( lastRound ) {
-                next_section = section + 1;
-                next_round = 0;
-            } else {
-                next_section = section;
-                next_round = round + 1;
-            }
+        advanceSubjectState : function(muid, next_section, next_round) {
+
             SubjectsStatus.update({meteorUserId: muid }, {
                 $set: {
                     sec_now: next_section,
                     sec_rnd_now: next_round,
                 },
             });
-            return( SubjectsStatus.findOne({ meteorUserId: muid }));
+            let sub = SubjectsStatus.findOne({ meteorUserId: muid });
+            return( sub );
         },
         // updates a CohortSettings object
         tryToCompleteCohort: function(design) {
@@ -378,6 +370,24 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
             });
             TurkServer.Instance.currentInstance().teardown(returnToLobby = true);
         },
+        updateQuiz: function ( muid, passed, triesLeft ) {
+            let failed = false; // this is not the opposite of passing
+            let sub = SubjectsStatus.findOne({ meteorUserId: muid });
+            let tries = sub.quiz.tries + 1;
+            if ( !passed && ( triesLeft === 0 || triesLeft < 0) ) {
+                failed = true;
+            }
+            SubjectsStatus.update({ meteorUserId: muid }, 
+                { $set: { quiz: {"passed" : passed, "failed" : failed, "tries" : tries } } }, 
+                callback = function(err, n) { 
+                    let asst = TurkServer.Assignment.getAssignment( sub.tsAsstId );
+                    let batch = TurkServer.Batch.getBatchByName( Design.batchName );
+                    if (err) { throw( err ); }
+                    if ( n > 0 && (passed || failed) ) {
+                        TurkServer.setLobbyState( asst, batch );
+                    }
+                });
+        }, 
         // this takes previous deisgn and increments on it, or takes nothign and makes firs deisgn on global
         // Creates a new CohortSettings object
         'initializeCohort': function(newCohortId, newSection, newRound ) {
