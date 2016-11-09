@@ -23,9 +23,13 @@
         <p>
             <b>Make your selection here:</b>
         </p>
-        {{> binaryForcedChoice texta="Queue A" textb="Queue B"}}
+        <div id="q1" class="expQuestion">
+            {{> binaryForcedChoice id="q1" texta="Queue A" textb="Queue B"}}
+        </div>
         <br/>
-        {{> proceedButton id="nextStage" }}
+        {{> submitButton id="nextStage" }}
+        <br/>
+        {{> proceedButton id="nextSection" }}
     </div>
     </section>
     {{#if showExperimenterView }}
@@ -62,7 +66,7 @@
             </li>
             <li class="list-group-item">
                     <p>
-                    Your chosen group: {{choiceChecked}}
+                    Your chosen group: {{choiceChecked "q1"}}
                     </p>
             </li>
             <li class="list-group-item">
@@ -75,21 +79,33 @@
 </template>
 <template name="binaryForcedChoice" >
     <div>
-        <div class="btn-group btn-group-lg" role="group">
-            <button class="btn btn-primary btn-lg experimentChoices expChoice {{checked 'A'}}" choice="A" >{{texta}}</button>
-            <button class="btn btn-primary btn-lg experimentChoices expChoice {{checked 'B'}}" choice="B" >{{textb}}</button>
+        <div id={{id}} name={{id}} class="btn-group btn-group-lg expChoices" role="group">
+            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice" choice="A" >{{texta}}</button>
+            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice" choice="B" >{{textb}}</button>
         </div>
     </div>
 </template>
 <template name="proceedButton">
     <div> 
-        <button class="btn btn-success" id={{id}}>Proceed</button>
+        <button type=button class="btn btn-success {{buttonInactive}}" id={{id}}>Proceed</button>
     </div> 
     {{#if testIncomplete }}
         {{> choiceIncomplete}}
     {{/if}}
 </template>
 
+<template name="submitButton">
+    <button type="submit" class = "btn btn-primary btn-sm" aria-label="Left Align" style="margin-left:auto; margin-right:auto; display:block">Submit Answers</button>
+</template>
 <template name="choiceIncomplete">
     <div class="alert alert-danger">You did not select a choice</div>
 </template>
+
+	<template name = "questionBinary">
+		<div class = "expQuestion form-group {{#if incorrect}}has-error{{/if}}" id="{{_id}}">
+			<label for="{{_id}}" class = "control-label">{{text}}</label>
+            <!--<input id="{{_id}}" name="{{_id}}" class = "sm-width form-control">-->
+            {{> binaryForcedChoice id=_id texta="Queue A" textb="Queue B"  }}
+		</div>
+	</template>
+

@@ -9,20 +9,46 @@
         <div class="alert alert-info">You failed the test.  You may not participate in the experiment, but you may submit the HIT.</div>
     {{/if}}
     <br/>
+
+    <!--{{instructionOptions}}-->
+	<h4>Survey</h4>
+	<p>Anwer these optional survey quetsions for additional earnings</p>
+	<p><i>You have two opportunities to submit your responses</i></p>
+
+        <form class = "survey" id="submitSurvey">
+            {{#each questions}}
+                {{> questionBinary}}
+            {{/each}}
+            {{#unless testProceed}}
+                {{> submitButton}}
+            {{/unless}}
+        </form>
+    {{#if testProceed }}
+        {{> exitSurvey}}
+    {{/if}}
     <br/>
-    <form class="survey">
-        <!--<p>You chose {{userSelection}}</p>
-            <p></p><br>-->
-            <div class="center-block">
-                <label>
-                    Do you have any feedback for us? <br/>
-                    Did you encounter any confusion, bugs, or ambiguities in the instructions?
-                </label>
-                <br/>
-                <textarea name="feedback" rows="3"></textarea>
-            </div>
-            <br/>
-            <button type="submit" class="btn btn-success" autofocus >Submit the HIT</button>
-    </form>
 </template>
 
+	<template name = "questionForm">
+        <!-- <div class = "expQuestion form-group {{#if incorrect}}has-error{{/if}}" id="{{_id}}"> -->
+		<div class = "expQuestion form-group" id="{{_id}}">
+			<label for="{{_id}}" class = "control-label">{{text}}</label>
+            <input id="{{_id}}" name="{{_id}}" class = "sm-width form-control">
+		</div>
+	</template>
+	<template name = "exitSurvey">
+            <form class="exitSurvey">
+                <!--<p>You chose {{userSelection}}</p>
+                    <p></p><br>-->
+                    <div class="center-block">
+                        <label>
+                            Do you have any feedback for us? <br/>
+                            Did you encounter any confusion, bugs, or ambiguities in the instructions?
+                        </label>
+                        <br/>
+                        <textarea name="feedback" rows="3"></textarea>
+                    </div>
+                    <br/>
+                    <button type="submit" class="btn btn-success" autofocus >Submit the HIT</button>
+            </form>
+	</template>

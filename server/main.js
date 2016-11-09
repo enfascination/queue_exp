@@ -72,7 +72,7 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
             SubjectsStatus.insert( {
                 userId: idObj.assignmentId,
                 meteorUserId: idObj.userId,
-                quiz: {"passed" : false, "failed" : false, "tries" : 0 },
+                quiz: {"passed" : false, "failed" : false, "triesLeft" : Design.maxQuizFails },
                 completedExperiment: false,
                 tsAsstId: idObj.asstId,
                 tsBatchId: idObj.batchId,
@@ -83,6 +83,7 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                 sec_now: 0,
                 sec_rnd_now: 0,
                 sec_rnd_stg_now: 0,
+                readyToProceed: false,
             } );
 
             //ensure uniqueness
@@ -261,6 +262,8 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                     completedChoice : true,
                 },
             });
+            //console.log("submitQueueChoice");
+            Meteor.call( "setReadyToProceed", muid );
             //let ss = SubjectsStatus.findOne({ meteorUserId: muid });
             //let sd = SubjectsData.findOne({ meteorUserId: muid , cohortId : cohortId, sec : section, sec_rnd : round });
             //return({ "s_status" : ss, "s_data" : sd });
@@ -268,6 +271,7 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
         // this updates a SubjectsStatus object
         advanceSubjectState : function(muid, next_section, next_round) {
 
+            let sub_old = SubjectsStatus.findOne({ meteorUserId: muid });
             SubjectsStatus.update({meteorUserId: muid }, {
                 $set: {
                     sec_now: next_section,
@@ -275,7 +279,29 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
                 },
             });
             let sub = SubjectsStatus.findOne({ meteorUserId: muid });
+
             return( sub );
+        },
+        advanceSubjectSection : function(muid) {
+            let sub_old = SubjectsStatus.findOne({ meteorUserId: muid });
+
+
+            SubjectsStatus.update({meteorUserId: muid }, {
+                $set: {
+                    sec_now: sub_old.sec_now + 1,
+                    readyToProceed: false,
+                },
+            });
+
+            sub = SubjectsStatus.findOne({ meteorUserId: muid });
+            //console.log("advanceSubjectSection", "unready", sub.readyToProceed );
+            // routing, which can vary by section
+            //if ( sub.sec_now != sub.sec_now ) {
+            if ( Design.sectionNames[ sub_old.sec_now ] === "quiz" ) {
+                let asst = TurkServer.Assignment.getAssignment( sub.tsAsstId );
+                let batch = TurkServer.Batch.getBatchByName( Design.batchName );
+                TurkServer.setLobbyState( asst, batch );
+            }
         },
         // updates a CohortSettings object
         tryToCompleteCohort: function(design) {
@@ -370,24 +396,29 @@ import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
             });
             TurkServer.Instance.currentInstance().teardown(returnToLobby = true);
         },
-        updateQuiz: function ( muid, passed, triesLeft ) {
-            let failed = false; // this is not the opposite of passing
+        updateQuiz: function ( muid, passed ) {
             let sub = SubjectsStatus.findOne({ meteorUserId: muid });
-            let tries = sub.quiz.tries + 1;
-            if ( !passed && ( triesLeft === 0 || triesLeft < 0) ) {
-                failed = true;
+            let failed = false; // this is not the opposite of passing
+            let triesLeft = sub.quiz.triesLeft;
+            if ( !passed || sub.quiz.failed) {// have I alrady failed this person?
+                triesLeft = sub.quiz.triesLeft - 1;
+                if ( triesLeft === 0 || triesLeft < 0 ) {
+                    failed = true;
+                }
             }
+            //console.log("updateQuiz", sub);
             SubjectsStatus.update({ meteorUserId: muid }, 
-                { $set: { quiz: {"passed" : passed, "failed" : failed, "tries" : tries } } }, 
-                callback = function(err, n) { 
-                    let asst = TurkServer.Assignment.getAssignment( sub.tsAsstId );
-                    let batch = TurkServer.Batch.getBatchByName( Design.batchName );
-                    if (err) { throw( err ); }
-                    if ( n > 0 && (passed || failed) ) {
-                        TurkServer.setLobbyState( asst, batch );
-                    }
-                });
+                { $set: { quiz: {"passed" : passed, "failed" : failed, "triesLeft" : triesLeft} } });
+            if ( passed || failed ) {
+                //console.log("updateQuiz");
+                Meteor.call( "setReadyToProceed", muid );
+            }
         }, 
+        setReadyToProceed: function (muid) {
+            //console.log("setReadyToProceed fn");
+            SubjectsStatus.update({ meteorUserId: muid }, 
+                { $set: { "readyToProceed" : true } });
+        },
         // this takes previous deisgn and increments on it, or takes nothign and makes firs deisgn on global
         // Creates a new CohortSettings object
         'initializeCohort': function(newCohortId, newSection, newRound ) {

@@ -4,12 +4,13 @@ body {
     width: 80%;
     max-width: 960px;
     margin: auto;
+    text-align: center;
 }
 .exp-info {
     width: 95%;
 }
 
-.checked, .checked:focus, .checked:hover, .checked:focus:hover {
+.btn[checked], .btn[checked]:focus, .btn[checked]:hover, .btn[checked]:focus:hover {
     background-color: Red;
 }
 /*

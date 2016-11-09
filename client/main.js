@@ -21,6 +21,7 @@ import './templates/experimenter-view.html';
 import './templates/survey.html';
 
 Tracker.autorun(function() {
+    //console.log("routing");
     if (TurkServer.inExperiment()) {
         Router.go('/experiment');
     } else if (TurkServer.inQuiz()) {
@@ -45,7 +46,7 @@ Tracker.autorun(function() {
         Meteor.subscribe('s_data');
     } else if ( TurkServer.inExperiment() ) {
         let group = TurkServer.group();
-        console.log("group", group);
+        //console.log("group", group);
         if (_.isNil(group) ) return;
         //Meteor.subscribe('s_data', group);
         //Meteor.subscribe('s_status', group);
@@ -57,9 +58,10 @@ Tracker.autorun(function() {
 });
 
 Tracker.autorun(function() {
-    UserElements.choiceChecked = new ReactiveVar("");
-    UserElements.pleaseMakeChoice = new ReactiveVar(false);
+    //initialize ui state
+    UserElements.choiceChecked = new ReactiveDict(); // this is so there can be mulplie of these buttons on a page
     UserElements.userAccount = new ReactiveVar();
+    UserElements.pleaseMakeChoice = new ReactiveVar(false);
 });
 
 Tracker.autorun(function() {
@@ -95,11 +97,82 @@ Template.experiment.onCreated( function(){
             Sess.setClientDesign( newCohort );
         });
     }
+
 });
 
 Template.experiment.helpers({
     showExperimenterView: function() {
         return( UserElements.experimenterView || TurkServer.isAdmin() );
+    },
+});
+Template.experiment.events({
+	'click div.expQuestion#q1': function (event) {
+        event.stopPropagation();
+        let des = Sess.design();
+        let buttonId = event.currentTarget.id; // currentTarget is the div wrapper, target is each button within in
+        if ( event.target.hasAttribute( "checked" ) ) {
+            event.currentTarget.setAttribute( "choice", event.target.getAttribute("choice") );
+            UserElements.choiceChecked.set(buttonId, event.target.getAttribute("choice"));
+            UserElements.userAccount.set(des.endowment - des.queueCosts[ event.target.getAttribute("choice") ]);
+            UserElements.pleaseMakeChoice.set( false);
+        } else {
+            event.currentTarget.removeAttribute( "choice" );
+            UserElements.choiceChecked.set( buttonId, "");
+            UserElements.userAccount.set(des.endowment);
+        }
+    },
+    'click #nextStage': function(event){
+    },
+    'click button#nextSection': function ( e ) {
+        let choice =  UserElements.choiceChecked.get( "q1" ); ///XXX fix this hardcoding
+        if (choice ) {
+            let design = Sess.design();
+            let cohortId = design.cohortId;
+            let sub = SubjectsStatus.findOne({ meteorUserId : Meteor.userId() });
+            //console.log("nextSection", Meteor.userId(), sub);
+            let next_section, next_round, lastGameRound;
+
+            // game-specific logic here
+            // the minus one is to correct for zero indexing: round zero should be able to be the first and only round
+            lastGameRound = ( sub.sec_rnd_now >= ( design.sequence[ sub.sec_now ].rounds - 1 ) );
+            if ( lastGameRound ) {
+                next_section = sub.sec_now + 1;
+                next_round = 0;
+            } else {
+                next_section = sub.sec_now;
+                next_round = sub.sec_rnd_now + 1;
+            }
+
+            // submit choice and do clean up on previousness
+            Meteor.call('submitQueueChoice', Meteor.userId(), cohortId, sub.sec_now, sub.sec_rnd_now, choice, design, asyncCallback=function(err, data) {
+                if (err) { throw( err ); }
+                // determine if end of queue
+                Meteor.call('tryToCompleteCohort', design);
+
+                Meteor.call('advanceSubjectState', Meteor.userId(), next_section, next_round, 
+                    function(err, updatedSub) {
+
+                    // experiment navigation
+                    if ( !lastGameRound ) {  // calculate the logic for this out of the callbacks because things get confusing
+                        // go to the next round
+                        // create the next cohort object (which might have no members actually);
+                        Meteor.call('initializeRound', sub=updatedSub, lastDesign=design, asyncCallback=function(err, data) {
+                            if (err) { console.log( err ); }
+                            Sess.setClientSub( _.assign( data.s_status, data.s_data) );
+                            Sess.setClientDesign( data.design );
+                        });
+                        // routing?
+                        //Router.go('/experiment');
+                    } else {
+                        Meteor.call('advanceSubjectSection', Meteor.userId());
+                        Meteor.call('goToExitSurvey', Meteor.userId());
+                    }
+                });
+            });
+        }
+        else {
+            UserElements.pleaseMakeChoice.set( true );
+        }
     },
 });
 
@@ -112,8 +185,8 @@ Template.queueInstructions.helpers({
     counterB: function () {
         return Sess.sub().queueCountB || "XXX";
     },
-    choiceChecked: function () {
-        return UserElements.choiceChecked.get();
+    choiceChecked: function ( id ) {
+        return UserElements.choiceChecked.get( id );
     },
     counterNet: function () {
         return Sess.sub().queuePosition || "XXX";
@@ -163,27 +236,22 @@ Template.queueInstructions.helpers({
     },
 });
 Template.binaryForcedChoice.helpers({
-    checked: function( cInput ) {
-        //console.log("checked", cInput);
-        let rVal = "";
-        if (UserElements.choiceChecked.get() === cInput) {
-            rVal = "checked";
-        }
-        return rVal;
-    },
 });
 
 Template.binaryForcedChoice.events({
-	'click button.expChoice': function (event) {
-        let des = Sess.design();
-        if (UserElements.choiceChecked.get() === event.target.getAttribute("choice") ) {
-            UserElements.choiceChecked.set("");
-            UserElements.userAccount.set(des.endowment);
-        } 
-        else {
-            UserElements.choiceChecked.set(event.target.getAttribute("choice"));
-            UserElements.userAccount.set(des.endowment - des.queueCosts[ event.target.getAttribute("choice") ]);
-            UserElements.pleaseMakeChoice.set( false);
+	'click div.expChoices': function (event) {
+        if ( event.target.hasAttribute( "checked" ) ) {
+            event.currentTarget.setAttribute( "choice", event.target.getAttribute("choice") );
+        } else {
+            event.currentTarget.removeAttribute( "choice" );
+        }
+        for (let child of event.currentTarget.children) {
+            if ( event.target.getAttribute("choice") === child.getAttribute("choice") && !child.hasAttribute("checked")) {
+                child.setAttribute("checked", '');
+            } 
+            else {// uncheck a checked button
+                child.removeAttribute("checked");
+            }
         }
 	}, 
 });
@@ -192,79 +260,17 @@ Template.proceedButton.helpers({
     testIncomplete: function() {
         return( UserElements.pleaseMakeChoice.get() );
     },
+    buttonInactive : function() {
+        let sub = SubjectsStatus.findOne({ meteorUserId : Meteor.userId() });
+        let rval = '';
+        if( false && ( _.isNil( sub ) || !sub.readyToProceed ) ) {
+            rval = "disabled";
+        } else {
+        }
+        //console.log("diabled?", rval);
+        return( rval);
+    },
 });
 Template.proceedButton.events({
-    'click button#exitQuiz': function ( e ) {
-        let passed;
-        let muid = Meteor.userId();
-        let choice = UserElements.choiceChecked.get();
-        let answer = UserElements.quizQuestion.get();
-        let triesLeft = Design.maxQuizFails - Sess.quizTries( muid ) - 1;
-        if (choice) {
-            if (choice === answer) {
-                passed = true;
-                UserElements.quizFailed.set( !passed );
-            } else {
-                passed = false;
-                UserElements.quizFailed.set( !passed );
-                //Router.go('/survey');
-            }
-        UserElements.quizTriesLeft.set( triesLeft );
-        Meteor.call('updateQuiz', muid, passed, triesLeft );
-
-        }
-        else {
-            UserElements.pleaseMakeChoice.set( true );
-        }
-    },
-    'click button#nextStage': function ( e ) {
-        if (UserElements.choiceChecked.get()) {
-            let design = Sess.design();
-            let cohortId = design.cohortId;
-            let sub = SubjectsStatus.findOne({ meteorUserId : Meteor.userId() });
-            //console.log("nextStage", Meteor.userId(), sub);
-            let next_section, next_round, lastGameRound;
-
-            // game-specific logic here
-            // the minus one is to correct for zero indexing: round zero should be able to be the first and only round
-            lastGameRound = ( sub.sec_rnd_now >= ( design.sequence[ sub.sec_now ].rounds - 1 ) );
-            if ( lastGameRound ) {
-                next_section = sub.sec_now + 1;
-                next_round = 0;
-            } else {
-                next_section = sub.sec_now;
-                next_round = sub.sec_rnd_now + 1;
-            }
-
-            // submit choice and do clean up on previousness
-            Meteor.call('submitQueueChoice', Meteor.userId(), cohortId, sub.sec_now, sub.sec_rnd_now, UserElements.choiceChecked.get(), design, asyncCallback=function(err, data) {
-                if (err) { throw( err ); }
-                // determine if end of queue
-                Meteor.call('tryToCompleteCohort', design);
-
-                Meteor.call('advanceSubjectState', Meteor.userId(), next_section, next_round, 
-                    function(err, updatedSub) {
-
-                    // experiment navigation
-                    if ( !lastGameRound ) {  // calculate the logic for this out of the callbacks because things get confusing
-                        // go to the next round
-                        // create the next cohort object (which might have no members actually);
-                        Meteor.call('initializeRound', sub=updatedSub, lastDesign=design, asyncCallback=function(err, data) {
-                            if (err) { console.log( err ); }
-                            Sess.setClientSub( _.assign( data.s_status, data.s_data) );
-                            Sess.setClientDesign( data.design );
-                        });
-                        // routing?
-                        //Router.go('/experiment');
-                    } else {
-                        Meteor.call('goToExitSurvey', Meteor.userId());
-                    }
-                });
-            });
-        }
-        else {
-            UserElements.pleaseMakeChoice.set( true );
-        }
-    },
 });
 

@@ -6,6 +6,24 @@ import { Amplify } from 'meteor/amplify';
 
 export const Sess = {
     // getter for subject
+    subStat : function () {
+        let sub = SubjectsStatus.findOne( { meteorUserId : Meteor.userId()} );
+        if ( !_.isNil(sub) ) {
+            return( sub );
+        } else {
+            return(amplify.store("subject") );
+        }
+    },
+    subData : function () {
+        // there's an assumption hardcoded here, that the data i'll want for a subject is the most recent data.  
+        //   I don't know if that's true, but that's what's here.
+        let sd = SubjectsData.findOne({meteorUserId: Meteor.userId()}, { sort : { sec : -1, sec_rnd : -1 } } );
+        if ( !_.isNil(sd) ) {
+            return( sd );
+        } else {
+            return(amplify.store("subject") );
+        }
+    },
     sub : function () {
         let sub = SubjectsStatus.findOne( { meteorUserId : Meteor.userId()} );
         // there's an assumption hardcoded here, that the data i'll want for a subject is the most recent data.  
@@ -41,9 +59,9 @@ export const Sess = {
             amplify.store("design", des);
         }
     },
-    quizTries : function (uid) {
+    quizTriesLeft : function (uid) {
         if( SubjectsStatus.findOne({ "meteorUserId" : uid }) ) {
-            return( SubjectsStatus.findOne({ "meteorUserId" : uid }).quiz.tries );
+            return( SubjectsStatus.findOne({ "meteorUserId" : uid }).quiz.triesLeft );
         }
     },
     wipeClientState : function() {

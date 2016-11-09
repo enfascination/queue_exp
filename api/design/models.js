@@ -22,7 +22,7 @@ Schemas.SubjectsStatus = new SimpleSchema({
         type: Boolean,
         label: "failed quiz",
     },
-    "quiz.tries": {
+    "quiz.triesLeft": {
         type: SimpleSchema.Integer,
         label: "Attempts at quiz",
     },
@@ -66,6 +66,10 @@ Schemas.SubjectsStatus = new SimpleSchema({
         type: SimpleSchema.Integer,
         label: "current stage",
     },
+    readyToProceed: {
+        type: Boolean,
+        label: "completed major section?",
+    }
 });
 
 Schemas.SubjectsData = new SimpleSchema({
@@ -202,8 +206,14 @@ Design = {
     queueNames : [ 'A', 'B' ],
     queueCosts : { "A": 0.50, 'B': 0.00 },
     maxQuizFails : 2,
-    sequence : { 0: {name:"experiment", "rounds":1, "stages" : 1 }, 1: {name:"done", "rounds":1, "stages" : 1 } },
+    //sequence : { 0: {name:"experiment", "rounds":1, "stages" : 1 }, 1: {name:"done", "rounds":1, "stages" : 1 } },
     //sequence : { 0: {name:"quiz", "rounds":1 }, 1: {name:"experiment", "rounds":2 }, 2: {name:"survey", "rounds":1 } },
+    sequence : { 
+        "0" : { "name" : "quiz", "rounds":1, "stages" : 1 }, 
+        "1" : { "name" : "experiment" , "rounds":1, "stages" : 1 }, 
+        "2" : { "name" : "survey", "rounds":1, "stages" : 1 } 
+    },
+    sectionNames : [ "quiz", "experiment", "survey" ],
     positionCosts : 0.25,
     batchName : "main",
 };
