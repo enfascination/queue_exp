@@ -7,11 +7,13 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Router } from 'meteor/iron:router';
 import { TurkServer } from 'meteor/mizzao:turkserver';
-import { Helper } from '../imports/lib/helper.js';
-import { Sess } from '../imports/lib/quick-session.js';
 import 'bootstrap-sass';
 
 import '../imports/startup/client/routes.js';
+import { Helper } from '../imports/lib/helper.js';
+import { Sess } from '../imports/lib/quick-session.js';
+import { Questions } from '../api/experiment.js';
+
 import './templatejs/quiz.js';
 import './templatejs/experimenter-view.js';
 import './templatejs/survey.js';
@@ -104,16 +106,32 @@ Template.experiment.helpers({
     showExperimenterView: function() {
         return( UserElements.experimenterView || TurkServer.isAdmin() );
     },
+	questions: function(){
+        return Questions.find({section: 'experiment'}).fetch() ;
+    },
     testProceed: Helper.testProceed,
 });
 Template.experiment.events({
     'submit form#nextStage': function(e){
-        console.log("form#nextStage");
-        e.preventDefault();
+        event.stopPropagation();
+        event.preventDefault();
+        let muid = Meteor.userId();
+        //Only allow clients to attempt quiz twice before preventing them from doing so
+        qs = Questions.find({section: 'experiment'}).forEach( function( q ) {
+            let form = event.target;
+            let element = $( $(form).children("div#"+q._id)[0] );
+            let choice = element.attr("choice");
+            let answered = !_.isNil( choice );
+            console.log(q._id, answered, choice);
+            Questions.update({_id: q._id}, {$set: { answered: answered, choice : choice }});
+            // mark incorrect in DOM
+        });
+        let answeredCount = Questions.find({section: 'experiment', answered:true}).count();
+        let questionsCount = Questions.find({section: 'experiment'}).count();
+        let choice = Questions.findOne({section: 'experiment'}).choice;
+        console.log(Questions.findOne({section: 'experiment'}));
 
-        let choice =  UserElements.choiceChecked.get( "q1" ); ///XXX fix this hardcoding
-        console.log("form#nextStage", choice);
-        if (choice ) {
+        if ( answeredCount === questionsCount ) {
             let design = Sess.design();
             let cohortId = design.cohortId;
             let sub = SubjectsStatus.findOne({ meteorUserId : Meteor.userId() });
@@ -123,7 +141,7 @@ Template.experiment.events({
             // the minus one is to correct for zero indexing: round zero should be able to be the first and only round
             //  the maxes and mins are to get sane section values while development
             lastGameRound = ( sub.sec_rnd_now >= ( design.sequence[ _.min( [ sub.sec_now, _.max( _.map( _.keys( design.sequence ), _.toInteger ) ) ] ) ].rounds - 1 ) );
-            console.log( lastGameRound );
+            //console.log( lastGameRound );
             if ( lastGameRound ) {
                 next_section = sub.sec_now + 1;
                 next_round = 0;
@@ -184,8 +202,9 @@ Template.queueInstructions.helpers({
     counterB: function () {
         return Sess.sub().queueCountB || "XXX";
     },
-    choiceChecked: function ( id ) {
-        return UserElements.choiceChecked.get( id );
+    choiceChecked: function ( ) {
+        let theId = Questions.findOne({ section: "experiment" })._id;
+        return UserElements.choiceChecked.get( theId );
     },
     counterNet: function () {
         return Sess.sub().queuePosition || "XXX";
@@ -264,8 +283,8 @@ Template.questionBinary.events({
         event.stopPropagation();
         let des = Sess.design();
         let buttonId = event.currentTarget.id; // currentTarget is the div wrapper, target is each button within in
-        let choice = event.target.parentElement.getAttribute("choice");
-        console.log("div check", choice);
+        let choice = event.currentTarget.getAttribute("choice");
+        console.log("div check", buttonId, choice);
         UserElements.choiceChecked.set(buttonId, choice);
         if (choice) {
             event.currentTarget.setAttribute( "choice", choice );

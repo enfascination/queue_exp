@@ -1,12 +1,14 @@
 /*jshint esversion: 6 */
 
 var _ = require('lodash');
-import '../api/design/models.js';
-import { QueueAssigner } from '../server/assigners-custom.js';
-import { Helper } from '../imports/lib/helper.js';
-
 import { Meteor } from 'meteor/meteor';
 import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
+
+import '../api/design/models.js';
+import { Helper } from '../imports/lib/helper.js';
+
+import { QueueAssigner } from './assigners-custom.js';
+
 
 
     Meteor.startup(function () {

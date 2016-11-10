@@ -7,8 +7,8 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { TurkServer } from 'meteor/mizzao:turkserver';
-import { Sess } from '../../imports/lib/quick-session.js';
 
+import { Sess } from '../../imports/lib/quick-session.js';
 import { Questions } from '../../api/experiment.js';
 
 // controller
@@ -43,11 +43,11 @@ Template.quiz.events({
             //let answer = $.trim(form[q._id].value.toLowerCase());
             //let correct = $.inArray(answer,q.answer) >= 0 ? true: false;
             let element = $( $(form).children("div#"+q._id)[0] );
-            let answer = element.attr("choice");
-            let answered = !_.isNil( answer );
-            let correct = answered && ( answer === q.answer[0] );
-            console.log(q._id, answered, answer, correct);
-            Questions.update({_id: q._id}, {$set: {correct: correct, answered: answered }});
+            let choice = element.attr("choice");
+            let answered = !_.isNil( choice );
+            let correct = answered && ( choice === q.answer[0] );
+            console.log(q._id, answered, choice, correct);
+            Questions.update({_id: q._id}, {$set: {correct: correct, answered: answered, choice : choice }});
             // mark incorrect in DOM
             if (correct) {
                 element.removeClass( "has-error" );

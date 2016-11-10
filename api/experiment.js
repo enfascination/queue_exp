@@ -13,6 +13,7 @@ questions[0] = {
     section: 'quiz',
 	text: '1) You should press B',
 	answer: ["B"],
+    choice: null,
 	correct: false,
 	answered: false,
 	submitted: false,
@@ -21,6 +22,7 @@ questions[1] = {
     section: 'quiz',
 	text: '2) You should press A',
 	answer: ["A"],
+    choice: null,
 	correct: false,
 	answered: false,
 	submitted: false,
@@ -28,18 +30,21 @@ questions[1] = {
 questions[2] = {
     section: 'survey',
 	text: 'What is your sex?',
+    choice: null,
 	answered: false,
 	submitted: false,
 };
 questions[3] = {
     section: 'survey',
 	text: 'Where are you from?',
+    choice: null,
 	answered: false,
 	submitted: false,
 };
 questions[4] = {
     section: 'experiment',
 	text: 'Which queue do you choose?',
+    choice: null,
 	answered: false,
 	submitted: false,
 };
