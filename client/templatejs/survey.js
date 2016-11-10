@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TurkServer } from 'meteor/mizzao:turkserver';
 
+import { Helper } from '../../imports/lib/helper.js';
 import { Questions } from '../../api/experiment.js';
 
 Template.survey.helpers({
@@ -24,19 +25,12 @@ Template.survey.helpers({
 	questions: function(){
         return Questions.find({section: 'survey'}).fetch() ;
     },
-    testProceed: function() {
-        let muid = Meteor.userId();
-        let sub = SubjectsStatus.findOne({ meteorUserId: muid } );
-        console.log("testProceed", muid, sub );
-        if (muid && sub ) {
-            return( sub.readyToProceed );
-        }
-    },
+    testProceed: Helper.testProceed,
 });
 Template.survey.events({
     'submit form#submitSurvey': function (e) {
         e.preventDefault();
-        console.log("button#submitSurvey");
+        //console.log("form#submitSurvey");
         Meteor.call( "setReadyToProceed", Meteor.userId() );
     },
 });

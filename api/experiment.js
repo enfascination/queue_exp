@@ -14,24 +14,34 @@ questions[0] = {
 	text: '1) You should press B',
 	answer: ["B"],
 	correct: false,
-	answered: false
+	answered: false,
+	submitted: false,
 };
 questions[1] = {
     section: 'quiz',
 	text: '2) You should press A',
 	answer: ["A"],
 	correct: false,
-	answered: false
+	answered: false,
+	submitted: false,
 };
 questions[2] = {
     section: 'survey',
 	text: 'What is your sex?',
-	answered: false
+	answered: false,
+	submitted: false,
 };
 questions[3] = {
     section: 'survey',
 	text: 'Where are you from?',
-	answered: false
+	answered: false,
+	submitted: false,
+};
+questions[4] = {
+    section: 'experiment',
+	text: 'Which queue do you choose?',
+	answered: false,
+	submitted: false,
 };
 /*
 questions[2] = {
@@ -56,7 +66,7 @@ questions[4] = {
 */
 
 
-let idxs = _.shuffle([0,1,2,3]);
+let idxs = _.shuffle([0,1,2,3,4]);
 for(var q of idxs){
     Questions.insert(questions[q]);
 }

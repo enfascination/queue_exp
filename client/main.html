@@ -23,13 +23,19 @@
         <p>
             <b>Make your selection here:</b>
         </p>
-        <div id="q1" class="expQuestion">
-            {{> binaryForcedChoice id="q1" texta="Queue A" textb="Queue B"}}
-        </div>
         <br/>
-        {{> submitButton id="nextStage" }}
-        <br/>
-        {{> proceedButton id="nextSection" }}
+                <form class="experiment" id="nextStage">
+                    {{> questionBinary _id="q1"}}
+                    {{#if testQuizIncomplete}}
+                            <div class = "alert alert-warning">You did not answer all of the questions.</div>
+                    {{/if}}
+                    {{#unless testProceed}}
+                        {{> submitButton}}
+                    {{/unless}}
+                </form>
+                {{#if testProceed}}
+                    {{> proceedButton id="nextSection"}}
+                {{/if}}
     </div>
     </section>
     {{#if showExperimenterView }}
@@ -77,14 +83,6 @@
         </ul>
     </div>
 </template>
-<template name="binaryForcedChoice" >
-    <div>
-        <div id={{id}} name={{id}} class="btn-group btn-group-lg expChoices" role="group">
-            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice" choice="A" >{{texta}}</button>
-            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice" choice="B" >{{textb}}</button>
-        </div>
-    </div>
-</template>
 <template name="proceedButton">
     <div> 
         <button type=button class="btn btn-success {{buttonInactive}}" id={{id}}>Proceed</button>
@@ -108,4 +106,12 @@
             {{> binaryForcedChoice id=_id texta="Queue A" textb="Queue B"  }}
 		</div>
 	</template>
+<template name="binaryForcedChoice" >
+    <div>
+        <div id={{id}} name={{id}} class="btn-group btn-group-lg expChoices" role="group">
+            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice" choice="A" >{{texta}}</button>
+            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice" choice="B" >{{textb}}</button>
+        </div>
+    </div>
+</template>
 

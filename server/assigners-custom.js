@@ -19,7 +19,7 @@ export let QueueAssigner = class extends TurkServer.Assigners.SimpleAssigner {
                 currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
             }
 
-            console.log("assigner");
+            //console.log("assigner");
             if ( !currentUser.quiz.passed && !currentUser.quiz.failed ) {
                 //console.log("in1");
                 this.lobby.pluckUsers([asst.userId]);
