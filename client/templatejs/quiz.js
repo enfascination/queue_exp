@@ -33,7 +33,7 @@ Template.quiz.onCreated( function(){
 });
 
 Template.quiz.events({
-    'submit form#submitQuiz': function(e){
+    'submit form#submitQuiz': function(e) {
         e.stopPropagation();
         e.preventDefault();
         let muid = Meteor.userId();
