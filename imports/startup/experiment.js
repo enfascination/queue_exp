@@ -11,7 +11,7 @@ let groupSize = 4;
 let potSize = groupSize*40;
 
 questions[0] = {
-    section: 'quiz',
+    sec: 'quiz',
 	text: '1) You should press B',
     type: 'binary',
 	answer: ["B"],
@@ -22,7 +22,7 @@ questions[0] = {
 	hasError: false,
 };
 questions[1] = {
-    section: 'quiz',
+    sec: 'quiz',
 	text: '2) You should press A',
     type: 'binary',
 	answer: ["A"],
@@ -33,7 +33,7 @@ questions[1] = {
 	hasError: false,
 };
 questions[2] = {
-    section: 'survey',
+    sec: 'survey',
 	text: 'What is your sex?',
     type: 'binary',
     choice: null,
@@ -42,7 +42,7 @@ questions[2] = {
 	hasError: false,
 };
 questions[3] = {
-    section: 'survey',
+    sec: 'survey',
 	text: 'Where are you from?',
     type: 'binary',
     choice: null,
@@ -51,8 +51,8 @@ questions[3] = {
 	hasError: false,
 };
 questions[4] = {
-    section: 'experiment',
-    round: 0,
+    sec: 'experiment',
+    sec_rnd: 0,
 	text: 'Which queue do you choose?',
     type: 'binary',
     choice: null,
@@ -61,8 +61,8 @@ questions[4] = {
 	hasError: false,
 };
 questions[5] = {
-    section: 'experiment',
-    round: 1,
+    sec: 'experiment',
+    sec_rnd: 1,
 	text: 'Which queue do you choose now?',
     type: 'binary',
     choice: null,

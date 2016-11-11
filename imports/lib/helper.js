@@ -13,7 +13,8 @@ export const Helper = {
 
         do {
             aPropertiesAndMethods = aPropertiesAndMethods.concat(Object.getOwnPropertyNames(obj));
-        } while (obj = Object.getPrototypeOf(obj));
+            obj = Object.getPrototypeOf(obj);
+        } while ( obj );
 
         for ( var a = 0; a < aPropertiesAndMethods.length; ++a) {
             for ( var b = a + 1; b < aPropertiesAndMethods.length; ++b) {

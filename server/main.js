@@ -56,7 +56,7 @@ import { QueueAssigner } from './assigners-custom.js';
     Meteor.methods({
         // this is a reload detector.  if the player has connected before, they will have a data object in progress.
         playerHasConnectedBefore: function( muid ) {
-            let liveRound = SubjectsData.find({meteorUserId : muid, completedChoice : false}).fetch();
+            let liveRound = SubjectsData.find({meteorUserId : muid, section : "experiment", completedChoice : false}).fetch();
             try {
                 console.assert( liveRound.length <= 1 );
             } catch(err) {
@@ -147,6 +147,7 @@ import { QueueAssigner } from './assigners-custom.js';
                 queueCountNoChoice: countInNoChoice,
             };
 
+            console.log("new subject data");
             SubjectsData.insert( {
                 userId: sub.userId,
                 meteorUserId: sub.meteorUserId,
@@ -185,11 +186,12 @@ import { QueueAssigner } from './assigners-custom.js';
             // im entering or continuing in the experiment 
             //      as the first subject in my cohort (create a new design object)
             //      as a subsequent subject (use an existing design object)
-            probeDesign = CohortSettings.findOne( { section : "experiment" }, 
+            probeDesign = CohortSettings.findOne( { sec : "experiment" }, 
                 { sort : { cohortId : -1, sec_rnd : -1 } });
 
             // initialize player objects; start with determining state
             if ( _.isNil( probeDesign ) ) { // server has been reset and there are no design in database
+                //console.log("First round of install", sub, lastDesign);
                 design = Meteor.call("initializeCohort", cohortId=0, sub.sec_now, sub.sec_rnd_now);
                 //console.log("First round of install", design);
             } else {
@@ -209,6 +211,7 @@ import { QueueAssigner } from './assigners-custom.js';
                     } else {
                         cohortId = maxCohortId;
                     }
+                    //console.log("First player in cohort/section/round", sub, lastDesign);
                     design = Meteor.call("initializeCohort", cohortId, sub.sec_now, sub.sec_rnd_now);
                     //console.log("First player in cohort/section/round", design);
                 } else {
@@ -233,7 +236,8 @@ import { QueueAssigner } from './assigners-custom.js';
                         //console.assert( sub.sec_now === lastDesign.sec || sub.sec_now === lastDesign.sec + 1 , "sanity3");
                         console.assert( sub.sec_rnd_now === lastDesign.sec_rnd + 1 || sub.sec_rnd_now === 0 , "sanity4");
                     } catch(err) {
-                        console.log(err, sub, lastDesign, design);
+                        //console.log(err, sub, lastDesign, design);
+                        //console.log(err);
                     }
                 }
             } catch(err) {
@@ -279,6 +283,7 @@ import { QueueAssigner } from './assigners-custom.js';
         advanceSubjectState : function(muid) {
 
             let sub_old = SubjectsStatus.findOne({ meteorUserId: muid });
+            console.log("updating round");
             SubjectsStatus.update({meteorUserId: muid }, {
                 $set: {
                     //sec_now: next_section,
@@ -445,6 +450,7 @@ import { QueueAssigner } from './assigners-custom.js';
         'initializeCohort': function(newCohortId, newSection, newRound ) {
             //  http://stackoverflow.com/questions/18887652/are-there-private-server-methods-in-meteor
             //if (this.connection === null) { /// to make method private to server
+            console.log("new design");
                 let newDesign = _.clone(Design);
                 newDesign.filledCohort = 0;
                 newDesign.completedCohort = false;
@@ -460,7 +466,7 @@ import { QueueAssigner } from './assigners-custom.js';
         },
         initializeSurveyData : function(muid, question) {
             let sub = SubjectsStatus.findOne({ meteorUserId : muid });
-            console.log("initializeSurveyData", sub);
+            //console.log("initializeSurveyData", sub);
             let theData = {
                 questionType: question.type,
                 question: question.text,

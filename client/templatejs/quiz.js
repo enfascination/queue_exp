@@ -15,7 +15,6 @@ import { Questions } from '../../imports/startup/experiment.js';
 // controller
 Template.quiz.onCreated( function(){
     // interaction elements
-    UserElements.pleaseMakeChoice = new ReactiveVar(false);
     UserElements.choiceChecked = new ReactiveDict(); // this is so there can be mulplie of these buttons on a page
     UserElements.quizIncomplete = new ReactiveVar(false);
 
@@ -39,7 +38,7 @@ Template.quiz.events({
         e.preventDefault();
         let muid = Meteor.userId();
         //Only allow clients to attempt quiz twice before preventing them from doing so
-        let qs = Questions.find({section: 'quiz'}).forEach( function( q ) {
+        let qs = Questions.find({sec: 'quiz'}).forEach( function( q ) {
             let form = e.target;
             //let answer = $.trim(form[q._id].value.toLowerCase());
             //let correct = $.inArray(answer,q.answer) >= 0 ? true: false;
@@ -56,9 +55,9 @@ Template.quiz.events({
                 Helper.questionHasError( element_raw, false );
             }
         });
-        let resultsCount = Questions.find({section: 'quiz', correct:true}).count();
-        let answeredCount = Questions.find({section: 'quiz', answered:true}).count();
-        let questionsCount = Questions.find({section: 'quiz'}).count();
+        let resultsCount = Questions.find({sec: 'quiz', correct:true}).count();
+        let answeredCount = Questions.find({sec: 'quiz', answered:true}).count();
+        let questionsCount = Questions.find({sec: 'quiz'}).count();
         //console.log("counts", questionsCount, answeredCount, resultsCount);
         //if ( answeredCount === questionsCount ) {
         if ( true ) {
@@ -67,7 +66,6 @@ Template.quiz.events({
             if ( resultsCount === questionsCount ) {
                 passed = true;
             }
-            UserElements.pleaseMakeChoice.set( false );
             Meteor.call('updateQuiz', muid, passed, function(err, quiz) {
                 if ( quiz.passed || quiz.failed ) {
                     Helper.buttonsDisable( e.currentTarget );
@@ -84,7 +82,6 @@ Template.quiz.events({
         let muid = Meteor.userId();
         let sub = SubjectsStatus.findOne({ meteorUserId : muid });
         if ( sub.readyToProceed ) {
-            UserElements.pleaseMakeChoice.set( false );
             Meteor.call("advanceSubjectSection", muid);
         }
     },
@@ -100,7 +97,7 @@ const quizTriesLeft = function quizTriesLeft() {
 
 Template.quiz.helpers({
 	questions: function(){
-        return Questions.find({section: 'quiz'}).fetch() ;
+        return Questions.find({sec: 'quiz'}).fetch() ;
 	},
     //testQuizSubmitted: function() {
         //return( UserElements.quizSubmitted.get() );

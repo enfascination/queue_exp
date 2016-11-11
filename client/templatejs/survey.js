@@ -24,7 +24,7 @@ Template.survey.helpers({
         }
 	},
 	questions: function(){
-        return Questions.find({section: 'survey'}).fetch() ;
+        return Questions.find({sec: 'survey'}).fetch() ;
     },
     testProceed: Helper.testProceed,
 });
@@ -32,7 +32,7 @@ Template.survey.events({
     'submit form#submitSurvey': function (e) {
         e.preventDefault();
 
-        let qs = Questions.find({section: 'survey'}).forEach( function( q ) {
+        let qs = Questions.find({sec: 'survey'}).forEach( function( q ) {
             let element_raw = $(e.target).children("div#"+q._id)[0];
             let element = $( element_raw );
             let choice = element.attr("choice");

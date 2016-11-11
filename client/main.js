@@ -64,7 +64,6 @@ Tracker.autorun(function() {
     //initialize ui state
     UserElements.choiceChecked = new ReactiveDict(); // this is so there can be mulplie of these buttons on a page
     UserElements.userAccount = new ReactiveVar();
-    UserElements.pleaseMakeChoice = new ReactiveVar(false);
 });
 
 Tracker.autorun(function() {
@@ -77,6 +76,7 @@ Template.experiment.onCreated( function(){
     if (_.isNil(group) ) return;
     // make client side subject available
     let muid = Meteor.userId();
+    console.log("MUID", muid);
     if ( muid ) {
         // is player refreshing, reconnecting, or somehow already up to date in the system?
         Meteor.call("playerHasConnectedBefore", muid, function(err,sData) { // think of this cb as an if statement
@@ -109,7 +109,7 @@ Template.experiment.helpers({
     },
 	questions: function(){
         let sub = Sess.subStat();
-        return Questions.find({section: 'experiment', round : sub.sec_rnd_now }).fetch() ;
+        return Questions.find({sec: 'experiment', sec_rnd : sub.sec_rnd_now }).fetch() ;
     },
     testProceed: Helper.testProceed,
 });
@@ -120,7 +120,7 @@ Template.experiment.events({
         let muid = Meteor.userId();
         let sub = SubjectsStatus.findOne({ meteorUserId : muid });
         //Only allow clients to attempt quiz twice before preventing them from doing so
-        let qs = Questions.find({section: 'experiment', round : sub.sec_rnd_now }).forEach( function( q ) {
+        let qs = Questions.find({sec: 'experiment', sec_rnd : sub.sec_rnd_now }).forEach( function( q ) {
             let form = e.target;
             let element_raw = $(form).children("div#"+q._id)[0];
             let element = $( element_raw );
@@ -133,14 +133,15 @@ Template.experiment.events({
                 Helper.questionHasError( element_raw, false );
             }
         });
-        let answeredCount = Questions.find({section: 'experiment', round : sub.sec_rnd_now , answered:true}).count();
-        let questionsCount = Questions.find({section: 'experiment', round : sub.sec_rnd_now }).count();
-        //console.log(sub.sec_rnd_now, Questions.findOne({section: 'experiment'}));
-        let choice = Questions.findOne({section: 'experiment', round : sub.sec_rnd_now }).choice;
+        let answeredCount = Questions.find({sec: 'experiment', sec_rnd : sub.sec_rnd_now , answered:true}).count();
+        let questionsCount = Questions.find({sec: 'experiment', sec_rnd : sub.sec_rnd_now }).count();
+        //console.log(sub.sec_rnd_now, Questions.findOne({sec: 'experiment'}));
+        let choice = Questions.findOne({sec: 'experiment', sec_rnd : sub.sec_rnd_now }).choice;
 
         if ( answeredCount === questionsCount ) {
             let design = Sess.design();
             let cohortId = design.cohortId;
+            console.log( "submitting answers", design );
 
             // game-specific logic here
             // the minus one is to correct for zero indexing: round zero should be able to be the first and only round
@@ -183,11 +184,9 @@ Template.experiment.events({
         let muid = Meteor.userId();
         let sub = SubjectsStatus.findOne({ meteorUserId : muid });
         if ( sub.readyToProceed ) {
-            UserElements.pleaseMakeChoice.set( false );
             Meteor.call('advanceSubjectSection', Meteor.userId());
             Meteor.call('goToExitSurvey', Meteor.userId());
         } else {
-            UserElements.pleaseMakeChoice.set( true );
         }
     },
 	'click form#nextStage': function (e) {
@@ -206,7 +205,7 @@ Template.queueInstructions.helpers({
     },
     choiceChecked: function ( ) {
         let sub = Sess.subStat();
-        let q = Questions.findOne({ section: "experiment", round : sub.sec_rnd_now });
+        let q = Questions.findOne({ sec: "experiment", sec_rnd : sub.sec_rnd_now });
         //console.log( sub );
         if (!_.isNil(sub) && !_.isNil( q )) {
             return UserElements.choiceChecked.get( q._id );
@@ -267,7 +266,7 @@ Template.queueInstructions.helpers({
 });
 Template.binaryForcedChoice.helpers({
 	disabled: function( id ){
-        if( Questions.findOne( { _id : id } ).disabled ) {
+        if( Questions.findOne( { _id : id } ).disabled || (Sess.subStat() && Sess.subStat().readyToProceed ) ) {
             return("disabled");
         }
 	},
@@ -313,7 +312,6 @@ Template.questionBinary.events({
         if (choice) {
             e.currentTarget.setAttribute( "choice", choice );
             UserElements.userAccount.set(des.endowment - des.queueCosts[ e.target.getAttribute("choice") ]);
-            UserElements.pleaseMakeChoice.set( false);
         } else {
             UserElements.userAccount.set(des.endowment);
             e.currentTarget.removeAttribute( "choice" );
@@ -323,7 +321,6 @@ Template.questionBinary.events({
                 e.currentTarget.setAttribute( "choice", e.target.getAttribute("choice") );
                 UserElements.choiceChecked.set(buttonId, e.target.getAttribute("choice"));
                 UserElements.userAccount.set(des.endowment - des.queueCosts[ e.target.getAttribute("choice") ]);
-                UserElements.pleaseMakeChoice.set( false);
             } else {
                 e.currentTarget.removeAttribute( "choice" );
                 UserElements.choiceChecked.set( buttonId, "");
@@ -334,19 +331,6 @@ Template.questionBinary.events({
 });
 
 Template.proceedButton.helpers({
-    testIncomplete: function() {
-        return( UserElements.pleaseMakeChoice.get() );
-    },
-    buttonInactive : function() {
-        let sub = SubjectsStatus.findOne({ meteorUserId : Meteor.userId() });
-        let rval = '';
-        if( false && ( _.isNil( sub ) || !sub.readyToProceed ) ) {
-            rval = "disabled";
-        } else {
-        }
-        //console.log("diabled?", rval);
-        return( rval);
-    },
 });
 Template.proceedButton.events({
 });
