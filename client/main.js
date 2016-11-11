@@ -145,7 +145,7 @@ Template.experiment.events({
             // game-specific logic here
             // the minus one is to correct for zero indexing: round zero should be able to be the first and only round
             //  the maxes and mins are to get sane section values while development
-            let lastGameRound = ( sub.sec_rnd_now >= ( design.sequence[ _.min( [ sub.sec_now, _.max( _.map( _.keys( design.sequence ), _.toInteger ) ) ] ) ].rounds - 1 ) );
+            let lastGameRound = ( sub.sec_rnd_now >= ( design.sequence[ sub.sec_now ].rounds - 1 ) );
             //console.log( lastGameRound );
 
             // submit choice and do clean up on previousness

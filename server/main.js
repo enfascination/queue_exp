@@ -82,7 +82,7 @@ import { QueueAssigner } from './assigners-custom.js';
                 mtHitId: idObj.hitId,
                 mtAssignmentId: idObj.assignmentId,
                 mtWorkerId: idObj.workerId,
-                sec_now: 0,
+                sec_now: 'quiz',
                 sec_rnd_now: 0,
                 sec_rnd_stg_now: 0,
                 readyToProceed: false,
@@ -179,8 +179,8 @@ import { QueueAssigner } from './assigners-custom.js';
             // im entering or continuing in the experiment 
             //      as the first subject in my cohort (create a new design object)
             //      as a subsequent subject (use an existing design object)
-            probeDesign = CohortSettings.findOne( {}, 
-                { sort : { cohortId : -1, sec : -1, sec_rnd : -1 } });
+            probeDesign = CohortSettings.findOne( { section : "experiment" }, 
+                { sort : { cohortId : -1, sec_rnd : -1 } });
 
             // initialize player objects; start with determining state
             if ( _.isNil( probeDesign ) ) { // server has been reset and there are no design in database
@@ -224,7 +224,7 @@ import { QueueAssigner } from './assigners-custom.js';
                 //sanity for existing subjects
                 if ( !_.isNil( lastDesign ) && familiarSubject ) { 
                     try {
-                        console.assert( sub.sec_now === lastDesign.sec || sub.sec_now === lastDesign.sec + 1 , "sanity3");
+                        //console.assert( sub.sec_now === lastDesign.sec || sub.sec_now === lastDesign.sec + 1 , "sanity3");
                         console.assert( sub.sec_rnd_now === lastDesign.sec_rnd + 1 || sub.sec_rnd_now === 0 , "sanity4");
                     } catch(err) {
                         console.log(err, sub, lastDesign, design);
@@ -289,7 +289,7 @@ import { QueueAssigner } from './assigners-custom.js';
 
             SubjectsStatus.update({meteorUserId: muid }, {
                 $set: {
-                    sec_now: sub_old.sec_now + 1,
+                    sec_now: Design.sectionNames[ _.findIndex( sub_old.sec_now ) + 1 ],
                     readyToProceed: false,
                 },
             });
@@ -298,7 +298,7 @@ import { QueueAssigner } from './assigners-custom.js';
             //console.log("advanceSubjectSection", "unready", sub.readyToProceed );
             // routing, which can vary by section
             //if ( sub.sec_now != sub.sec_now ) {
-            if ( Design.sectionNames[ sub_old.sec_now ] === "quiz" ) {
+            if ( sub_old.sec_now === "quiz" ) {
                 let asst = TurkServer.Assignment.getAssignment( sub.tsAsstId );
                 let batch = TurkServer.Batch.getBatchByName( Design.batchName );
                 TurkServer.setLobbyState( asst, batch );
@@ -407,12 +407,12 @@ import { QueueAssigner } from './assigners-custom.js';
                     failed = true;
                 }
             }
-            //console.log("updateQuiz", sub);
+            console.log("updateQuiz", sub);
             let quizObj = {"passed" : passed, "failed" : failed, "triesLeft" : triesLeft};
             SubjectsStatus.update({ meteorUserId: muid }, 
                 { $set: { quiz: quizObj } });
             if ( passed || failed ) {
-                //console.log("updateQuiz");
+                console.log("updateQuiz");
                 Meteor.call( "setReadyToProceed", muid );
             }
             return( quizObj );

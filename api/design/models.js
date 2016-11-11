@@ -55,7 +55,7 @@ Schemas.SubjectsStatus = new SimpleSchema({
         label: "MT Worker Id",
     },
     sec_now: {
-        type: SimpleSchema.Integer,
+        type: String,
         label: "current section",
     },
     sec_rnd_now: {
@@ -132,7 +132,7 @@ Schemas.SubjectsData = new SimpleSchema({
         label: "Number of null choices",
     },
     sec: {
-        type: SimpleSchema.Integer,
+        type: String,
         label: "gross section of the experiment",
     },
     sec_rnd: {
@@ -190,7 +190,7 @@ Schemas.CohortSettings = new SimpleSchema({
         label: "sequence of the experiment",
     },
     sec: {
-        type: SimpleSchema.Integer,
+        type: String,
         label: "gross section of the experiment",
     },
     sec_rnd: {
@@ -240,9 +240,9 @@ Design = {
     //sequence : { 0: {name:"experiment", "rounds":1, "stages" : 1 }, 1: {name:"done", "rounds":1, "stages" : 1 } },
     //sequence : { 0: {name:"quiz", "rounds":1 }, 1: {name:"experiment", "rounds":2 }, 2: {name:"survey", "rounds":1 } },
     sequence : { 
-        "0" : { "name" : "quiz", "rounds":1, "stages" : 1 }, 
-        "1" : { "name" : "experiment" , "rounds":2, "stages" : 1 }, 
-        "2" : { "name" : "survey", "rounds":1, "stages" : 1 } 
+        "quiz" : { "name" : "quiz", "rounds":1, "stages" : 1 }, 
+        "experiment" : { "name" : "experiment" , "rounds":2, "stages" : 1 }, 
+        "survey" : { "name" : "survey", "rounds":1, "stages" : 1 } 
     },
     sectionNames : [ "quiz", "experiment", "survey" ],
     positionCosts : 0.25,
