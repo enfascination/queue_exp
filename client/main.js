@@ -12,7 +12,7 @@ import 'bootstrap-sass';
 import '../imports/startup/client/routes.js';
 import { Helper } from '../imports/lib/helper.js';
 import { Sess } from '../imports/lib/quick-session.js';
-import { Questions } from '../api/experiment.js';
+import { Questions } from '../imports/startup/experiment.js';
 
 import './templatejs/quiz.js';
 import './templatejs/experimenter-view.js';
@@ -86,12 +86,12 @@ Template.experiment.onCreated( function(){
                 Meteor.call("addGroupId", muid, group );
                 Meteor.call('initializeRound', sub=muid, lastDesign=null, asyncCallback=function(err, data) {
                     if (err) { throw( err ); }
-                    newSub = _.assign( data.s_status, data.s_data);
+                    newSub = { "status" : data.s_status, "data" : data.s_data };
                     newCohort = data.design;
                 } );
             } else { // player is refreshing or reconnecting
                 //console.log("returning sub");
-                newSub = _.assign( SubjectsStatus.findOne( {meteorUserId : muid }), sData );
+                newSub = { "status" : SubjectsStatus.findOne( {meteorUserId : muid }), "data" : sData };
                 newCohort = CohortSettings.findOne( { cohortId : sData.cohortId, sec : sData.sec, sec_rnd : sData.sec_rnd });
             }
             //console.log("setting client side");
@@ -107,48 +107,46 @@ Template.experiment.helpers({
         return( UserElements.experimenterView || TurkServer.isAdmin() );
     },
 	questions: function(){
-        return Questions.find({section: 'experiment'}).fetch() ;
+        let sub = Sess.subStat();
+        return Questions.find({section: 'experiment', round : sub.sec_rnd_now }).fetch() ;
     },
     testProceed: Helper.testProceed,
 });
 Template.experiment.events({
     'submit form#nextStage': function(e){
-        event.stopPropagation();
-        event.preventDefault();
+        e.stopPropagation();
+        e.preventDefault();
         let muid = Meteor.userId();
+        let sub = SubjectsStatus.findOne({ meteorUserId : muid });
         //Only allow clients to attempt quiz twice before preventing them from doing so
-        qs = Questions.find({section: 'experiment'}).forEach( function( q ) {
-            let form = event.target;
-            let element = $( $(form).children("div#"+q._id)[0] );
+        qs = Questions.find({section: 'experiment', round : sub.sec_rnd_now }).forEach( function( q ) {
+            let form = e.target;
+            let element_raw = $(form).children("div#"+q._id)[0];
+            let element = $( element_raw );
             let choice = element.attr("choice");
             let answered = !_.isNil( choice );
             console.log(q._id, answered, choice);
             Questions.update({_id: q._id}, {$set: { answered: answered, choice : choice }});
-            // mark incorrect in DOM
+            if (!answered) {
+                Helper.questionHasError( element_raw, true );
+            } else {
+                Helper.questionHasError( element_raw, false );
+            }
         });
-        let answeredCount = Questions.find({section: 'experiment', answered:true}).count();
-        let questionsCount = Questions.find({section: 'experiment'}).count();
-        let choice = Questions.findOne({section: 'experiment'}).choice;
-        console.log(Questions.findOne({section: 'experiment'}));
+        let answeredCount = Questions.find({section: 'experiment', round : sub.sec_rnd_now , answered:true}).count();
+        let questionsCount = Questions.find({section: 'experiment', round : sub.sec_rnd_now }).count();
+        console.log(sub.sec_rnd_now, Questions.findOne({section: 'experiment'}));
+        let choice = Questions.findOne({section: 'experiment', round : sub.sec_rnd_now }).choice;
 
         if ( answeredCount === questionsCount ) {
             let design = Sess.design();
             let cohortId = design.cohortId;
-            let sub = SubjectsStatus.findOne({ meteorUserId : Meteor.userId() });
-            let next_section, next_round, lastGameRound;
 
             // game-specific logic here
             // the minus one is to correct for zero indexing: round zero should be able to be the first and only round
             //  the maxes and mins are to get sane section values while development
-            lastGameRound = ( sub.sec_rnd_now >= ( design.sequence[ _.min( [ sub.sec_now, _.max( _.map( _.keys( design.sequence ), _.toInteger ) ) ] ) ].rounds - 1 ) );
+            let lastGameRound = ( sub.sec_rnd_now >= ( design.sequence[ _.min( [ sub.sec_now, _.max( _.map( _.keys( design.sequence ), _.toInteger ) ) ] ) ].rounds - 1 ) );
             //console.log( lastGameRound );
-            if ( lastGameRound ) {
-                next_section = sub.sec_now + 1;
-                next_round = 0;
-            } else {
-                next_section = sub.sec_now;
-                next_round = sub.sec_rnd_now + 1;
-            }
 
             // submit choice and do clean up on previousness
             Meteor.call('submitQueueChoice', Meteor.userId(), cohortId, sub.sec_now, sub.sec_rnd_now, choice, design, asyncCallback=function(err, data) {
@@ -156,21 +154,25 @@ Template.experiment.events({
                 // determine if end of queue
                 Meteor.call('tryToCompleteCohort', design);
 
-                Meteor.call('advanceSubjectState', Meteor.userId(), next_section, next_round, 
+                Meteor.call('advanceSubjectState', Meteor.userId(), 
                     function(err, updatedSub) {
 
                     // experiment navigation
                     if ( !lastGameRound ) {  // calculate the logic for this out of the callbacks because things get confusing
                         // go to the next round
+                        // uncheck buttons in UI
+                        Helper.buttonsReset( e.currentTarget );
                         // create the next cohort object (which might have no members actually);
                         Meteor.call('initializeRound', sub=updatedSub, lastDesign=design, asyncCallback=function(err, data) {
                             if (err) { console.log( err ); }
-                            Sess.setClientSub( _.assign( data.s_status, data.s_data) );
+                            Sess.setClientSub( { "status" : data.s_status, "data" : data.s_data } );
                             Sess.setClientDesign( data.design );
                         });
                         // routing?
                         //Router.go('/experiment');
                     } else {
+                        Meteor.call( "setReadyToProceed", muid );
+                        Helper.buttonsDisable( e.currentTarget );
                     }
                 });
             });
@@ -188,7 +190,7 @@ Template.experiment.events({
             UserElements.pleaseMakeChoice.set( true );
         }
     },
-	'click form#nextStage': function (event) {
+	'click form#nextStage': function (e) {
         console.log("click form#nextStage");
     },
 });
@@ -197,17 +199,19 @@ Template.queueInstructions.onCreated( function(){
 });
 Template.queueInstructions.helpers({
     counterA: function () {
-        return Sess.sub().queueCountA || "XXX";
+        return Sess.subData().queueCountA || "XXX";
     },
     counterB: function () {
-        return Sess.sub().queueCountB || "XXX";
+        return Sess.subData().queueCountB || "XXX";
     },
     choiceChecked: function ( ) {
-        let theId = Questions.findOne({ section: "experiment" })._id;
+        let sub = Sess.subStat();
+        //console.log( sub );
+        let theId = Questions.findOne({ section: "experiment", round : sub.sec_rnd_now })._id;
         return UserElements.choiceChecked.get( theId );
     },
     counterNet: function () {
-        return Sess.sub().queuePosition || "XXX";
+        return Sess.subData().queuePosition || "XXX";
     },
     userAccount: function () {
         if (!UserElements.userAccount.get()) {
@@ -217,7 +221,7 @@ Template.queueInstructions.helpers({
         return( Helper.toCash( UserElements.userAccount.get() ) );
     },
     earningsAMin: function () {
-        let sub = Sess.sub();
+        let sub = Sess.subData();
         let aDesign = Sess.design();
         let qPos = sub.queuePosition * aDesign.positionCosts;
         return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.A + 1.00 - qPos ) );
@@ -231,7 +235,7 @@ Template.queueInstructions.helpers({
         return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.B ) );
     },
     earningsBMax: function () {
-        let sub = Sess.sub();
+        let sub = Sess.subData();
         let aDesign = Sess.design();
         let qPos = sub.queuePosition * aDesign.positionCosts;
         return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.B + 1.00 - qPos ) );
@@ -254,21 +258,26 @@ Template.queueInstructions.helpers({
     },
 });
 Template.binaryForcedChoice.helpers({
+	disabled: function( id ){
+        if( Questions.findOne( { _id : id } ).disabled ) {
+            return("disabled");
+        }
+	},
 });
 
 Template.binaryForcedChoice.events({
-	'click button.expChoice': function (event) {
+	'click button.expChoice': function (e) {
         console.log("button.expChoice");
     },
-	'click div.expChoices': function (event) {
+	'click div.expChoices': function (e) {
         console.log("div.expChoices");
-        if ( event.target.hasAttribute( "checked" ) ) {
-            event.currentTarget.removeAttribute( "choice" );
+        if ( e.target.hasAttribute( "checked" ) ) {
+            e.currentTarget.removeAttribute( "choice" );
         } else {
-            event.currentTarget.setAttribute( "choice", event.target.getAttribute("choice") );
+            e.currentTarget.setAttribute( "choice", e.target.getAttribute("choice") );
         }
-        for (let child of event.currentTarget.children) {
-            if ( event.target.getAttribute("choice") === child.getAttribute("choice") && !child.hasAttribute("checked")) {
+        for (let child of e.currentTarget.children) {
+            if ( e.target.getAttribute("choice") === child.getAttribute("choice") && !child.hasAttribute("checked")) {
                 child.setAttribute("checked", '');
             } 
             else {// uncheck a checked button
@@ -277,33 +286,41 @@ Template.binaryForcedChoice.events({
         }
 	}, 
 });
+Template.questionBinary.helpers({
+	hasError: function( id ){
+        if (Questions.findOne( id ).hasError ) {
+            return("has-error");
+        }
+	},
+});
+
 Template.questionBinary.events({
-	'click div.expQuestion': function (event) {
+	'click div.expQuestion': function (e) {
         console.log("div.expQuestion");
-        event.stopPropagation();
+        e.stopPropagation();
         let des = Sess.design();
-        let buttonId = event.currentTarget.id; // currentTarget is the div wrapper, target is each button within in
-        let choice = event.currentTarget.getAttribute("choice");
+        let buttonId = e.currentTarget.id; // currentTarget is the div wrapper, target is each button within in
+        let choice = e.currentTarget.getAttribute("choice");
         console.log("div check", buttonId, choice);
         UserElements.choiceChecked.set(buttonId, choice);
         if (choice) {
-            event.currentTarget.setAttribute( "choice", choice );
-            UserElements.userAccount.set(des.endowment - des.queueCosts[ event.target.getAttribute("choice") ]);
+            e.currentTarget.setAttribute( "choice", choice );
+            UserElements.userAccount.set(des.endowment - des.queueCosts[ e.target.getAttribute("choice") ]);
             UserElements.pleaseMakeChoice.set( false);
         } else {
             UserElements.userAccount.set(des.endowment);
-            event.currentTarget.removeAttribute( "choice" );
+            e.currentTarget.removeAttribute( "choice" );
         }
         if (false){
-            if ( event.target.hasAttribute( "checked" ) ) {
+            if ( e.target.hasAttribute( "checked" ) ) {
                 console.log("div check");
-                event.currentTarget.setAttribute( "choice", event.target.getAttribute("choice") );
-                UserElements.choiceChecked.set(buttonId, event.target.getAttribute("choice"));
-                UserElements.userAccount.set(des.endowment - des.queueCosts[ event.target.getAttribute("choice") ]);
+                e.currentTarget.setAttribute( "choice", e.target.getAttribute("choice") );
+                UserElements.choiceChecked.set(buttonId, e.target.getAttribute("choice"));
+                UserElements.userAccount.set(des.endowment - des.queueCosts[ e.target.getAttribute("choice") ]);
                 UserElements.pleaseMakeChoice.set( false);
             } else {
                 console.log("div uncheck");
-                event.currentTarget.removeAttribute( "choice" );
+                e.currentTarget.removeAttribute( "choice" );
                 UserElements.choiceChecked.set( buttonId, "");
                 UserElements.userAccount.set(des.endowment);
             }

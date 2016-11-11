@@ -1,6 +1,8 @@
 /*jshint esversion: 6 */
 
 var _ = require('lodash');
+import { Questions } from '../../imports/startup/experiment.js';
+
 /* boilerplate blank error return function for validated inputs */
 export const Helper = {
     err_func : function err_func(error, result) { console.log( error ); }, 
@@ -42,7 +44,35 @@ export const Helper = {
             if (muid && sub ) {
                 return( sub.readyToProceed );
             }
-        },
+    },
+    questionHasError : function ( el, hasError ) {
+        //console.log("questionHasError", el, el.id, Questions.find({section: "quiz"}).fetch() );
+        console.log("questionHasError", el);
+        let output = Questions.update( {_id : el.id }, { $set : { "hasError" : hasError }} );
+        //console.log("questionHasError", el.id, Questions.findOne( el.id ), output);
+    },
+};
+Helper.buttonsReset = function (form) {
+        console.log("buttonsReset", $( form ).children(".expQuestion"));
+        $( form ).children(".expQuestion").each( function( el ) {
+            //let id = b.id;
+            let id = this.id;
+            // uncheck all buttons in this question
+            Helper.questionHasError( this, false);
+            $( this ).find( "button.expChoice" ).each( function( el ) {
+                $( this ).removeAttr( "checked" );
+            });
+        });
+    };
+Helper.buttonsDisable = function (form) {
+        console.log("buttonsDisable", $( form ).children(".expQuestion"));
+        $( form ).children(".expQuestion").each( function( el ) {
+            //let b = $( this );
+            //let id = b.id;
+            let id = this.id;
+            let output = Questions.update( {_id : id }, { $set : { disabled : true }} );
+            console.log(this, el, id, Questions.findOne( id ));
+        });
 };
 
 

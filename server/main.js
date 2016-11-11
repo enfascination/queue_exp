@@ -265,19 +265,18 @@ import { QueueAssigner } from './assigners-custom.js';
                 },
             });
             //console.log("submitQueueChoice");
-            Meteor.call( "setReadyToProceed", muid );
             //let ss = SubjectsStatus.findOne({ meteorUserId: muid });
             //let sd = SubjectsData.findOne({ meteorUserId: muid , cohortId : cohortId, sec : section, sec_rnd : round });
             //return({ "s_status" : ss, "s_data" : sd });
         },
         // this updates a SubjectsStatus object
-        advanceSubjectState : function(muid, next_section, next_round) {
+        advanceSubjectState : function(muid) {
 
             let sub_old = SubjectsStatus.findOne({ meteorUserId: muid });
             SubjectsStatus.update({meteorUserId: muid }, {
                 $set: {
-                    sec_now: next_section,
-                    sec_rnd_now: next_round,
+                    //sec_now: next_section,
+                    sec_rnd_now: sub_old.sec_rnd_now + 1,
                 },
             });
             let sub = SubjectsStatus.findOne({ meteorUserId: muid });
@@ -409,12 +408,14 @@ import { QueueAssigner } from './assigners-custom.js';
                 }
             }
             //console.log("updateQuiz", sub);
+            let quizObj = {"passed" : passed, "failed" : failed, "triesLeft" : triesLeft};
             SubjectsStatus.update({ meteorUserId: muid }, 
-                { $set: { quiz: {"passed" : passed, "failed" : failed, "triesLeft" : triesLeft} } });
+                { $set: { quiz: quizObj } });
             if ( passed || failed ) {
                 //console.log("updateQuiz");
                 Meteor.call( "setReadyToProceed", muid );
             }
+            return( quizObj );
         }, 
         setReadyToProceed: function (muid) {
             //console.log("setReadyToProceed fn");

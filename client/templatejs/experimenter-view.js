@@ -117,8 +117,8 @@ Template.queueSelection.helpers({
 });
 // http://stackoverflow.com/questions/28528660/meteor-dropdown-list-get-and-set
 Template.queueSelection.events({
-    "change .dropdown__menu": function (event, template) {
-        let queueToCalculate = +$(event.currentTarget).val();
+    "change .dropdown__menu": function (e, template) {
+        let queueToCalculate = +$(e.currentTarget).val();
         Session.set('selectedQueue', queueToCalculate);
         // (re)calculate earnings
         let designs = CohortSettings.find( {cohortId: queueToCalculate }, { sort : { sec : -1, sec_rnd : -1 } } ).fetch();

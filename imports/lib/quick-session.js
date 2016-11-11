@@ -11,7 +11,7 @@ export const Sess = {
         if ( !_.isNil(sub) ) {
             return( sub );
         } else {
-            return(amplify.store("subject") );
+            return(amplify.store("s_status") );
         }
     },
     subData : function () {
@@ -21,7 +21,7 @@ export const Sess = {
         if ( !_.isNil(sd) ) {
             return( sd );
         } else {
-            return(amplify.store("subject") );
+            return(amplify.store("s_data") );
         }
     },
     sub : function () {
@@ -35,9 +35,12 @@ export const Sess = {
             return(amplify.store("subject") );
         }
     },
-    setClientSub : function (sub) {
+    setClientSub : function ( sub ) {
         if (sub) {
-            amplify.store("subject", sub);
+            //console.log("setclientsub", sub["data"], sub.data);
+            amplify.store("subject", _.assign( sub.status, sub.data ) );
+            amplify.store("s_status", sub.status );
+            amplify.store("s_data", sub.data );
         }
     },
     design : function () {

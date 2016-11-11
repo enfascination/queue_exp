@@ -5,7 +5,7 @@ import { Template } from 'meteor/templating';
 import { TurkServer } from 'meteor/mizzao:turkserver';
 
 import { Helper } from '../../imports/lib/helper.js';
-import { Questions } from '../../api/experiment.js';
+import { Questions } from '../../imports/startup/experiment.js';
 
 Template.survey.helpers({
     userSelection: function () {
@@ -30,6 +30,11 @@ Template.survey.helpers({
 Template.survey.events({
     'submit form#submitSurvey': function (e) {
         e.preventDefault();
+
+        // uncheck buttons in UI
+        //Helper.buttonsReset( e.currentTarget );
+        Helper.buttonsDisable( e.currentTarget );
+
         //console.log("form#submitSurvey");
         Meteor.call( "setReadyToProceed", Meteor.userId() );
     },

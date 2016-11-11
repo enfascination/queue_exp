@@ -210,7 +210,7 @@ Design = {
     //sequence : { 0: {name:"quiz", "rounds":1 }, 1: {name:"experiment", "rounds":2 }, 2: {name:"survey", "rounds":1 } },
     sequence : { 
         "0" : { "name" : "quiz", "rounds":1, "stages" : 1 }, 
-        "1" : { "name" : "experiment" , "rounds":1, "stages" : 1 }, 
+        "1" : { "name" : "experiment" , "rounds":2, "stages" : 1 }, 
         "2" : { "name" : "survey", "rounds":1, "stages" : 1 } 
     },
     sectionNames : [ "quiz", "experiment", "survey" ],

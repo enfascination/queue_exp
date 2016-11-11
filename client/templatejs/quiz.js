@@ -8,8 +8,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { TurkServer } from 'meteor/mizzao:turkserver';
 
+import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
-import { Questions } from '../../api/experiment.js';
+import { Questions } from '../../imports/startup/experiment.js';
 
 // controller
 Template.quiz.onCreated( function(){
@@ -33,26 +34,26 @@ Template.quiz.onCreated( function(){
 });
 
 Template.quiz.events({
-    'submit form#submitQuiz': function(event){
-        event.stopPropagation();
-        event.preventDefault();
+    'submit form#submitQuiz': function(e){
+        e.stopPropagation();
+        e.preventDefault();
         let muid = Meteor.userId();
         //Only allow clients to attempt quiz twice before preventing them from doing so
         qs = Questions.find({section: 'quiz'}).forEach( function( q ) {
-            let form = event.target;
+            let form = e.target;
             //let answer = $.trim(form[q._id].value.toLowerCase());
             //let correct = $.inArray(answer,q.answer) >= 0 ? true: false;
-            let element = $( $(form).children("div#"+q._id)[0] );
+            let element_raw = $(form).children("div#"+q._id)[0];
+            let element = $( element_raw );
             let choice = element.attr("choice");
             let answered = !_.isNil( choice );
             let correct = answered && ( choice === q.answer[0] );
-            console.log(q._id, answered, choice, correct);
+            console.log(q._id, answered, choice, correct, element_raw);
             Questions.update({_id: q._id}, {$set: {correct: correct, answered: answered, choice : choice }});
-            // mark incorrect in DOM
-            if (correct) {
-                element.removeClass( "has-error" );
-            } else { 
-                element.addClass( "has-error" );
+            if (!correct) {
+                Helper.questionHasError( element_raw, true );
+            } else {
+                Helper.questionHasError( element_raw, false );
             }
         });
         let resultsCount = Questions.find({section: 'quiz', correct:true}).count();
@@ -62,27 +63,24 @@ Template.quiz.events({
         //if ( answeredCount === questionsCount ) {
         if ( true ) {
             UserElements.quizSubmitted.set( true );
-            let passed, failed;
-            let triesLeft = UserElements.quizTriesLeft.get();
+            let passed = false;
             if ( resultsCount === questionsCount ) {
-                //console.log("passed");
-                failed = false;
                 passed = true;
-            } else{
-                //console.log("failing");
-                if (triesLeft === 0) {
-                    failed = true;
-                }
-                passed = false;
-                triesLeft = triesLeft - 1;
             }
             UserElements.pleaseMakeChoice.set( false );
-            Meteor.call('updateQuiz', muid, passed);
+            Meteor.call('updateQuiz', muid, passed, function(err, quiz) {
+                if ( quiz.passed || quiz.failed ) {
+                    Helper.buttonsDisable( e.currentTarget );
+                    if ( quiz.failed ) {
+                        Helper.buttonsReset( e.currentTarget );
+                    }
+                }
+            });
         } else {
         }
     },
     'click button#exitQuiz': function ( e ) {
-        event.stopPropagation();
+        e.stopPropagation();
         let muid = Meteor.userId();
         let sub = SubjectsStatus.findOne({ meteorUserId : muid });
         if ( sub.readyToProceed ) {
@@ -109,7 +107,9 @@ Template.quiz.helpers({
     //},
     testQuizPassed: function() {
         //console.log("testQuizPassed", UserElements.quizSubmitted.get(), Sess.subStat().quiz.passed);
-        return( Sess.subStat().quiz.passed );
+        if( !_.isNil( Sess.subStat() ) ) {
+            return( Sess.subStat().quiz.passed );
+        }
     },
     testQuizWrong: function() {
         //console.log("testQuizWrong", UserElements.quizSubmitted.get(), !Sess.subStat().quiz.passed);
@@ -119,34 +119,26 @@ Template.quiz.helpers({
     },
     testQuizFailed: function() {
         //console.log("testQuizFailed", UserElements.quizSubmitted.get(), Sess.subStat().quiz.failed);
-        return( Sess.subStat().quiz.failed );
+        if( !_.isNil( Sess.subStat() ) ) {
+            return( Sess.subStat().quiz.failed );
+        }
     },
     testProceed: function() {
-            //console.log("testProceed",  Sess.subStat().quiz.passed , Sess.subStat().quiz.failed);
+            //console.log("testProceed",  Sess.subStat(), Sess.subStat().quiz.passed , Sess.subStat().quiz.failed);
+        if( !_.isNil( Sess.subStat() ) ) {
             return( Sess.subStat().quiz.passed || Sess.subStat().quiz.failed );
+        }
     },
     quizTriesLeft: quizTriesLeft,
 });
-Template.questionBinary.helpers({
-	//incorrect: function(){
-		//if ( UserElements.quizSubmitted.get() &&  !Sess.subStat().quiz.passed ) {
-                    //return( !this.correct );
-        //}
-	//},
-});
 Template.questionBinary.events({
-	'click div.expQuestion': function (event) {
-        event.stopPropagation();
-        if ( event.target.hasAttribute( "checked" ) ) {
-            event.currentTarget.setAttribute( "choice", event.target.getAttribute("choice") );
+	'click div.expQuestion': function (e) {
+        e.stopPropagation();
+        if ( e.target.hasAttribute( "checked" ) ) {
+            e.currentTarget.setAttribute( "choice", e.target.getAttribute("choice") );
         } else {
-            event.currentTarget.removeAttribute( "choice" );
+            e.currentTarget.removeAttribute( "choice" );
         }
     },
-	//'click .control-label': function (event) {
-        //event.currentTarget.setAttribute( "GGG", "hello" );
-        //event.currentTarget.setAttribute( "choice", event.target.getAttribute("choice") );
-        //console.log( "inbutton", event.target.id, event.target.getAttribute("choice"), event.this.id, event.this.getAttribute("choice"));
-    //}
 });
 

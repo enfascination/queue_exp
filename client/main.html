@@ -102,7 +102,7 @@
 </template>
 
 	<template name = "questionBinary">
-		<div class = "expQuestion form-group {{#if incorrect}}has-error{{/if}}" id="{{_id}}">
+		<div class = "expQuestion form-group {{hasError _id}}" id="{{_id}}">
 			<label for="{{_id}}" class = "control-label">{{text}}</label>
             <!--<input id="{{_id}}" name="{{_id}}" class = "sm-width form-control">-->
             {{> binaryForcedChoice id=_id texta="Queue A" textb="Queue B"  }}
@@ -111,8 +111,8 @@
 <template name="binaryForcedChoice" >
     <div>
         <div id={{id}} name={{id}} class="btn-group btn-group-lg expChoices" role="group">
-            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice" choice="A" >{{texta}}</button>
-            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice" choice="B" >{{textb}}</button>
+            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice {{disabled id}}" choice="A" >{{texta}}</button>
+            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice {{disabled id}}" choice="B" >{{textb}}</button>
         </div>
     </div>
 </template>

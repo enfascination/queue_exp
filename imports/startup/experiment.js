@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 // model
 export let Questions = new Mongo.Collection( null );
+//export let Questions = new Mongo.Collection( "questions" );
 let questions = [];
 let groupSize = 4;
 let potSize = groupSize*40;
@@ -17,6 +18,8 @@ questions[0] = {
 	correct: false,
 	answered: false,
 	submitted: false,
+	disabled: false,
+	hasError: false,
 };
 questions[1] = {
     section: 'quiz',
@@ -26,6 +29,8 @@ questions[1] = {
 	correct: false,
 	answered: false,
 	submitted: false,
+	disabled: false,
+	hasError: false,
 };
 questions[2] = {
     section: 'survey',
@@ -33,6 +38,8 @@ questions[2] = {
     choice: null,
 	answered: false,
 	submitted: false,
+	disabled: false,
+	hasError: false,
 };
 questions[3] = {
     section: 'survey',
@@ -40,13 +47,28 @@ questions[3] = {
     choice: null,
 	answered: false,
 	submitted: false,
+	disabled: false,
+	hasError: false,
 };
 questions[4] = {
     section: 'experiment',
+    round: 0,
 	text: 'Which queue do you choose?',
     choice: null,
 	answered: false,
 	submitted: false,
+	disabled: false,
+	hasError: false,
+};
+questions[5] = {
+    section: 'experiment',
+    round: 1,
+	text: 'Which queue do you choose now?',
+    choice: null,
+	answered: false,
+	submitted: false,
+	disabled: false,
+	hasError: false,
 };
 /*
 questions[2] = {
@@ -71,7 +93,7 @@ questions[4] = {
 */
 
 
-let idxs = _.shuffle([0,1,2,3,4]);
+let idxs = _.shuffle( _.range( questions.length ) );
 for(var q of idxs){
     Questions.insert(questions[q]);
 }
