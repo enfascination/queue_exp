@@ -89,7 +89,7 @@ import { QueueAssigner } from './assigners-custom.js';
             } );
 
             //ensure uniqueness
-            SubjectsStatus._ensureIndex({userId : 1}, { unique : true } );
+            SubjectsStatus._ensureIndex({userId : 1, meteorUserId : 1}, { unique : true } );
         },
         // initialize cohort should always have been called before this function initializeRound
         // this will create a new SubjectsData object
@@ -113,20 +113,20 @@ import { QueueAssigner } from './assigners-custom.js';
                 /// previous subject  who isn't the main player
                 let previousSubject = SubjectsData.findOne( {
                     meteorUserId : { $ne : sub.meteorUserId }, 
-                    cohortId : design.cohortId, 
+                    "theData.cohortId" : design.cohortId, 
                     sec : design.sec, 
                     sec_rnd : design.sec_rnd 
-                }, { sort : {  cohortId : -1, queuePosition : -1 } });
+                }, { sort : {  "theData.cohortId" : -1, "theData.queuePosition" : -1 } });
                 if (_.isNil(previousSubject)) {
                     throw( "something is seriously the matter: you can't play against yourself, but there isn't someone else" );
                 }
-                subjectPos = previousSubject.queuePosition + 1;
-                countInA = SubjectsData.find({ cohortId: design.cohortId, 
-                    sec : design.sec, sec_rnd : design.sec_rnd, choice: "A" }).fetch().length;
-                countInB = SubjectsData.find({ cohortId: design.cohortId, 
-                    sec : design.sec, sec_rnd : design.sec_rnd, choice: "B" }).fetch().length;
-                countInNoChoice = SubjectsData.find({ cohortId: design.cohortId, 
-                    sec : design.sec, sec_rnd : design.sec_rnd, choice: "X" }).fetch().length;
+                subjectPos = previousSubject.theData.queuePosition + 1;
+                countInA = SubjectsData.find({ "theData.cohortId": design.cohortId, 
+                    sec : design.sec, sec_rnd : design.sec_rnd, "theData.choice": "A" }).fetch().length;
+                countInB = SubjectsData.find({ "theData.cohortId": design.cohortId, 
+                    sec : design.sec, sec_rnd : design.sec_rnd, "theData.choice": "B" }).fetch().length;
+                countInNoChoice = SubjectsData.find({ "theData.cohortId": design.cohortId, 
+                    sec : design.sec, sec_rnd : design.sec_rnd, "theData.choice": "X" }).fetch().length;
             } else {
                 subjectPos = 1;
                 countInA = 0;
@@ -134,9 +134,7 @@ import { QueueAssigner } from './assigners-custom.js';
                 countInNoChoice = 0;
             }
 
-            SubjectsData.insert( {
-                userId: sub.userId,
-                meteorUserId: sub.meteorUserId,
+            let theData = {
                 cohortId: design.cohortId,
                 queuePosition: subjectPos,
                 queuePositionFinal: -1,
@@ -144,16 +142,22 @@ import { QueueAssigner } from './assigners-custom.js';
                 earnings1: design.endowment,
                 earnings2: 0,
                 totalPayment: 0,
-                theTimestamp: Date.now(),
                 queueCountA: countInA,
                 queueCountB: countInB,
                 queueCountNoChoice: countInNoChoice,
+            };
+
+            SubjectsData.insert( {
+                userId: sub.userId,
+                meteorUserId: sub.meteorUserId,
                 sec: sub.sec_now,
                 sec_rnd: sub.sec_rnd_now,
                 completedChoice: false,
+                theTimestamp: Date.now(),
+                theData : theData,
             } );
             //ensure uniqueness
-            SubjectsData._ensureIndex({userId : 1, cohortId : 1, sec : 1, sec_rnd : 1}, { unique : true } );
+            //SubjectsData._ensureIndex({userId : 1, meteorUserId : 1, sec : 1, sec_rnd : 1}, { unique : true } );
             CohortSettings.update({
                 cohortId : design.cohortId, 
                 sec : sub.sec_now, 
@@ -166,7 +170,9 @@ import { QueueAssigner } from './assigners-custom.js';
 
             let ss, sd, ct;
             ss = SubjectsStatus.findOne({ meteorUserId: sub.meteorUserId });
-            sd = SubjectsData.findOne({ meteorUserId: sub.meteorUserId, cohortId: design.cohortId, sec: design.sec, sec_rnd : design.sec_rnd });
+            sd = SubjectsData.findOne({ 
+                meteorUserId: sub.meteorUserId, "theData.cohortId": design.cohortId, sec: design.sec, sec_rnd : design.sec_rnd 
+            });
             ct = CohortSettings.findOne({ cohortId: design.cohortId, sec: design.sec, sec_rnd : design.sec_rnd });
             return( { "s_status" : ss, "s_data" : sd, "design" : ct } );
         },
@@ -257,16 +263,16 @@ import { QueueAssigner } from './assigners-custom.js';
                 theEarnings = design.endowment - design.queueCosts.B;
             }
 
-            SubjectsData.update({ meteorUserId: muid , cohortId : cohortId, sec : section, sec_rnd : round }, {
+            SubjectsData.update({ meteorUserId: muid , "theData.cohortId" : cohortId, sec : section, sec_rnd : round }, {
                 $set: {
-                    choice: theChoice,
-                    earnings1: theEarnings,
-                    completedChoice : true,
+                    "theData.choice": theChoice,
+                    "theData.earnings1": theEarnings,
+                    "theData.completedChoice" : true,
                 },
             });
             //console.log("submitQueueChoice");
             //let ss = SubjectsStatus.findOne({ meteorUserId: muid });
-            //let sd = SubjectsData.findOne({ meteorUserId: muid , cohortId : cohortId, sec : section, sec_rnd : round });
+            //let sd = SubjectsData.findOne({ meteorUserId: muid , theData.cohortId : cohortId, sec : section, sec_rnd : round });
             //return({ "s_status" : ss, "s_data" : sd });
         },
         // this updates a SubjectsStatus object
@@ -284,12 +290,24 @@ import { QueueAssigner } from './assigners-custom.js';
             return( sub );
         },
         advanceSubjectSection : function(muid) {
+            let new_sec;
             let sub_old = SubjectsStatus.findOne({ meteorUserId: muid });
 
+            if ( sub_old.sec_now === "quiz" ) {
+                if ( sub_old.quiz.passed ) {
+                    new_sec = "experiment";
+                } else if ( sub_old.quiz.failed ) {
+                    new_sec = "survey";
+                }
+            } else if ( sub_old.sec_now === "experiment" ) {
+                new_sec = "survey";
+            } else if ( sub_old.sec_now === "survey" ) {
+                new_sec = "done";
+            }
 
             SubjectsStatus.update({meteorUserId: muid }, {
                 $set: {
-                    sec_now: Design.sectionNames[ _.findIndex( sub_old.sec_now ) + 1 ],
+                    sec_now: new_sec,
                     readyToProceed: false,
                 },
             });
@@ -311,13 +329,13 @@ import { QueueAssigner } from './assigners-custom.js';
             
             // experiment-specific logic
             let cohortFin = SubjectsData.find({
-                cohortId : cohortId, 
+                "theData.cohortId" : cohortId, 
                 sec: design.sec,
                 sec_rnd: design.sec_rnd,
                 completedChoice: true,
             });
             let cohortUnfin = SubjectsData.find({
-                cohortId : cohortId, 
+                "theData.cohortId" : cohortId, 
                 sec: design.sec,
                 sec_rnd: design.sec_rnd,
                 completedChoice: false,
@@ -361,11 +379,11 @@ import { QueueAssigner } from './assigners-custom.js';
 
             // experiment-specific logic
             queueASubjects = SubjectsData.find( {
-                cohortId : cohortId, choice : "A", sec : aDesign.sec, sec_rnd : aDesign.sec_rnd 
-                }, {sort : { queuePosition : 1 } } ).fetch() ;
+                "theData.cohortId" : cohortId, "theData.choice" : "A", sec : aDesign.sec, sec_rnd : aDesign.sec_rnd 
+                }, {sort : { "theData.queuePosition" : 1 } } ).fetch() ;
             queueBSubjects = SubjectsData.find( {
-                cohortId : cohortId, choice : "B", sec : aDesign.sec, sec_rnd : aDesign.sec_rnd 
-                }, {sort : { queuePosition : 1 } } ).fetch() ;
+                "theData.cohortId" : cohortId, "theData.choice" : "B", sec : aDesign.sec, sec_rnd : aDesign.sec_rnd 
+                }, {sort : { "theData.queuePosition" : 1 } } ).fetch() ;
             positionFinal = 1;
 
             for ( let sub of _.concat(queueASubjects, queueBSubjects ) ) {
@@ -373,13 +391,13 @@ import { QueueAssigner } from './assigners-custom.js';
                 // experiment-specific logic
                 // maybe figure out here how to recover assignment from an old passed subject;
                 earnings2 = aDesign.pot - ( (positionFinal-1) * aDesign.positionCosts );
-                totalPayment = sub.earnings1 + earnings2;
+                totalPayment = sub.theData.earnings1 + earnings2;
 
-                SubjectsData.update({cohortId: cohortId, userId : sub.userId, sec : aDesign.sec, sec_rnd : aDesign.sec_rnd }, {
+                SubjectsData.update({"theData.cohortId": cohortId, userId : sub.userId, sec : aDesign.sec, sec_rnd : aDesign.sec_rnd }, {
                     $set: { 
-                        earnings2: earnings2, 
-                        totalPayment: totalPayment, 
-                        queuePositionFinal : positionFinal,
+                        "theData.earnings2": earnings2, 
+                        "theData.totalPayment": totalPayment, 
+                        "theData.queuePositionFinal" : positionFinal,
                     },
                 });
                 subbk = SubjectsStatus.findOne({ meteorUserId: sub.meteorUserId });
@@ -407,12 +425,12 @@ import { QueueAssigner } from './assigners-custom.js';
                     failed = true;
                 }
             }
-            console.log("updateQuiz", sub);
+            //console.log("updateQuiz", sub);
             let quizObj = {"passed" : passed, "failed" : failed, "triesLeft" : triesLeft};
             SubjectsStatus.update({ meteorUserId: muid }, 
                 { $set: { quiz: quizObj } });
             if ( passed || failed ) {
-                console.log("updateQuiz");
+                //console.log("updateQuiz");
                 Meteor.call( "setReadyToProceed", muid );
             }
             return( quizObj );
@@ -442,14 +460,21 @@ import { QueueAssigner } from './assigners-custom.js';
         },
         initializeSurveyData : function(muid, question) {
             let sub = SubjectsStatus.findOne({ meteorUserId : muid });
-            let id = SubjectsSurvey.insert( {
-                userId: sub.userId,
-                meteorUserId: sub.meteorUserId,
-                theTimestamp: Date.now(),
+            console.log("initializeSurveyData", sub);
+            let theData = {
                 questionType: question.type,
                 question: question.text,
                 answer: question.choice,
+            };
+            let id = SubjectsData.insert( {
+                userId: sub.userId,
+                meteorUserId: sub.meteorUserId,
+                sec: sub.sec_now,
+                sec_rnd: 0,
+                theData: theData,
+                completedChoice : question.answered,
+                theTimestamp: Date.now(),
             } );
-            return( SubjectsSurvey.findOne( id ) );
+            return( SubjectsData.findOne( id ) );
         },
     });

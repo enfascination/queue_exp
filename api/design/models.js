@@ -84,6 +84,29 @@ Schemas.SubjectsData = new SimpleSchema({
         type: String,
         label: "Meteor User",
     },
+    sec: {
+        type: String,
+        label: "gross section of the experiment",
+    },
+    sec_rnd: {
+        type: SimpleSchema.Integer,
+        label: "round in the section",
+    },
+    theData: {
+        type: Object,
+        label: "the data, in whichever section's format",
+        blackbox: true,
+    },
+    completedChoice: {
+        type: Boolean,
+        label: "completed round?",
+    }, 
+    theTimestamp: {
+        type: Date,
+        label: "Timestamp",
+    },
+});
+Schemas.ExperimentAnswers = new SimpleSchema({
     cohortId: {  
         type: SimpleSchema.Integer,
         label: "group number",
@@ -115,10 +138,6 @@ Schemas.SubjectsData = new SimpleSchema({
         label: "Total experiment earnings",
         decimal: true,
     },
-    theTimestamp: {
-        type: Date,
-        label: "Timestamp",
-    },
     queueCountA: {
         type: SimpleSchema.Integer,
         label: "Size of Queue A",
@@ -131,18 +150,21 @@ Schemas.SubjectsData = new SimpleSchema({
         type: SimpleSchema.Integer,
         label: "Number of null choices",
     },
-    sec: {
+});
+Schemas.QuizAnswers = new SimpleSchema({
+    questionType: {
         type: String,
-        label: "gross section of the experiment",
+        label: "Type of survey question",
     },
-    sec_rnd: {
-        type: SimpleSchema.Integer,
-        label: "round in the section",
+    question: {
+        type: String,
+        label: "question",
     },
-    completedChoice: {
-        type: Boolean,
-        label: "completed round?",
-    }, 
+    answer: {
+        type: String,
+        label: "answer",
+        optional: true,
+    },
 });
 
 Schemas.CohortSettings = new SimpleSchema({
@@ -199,37 +221,6 @@ Schemas.CohortSettings = new SimpleSchema({
     },
 });
 
-Schemas.SubjectsSurvey = new SimpleSchema({
-    // this is the TurkServer asstId. 
-        // it's the finest grain one and the one I shoudl use in data nalayssi.
-    userId: {
-        type: String,
-        label: "User",
-    },
-    // this is the Meteor.userId ( and the asst.userId ) for identifying user in-game. 
-    meteorUserId: {  // with better hygeine, this wouldn't be in this collection
-        type: String,
-        label: "Meteor User",
-    },
-    theTimestamp: {
-        type: Date,
-        label: "Timestamp",
-    },
-    questionType: {
-        type: String,
-        label: "Type of survey question",
-    },
-    question: {
-        type: String,
-        label: "question",
-    },
-    answer: {
-        type: String,
-        label: "answer",
-        optional: true,
-    },
-});
-
 Design = {
     maxPlayersInCohort : 4,
     endowment : 1.00,
@@ -242,9 +233,9 @@ Design = {
     sequence : { 
         "quiz" : { "name" : "quiz", "rounds":1, "stages" : 1 }, 
         "experiment" : { "name" : "experiment" , "rounds":2, "stages" : 1 }, 
-        "survey" : { "name" : "survey", "rounds":1, "stages" : 1 } 
+        "survey" : { "name" : "survey", "rounds":1, "stages" : 1 },
+        "done" : { "name" : "done", "rounds":0, "stages" : 0 },
     },
-    sectionNames : [ "quiz", "experiment", "survey" ],
     positionCosts : 0.25,
     batchName : "main",
 };
@@ -257,8 +248,6 @@ SubjectsStatus = new Mongo.Collection('s_status');
 SubjectsData.attachSchema(Schemas.SubjectsData);
 SubjectsStatus.attachSchema(Schemas.SubjectsStatus);
 CohortSettings = new Mongo.Collection('designs');
-SubjectsSurvey = new Mongo.Collection('s_survey');
-SubjectsSurvey.attachSchema(Schemas.SubjectsSurvey);
 //CohortSettings.attachSchema(Schemas.CohortSettings);
 //TurkServer.partitionCollection(SubjectsData);
 //TurkServer.partitionCollection(CohortSettings);

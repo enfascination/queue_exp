@@ -59,7 +59,7 @@ Template.experimenterViewPayouts.onCreated( function() {
 Template.experimenterViewPayouts.helpers({
 
     subjects() {
-        return SubjectsData.find( { cohortId: Session.get('selectedQueue') }, { sort: { sec: 1 , sec_rnd : 1, queuePositionFinal: 1, queuePosition: 1 } } );
+        return SubjectsData.find( { "theData.cohortId": Session.get('selectedQueue') }, { sort: { sec: 1 , sec_rnd : 1, "theData.queuePositionFinal": 1, "theData.queuePosition": 1 } } );
     },
 
     showQueueCalc: function() {
@@ -110,8 +110,8 @@ Template.queueSelection.helpers({
     //https://coderwall.com/p/o9np9q/get-unique-values-from-a-collection-in-meteor
     items: function() {
         let allSubs = SubjectsData.find().fetch();
-        let allQueuesObj = _.uniqBy(allSubs, (d) =>  parseInt(d.cohortId) );
-        let allQueueIds = _.map(allQueuesObj, "cohortId").sort();
+        let allQueuesObj = _.uniqBy(allSubs, (d) =>  parseInt(d.theData.cohortId) );
+        let allQueueIds = _.map(allQueuesObj, "theData.cohortId").sort();
         return(allQueueIds);
   },
 });

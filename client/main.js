@@ -93,7 +93,7 @@ Template.experiment.onCreated( function(){
             } else { // player is refreshing or reconnecting
                 //console.log("returning sub");
                 newSub = { "status" : SubjectsStatus.findOne( {meteorUserId : muid }), "data" : sData };
-                newCohort = CohortSettings.findOne( { cohortId : sData.cohortId, sec : sData.sec, sec_rnd : sData.sec_rnd });
+                newCohort = CohortSettings.findOne( { cohortId : sData.theData.cohortId, sec : sData.sec, sec_rnd : sData.sec_rnd });
             }
             //console.log("setting client side");
             Sess.setClientSub( newSub );
@@ -199,10 +199,10 @@ Template.queueInstructions.onCreated( function(){
 });
 Template.queueInstructions.helpers({
     counterA: function () {
-        return Sess.subData().queueCountA || "XXX";
+        return Sess.subData().theData.queueCountA || "XXX";
     },
     counterB: function () {
-        return Sess.subData().queueCountB || "XXX";
+        return Sess.subData().theData.queueCountB || "XXX";
     },
     choiceChecked: function ( ) {
         let sub = Sess.subStat();
@@ -213,7 +213,9 @@ Template.queueInstructions.helpers({
         }
     },
     counterNet: function () {
-        return Sess.subData().queuePosition || "XXX";
+        if (Sess.subData() && Sess.subData().theData) {
+            return Sess.subData().theData.queuePosition || "XXX";
+        }
     },
     userAccount: function () {
         if (!UserElements.userAccount.get()) {
@@ -225,8 +227,10 @@ Template.queueInstructions.helpers({
     earningsAMin: function () {
         let sub = Sess.subData();
         let aDesign = Sess.design();
-        let qPos = sub.queuePosition * aDesign.positionCosts;
-        return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.A + 1.00 - qPos ) );
+        if ( sub && sub.theData ) {
+            let qPos = sub.theData.queuePosition * aDesign.positionCosts;
+            return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.A + 1.00 - qPos ) );
+        }
     },
     earningsAMax: function () {
         let aDesign = Sess.design();
@@ -239,8 +243,10 @@ Template.queueInstructions.helpers({
     earningsBMax: function () {
         let sub = Sess.subData();
         let aDesign = Sess.design();
-        let qPos = sub.queuePosition * aDesign.positionCosts;
-        return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.B + 1.00 - qPos ) );
+        if ( sub && sub.theData ) {
+            let qPos = sub.theData.queuePosition * aDesign.positionCosts;
+            return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.B + 1.00 - qPos ) );
+        }
     },
     groupSize: function () {
         let aDesign = Sess.design();
