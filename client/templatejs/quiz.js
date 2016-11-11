@@ -39,7 +39,7 @@ Template.quiz.events({
         e.preventDefault();
         let muid = Meteor.userId();
         //Only allow clients to attempt quiz twice before preventing them from doing so
-        qs = Questions.find({section: 'quiz'}).forEach( function( q ) {
+        let qs = Questions.find({section: 'quiz'}).forEach( function( q ) {
             let form = e.target;
             //let answer = $.trim(form[q._id].value.toLowerCase());
             //let correct = $.inArray(answer,q.answer) >= 0 ? true: false;
@@ -48,10 +48,10 @@ Template.quiz.events({
             let choice = element.attr("choice");
             let answered = !_.isNil( choice );
             let correct = answered && ( choice === q.answer[0] );
-            console.log(q._id, answered, choice, correct, element_raw);
             Questions.update({_id: q._id}, {$set: {correct: correct, answered: answered, choice : choice }});
             if (!correct) {
                 Helper.questionHasError( element_raw, true );
+                console.log("Quiz Failure", q._id, answered, choice, correct, element_raw);
             } else {
                 Helper.questionHasError( element_raw, false );
             }
@@ -59,7 +59,7 @@ Template.quiz.events({
         let resultsCount = Questions.find({section: 'quiz', correct:true}).count();
         let answeredCount = Questions.find({section: 'quiz', answered:true}).count();
         let questionsCount = Questions.find({section: 'quiz'}).count();
-        console.log("counts", questionsCount, answeredCount, resultsCount);
+        //console.log("counts", questionsCount, answeredCount, resultsCount);
         //if ( answeredCount === questionsCount ) {
         if ( true ) {
             UserElements.quizSubmitted.set( true );

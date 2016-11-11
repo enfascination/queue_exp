@@ -13,40 +13,40 @@ let potSize = groupSize*40;
 questions[0] = {
     section: 'quiz',
 	text: '1) You should press B',
+    type: 'binary',
 	answer: ["B"],
     choice: null,
 	correct: false,
 	answered: false,
-	submitted: false,
 	disabled: false,
 	hasError: false,
 };
 questions[1] = {
     section: 'quiz',
 	text: '2) You should press A',
+    type: 'binary',
 	answer: ["A"],
     choice: null,
 	correct: false,
 	answered: false,
-	submitted: false,
 	disabled: false,
 	hasError: false,
 };
 questions[2] = {
     section: 'survey',
 	text: 'What is your sex?',
+    type: 'binary',
     choice: null,
 	answered: false,
-	submitted: false,
 	disabled: false,
 	hasError: false,
 };
 questions[3] = {
     section: 'survey',
 	text: 'Where are you from?',
+    type: 'binary',
     choice: null,
 	answered: false,
-	submitted: false,
 	disabled: false,
 	hasError: false,
 };
@@ -54,9 +54,9 @@ questions[4] = {
     section: 'experiment',
     round: 0,
 	text: 'Which queue do you choose?',
+    type: 'binary',
     choice: null,
 	answered: false,
-	submitted: false,
 	disabled: false,
 	hasError: false,
 };
@@ -64,9 +64,9 @@ questions[5] = {
     section: 'experiment',
     round: 1,
 	text: 'Which queue do you choose now?',
+    type: 'binary',
     choice: null,
 	answered: false,
-	submitted: false,
 	disabled: false,
 	hasError: false,
 };

@@ -1,4 +1,5 @@
 /*jshint esversion: 6 */
+var _ = require('lodash');
 
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
@@ -31,6 +32,17 @@ Template.survey.events({
     'submit form#submitSurvey': function (e) {
         e.preventDefault();
 
+        let qs = Questions.find({section: 'survey'}).forEach( function( q ) {
+            let element_raw = $(e.target).children("div#"+q._id)[0];
+            let element = $( element_raw );
+            let choice = element.attr("choice");
+            let answered = !_.isNil( choice );
+            Questions.update({_id: q._id}, {$set: { answered: answered, choice : choice }});
+            Meteor.call("initializeSurveyData", Meteor.userId(), Questions.findOne({_id: q._id}), function(err,data) {
+                if (err) { throw( err ); }
+                //console.log("initSurvey cb", answered, choice, data);
+            } );
+        });
         // uncheck buttons in UI
         //Helper.buttonsReset( e.currentTarget );
         Helper.buttonsDisable( e.currentTarget );

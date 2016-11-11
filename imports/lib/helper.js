@@ -47,13 +47,11 @@ export const Helper = {
     },
     questionHasError : function ( el, hasError ) {
         //console.log("questionHasError", el, el.id, Questions.find({section: "quiz"}).fetch() );
-        console.log("questionHasError", el);
         let output = Questions.update( {_id : el.id }, { $set : { "hasError" : hasError }} );
-        //console.log("questionHasError", el.id, Questions.findOne( el.id ), output);
     },
 };
 Helper.buttonsReset = function (form) {
-        console.log("buttonsReset", $( form ).children(".expQuestion"));
+        //console.log("buttonsReset", $( form ).children(".expQuestion"));
         $( form ).children(".expQuestion").each( function( el ) {
             //let id = b.id;
             let id = this.id;
@@ -65,13 +63,12 @@ Helper.buttonsReset = function (form) {
         });
     };
 Helper.buttonsDisable = function (form) {
-        console.log("buttonsDisable", $( form ).children(".expQuestion"));
+        //console.log("buttonsDisable", $( form ).children(".expQuestion"));
         $( form ).children(".expQuestion").each( function( el ) {
             //let b = $( this );
             //let id = b.id;
             let id = this.id;
             let output = Questions.update( {_id : id }, { $set : { disabled : true }} );
-            console.log(this, el, id, Questions.findOne( id ));
         });
 };
 

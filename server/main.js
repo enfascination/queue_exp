@@ -440,4 +440,16 @@ import { QueueAssigner } from './assigners-custom.js';
                 //throw(new Meteor.Error(500, 'Permission denied!'));
             //}
         },
+        initializeSurveyData : function(muid, question) {
+            let sub = SubjectsStatus.findOne({ meteorUserId : muid });
+            let id = SubjectsSurvey.insert( {
+                userId: sub.userId,
+                meteorUserId: sub.meteorUserId,
+                theTimestamp: Date.now(),
+                questionType: question.type,
+                question: question.text,
+                answer: question.choice,
+            } );
+            return( SubjectsSurvey.findOne( id ) );
+        },
     });

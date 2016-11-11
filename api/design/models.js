@@ -199,6 +199,37 @@ Schemas.CohortSettings = new SimpleSchema({
     },
 });
 
+Schemas.SubjectsSurvey = new SimpleSchema({
+    // this is the TurkServer asstId. 
+        // it's the finest grain one and the one I shoudl use in data nalayssi.
+    userId: {
+        type: String,
+        label: "User",
+    },
+    // this is the Meteor.userId ( and the asst.userId ) for identifying user in-game. 
+    meteorUserId: {  // with better hygeine, this wouldn't be in this collection
+        type: String,
+        label: "Meteor User",
+    },
+    theTimestamp: {
+        type: Date,
+        label: "Timestamp",
+    },
+    questionType: {
+        type: String,
+        label: "Type of survey question",
+    },
+    question: {
+        type: String,
+        label: "question",
+    },
+    answer: {
+        type: String,
+        label: "answer",
+        optional: true,
+    },
+});
+
 Design = {
     maxPlayersInCohort : 4,
     endowment : 1.00,
@@ -226,6 +257,8 @@ SubjectsStatus = new Mongo.Collection('s_status');
 SubjectsData.attachSchema(Schemas.SubjectsData);
 SubjectsStatus.attachSchema(Schemas.SubjectsStatus);
 CohortSettings = new Mongo.Collection('designs');
+SubjectsSurvey = new Mongo.Collection('s_survey');
+SubjectsSurvey.attachSchema(Schemas.SubjectsSurvey);
 //CohortSettings.attachSchema(Schemas.CohortSettings);
 //TurkServer.partitionCollection(SubjectsData);
 //TurkServer.partitionCollection(CohortSettings);

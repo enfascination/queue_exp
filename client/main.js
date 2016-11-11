@@ -43,6 +43,7 @@ Tracker.autorun(function() {
     //console.log( "state", state );
     if ( TurkServer.inQuiz() ) {
         Meteor.subscribe('s_status');
+        Meteor.subscribe('s_data');
     } else if ( TurkServer.inExitSurvey() ) {
         Meteor.subscribe('s_status');
         Meteor.subscribe('s_data');
@@ -119,13 +120,12 @@ Template.experiment.events({
         let muid = Meteor.userId();
         let sub = SubjectsStatus.findOne({ meteorUserId : muid });
         //Only allow clients to attempt quiz twice before preventing them from doing so
-        qs = Questions.find({section: 'experiment', round : sub.sec_rnd_now }).forEach( function( q ) {
+        let qs = Questions.find({section: 'experiment', round : sub.sec_rnd_now }).forEach( function( q ) {
             let form = e.target;
             let element_raw = $(form).children("div#"+q._id)[0];
             let element = $( element_raw );
             let choice = element.attr("choice");
             let answered = !_.isNil( choice );
-            console.log(q._id, answered, choice);
             Questions.update({_id: q._id}, {$set: { answered: answered, choice : choice }});
             if (!answered) {
                 Helper.questionHasError( element_raw, true );
@@ -135,7 +135,7 @@ Template.experiment.events({
         });
         let answeredCount = Questions.find({section: 'experiment', round : sub.sec_rnd_now , answered:true}).count();
         let questionsCount = Questions.find({section: 'experiment', round : sub.sec_rnd_now }).count();
-        console.log(sub.sec_rnd_now, Questions.findOne({section: 'experiment'}));
+        //console.log(sub.sec_rnd_now, Questions.findOne({section: 'experiment'}));
         let choice = Questions.findOne({section: 'experiment', round : sub.sec_rnd_now }).choice;
 
         if ( answeredCount === questionsCount ) {
@@ -191,7 +191,7 @@ Template.experiment.events({
         }
     },
 	'click form#nextStage': function (e) {
-        console.log("click form#nextStage");
+        //console.log("click form#nextStage");
     },
 });
 
@@ -206,9 +206,11 @@ Template.queueInstructions.helpers({
     },
     choiceChecked: function ( ) {
         let sub = Sess.subStat();
+        let q = Questions.findOne({ section: "experiment", round : sub.sec_rnd_now });
         //console.log( sub );
-        let theId = Questions.findOne({ section: "experiment", round : sub.sec_rnd_now })._id;
-        return UserElements.choiceChecked.get( theId );
+        if (!_.isNil(sub) && !_.isNil( q )) {
+            return UserElements.choiceChecked.get( q._id );
+        }
     },
     counterNet: function () {
         return Sess.subData().queuePosition || "XXX";
@@ -267,10 +269,10 @@ Template.binaryForcedChoice.helpers({
 
 Template.binaryForcedChoice.events({
 	'click button.expChoice': function (e) {
-        console.log("button.expChoice");
+        //console.log("button.expChoice");
     },
 	'click div.expChoices': function (e) {
-        console.log("div.expChoices");
+        //console.log("div.expChoices");
         if ( e.target.hasAttribute( "checked" ) ) {
             e.currentTarget.removeAttribute( "choice" );
         } else {
@@ -296,12 +298,11 @@ Template.questionBinary.helpers({
 
 Template.questionBinary.events({
 	'click div.expQuestion': function (e) {
-        console.log("div.expQuestion");
+        //console.log("div.expQuestion");
         e.stopPropagation();
         let des = Sess.design();
         let buttonId = e.currentTarget.id; // currentTarget is the div wrapper, target is each button within in
         let choice = e.currentTarget.getAttribute("choice");
-        console.log("div check", buttonId, choice);
         UserElements.choiceChecked.set(buttonId, choice);
         if (choice) {
             e.currentTarget.setAttribute( "choice", choice );
@@ -313,13 +314,11 @@ Template.questionBinary.events({
         }
         if (false){
             if ( e.target.hasAttribute( "checked" ) ) {
-                console.log("div check");
                 e.currentTarget.setAttribute( "choice", e.target.getAttribute("choice") );
                 UserElements.choiceChecked.set(buttonId, e.target.getAttribute("choice"));
                 UserElements.userAccount.set(des.endowment - des.queueCosts[ e.target.getAttribute("choice") ]);
                 UserElements.pleaseMakeChoice.set( false);
             } else {
-                console.log("div uncheck");
                 e.currentTarget.removeAttribute( "choice" );
                 UserElements.choiceChecked.set( buttonId, "");
                 UserElements.userAccount.set(des.endowment);
