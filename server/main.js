@@ -420,24 +420,11 @@ import { QueueAssigner } from './assigners-custom.js';
             });
             TurkServer.Instance.currentInstance().teardown(returnToLobby = true);
         },
-        updateQuiz: function ( muid, passed ) {
-            let sub = SubjectsStatus.findOne({ meteorUserId: muid });
-            let failed = false; // this is not the opposite of passing
-            let triesLeft = sub.quiz.triesLeft;
-            if ( !passed || sub.quiz.failed) {// have I alrady failed this person?
-                triesLeft = sub.quiz.triesLeft - 1;
-                if ( triesLeft === 0 || triesLeft < 0 ) {
-                    failed = true;
-                }
-            }
+        updateQuiz: function ( muid, passed, failed, triesLeft ) {
             //console.log("updateQuiz", sub);
             let quizObj = {"passed" : passed, "failed" : failed, "triesLeft" : triesLeft};
             SubjectsStatus.update({ meteorUserId: muid }, 
                 { $set: { quiz: quizObj } });
-            if ( passed || failed ) {
-                //console.log("updateQuiz");
-                Meteor.call( "setReadyToProceed", muid );
-            }
             return( quizObj );
         }, 
         setReadyToProceed: function (muid) {

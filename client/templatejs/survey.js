@@ -32,17 +32,28 @@ Template.survey.events({
     'submit form#submitSurvey': function (e) {
         e.preventDefault();
 
+        /////////////////////
+        //// ARE INPUTS ACCEPTABLE?
+        /////////////////////
         let qs = Questions.find({sec: 'survey'}).forEach( function( q ) {
             let element_raw = $(e.target).children("div#"+q._id)[0];
             let element = $( element_raw );
             let choice = element.attr("choice");
             let answered = !_.isNil( choice );
             Questions.update({_id: q._id}, {$set: { answered: answered, choice : choice }});
+        });
+        /////////////////////
+        //// IF INPUTS OK, SUBMIT ANSWERS AND ....
+        /////////////////////
+        qs = Questions.find({sec: 'survey'}).forEach( function( q ) {
             Meteor.call("initializeSurveyData", Meteor.userId(), Questions.findOne({_id: q._id}), function(err,data) {
                 if (err) { throw( err ); }
                 //console.log("initSurvey cb", answered, choice, data);
             } );
         });
+        /////////////////////
+        //// ... SEPARATELY, ADVANCE STATE 
+        /////////////////////
         // uncheck buttons in UI
         //Helper.buttonsReset( e.currentTarget );
         Helper.buttonsDisable( e.currentTarget );

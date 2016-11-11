@@ -38,6 +38,9 @@ Template.quiz.events({
         e.preventDefault();
         let muid = Meteor.userId();
         //Only allow clients to attempt quiz twice before preventing them from doing so
+        /////////////////////
+        //// ARE INPUTS ACCEPTABLE?
+        /////////////////////
         let qs = Questions.find({sec: 'quiz'}).forEach( function( q ) {
             let form = e.target;
             //let answer = $.trim(form[q._id].value.toLowerCase());
@@ -66,14 +69,29 @@ Template.quiz.events({
             if ( resultsCount === questionsCount ) {
                 passed = true;
             }
-            Meteor.call('updateQuiz', muid, passed, function(err, quiz) {
-                if ( quiz.passed || quiz.failed ) {
-                    Helper.buttonsDisable( e.currentTarget );
-                    if ( quiz.failed ) {
-                        Helper.buttonsReset( e.currentTarget );
-                    }
+            let sub = SubjectsStatus.findOne({ meteorUserId: muid });
+            let failed = false; // this is not the opposite of passing
+            let triesLeft = sub.quiz.triesLeft;
+            if ( !passed || sub.quiz.failed) {// have I alrady failed this person?
+                triesLeft = sub.quiz.triesLeft - 1;
+                if ( triesLeft === 0 || triesLeft < 0 ) {
+                    failed = true;
                 }
-            });
+            }
+            /////////////////////
+            //// IF INPUTS OK, SUBMIT ANSWERS AND ....
+            /////////////////////
+            Meteor.call('updateQuiz', muid, passed, failed, triesLeft);
+            /////////////////////
+            //// ... SEPARATELY, ADVANCE STATE 
+            /////////////////////
+            if ( passed || failed ) {
+                Meteor.call( "setReadyToProceed", muid );
+                Helper.buttonsDisable( e.currentTarget );
+                if ( failed ) {
+                    Helper.buttonsReset( e.currentTarget );
+                }
+            }
         } else {
         }
     },

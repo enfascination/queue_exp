@@ -119,6 +119,10 @@ Template.experiment.events({
         e.preventDefault();
         let muid = Meteor.userId();
         let sub = SubjectsStatus.findOne({ meteorUserId : muid });
+
+        /////////////////////
+        //// ARE INPUTS ACCEPTABLE?
+        /////////////////////
         //Only allow clients to attempt quiz twice before preventing them from doing so
         let qs = Questions.find({sec: 'experiment', sec_rnd : sub.sec_rnd_now }).forEach( function( q ) {
             let form = e.target;
@@ -141,7 +145,11 @@ Template.experiment.events({
         if ( answeredCount === questionsCount ) {
             let design = Sess.design();
             let cohortId = design.cohortId;
-            console.log( "submitting answers", design );
+
+            /////////////////////
+            //// IF INPUTS OK, SUBMIT ANSWERS AND ....
+            /////////////////////
+            console.log( "submitting answers, advancing state", design );
 
             // game-specific logic here
             // the minus one is to correct for zero indexing: round zero should be able to be the first and only round
@@ -154,28 +162,31 @@ Template.experiment.events({
                 if (err) { throw( err ); }
                 // determine if end of queue
                 Meteor.call('tryToCompleteCohort', design);
+            });
 
-                Meteor.call('advanceSubjectState', Meteor.userId(), 
-                    function(err, updatedSub) {
+            /////////////////////
+            //// ... SEPARATELY, ADVANCE STATE 
+            /////////////////////
+            Meteor.call('advanceSubjectState', Meteor.userId(), 
+                function(err, updatedSub) {
 
-                    // experiment navigation
-                    if ( !lastGameRound ) {  // calculate the logic for this out of the callbacks because things get confusing
-                        // go to the next round
-                        // uncheck buttons in UI
-                        Helper.buttonsReset( e.currentTarget );
-                        // create the next cohort object (which might have no members actually);
-                        Meteor.call('initializeRound', sub=updatedSub, lastDesign=design, asyncCallback=function(err, data) {
-                            if (err) { console.log( err ); }
-                            Sess.setClientSub( { "status" : data.s_status, "data" : data.s_data } );
-                            Sess.setClientDesign( data.design );
-                        });
-                        // routing?
-                        //Router.go('/experiment');
-                    } else {
-                        Meteor.call( "setReadyToProceed", muid );
-                        Helper.buttonsDisable( e.currentTarget );
-                    }
-                });
+                // experiment navigation
+                if ( !lastGameRound ) {  // calculate the logic for this out of the callbacks because things get confusing
+                    // go to the next round
+                    // uncheck buttons in UI
+                    Helper.buttonsReset( e.currentTarget );
+                    // create the next cohort object (which might have no members actually);
+                    Meteor.call('initializeRound', sub=updatedSub, lastDesign=design, asyncCallback=function(err, data) {
+                        if (err) { console.log( err ); }
+                        Sess.setClientSub( { "status" : data.s_status, "data" : data.s_data } );
+                        Sess.setClientDesign( data.design );
+                    });
+                    // routing?
+                    //Router.go('/experiment');
+                } else {
+                    Meteor.call( "setReadyToProceed", muid );
+                    Helper.buttonsDisable( e.currentTarget );
+                }
             });
         }
     },
