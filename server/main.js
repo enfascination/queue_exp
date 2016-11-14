@@ -57,14 +57,14 @@ import { QueueAssigner } from './assigners-custom.js';
         // this is a reload detector.  if the player has connected before, they will have a data object in progress.
         playerHasConnectedBefore: function( muid ) {
             //console.log("check prior (data) connections",SubjectsStatus.findOne({meteorUserId : muid}),  SubjectsData.find({meteorUserId : muid}, { $sort: {sec : -1, sec_rnd : -1 }}).fetch() );
-            let liveRound = SubjectsData.find({meteorUserId : muid, sec : "experiment", completedChoice : false}).fetch();
+            let subjectDatas = SubjectsData.find({meteorUserId : muid}).fetch();
             try {
-                console.assert( liveRound.length <= 1 );
+                console.assert( subjectDatas.length <= 1 );
             } catch(err) {
-                console.log( err, liveRound );
+                console.log( err, subjectDatas );
             }
-            //console.log("testrelogon", muid, SubjectsData.find({meteorUserId : muid, completedChoice : false}).fetch(), liveRound );
-            return( { "status" : SubjectsStatus.findOne( {meteorUserId : muid }), "data" : liveRound } );
+            //console.log("testrelogon", muid, SubjectsData.find({meteorUserId : muid, completedChoice : false}).fetch(), subjectDatas );
+            return( { "status" : SubjectsStatus.findOne( {meteorUserId : muid }), "data" : subjectDatas } );
         },
         // this will createa a new SubjectStatus object
         initializeSubject: function( idObj ) {

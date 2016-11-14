@@ -17,10 +17,14 @@ Template.experimenterViewState.helpers({
         return Sess.design().cohortId;
     },
     section: function () {
-        return Sess.subData().sec_now;
+        if( !_.isNil( Sess.subData() ) && Sess.subData().theData ) {
+            return(Sess.subData()[0].sec_now);
+        }
     },
     round: function () {
-        return Sess.subData().sec_rnd_now;
+        if( !_.isNil( Sess.subData() ) && Sess.subData().theData ) {
+            return(Sess.subData()[0].sec_rnd_now);
+        }
     },
     maxPlayersInCohort: function () {
         let aDesign = Sess.design();
@@ -28,22 +32,22 @@ Template.experimenterViewState.helpers({
     },
     queuePosition: function () {
         if( !_.isNil( Sess.subData() ) && Sess.subData().theData ) {
-            return Sess.subData().theData.queuePosition;
+            return Sess.subData()[0].theData.queuePosition;
         }
     },
     queueCountA: function () {
         if( !_.isNil( Sess.subData() ) && Sess.subData().theData ) {
-            return Sess.subData().theData.queueCountA;
+            return Sess.subData()[0].theData.queueCountA;
         }
     },
     queueCountB: function () {
         if( !_.isNil( Sess.subData() ) && Sess.subData().theData ) {
-            return Sess.subData().theData.queueCountB;
+            return Sess.subData()[0].theData.queueCountB;
         }
     },
     queueCountNoChoice: function () {
         if( !_.isNil( Sess.subData() ) && Sess.subData().theData ) {
-            return Sess.subData().theData.queueCountNoChoice;
+            return Sess.subData()[0].theData.queueCountNoChoice;
         }
     },
 });

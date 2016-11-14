@@ -28,34 +28,32 @@ Template.experiment.onCreated( function(){
         // is player refreshing, reconnecting, or somehow already up to date in the system?
         //console.log("experiment render");
         Meteor.call("playerHasConnectedBefore", muid, function(err,state) { // think of this cb as an if statement
-            let newData, newCohort;
+            let newData, newCohort, updateSession;
             let sub = state.status;
-            let sData = state.data;
-            if ( sub.sec_now === "experiment" && _.isEmpty( sData ) ) { // player is new to me
+            let data = state.data;
+            if ( _.isEmpty( data ) ) { // player is new to me if they are int he experiment, they have no incomplete data, and they aren't ready to proceeed to a next stage
                 // record groupid, in case I need it one day
                 console.log("new sub");
                 Meteor.call("addGroupId", muid, group );
                 Meteor.call('initializeRound', sub=muid, lastDesign=null, asyncCallback=function(err, data) {
                     if (err) { throw( err ); }
-                    console.log("initializeRound", data.s_data.theData.cohortId, data.design.cohortId);
+                    //console.log("initializeRound", data.s_data.theData.cohortId, data.design.cohortId);
+                    updateSession = true;
                     newData = { "status" : data.s_status, "data" : data.s_data };
                     newCohort = data.design;
                 } );
-            } else { // player is refreshing or reconnecting
-                console.log("returning sub", sData, sub);
-                let dataSupp; 
-                if (sub.sec_now === "survey") {
-                    dataSupp = SubjectsData.find({meteorUserId : muid, sec : "survey"}).fetch();
-                    newCohort = null;
-                } else {
-                    dataSupp = sData[0];
-                    newCohort = CohortSettings.findOne( { cohortId : dataSupp.theData.cohortId, sec : dataSupp.sec, sec_rnd : dataSupp.sec_rnd });
-                }
-                newData = { "status" : SubjectsStatus.findOne( {meteorUserId : muid }), "data" : dataSupp };
+            } else if (sub.sec_now === "survey") { // player is refreshing or reconnecting in survey
+                updateSession = false;
+            } else if ( sub.sec_now === "experiment" && _.some( data, (x) => x.completedChoice === false ) ) { // player is refreshing or reconnecting mid choice in experiment
+                updateSession = false;
+            } else if ( sub.sec_now === "experiment" && _.every( data, (x) => x.completedChoice === true ) ) { // player is refreshing or reconnecting post choice in experiment
+                updateSession = false;
             }
-            //console.log("setting client side");
-            Sess.setClientSub( newData );
-            Sess.setClientDesign( newCohort );
+            if (updateSession) {
+                //console.log("setting client side");
+                Sess.setClientSub( newData );
+                Sess.setClientDesign( newCohort );
+            }
         });
     }
 });
@@ -169,7 +167,7 @@ Template.experimentInfo.helpers({
     },
     counterNet: function () {
         if (Sess.subData() && Sess.subData().theData) {
-            return Sess.subData().theData.queuePosition || "XXX";
+            return Sess.subData().theData[0].queuePosition || "XXX";
         }
     },
     userAccount: function () {
