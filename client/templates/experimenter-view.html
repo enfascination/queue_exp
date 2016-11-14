@@ -78,8 +78,8 @@
 
 <template name="experimenterViewPayouts">
         <p>Pick a queue to calculate payoffs for.</p>
-        {{> queueSelection}}
-        {{#if showQueueCalc }}
+        {{> cohortSelection}}
+        {{#if showExperimentCalc }}
             <table class="table table-striped payoffs-list">
                 <thead>
                     <tr>
@@ -87,7 +87,7 @@
                             User ID
                         </th>
                         <th>
-                            Queue
+                            Cohort
                         </th>
                         <th>
                             Section
@@ -114,7 +114,7 @@
                             Choice
                         </th>
                         <th>
-                            Queue Earnings
+                            Choice Earnings
                         </th>
                         <th>
                             Total Payoff
@@ -140,7 +140,7 @@
                         {{subject.userId}}
                     </td>
                     <td>
-                        {{subject.cohortId}}
+                        {{subject.theData.cohortId}}
                     </td>
                     <td>
                         {{subject.sec}}
@@ -149,7 +149,7 @@
                         {{subject.sec_rnd}}
                     </td>
                     <td>
-                        {{completedChoice subject}}
+                        {{subject.completedChoice}}
                     </td>
                     <td>
                         {{completedExperiment subject}}
@@ -158,16 +158,16 @@
                         {{completedCohort subject}}
                     </td>
                     <td>
-                        {{subject.queuePositionFinal}}
+                        {{subject.theData.queuePositionFinal}}
                     </td>
                     <td>
-                        {{subject.queuePosition}}
+                        {{subject.theData.queuePosition}}
                     </td>
                     <td>
-                        {{subject.choice}}
+                        {{subject.theData.choice}}
                     </td>
                     <td>
-                        {{earningsQueue subject}}
+                        {{earningsChoice subject}}
                     </td>
                     <td>
                         {{earningsTotal subject}}
@@ -175,7 +175,7 @@
                 </tr>
 </template>
 
-<template name="queueSelection">
+<template name="cohortSelection">
     <select class="dropdown__menu" id="category-select">
         <option disabled="disabled" selected="selected">Please Select</option> 
         {{#each items}}

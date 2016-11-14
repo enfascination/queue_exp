@@ -8,12 +8,11 @@ Router.route('/', function() {
 
 
 Router.route('/start', function() {
-        this.render('quiz');
+    this.render('quizNav');
 });
 Router.route('/experiment', function() {
-        this.render('experiment');
+    this.render('experimentNav');
 });
-
-Router.route('/survey', function() {
-    this.render('survey');
+Router.route('/submitHIT', function() {
+    this.render('submitNav');
 });

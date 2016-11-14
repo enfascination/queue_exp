@@ -1,7 +1,7 @@
 /*jshint esversion: 6 */
 
 var _ = require('lodash');
-import { Questions } from '../../imports/startup/experiment.js';
+import { Questions } from '../../imports/startup/experiment_prep.js';
 
 /* boilerplate blank error return function for validated inputs */
 export const Helper = {
@@ -78,7 +78,6 @@ Helper.buttonsDisable = function (form) {
 TurkServer.inQuiz = function() {
   return Session.equals("turkserver.state", "quiz");
 };
-
 TurkServer.setQuizState = function(asst) {
     //console.log("set quiz");
     // This does not emit an event to lobby, so you'd better already be there if you 
@@ -103,4 +102,3 @@ TurkServer.setLobbyState = function(asst, batch) {
     // this emits an event to lobby
     batch.lobby.addAssignment( asst );
 };
-

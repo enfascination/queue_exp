@@ -10,12 +10,11 @@ import { TurkServer } from 'meteor/mizzao:turkserver';
 
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
-import { Questions } from '../../imports/startup/experiment.js';
+import { Questions } from '../../imports/startup/experiment_prep.js';
 
 // controller
 Template.quiz.onCreated( function(){
     // interaction elements
-    UserElements.choiceChecked = new ReactiveDict(); // this is so there can be mulplie of these buttons on a page
     UserElements.quizIncomplete = new ReactiveVar(false);
 
     let muid = Meteor.userId();
@@ -41,6 +40,10 @@ Template.quiz.events({
         /////////////////////
         //// ARE INPUTS ACCEPTABLE?
         /////////////////////
+        // AHHHHHHHH
+        Meteor.call( "setReadyToProceed", Meteor.userId() );
+        return;
+        // AHHHHHHHH
         let qs = Questions.find({sec: 'quiz'}).forEach( function( q ) {
             let form = e.target;
             //let answer = $.trim(form[q._id].value.toLowerCase());
@@ -81,7 +84,8 @@ Template.quiz.events({
             /////////////////////
             //// IF INPUTS OK, SUBMIT ANSWERS AND ....
             /////////////////////
-            Meteor.call('updateQuiz', muid, passed, failed, triesLeft);
+            let quizObj = {"passed" : passed, "failed" : failed, "triesLeft" : triesLeft};
+            Meteor.call('updateQuiz', muid, quizObj );
             /////////////////////
             //// ... SEPARATELY, ADVANCE STATE 
             /////////////////////
@@ -100,7 +104,11 @@ Template.quiz.events({
         let muid = Meteor.userId();
         let sub = SubjectsStatus.findOne({ meteorUserId : muid });
         if ( sub.readyToProceed ) {
-            Meteor.call("advanceSubjectSection", muid);
+            let nextSection = "experiment";
+            if (sub.quiz.failed) {
+                nextSection = "submitHIT";
+            }
+            Meteor.call("advanceSubjectSection", muid, nextSection);
         }
     },
 });
@@ -141,7 +149,7 @@ Template.quiz.helpers({
     testProceed: function() {
             //console.log("testProceed",  Sess.subStat(), Sess.subStat().quiz.passed , Sess.subStat().quiz.failed);
         if( !_.isNil( Sess.subStat() ) ) {
-            return( Sess.subStat().quiz.passed || Sess.subStat().quiz.failed );
+            return( Sess.subStat().readyToProceed );
         }
     },
     quizTriesLeft: quizTriesLeft,

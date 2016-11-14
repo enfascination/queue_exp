@@ -6,23 +6,9 @@ import { Template } from 'meteor/templating';
 import { TurkServer } from 'meteor/mizzao:turkserver';
 
 import { Helper } from '../../imports/lib/helper.js';
-import { Questions } from '../../imports/startup/experiment.js';
+import { Questions } from '../../imports/startup/experiment_prep.js';
 
 Template.survey.helpers({
-    userSelection: function () {
-        let muid = Meteor.userId();
-        let sd = SubjectsData.findOne({ meteorUserId: muid } );
-        if (muid && sd ) {
-            return( sd.choice );
-        }
-    },
-    "testQuizPassed": function() {
-        let muid = Meteor.userId();
-        let sub = SubjectsStatus.findOne({ meteorUserId: muid } );
-        if (muid && sub ) {
-            return( sub.quiz.passed );
-        }
-	},
 	questions: function(){
         return Questions.find({sec: 'survey'}).fetch() ;
     },
@@ -35,6 +21,10 @@ Template.survey.events({
         /////////////////////
         //// ARE INPUTS ACCEPTABLE?
         /////////////////////
+        // AHHHHHHHH
+        Meteor.call( "setReadyToProceed", Meteor.userId() );
+        return;
+        // AHHHHHHHH
         let qs = Questions.find({sec: 'survey'}).forEach( function( q ) {
             let element_raw = $(e.target).children("div#"+q._id)[0];
             let element = $( element_raw );
@@ -61,10 +51,28 @@ Template.survey.events({
         //console.log("form#submitSurvey");
         Meteor.call( "setReadyToProceed", Meteor.userId() );
     },
+    'click button#exitSurvey': function ( e ) {
+        e.stopPropagation();
+        let muid = Meteor.userId();
+        let sub = SubjectsStatus.findOne({ meteorUserId : muid });
+        if ( sub.readyToProceed ) {
+            Meteor.call("advanceSubjectSection", muid, "submitHIT");
+        }
+    },
 });
 
-Template.exitSurvey.events({
-    'submit form.exitSurvey': function (e) {
+Template.submitHIT.helpers({
+    "testQuizPassed": function() {
+        let muid = Meteor.userId();
+        let sub = SubjectsStatus.findOne({ meteorUserId: muid } );
+        if (muid && sub ) {
+            return( sub.quiz.passed );
+        }
+	},
+});
+Template.submitHIT.events({
+    'submit form.submitHIT': function (e) {
+        console.log("IN HERE");
         let results = null;
         e.preventDefault();
         results = { feedback: e.target.feedback.value };

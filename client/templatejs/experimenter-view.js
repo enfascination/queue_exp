@@ -17,32 +17,40 @@ Template.experimenterViewState.helpers({
         return Sess.design().cohortId;
     },
     section: function () {
-        return Sess.sub().sec_now;
+        return Sess.subData().sec_now;
     },
     round: function () {
-        return Sess.sub().sec_rnd_now;
+        return Sess.subData().sec_rnd_now;
     },
     maxPlayersInCohort: function () {
         let aDesign = Sess.design();
         return aDesign.maxPlayersInCohort;
     },
     queuePosition: function () {
-        return Sess.sub().queuePosition;
+        if( !_.isNil( Sess.subData() ) && Sess.subData().theData ) {
+            return Sess.subData().theData.queuePosition;
+        }
     },
     queueCountA: function () {
-        return Sess.sub().queueCountA;
+        if( !_.isNil( Sess.subData() ) && Sess.subData().theData ) {
+            return Sess.subData().theData.queueCountA;
+        }
     },
     queueCountB: function () {
-        return Sess.sub().queueCountB;
+        if( !_.isNil( Sess.subData() ) && Sess.subData().theData ) {
+            return Sess.subData().theData.queueCountB;
+        }
     },
     queueCountNoChoice: function () {
-        return Sess.sub().queueCountNoChoice;
+        if( !_.isNil( Sess.subData() ) && Sess.subData().theData ) {
+            return Sess.subData().theData.queueCountNoChoice;
+        }
     },
 });
 
 Template.experimenterViewCurrentSubject.helpers({
     userId: function () {
-        return Sess.sub().userId;
+        return Sess.subStat().userId;
     },
     meteorUserId: function () {
         return Meteor.userId();
@@ -53,26 +61,28 @@ Template.experimenterViewCurrentSubject.helpers({
 });
 
 Template.experimenterViewPayouts.onCreated( function() {
-    Session.set('showQueueCalc', false);
+    Session.set('showExperimentCalc', false);
 });
 
 Template.experimenterViewPayouts.helpers({
 
     subjects() {
-        return SubjectsData.find( { "theData.cohortId": Session.get('selectedQueue') }, { sort: { sec: 1 , sec_rnd : 1, "theData.queuePositionFinal": 1, "theData.queuePosition": 1 } } );
+        //console.log(SubjectsData.find().count(), SubjectsData.find({ sec : "experiment" }).count(), SubjectsData.find() );
+        return SubjectsData.find( { "theData.cohortId": Session.get('selectedChoice'), sec : "experiment" }, { sort: { sec: 1 , sec_rnd : 1, "theData.queuePositionFinal": 1, "theData.queuePosition": 1 } } );
     },
 
-    showQueueCalc: function() {
+    showExperimentCalc: function() {
         // the last queue is complete when the next shows it's first subject.
-        return( Session.get('showQueueCalc') );
+        return( Session.get('showExperimentCalc') );
     },
 
 });
 Template.experimenterViewPayout.helpers({
     userId: function () {
-        return Sess.sub().userId;
+        return Sess.subStat().userId;
     },
     completedChoice: function (subject) {
+        console.log(subject.completedChoice);
         return(subject.completedChoice);
     },
     completedExperiment: function (subject) {
@@ -80,52 +90,56 @@ Template.experimenterViewPayout.helpers({
         return(subbk.completedExperiment);
     },
     completedCohort: function (subject) {
-        cohort = CohortSettings.findOne({ cohortId : subject.cohortId, sec : subject.sec , sec_rnd : subject.sec_rnd });
-        return(cohort.completedCohort);
+        cohort = CohortSettings.findOne({ cohortId : subject.theData.cohortId, sec : subject.sec , sec_rnd : subject.sec_rnd });
+        if (cohort) {
+            return(cohort.completedCohort);
+        }
     },
-    earningsQueue: function (subject) {
-        return Helper.toCash( subject.earnings2 );
+    earningsChoice: function (subject) {
+        return Helper.toCash( subject.theData.earnings2 );
     },
     earningsTotal: function (subject) {
-        if ( !_.isNumber( subject.earnings1 ) || !_.isNumber( subject.earnings2 ) ) {
+        if ( !_.isNumber( subject.theData.earnings1 ) || !_.isNumber( subject.theData.earnings2 ) ) {
             return("error");
         } else {
-            return Helper.toCash( subject.earnings1 + subject.earnings2 );
+            return Helper.toCash( subject.theData.earnings1 + subject.theData.earnings2 );
         }
     },
 });
 
-Template.queueSelection.onCreated( function(){
-    //let group = TurkServer.group();
-    //if (_.isNil(group) ) return;
-    //Meteor.subscribe('s_data_full');
-    //Meteor.subscribe('s_status_full');
-    //Meteor.subscribe('designs');
+Template.cohortSelection.onCreated( function(){
+    let group = TurkServer.group();
+    if (_.isNil(group) ) return;
+    Meteor.subscribe('s_data_full');
+    Meteor.subscribe('s_status_full');
+    Meteor.subscribe('designs');
     //let allSubs = SubjectsData.find().fetch();
     //console.log("from sub sub top" ,_.map(allSubs, (s) => s.cohortId));
 });
 // https://github.com/lookback/meteor-dropdowns
-Template.queueSelection.helpers({
+Template.cohortSelection.helpers({
     //items: ['Foo', 'Bar', 'Baz'],
     //https://coderwall.com/p/o9np9q/get-unique-values-from-a-collection-in-meteor
     items: function() {
-        let allSubs = SubjectsData.find().fetch();
-        let allQueuesObj = _.uniqBy(allSubs, (d) =>  parseInt(d.theData.cohortId) );
-        let allQueueIds = _.map(allQueuesObj, "theData.cohortId").sort();
-        return(allQueueIds);
+        let allSubs = SubjectsData.find({sec : "experiment"}).fetch();
+        let allCohortIds = _(allSubs).map("theData.cohortId").compact().map(_.toInteger).uniq().sortBy().reverse().value();
+        //console.log(_(allSubs).map("theData.cohortId").compact().map(_.toInteger).uniq().sortBy().reverse().value());
+        //let allCohortsObj = _.uniqBy(allSubs, (d) =>  parseInt(d.theData.cohortId) );
+        //let allCohortIds = _.map(allCohortsObj, "theData.cohortId").sort();
+        return(allCohortIds);
   },
 });
 // http://stackoverflow.com/questions/28528660/meteor-dropdown-list-get-and-set
-Template.queueSelection.events({
+Template.cohortSelection.events({
     "change .dropdown__menu": function (e, template) {
-        let queueToCalculate = +$(e.currentTarget).val();
-        Session.set('selectedQueue', queueToCalculate);
+        let cohortToCalculate = +$(e.currentTarget).val();
+        Session.set('selectedChoice', cohortToCalculate);
         // (re)calculate earnings
-        let designs = CohortSettings.find( {cohortId: queueToCalculate }, { sort : { sec : -1, sec_rnd : -1 } } ).fetch();
+        let designs = CohortSettings.find( {cohortId: cohortToCalculate }, { sort : { sec : -1, sec_rnd : -1 } } ).fetch();
         for ( let design of designs) {
-            Meteor.call('tryToCompleteCohort', queueToCalculate, design );
+            Meteor.call('tryToCompleteCohort', design );
         }
-        Session.set('showQueueCalc', true);
+        Session.set('showExperimentCalc', true);
     }
 });
 

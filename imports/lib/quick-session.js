@@ -24,21 +24,9 @@ export const Sess = {
             return(amplify.store("s_data") );
         }
     },
-    sub : function () {
-        let sub = SubjectsStatus.findOne( { meteorUserId : Meteor.userId()} );
-        // there's an assumption hardcoded here, that the data i'll want for a subject is the most recent data.  
-        //   I don't know if that's true, but that's what's here.
-        let sd = SubjectsData.findOne({meteorUserId: Meteor.userId()}, { sort : { sec : -1, sec_rnd : -1 } } );
-        if ( !_.isNil(sub) && !_.isNil(sd) ) {
-            return( _.assign( sub, sd ) );
-        } else {
-            return(amplify.store("subject") );
-        }
-    },
     setClientSub : function ( sub ) {
         if (sub) {
             //console.log("setclientsub", sub["data"], sub.data);
-            amplify.store("subject", _.assign( sub.status, sub.data ) );
             amplify.store("s_status", sub.status );
             amplify.store("s_data", sub.data );
         }
@@ -49,7 +37,7 @@ export const Sess = {
         //   I don't know if that's true, but that's what's here.
         let sd = SubjectsData.findOne({meteorUserId: Meteor.userId()}, { sort : { sec : -1, sec_rnd : -1 } } );
         if ( !_.isNil( sd ) ) {
-            cs = CohortSettings.findOne({ cohortId: sd.cohortId, sec : sd.sec, sec_rnd : sd.sec_rnd }, { sort : { sec : -1, sec_rnd : -1 } } );
+            cs = CohortSettings.findOne({ cohortId: sd.theData.cohortId, sec : sd.sec, sec_rnd : sd.sec_rnd }, { sort : { sec : -1, sec_rnd : -1 } } );
         }
         if ( !_.isNil( cs ) ) {
             return( cs );
@@ -66,10 +54,6 @@ export const Sess = {
         if( SubjectsStatus.findOne({ "meteorUserId" : uid }) ) {
             return( SubjectsStatus.findOne({ "meteorUserId" : uid }).quiz.triesLeft );
         }
-    },
-    wipeClientState : function() {
-        amplify.store("subject", null);
-        amplify.store("design", null);
     },
 }
 

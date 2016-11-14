@@ -56,14 +56,15 @@ import { QueueAssigner } from './assigners-custom.js';
     Meteor.methods({
         // this is a reload detector.  if the player has connected before, they will have a data object in progress.
         playerHasConnectedBefore: function( muid ) {
-            let liveRound = SubjectsData.find({meteorUserId : muid, section : "experiment", completedChoice : false}).fetch();
+            //console.log("check prior (data) connections",SubjectsStatus.findOne({meteorUserId : muid}),  SubjectsData.find({meteorUserId : muid}, { $sort: {sec : -1, sec_rnd : -1 }}).fetch() );
+            let liveRound = SubjectsData.find({meteorUserId : muid, sec : "experiment", completedChoice : false}).fetch();
             try {
                 console.assert( liveRound.length <= 1 );
             } catch(err) {
                 console.log( err, liveRound );
             }
             //console.log("testrelogon", muid, SubjectsData.find({meteorUserId : muid, completedChoice : false}).fetch(), liveRound );
-            return( liveRound );
+            return( { "status" : SubjectsStatus.findOne( {meteorUserId : muid }), "data" : liveRound } );
         },
         // this will createa a new SubjectStatus object
         initializeSubject: function( idObj ) {
@@ -147,7 +148,7 @@ import { QueueAssigner } from './assigners-custom.js';
                 queueCountNoChoice: countInNoChoice,
             };
 
-            console.log("new subject data");
+            console.log("new subject data", theData);
             SubjectsData.insert( {
                 userId: sub.userId,
                 meteorUserId: sub.meteorUserId,
@@ -191,7 +192,7 @@ import { QueueAssigner } from './assigners-custom.js';
 
             // initialize player objects; start with determining state
             if ( _.isNil( probeDesign ) ) { // server has been reset and there are no design in database
-                //console.log("First round of install", sub, lastDesign);
+                console.log("First round of install", sub, lastDesign);
                 design = Meteor.call("initializeCohort", cohortId=0, sub.sec_now, sub.sec_rnd_now);
                 //console.log("First round of install", design);
             } else {
@@ -211,7 +212,7 @@ import { QueueAssigner } from './assigners-custom.js';
                     } else {
                         cohortId = maxCohortId;
                     }
-                    //console.log("First player in cohort/section/round", sub, lastDesign);
+                    console.log("First player in cohort/section/round", sub, cohortId, lastDesign);
                     design = Meteor.call("initializeCohort", cohortId, sub.sec_now, sub.sec_rnd_now);
                     //console.log("First player in cohort/section/round", design);
                 } else {
@@ -219,7 +220,7 @@ import { QueueAssigner } from './assigners-custom.js';
                     //    this will be the case if I'm entering a cohort as a non-first person, regardles of the round i'm enetering in
                     familiarSubject = true;
                     design = design;
-                    //console.log( "Found round for continuing player", design );
+                    console.log( "Found round for continuing player", design );
                 }
             }
 
@@ -254,7 +255,7 @@ import { QueueAssigner } from './assigners-custom.js';
             }
         },
         // this updates a SubjectsData object
-        submitQueueChoice: function(muid, cohortId, section, round, choice, design) {
+        submitExperimentChoice: function(muid, cohortId, section, round, choice, design) {
             let theChoice, theEarnings;
 
 
@@ -271,61 +272,72 @@ import { QueueAssigner } from './assigners-custom.js';
                 $set: {
                     "theData.choice": theChoice,
                     "theData.earnings1": theEarnings,
-                    "theData.completedChoice" : true,
+                    "completedChoice" : true,
                 },
             });
-            //console.log("submitQueueChoice");
+            //console.log("submitExperimentChoice");
             //let ss = SubjectsStatus.findOne({ meteorUserId: muid });
             //let sd = SubjectsData.findOne({ meteorUserId: muid , theData.cohortId : cohortId, sec : section, sec_rnd : round });
             //return({ "s_status" : ss, "s_data" : sd });
         },
         // this updates a SubjectsStatus object
-        advanceSubjectState : function(muid) {
+        advanceSubjectState : function(muid, lastRound) {
 
-            let sub_old = SubjectsStatus.findOne({ meteorUserId: muid });
-            console.log("updating round");
-            SubjectsStatus.update({meteorUserId: muid }, {
-                $set: {
-                    //sec_now: next_section,
-                    sec_rnd_now: sub_old.sec_rnd_now + 1,
-                },
-            });
+            if( !lastRound ) {
+                let sub_old = SubjectsStatus.findOne({ meteorUserId: muid });
+                console.log("updating round");
+                SubjectsStatus.update({meteorUserId: muid }, {
+                    $set: {
+                        //sec_now: next_section,
+                        sec_rnd_now: sub_old.sec_rnd_now + 1,
+                    },
+                });
+            }
             let sub = SubjectsStatus.findOne({ meteorUserId: muid });
 
             return( sub );
         },
-        advanceSubjectSection : function(muid) {
-            let new_sec;
+        advanceSubjectSection : function(muid, nextSection) {
             let sub_old = SubjectsStatus.findOne({ meteorUserId: muid });
 
-            if ( sub_old.sec_now === "quiz" ) {
-                if ( sub_old.quiz.passed ) {
-                    new_sec = "experiment";
-                } else if ( sub_old.quiz.failed ) {
-                    new_sec = "survey";
-                }
-            } else if ( sub_old.sec_now === "experiment" ) {
-                new_sec = "survey";
-            } else if ( sub_old.sec_now === "survey" ) {
-                new_sec = "done";
-            }
+            let entered = 0;
 
             SubjectsStatus.update({meteorUserId: muid }, {
                 $set: {
-                    sec_now: new_sec,
-                    readyToProceed: false,
+                    sec_now: nextSection,
+                    readyToProceed: false, // reset this for the next section
                 },
             });
 
-            sub = SubjectsStatus.findOne({ meteorUserId: muid });
             //console.log("advanceSubjectSection", "unready", sub.readyToProceed );
             // routing, which can vary by section
             //if ( sub.sec_now != sub.sec_now ) {
             if ( sub_old.sec_now === "quiz" ) {
-                let asst = TurkServer.Assignment.getAssignment( sub.tsAsstId );
+                // to experiment
+                let asst = TurkServer.Assignment.getAssignment( sub_old.tsAsstId );
                 let batch = TurkServer.Batch.getBatchByName( Design.batchName );
                 TurkServer.setLobbyState( asst, batch );
+                entered = 1;
+            } else if ( sub_old.sec_now === "experiment" ) {
+                // to survey
+                //let asst = TurkServer.Assignment.getAssignment( sub_old.tsAsstId );
+                //let batch = TurkServer.Batch.getBatchByName( Design.batchName );
+                //TurkServer.setLobbyState( asst, batch );
+                entered = 2;
+            } else if ( sub_old.sec_now === "survey" ) {
+                SubjectsStatus.update({ meteorUserId: muid }, {
+                    $set: {
+                        completedExperiment: true,
+                    },
+                });
+                // to exit survey/submitHIT
+                Meteor.call('goToExitSurvey', Meteor.userId());
+                entered = 3;
             }
+
+            sub = SubjectsStatus.findOne({ meteorUserId: muid });
+            console.log("end of advancesection", entered, sub.sec_now );
+            return( sub );
         },
         // updates a CohortSettings object
         tryToCompleteCohort: function(design) {
@@ -346,6 +358,7 @@ import { QueueAssigner } from './assigners-custom.js';
                 completedChoice: false,
             });
 
+            console.log( "cohort completion", cohortFin.count(), cohortUnfin.count(), design.maxPlayersInCohort );
             if (cohortFin.count() >= design.maxPlayersInCohort ) {
                 // get rid of old cohort (make it outdated/complete)
                 completedCohort = true;
@@ -362,7 +375,7 @@ import { QueueAssigner } from './assigners-custom.js';
                 }
 
                 //if end of queue, calculate all earnings
-                Meteor.call( 'calculateQueueEarnings', design );
+                Meteor.call( 'calculateExperimentEarnings', design );
 
             } else if ( cohortFin.count() + cohortUnfin.count() === design.maxPlayersInCohort) {
                 //let sub = SubjectsData.findOne({ cohortId : cohortId, sec: design.sec, sec_rnd: design.sec_rnd }, 
@@ -378,7 +391,7 @@ import { QueueAssigner } from './assigners-custom.js';
             //return( design  );
         },
         // updates a bunch of SubjectsData objects
-        calculateQueueEarnings: function(aDesign) {
+        calculateExperimentEarnings: function(aDesign) {
             let queueasubjects, queuebsubjects, positionfinal, earnings2, totalpayment, asst, cohortId;
             cohortId = aDesign.cohortId;
 
@@ -411,18 +424,13 @@ import { QueueAssigner } from './assigners-custom.js';
                 positionFinal += 1;
             }
         },
-        // updates a SubjectStatus object
         goToExitSurvey: function( muid ) {
-            SubjectsStatus.update({ meteorUserId: muid }, {
-                $set: {
-                    completedExperiment: true,
-                },
-            });
-            TurkServer.Instance.currentInstance().teardown(returnToLobby = true);
+            if (TurkServer.Instance.currentInstance()) {
+                TurkServer.Instance.currentInstance().teardown(returnToLobby = true);
+            }
         },
-        updateQuiz: function ( muid, passed, failed, triesLeft ) {
+        updateQuiz: function ( muid, quizObj) {
             //console.log("updateQuiz", sub);
-            let quizObj = {"passed" : passed, "failed" : failed, "triesLeft" : triesLeft};
             SubjectsStatus.update({ meteorUserId: muid }, 
                 { $set: { quiz: quizObj } });
             return( quizObj );

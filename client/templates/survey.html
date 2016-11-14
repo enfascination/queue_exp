@@ -1,14 +1,5 @@
 
 <template name="survey">
-    <br/>
-    <br/>
-    {{#if testQuizPassed }}
-        <b>One of your previous answers:</b>
-        {{userSelection}}
-    {{else}}
-        <div class="alert alert-info">You failed the test.  You may not participate in the experiment, but you may submit the HIT.</div>
-    {{/if}}
-    <br/>
 
     <!--{{instructionOptions}}-->
 	<h4>Survey</h4>
@@ -24,20 +15,19 @@
             {{/unless}}
         </form>
     {{#if testProceed }}
-        {{> exitSurvey}}
+        {{> proceedButton id="exitSurvey"}}
     {{/if}}
     <br/>
 </template>
 
-	<template name = "questionForm">
-        <!-- <div class = "expQuestion form-group {{#if incorrect}}has-error{{/if}}" id="{{_id}}"> -->
-		<div class = "expQuestion form-group" id="{{_id}}">
-			<label for="{{_id}}" class = "control-label">{{text}}</label>
-            <input id="{{_id}}" name="{{_id}}" class = "sm-width form-control">
-		</div>
-	</template>
-	<template name = "exitSurvey">
-            <form class="exitSurvey">
+	<template name = "submitHIT">
+    <br/>
+    <br/>
+    {{#unless testQuizPassed }}
+        <div class="alert alert-info">You failed the test.  You may not participate in the experiment, but you may submit the HIT.</div>
+    {{/unless}}
+    <br/>
+            <form class="submitHIT">
                 <!--<p>You chose {{userSelection}}</p>
                     <p></p><br>-->
                     <div class="center-block">
@@ -49,6 +39,6 @@
                         <textarea name="feedback" rows="3"></textarea>
                     </div>
                     <br/>
-                    <button type="submit" class="btn btn-success" autofocus >Submit the HIT</button>
+                    <button type="submit" class="btn btn-success navButton" autofocus >Submit the HIT</button>
             </form>
 	</template>
