@@ -10,6 +10,7 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
 import { Questions } from '../../imports/startup/experiment_prep.js';
+import { Schemas } from '../../api/design/schemas.js';
 
 
 Template.body.onCreated( function(){
@@ -106,11 +107,29 @@ Template.experiment.events({
             // the minus one is to correct for zero indexing: round zero should be able to be the first and only round
             //  the maxes and mins are to get sane section values while development
             let lastGameRound = ( sub.sec_rnd_now >= ( design.sequence[ sub.sec_now ].rounds - 1 ) );
-            console.log( "submitting answers, advancing state", design, lastGameRound );
+
+            //console.log( "submitting answers, advancing state", design, lastGameRound );
             //console.log( lastGameRound );
+            let subData = SubjectsData.findOne({ meteorUserId: Meteor.userId() , "theData.cohortId" : cohortId, sec : sub.sec_now, sec_rnd : sub.sec_rnd_now });
+            let theData = subData.theData;
+            theData.choice = choice; // user input might be dirty;
+            try {
+                check(theData, Schemas.ExperimentAnswers);
+            } catch (err) {
+                console.log("Data failed validation");
+                throw(err);
+            }
+            // continue if clean
+            // experiment-specific logic
+            if (choice === "A") {
+                theData.earnings1 = design.endowment - design.queueCosts.A;
+            } else if (choice === "B") {
+                theData.earnings1 = design.endowment - design.queueCosts.B;
+            }
+            
 
             // submit choice and do clean up on previousness
-            Meteor.call('submitExperimentChoice', Meteor.userId(), cohortId, sub.sec_now, sub.sec_rnd_now, choice, design, asyncCallback=function(err, data) {
+            Meteor.call('submitExperimentChoice', Meteor.userId(), sub.sec_now, sub.sec_rnd_now, theData, asyncCallback=function(err, data) {
                 if (err) { throw( err ); }
                 // determine if end of cohort
                 Meteor.call('tryToCompleteCohort', design);
@@ -129,7 +148,7 @@ Template.experiment.events({
                     Helper.buttonsReset( e.currentTarget );
                     // create the next cohort object (which might have no members actually);
                     Meteor.call('initializeRound', sub=updatedSub, lastDesign=design, asyncCallback=function(err, data) {
-                        if (err) { console.log( err ); }
+                        if (err) { return(err); }
                         Sess.setClientSub( { "status" : data.s_status, "data" : data.s_data } );
                         Sess.setClientDesign( data.design );
                     });
@@ -166,8 +185,8 @@ Template.experimentInfo.helpers({
         }
     },
     counterNet: function () {
-        if (Sess.subData() && Sess.subData().theData) {
-            return Sess.subData().theData[0].queuePosition || "XXX";
+        if( !_.isNil( Sess.subData() ) && !_.isNil( Sess.subData()[0] ) ) {
+            return Sess.subData()[0].theData.queuePosition || "XXX";
         }
     },
     userAccount: function () {

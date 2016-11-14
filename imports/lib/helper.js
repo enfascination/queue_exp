@@ -3,6 +3,11 @@
 var _ = require('lodash');
 import { Questions } from '../../imports/startup/experiment_prep.js';
 
+/// local used below
+let questionHasError = function ( el, hasError ) {
+    //console.log("questionHasError", el, el.id, Questions.find({section: "quiz"}).fetch() );
+    let output = Questions.update( {_id : el.id }, { $set : { "hasError" : hasError }} );
+};
 /* boilerplate blank error return function for validated inputs */
 export const Helper = {
     err_func : function err_func(error, result) { console.log( error ); }, 
@@ -38,6 +43,15 @@ export const Helper = {
             j = (j = i.length) > 3 ? j % 3 : 0;
         return symbol + negative + (j ? i.substr(0, j) + thousand : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousand) + (places ? decimal + Math.abs(number - i).toFixed(places).slice(2) : "");
     },
+    // from https://gist.github.com/izumskee/b3eca69d2502ae1aee88
+    throwError : function(error, reason, details) {
+        error = new Meteor.Error(error, reason, details);
+        if (Meteor.isClient) {
+            return error;
+        } else if (Meteor.isServer) {
+            throw error;
+        }
+    },
     testProceed : function() {
             let muid = Meteor.userId();
             let sub = SubjectsStatus.findOne({ meteorUserId: muid } );
@@ -46,24 +60,20 @@ export const Helper = {
                 return( sub.readyToProceed );
             }
     },
-    questionHasError : function ( el, hasError ) {
-        //console.log("questionHasError", el, el.id, Questions.find({section: "quiz"}).fetch() );
-        let output = Questions.update( {_id : el.id }, { $set : { "hasError" : hasError }} );
-    },
-};
-Helper.buttonsReset = function (form) {
+    questionHasError : questionHasError, 
+    buttonsReset : function (form) {
         //console.log("buttonsReset", $( form ).children(".expQuestion"));
         $( form ).children(".expQuestion").each( function( el ) {
             //let id = b.id;
             let id = this.id;
             // uncheck all buttons in this question
-            Helper.questionHasError( this, false);
+            questionHasError( this, false);
             $( this ).find( "button.expChoice" ).each( function( el ) {
                 $( this ).removeAttr( "checked" );
             });
         });
-    };
-Helper.buttonsDisable = function (form) {
+    },
+    buttonsDisable : function (form) {
         //console.log("buttonsDisable", $( form ).children(".expQuestion"));
         $( form ).children(".expQuestion").each( function( el ) {
             //let b = $( this );
@@ -71,6 +81,7 @@ Helper.buttonsDisable = function (form) {
             let id = this.id;
             let output = Questions.update( {_id : id }, { $set : { disabled : true }} );
         });
+    },
 };
 
 

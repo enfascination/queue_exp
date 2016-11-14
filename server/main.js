@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
 
 import '../api/design/models.js';
+import { Schemas } from '../api/design/schemas.js';
 import { Helper } from '../imports/lib/helper.js';
 
 import { QueueAssigner } from './assigners-custom.js';
@@ -118,8 +119,13 @@ import { QueueAssigner } from './assigners-custom.js';
                     sec : design.sec, 
                     sec_rnd : design.sec_rnd 
                 }, { sort : {  "theData.cohortId" : -1, "theData.queuePosition" : -1 } });
+                console.log("familiarSubject", dat.design, previousSubject, SubjectsData.findOne( {
+                    "theData.cohortId" : design.cohortId, 
+                    sec : design.sec, 
+                    sec_rnd : design.sec_rnd 
+                }));
                 if (_.isNil(previousSubject)) {
-                    throw( "something is seriously the matter: you can't play against yourself, but there isn't someone else" );
+                    return Helper.throwError(403, "something is seriously the matter: you can't play against yourself, but there isn't someone else");
                 }
                 subjectPos = previousSubject.theData.queuePosition + 1;
                 countInA = SubjectsData.find({ "theData.cohortId": design.cohortId, 
@@ -147,8 +153,14 @@ import { QueueAssigner } from './assigners-custom.js';
                 queueCountB: countInB,
                 queueCountNoChoice: countInNoChoice,
             };
+            try {
+                check(theData, Schemas.ExperimentAnswers);
+            } catch (err) {
+                console.log("Data failed validation");
+                throw(err);
+            }
 
-            console.log("new subject data", theData);
+            //console.log("new subject data", theData);
             SubjectsData.insert( {
                 userId: sub.userId,
                 meteorUserId: sub.meteorUserId,
@@ -212,7 +224,8 @@ import { QueueAssigner } from './assigners-custom.js';
                     } else {
                         cohortId = maxCohortId;
                     }
-                    console.log("First player in cohort/section/round", sub, cohortId, lastDesign);
+                    //console.log("First player in cohort/section/round", sub, cohortId, lastDesign);
+                    console.log("First player in cohort/section/round");
                     design = Meteor.call("initializeCohort", cohortId, sub.sec_now, sub.sec_rnd_now);
                     //console.log("First player in cohort/section/round", design);
                 } else {
@@ -220,7 +233,8 @@ import { QueueAssigner } from './assigners-custom.js';
                     //    this will be the case if I'm entering a cohort as a non-first person, regardles of the round i'm enetering in
                     familiarSubject = true;
                     design = design;
-                    console.log( "Found round for continuing player", design );
+                    //console.log( "Found round for continuing player", design );
+                    console.log( "Found round for continuing player");
                 }
             }
 
@@ -255,23 +269,12 @@ import { QueueAssigner } from './assigners-custom.js';
             }
         },
         // this updates a SubjectsData object
-        submitExperimentChoice: function(muid, cohortId, section, round, choice, design) {
-            let theChoice, theEarnings;
+        submitExperimentChoice: function(muid, sec, sec_rnd, theData) {
 
-
-            // experiment-specific logic
-            if (choice === "A") {
-                theChoice = "A";
-                theEarnings = design.endowment - design.queueCosts.A;
-            } else if (choice === "B") {
-                theChoice = "B";
-                theEarnings = design.endowment - design.queueCosts.B;
-            }
-
-            SubjectsData.update({ meteorUserId: muid , "theData.cohortId" : cohortId, sec : section, sec_rnd : round }, {
+            SubjectsData.update({ meteorUserId: muid , "theData.cohortId" : theData.cohortId, sec : sec, sec_rnd : sec_rnd }, {
                 $set: {
-                    "theData.choice": theChoice,
-                    "theData.earnings1": theEarnings,
+                    "theData.choice": theData.choice,
+                    "theData.earnings1": theData.earnings1,
                     "completedChoice" : true,
                 },
             });
@@ -459,21 +462,16 @@ import { QueueAssigner } from './assigners-custom.js';
                 //throw(new Meteor.Error(500, 'Permission denied!'));
             //}
         },
-        initializeSurveyData : function(muid, question) {
+        initializeSurveyData : function(muid, theData ) {
             let sub = SubjectsStatus.findOne({ meteorUserId : muid });
             //console.log("initializeSurveyData", sub);
-            let theData = {
-                questionType: question.type,
-                question: question.text,
-                answer: question.choice,
-            };
             let id = SubjectsData.insert( {
                 userId: sub.userId,
                 meteorUserId: sub.meteorUserId,
                 sec: sub.sec_now,
                 sec_rnd: 0,
                 theData: theData,
-                completedChoice : question.answered,
+                completedChoice : theData.answered,
                 theTimestamp: Date.now(),
             } );
             return( SubjectsData.findOne( id ) );

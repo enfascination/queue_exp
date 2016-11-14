@@ -7,6 +7,7 @@ import { TurkServer } from 'meteor/mizzao:turkserver';
 
 import { Helper } from '../../imports/lib/helper.js';
 import { Questions } from '../../imports/startup/experiment_prep.js';
+import { Schemas } from '../../api/design/schemas.js';
 
 Template.survey.helpers({
 	questions: function(){
@@ -22,8 +23,8 @@ Template.survey.events({
         //// ARE INPUTS ACCEPTABLE?
         /////////////////////
         // AHHHHHHHH
-        Meteor.call( "setReadyToProceed", Meteor.userId() );
-        return;
+        //Meteor.call( "setReadyToProceed", Meteor.userId() );
+        //return;
         // AHHHHHHHH
         let qs = Questions.find({sec: 'survey'}).forEach( function( q ) {
             let element_raw = $(e.target).children("div#"+q._id)[0];
@@ -36,6 +37,18 @@ Template.survey.events({
         //// IF INPUTS OK, SUBMIT ANSWERS AND ....
         /////////////////////
         qs = Questions.find({sec: 'survey'}).forEach( function( q ) {
+            let theData = {
+                questionType: q.type,
+                question: q.text,
+                answer: q.choice,
+                answered: q.answered,
+            };
+            try {
+                check(theData, Schemas.SurveyAnswers);
+            } catch (err) {
+                console.log("Data failed validation");
+                throw(err);
+            }
             Meteor.call("initializeSurveyData", Meteor.userId(), Questions.findOne({_id: q._id}), function(err,data) {
                 if (err) { throw( err ); }
                 //console.log("initSurvey cb", answered, choice, data);
@@ -72,11 +85,15 @@ Template.submitHIT.helpers({
 });
 Template.submitHIT.events({
     'submit form.submitHIT': function (e) {
-        console.log("IN HERE");
-        let results = null;
         e.preventDefault();
-        results = { feedback: e.target.feedback.value };
-        TurkServer.submitExitSurvey(results);
+        let theData = { feedback: e.target.feedback.value };
+        try {
+            check(theData, Schemas.ExitSurveyAnswers);
+        } catch (err) {
+            console.log("Data failed validation");
+            throw(err);
+        }
+        TurkServer.submitExitSurvey(theData);
     },
 });
 

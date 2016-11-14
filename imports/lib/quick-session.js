@@ -17,7 +17,7 @@ export const Sess = {
     subData : function () {
         // there's an assumption hardcoded here, that the data i'll want for a subject is the most recent data.  
         //   I don't know if that's true, but that's what's here.
-        let sd = SubjectsData.find({meteorUserId: Meteor.userId()}, { sort : { theTimestamp : -1, sec : -1, sec_rnd : -1 } } );
+        let sd = SubjectsData.find({meteorUserId: Meteor.userId()}, { sort : { theTimestamp : -1, sec : -1, sec_rnd : -1 } } ).fetch();
         if ( !_.isNil(sd) ) {
             return( sd );
         } else {

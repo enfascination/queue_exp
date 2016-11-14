@@ -48,6 +48,8 @@ Template.binaryForcedChoice.events({
                 else {// uncheck a checked button
                     child.removeAttribute("checked");
                 }
+            } else {
+                e.stopPropagation();
             }
         }
 	}, 

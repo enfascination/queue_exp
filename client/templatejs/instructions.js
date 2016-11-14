@@ -13,15 +13,15 @@ Template.experimentInstructions.onCreated( function(){
 });
 Template.experimentInstructions.helpers({
     counterNet: function () {
-        if (Sess.subData() && Sess.subData().theData) {
+        if( !_.isNil( Sess.subData() ) && !_.isNil( Sess.subData()[0] ) ) {
             return Sess.subData()[0].theData.queuePosition || "XXX";
         }
     },
     earningsAMin: function () {
-        let sub = Sess.subData();
+        let sub = Sess.subData()[0];
         let aDesign = Sess.design();
         if ( sub && sub.theData ) {
-            let qPos = sub.theData[0].queuePosition * aDesign.positionCosts;
+            let qPos = sub.theData.queuePosition * aDesign.positionCosts;
             return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.A + 1.00 - qPos ) );
         }
     },
@@ -34,10 +34,10 @@ Template.experimentInstructions.helpers({
         return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.B ) );
     },
     earningsBMax: function () {
-        let sub = Sess.subData();
+        let sub = Sess.subData()[0];
         let aDesign = Sess.design();
         if ( sub && sub.theData ) {
-            let qPos = sub.theData[0].queuePosition * aDesign.positionCosts;
+            let qPos = sub.theData.queuePosition * aDesign.positionCosts;
             return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.B + 1.00 - qPos ) );
         }
     },

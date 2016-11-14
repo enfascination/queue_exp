@@ -16,7 +16,7 @@ import { Questions } from '../imports/startup/experiment_prep.js';
 
 Tracker.autorun(function() {
     //console.log("routing", Meteor.users.findOne(asst.userId).turkserver.state );
-    console.log("routing");
+    //console.log("routing");
     if (TurkServer.inExperiment()) {
         Router.go('/experiment');
     } else if (TurkServer.inQuiz()) {
@@ -91,9 +91,9 @@ Template.main.onRendered( function() {
         disableTab( $( tabRef ) );
     } );
     sub = Sess.subStat();
-    console.log( "main.onRendered", sub, SubjectsStatus.findOne({meteorUserId : Meteor.userId() }));
+    //console.log( "main.onRendered", sub, SubjectsStatus.findOne({meteorUserId : Meteor.userId() }));
     
-    console.log("onCreated", this.data);
+    //console.log("onCreated", this.data);
 });
 Template.main.helpers({
     testProceed: Helper.testProceed,

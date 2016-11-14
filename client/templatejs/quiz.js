@@ -11,6 +11,7 @@ import { TurkServer } from 'meteor/mizzao:turkserver';
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
 import { Questions } from '../../imports/startup/experiment_prep.js';
+import { Schemas } from '../../api/design/schemas.js';
 
 // controller
 Template.quiz.onCreated( function(){
@@ -41,8 +42,8 @@ Template.quiz.events({
         //// ARE INPUTS ACCEPTABLE?
         /////////////////////
         // AHHHHHHHH
-        Meteor.call( "setReadyToProceed", Meteor.userId() );
-        return;
+        //Meteor.call( "setReadyToProceed", Meteor.userId() );
+        //return;
         // AHHHHHHHH
         let qs = Questions.find({sec: 'quiz'}).forEach( function( q ) {
             let form = e.target;
@@ -53,10 +54,16 @@ Template.quiz.events({
             let choice = element.attr("choice");
             let answered = !_.isNil( choice );
             let correct = answered && ( choice === q.answer[0] );
-            Questions.update({_id: q._id}, {$set: {correct: correct, answered: answered, choice : choice }});
+            let theData = {correct: correct, answered: answered, choice : choice };
+            // double check correctness before udpating
+            if (Match.test(theData, Schemas.QuizAnswers) ) {
+                Questions.update({_id: q._id}, {$set: theData});
+            } else {
+               correct = false;
+            }
             if (!correct) {
                 Helper.questionHasError( element_raw, true );
-                console.log("Quiz Failure", q._id, answered, choice, correct, element_raw);
+                console.log("Quiz Failure", q._id, theData, element_raw);
             } else {
                 Helper.questionHasError( element_raw, false );
             }
