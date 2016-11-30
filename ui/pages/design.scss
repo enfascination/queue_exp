@@ -1,13 +1,126 @@
 @import "../../../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 
+@font-face {
+    font-family: "Matterhorn";
+    font-style: normal;
+    font-weight: 400;
+    src: url("/fonts/Matterhorn-Regular.otf") format("opentype");
+}
+@font-face {
+    font-family: "Matterhorn";
+    font-style: normal;
+    font-weight: 700;
+    src: url("/fonts/Matterhorn-Bold.otf") format("opentype");
+}
+@font-face {
+    font-family: "Matterhorn";
+    font-weight: 600;
+    font-style: normal;
+    src: url("/fonts/Matterhorn-SemiBold.otf") format("opentype");
+}
+@font-face {
+    font-family: "Matterhorn";
+    font-style: italic;
+    font-weight: 400;
+    src: url("/fonts/Matterhorn-Italic.otf") format("opentype");
+}
+@font-face {
+    font-family: "Matterhorn";
+    font-style: oblique;
+    font-weight: 400;
+    src: url("/fonts/Matterhorn-Italic.otf") format("opentype");
+}
+@font-face {
+    font-family: "Matterhorn";
+    font-weight: 700;
+    font-style: italic;
+    src: url("/fonts/Matterhorn-BoldItalic.otf") format("opentype");
+}
+@font-face {
+    font-family: "Matterhorn";
+    font-weight: 700;
+    font-style: oblique;
+    src: url("/fonts/Matterhorn-BoldItalic.otf") format("opentype");
+}
+@font-face {
+    font-family: "Matterhorn";
+    font-weight: 600;
+    font-style: italic;
+    src: url("/fonts/Matterhorn-SemiBoldItalic.otf") format("opentype");
+}
+@font-face {
+    font-family: "Matterhorn";
+    font-weight: 600;
+    font-style: oblique;
+    src: url("/fonts/Matterhorn-SemiBoldItalic.otf") format("opentype");
+}
+@font-face {
+    font-family: "Matterhorn Serif";
+    font-weight: 400;
+    font-style: normal;
+    src: url("/fonts/MatterhornSerif-Regular.otf") format("opentype");
+}
+@font-face {
+    font-family: "Matterhorn Serif";
+    font-weight: 600;
+    font-style: normal;
+    src: url("/fonts/MatterhornSerif-SemiBold.otf") format("opentype");
+}
+@font-face {
+    font-family: "Matterhorn Serif";
+    font-weight: 700;
+    font-style: normal;
+    src: url("/fonts/MatterhornSerif-Bold.otf") format("opentype");
+}
+@font-face {
+    font-family: "Inconsolata";
+    font-style: normal;
+    font-weight: 400;
+    src: url("/fonts/Inconsolata.otf") format("opentype");
+}
+
 body {
-    width: 80%;
-    max-width: 960px;
+    //width: 80%;
+    //max-width: 960px;
+    padding: 50px 50px 50px 50px;
+    background: LightGrey;
     margin: auto;
+}
+.expWindow {
+    font-family: "Matterhorn";
     text-align: center;
 }
-.exp-info {
-    width: 95%;
+h1 {
+    font-weight: 600;
+}
+h2, h3, h4 {
+    font-family: "Matterhorn Serif";
+}
+.bg {
+    float: right;
+    background: url('data:image/svg+xml;utf8,<svg id="circle" height="200" xmlns="http://www.w3.org/2000/svg"><circle id="greencircle" cx="30" cy="30" r="30" fill="green" /></svg>') no-repeat;
+}
+.expMainPanel {
+    background-color: White;
+    border: 1px solid DarkGrey;
+    min-width: 40%;
+}
+.expTabs {
+    text-align: left;
+    background-color: White;
+    border: 1px solid DarkGrey;
+}
+.expSubTabs {
+    text-align: right;
+    background-color: LightGrey;
+}
+.expHeader {
+    background-color: White;
+    border: 1px solid DarkGrey;
+}
+.expInfoPanel {
+    background-color: White;
+    border: 1px solid DarkGrey;
 }
 
 .btn[checked], .btn[checked]:focus, .btn[checked]:hover, .btn[checked]:focus:hover {

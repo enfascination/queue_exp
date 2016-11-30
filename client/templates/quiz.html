@@ -1,4 +1,5 @@
 <template name="quiz">
+                <h1>Quiz</h1>
     These are the instructions.
     <br/>
 
@@ -8,7 +9,7 @@
 
 	<form class="quiz" id="submitQuiz">
 		{{#each questions}}
-			{{> questionBinary}}
+        {{> questionBinary}}
 		{{/each}}
 		{{#if testQuizPassed}}
 			<div class = "alert alert-success">You have successfully passed the quiz! Click <em>Proceed</em>.</div>

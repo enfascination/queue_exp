@@ -8,58 +8,95 @@
 </template>
 
 <template name="main">
-    <ul class="nav nav-tabs" role="tab-list">
-        <li role="presentation"><a href="#instructions" aria-controls="instructions" role="tab" data-toggle="tab">Instructions</a></li>
-        <li role="presentation"><a href="#quiz" aria-controls="quiz" role="tab" data-toggle="tab">Start</a></li>
-        <li role="presentation"><a href="#experiment" aria-controls="experiment" role="tab" data-toggle="tab">Experiment</a></li>
-        <li role="presentation"><a href="#survey" aria-controls="survey" role="tab" data-toggle="tab">Surveys</a></li>
-        <li role="presentation"><a href="#submitHIT" aria-controls="submitHIT" role="tab" data-toggle="tab">Submit</a></li>
-        {{#if showExperimenterView}}
-        <li role="presentation"><a href="#experimenterView" aria-controls="experimenterView" role="tab" data-toggle="tab">Data view</a></li>
-        {{/if}}
-    </ul>
-    <div class="tab-content">
-        <div role="tabpanel" class="tab-pane" id="instructions">
-            {{> mainInstructions}}
-            {{> navButton tabTarget=page buttonText=page}}
+        <div class="expWindow bg">
+        <div class="row">
+            <div class="col-md-7 col-md-offset-3 expHeader">
+                <h1>The Experiment</h1>
+            </div>
         </div>
-        <div role="tabpanel" class="tab-pane" id="quiz">
-            {{> quiz}}
-            {{> navButton tabTarget="instructions" buttonText="Instructions"}}
+        <div class="row">
+            <div class="col-md-2">
+                <ul class="nav nav-tabs nav-stacked expTabs" role="tab-list">
+                    <li role="presentation"><a data-target="#instructions" href="#instructions" aria-controls="instructions" role="tab" data-toggle="tab">Instructions</a></li>
+                    <li role="presentation"><a data-target="#quiz" href="#quiz" aria-controls="quiz" role="tab" data-toggle="tab">Start</a></li>
+                    {{#each expSectionTabs}}
+                        {{> expSectionTab}}
+                    {{/each}}
+                    <li role="presentation"><a data-target="#submitHIT" href="#submitHIT" aria-controls="submitHIT" role="tab" data-toggle="tab">Submit</a></li>
+                    {{#if showExperimenterView}}
+                    <li role="presentation"><a data-target="#experimenterView" href="#experimenterView" aria-controls="experimenterView" role="tab" data-toggle="tab">Data view</a></li>
+                    {{/if}}
+                </ul>
+            </div>
+            <div class="col-md-7 col-md-offset-1 expMainPanel">
+                <div class="tab-content" id="tabs" data-tabs="tabs">
+                    <div role="tabpanel" class="tab-pane" id="instructions">
+                        {{> mainInstructions}}
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="{{currentSection.id}}">
+                    {{> yield }}
+                    </div>
+                    {{#if showExperimenterView}}
+                    <div role="tabpanel" class="tab-pane" id="experimenterView">
+                        {{> experimenterView}}
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+            <div class="col-md-2 expInfoPanel">
+                Subject Info
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+            </div>
         </div>
-        <div role="tabpanel" class="tab-pane" id="experiment">
-            {{> experiment}}
-            {{> navButton tabTarget="instructions" buttonText="Instructions"}}
         </div>
-        <div role="tabpanel" class="tab-pane" id="survey">
-            {{> survey}}
-        </div>
-        <div role="tabpanel" class="tab-pane" id="submitHIT">
-            {{> submitHIT}}
-        </div>
-        {{#if showExperimenterView}}
-        <div role="tabpanel" class="tab-pane" id="experimenterView">
-            {{> experimenterView}}
-        </div>
-        {{/if}}
-    </div>
 </template>
-<template name="experimentNav">
-    {{#if sectionExperiment}}
-        {{> main page="experiment"}}
-    {{else}} {{#if sectionExperimentSurvey}}
-        {{> main page="survey"}}
-    {{else}} 
-        {{> main page="experiment"}}
-        {{!--<p>Loading ...</p>--}}
+<template name="expSectionTab">
+    <li role="presentation">
+        <a data-target="#{{expSection.id}}" href="#{{expSection.id}}" aria-controls="{{expSection.id}}" role="tab" data-toggle="tab">{{expSection.label}}</a>
+    {{#if currentSectionExperiment expSection.id}}
+        <ul class="nav nav-pills nav-stacked expSubTabs" role="tab-list">
+            {{#each expSectionRoundTabs}}
+                {{> expSectionRoundTab}}
+            {{/each}}
+        </ul>
     {{/if}}
+    </li>
+</template>
+<template name="expSectionRoundTab">
+    <li role="presentation"><a data-target="#{{expSectionRoundId}}" href="#{{expSectionRoundId}}" aria-controls="{{expSectionRoundId}}" role="tab" data-toggle="tab">{{expSectionRoundLabel}}</a></li>
+</template>
+
+<template name="expSectionTabPane">
+    {{#if currentSectionExperiment expSection.id}}
+            {{> experiment thisSection=expSection}}
     {{/if}}
 </template>
 
-<template name="quizNav">
-    {{> main page="quiz"}}
+<template name="quizSectionTabPane">
+    <h1>QUIZZZ!!!</h1>
+                    {{> quiz}}
+                    {{> navButton}}
+</template>
+<template name="expSectionTabPane2">
+    <h1>EXPZZZ!!!</h1>
+    {{#if currentSectionExperiment}}
+            {{#unless isSection "survey"}}
+                {{> experiment ..}}
+            {{else}}
+                {{> survey}}
+            {{/unless}}
+    {{/if}}
+</template>
+<template name="submitHITSectionTabPane">
+    <h1>SUBMITZZZ!!!</h1>
+    {{> submitHIT}}
 </template>
 
-<template name="submitNav">
-    {{> main page="submitHIT"}}
+
+<template name="loading">
+    <h1>Loading ...</h1>
 </template>

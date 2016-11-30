@@ -6,6 +6,7 @@ import { Template } from 'meteor/templating';
 import { TurkServer } from 'meteor/mizzao:turkserver';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
+import { Router } from 'meteor/iron:router';
 
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
@@ -13,21 +14,19 @@ import { Questions } from '../../imports/startup/experiment_prep.js';
 import { Schemas } from '../../api/design/schemas.js';
 
 
-Template.body.onCreated( function(){
-    //initialize ui state
-    UserElements.choiceChecked = new ReactiveDict(); // this is so there can be mulplie of these buttons on a page
-    UserElements.userAccount = new ReactiveVar();
-});
-
 Template.experiment.onCreated( function(){
+    UserElements.userAccount = new ReactiveVar();
+
     let group = TurkServer.group();
     if (_.isNil(group) ) return;
     // make client side subject available
     let muid = Meteor.userId();
+    let templateCurrentData = Template.currentData();
     //console.log("MUID", muid);
     if ( muid ) {
         // is player refreshing, reconnecting, or somehow already up to date in the system?
-        //console.log("experiment render");
+        //console.log("experiment render", this, Template.currentData());
+        console.log("experiment render", Template.currentData());
         Meteor.call("playerHasConnectedBefore", muid, function(err,state) { // think of this cb as an if statement
             let newData, newCohort, updateSession;
             let sub = state.status;
@@ -38,16 +37,14 @@ Template.experiment.onCreated( function(){
                 Meteor.call("addGroupId", muid, group );
                 Meteor.call('initializeRound', sub=muid, lastDesign=null, asyncCallback=function(err, data) {
                     if (err) { throw( err ); }
-                    //console.log("initializeRound", data.s_data.theData.cohortId, data.design.cohortId);
+                    console.log("initializeRound", data.s_data.theData.cohortId, data.design.cohortId);
                     updateSession = true;
                     newData = { "status" : data.s_status, "data" : data.s_data };
                     newCohort = data.design;
                 } );
-            } else if (sub.sec_now === "survey") { // player is refreshing or reconnecting in survey
+            } else if ( sub.sec_type_now === "experiment" && _.some( data, (x) => x.completedChoice === false ) ) { // player is refreshing or reconnecting mid choice in experiment
                 updateSession = false;
-            } else if ( sub.sec_now === "experiment" && _.some( data, (x) => x.completedChoice === false ) ) { // player is refreshing or reconnecting mid choice in experiment
-                updateSession = false;
-            } else if ( sub.sec_now === "experiment" && _.every( data, (x) => x.completedChoice === true ) ) { // player is refreshing or reconnecting post choice in experiment
+            } else if ( sub.sec_type_now === "experiment" && _.every( data, (x) => x.completedChoice === true ) ) { // player is refreshing or reconnecting post choice in experiment
                 updateSession = false;
             }
             if (updateSession) {
@@ -55,29 +52,42 @@ Template.experiment.onCreated( function(){
                 Sess.setClientSub( newData );
                 Sess.setClientDesign( newCohort );
             }
+
+            //update ui
+            let sec = templateCurrentData.currentSection.id;
+            //Helper.updateNavBar( sec );
         });
     }
 });
 
 Template.experiment.helpers({
 	questions: function(){
+        //console.log("experiment.helpers", this);
         let sub = Sess.subStat();
-        return Questions.find({sec: 'experiment', sec_rnd : sub.sec_rnd_now }).fetch() ;
+        let dataContext = this;
+        if (dataContext.thisSection) {
+            return( Helper.questions( sub, dataContext.thisSection.id, dataContext) );
+        }
     },
     testProceed: Helper.testProceed,
+    section: function() {
+        let dataContext = this;
+        return( dataContext.thisSection );
+    }
 });
 Template.experiment.events({
     'submit form#nextStage': function(e){
+        //console.log("experiment.events", this);
         e.stopPropagation();
         e.preventDefault();
         let muid = Meteor.userId();
-        let sub = SubjectsStatus.findOne({ meteorUserId : muid });
+        let sub = Sess.subStat();
 
         /////////////////////
         //// ARE INPUTS ACCEPTABLE?
         /////////////////////
         //Only allow clients to attempt quiz twice before preventing them from doing so
-        let qs = Questions.find({sec: 'experiment', sec_rnd : sub.sec_rnd_now }).forEach( function( q ) {
+        let qs = Questions.find({sec: this.thisSection.id, sec_rnd : sub.sec_rnd_now }).forEach( function( q ) {
             let form = e.target;
             let element_raw = $(form).children("div#"+q._id)[0];
             let element = $( element_raw );
@@ -90,10 +100,10 @@ Template.experiment.events({
                 Helper.questionHasError( element_raw, false );
             }
         });
-        let answeredCount = Questions.find({sec: 'experiment', sec_rnd : sub.sec_rnd_now , answered:true}).count();
-        let questionsCount = Questions.find({sec: 'experiment', sec_rnd : sub.sec_rnd_now }).count();
-        //console.log(sub.sec_rnd_now, Questions.findOne({sec: 'experiment'}));
-        let choice = Questions.findOne({sec: 'experiment', sec_rnd : sub.sec_rnd_now }).choice;
+        let answeredCount = Questions.find({sec: this.thisSection.id, sec_rnd : sub.sec_rnd_now , answered:true}).count();
+        let questionsCount = Questions.find({sec: this.thisSection.id, sec_rnd : sub.sec_rnd_now }).count();
+        //console.log(sub.sec_rnd_now, Questions.findOne({sec: this.thisSection.id}));
+        let choice = Questions.findOne({sec: this.thisSection.id, sec_rnd : sub.sec_rnd_now }).choice;
 
         if ( answeredCount === questionsCount ) {
             let design = Sess.design();
@@ -102,6 +112,10 @@ Template.experiment.events({
             /////////////////////
             //// IF INPUTS OK, SUBMIT ANSWERS AND ....
             /////////////////////
+            // AHHHHHHHH
+            //Meteor.call( "setReadyToProceed", Meteor.userId() );
+            //return;
+            // AHHHHHHHH
 
             // game-specific logic here
             // the minus one is to correct for zero indexing: round zero should be able to be the first and only round
@@ -143,6 +157,7 @@ Template.experiment.events({
 
                 // experiment navigation
                 if ( !lastGameRound ) {  // calculate the logic for this out of the callbacks because things get confusing
+                    //console.log("continuing");
                     // go to the next round
                     // uncheck buttons in UI
                     Helper.buttonsReset( e.currentTarget );
@@ -155,6 +170,7 @@ Template.experiment.events({
                     // routing?
                     //Router.go('/experiment');
                 } else {
+                    //console.log("ready?");
                     Meteor.call( "setReadyToProceed", muid );
                     Helper.buttonsDisable( e.currentTarget );
                 }
@@ -164,9 +180,16 @@ Template.experiment.events({
     'click button#nextSection': function ( e ) {
         e.stopPropagation();
         let muid = Meteor.userId();
-        let sub = SubjectsStatus.findOne({ meteorUserId : muid });
+        let sub = Sess.subStat();
         if ( sub.readyToProceed ) {
-            Meteor.call('advanceSubjectSection', Meteor.userId(), "survey");
+            if (sub.sec_now === "experiment1" ) {
+                Meteor.call('advanceSubjectSection', Meteor.userId(), "experiment2", "experiment", asyncCallback=function(err, updatedSub) {
+                    if (err) { throw( err ); }
+                    Meteor.call('initializeRound', sub=updatedSub, lastDesign=Sess.design());
+                });
+            } else if (sub.sec_now === "experiment2" ) {
+                Meteor.call('advanceSubjectSection', Meteor.userId(), "survey", "experiment");
+            }
         } else {
         }
     },
@@ -178,21 +201,25 @@ Template.experiment.events({
 Template.experimentInfo.helpers({
     choiceChecked: function ( ) {
         let sub = Sess.subStat();
-        let q = Questions.findOne({ sec: "experiment", sec_rnd : sub.sec_rnd_now });
-        //console.log( sub );
-        if (UserElements.choiceChecked && !_.isNil(sub) && !_.isNil( q )) {
-            return UserElements.choiceChecked.get( q._id );
+        if (sub) {
+            //console.log("experimentInfo.helpers", this, sub );
+            let q = Questions.findOne({ sec: this.thisSection.id, sec_rnd : sub.sec_rnd_now });
+            //console.log("experimentInfo.helpers", this, sub, q );
+            if (UserElements.choiceChecked && !_.isNil(sub) && !_.isNil( q )) {
+                return UserElements.choiceChecked.get( q._id );
+            }
         }
     },
     counterNet: function () {
-        if( !_.isNil( Sess.subData() ) && !_.isNil( Sess.subData()[0] ) ) {
-            return Sess.subData()[0].theData.queuePosition || "XXX";
+        let data = Sess.subData();
+        if( data && !_.isNil( data ) && !_.isNil( data[0] ) ) {
+            return data[0].theData.queuePosition;
         }
     },
     userAccount: function () {
-        if (UserElements.userAccount) {
+        let des = Sess.design();
+        if (UserElements.userAccount && des) {
             if (!UserElements.userAccount.get()) {
-                let des = Sess.design();
                 UserElements.userAccount.set(des.endowment);
             }
             return( Helper.toCash( UserElements.userAccount.get() ) );
@@ -200,25 +227,33 @@ Template.experimentInfo.helpers({
     },
     groupSize: function () {
         let aDesign = Sess.design();
-        return( aDesign.maxPlayersInCohort || "XXX");
+        if (aDesign) {
+            return( aDesign.maxPlayersInCohort);
+        }
     },
 });
 
 Template.questionBinary.events({
 	'click div.expQuestion': function (e) {
-        //console.log("div.expQuestion");
         e.stopPropagation();
-        let des = Sess.design();
-        let choice = e.target.getAttribute("choice");
-        let buttonId = e.currentTarget.id; // currentTarget is the div wrapper, target is each button within in
-        if ( !( _.isNil( choice ) || e.currentTarget.getAttribute("choice") ) ) {
-            e.currentTarget.setAttribute( "choice", choice );
-            UserElements.userAccount.set(des.endowment - des.queueCosts[ e.target.getAttribute("choice") ]);
-            UserElements.choiceChecked.set(buttonId, choice);
-        } else {
-            e.currentTarget.removeAttribute( "choice" );
-            UserElements.userAccount.set(des.endowment);
-            UserElements.choiceChecked.set(buttonId, "");
+        let questionData = this;
+        //console.log("div.experimentQuestion", this, e.currentTarget.getAttribute("choice"), e.target.getAttribute("choice"));
+        if ( questionData.context.currentSection.type === "experiment" ) {
+            let des = Sess.design();
+            let choice = e.target.getAttribute("choice");
+            let buttonId = e.currentTarget.id; // currentTarget is the div wrapper, target is each button within in
+            //console.log("div.experimentQuestion", buttonId, choice, e.currentTarget.getAttribute("choice"), e.target.getAttribute("choice"));
+            if ( !_.isNil( choice ) && e.currentTarget.getAttribute("choice") != choice ) {
+                //console.log("div.experimentQuestion check", this, des, SubjectsData.find().fetch() );
+                e.currentTarget.setAttribute( "choice", choice );
+                UserElements.userAccount.set(des.endowment - des.queueCosts[ e.target.getAttribute("choice") ]);
+                UserElements.choiceChecked.set(buttonId, choice);
+            } else { // uncheck
+                //console.log("div.experimentQuestion uncheck");
+                e.currentTarget.removeAttribute( "choice" );
+                UserElements.userAccount.set(des.endowment);
+                UserElements.choiceChecked.set(buttonId, "");
+            }
         }
     },
 });

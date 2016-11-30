@@ -26,3 +26,4 @@ amplify
 smeevil:session-store
 iron:middleware-stack
 check
+xamfoo:reactive-obj

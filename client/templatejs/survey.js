@@ -6,12 +6,17 @@ import { Template } from 'meteor/templating';
 import { TurkServer } from 'meteor/mizzao:turkserver';
 
 import { Helper } from '../../imports/lib/helper.js';
+import { Sess } from '../../imports/lib/quick-session.js';
 import { Questions } from '../../imports/startup/experiment_prep.js';
 import { Schemas } from '../../api/design/schemas.js';
 
 Template.survey.helpers({
 	questions: function(){
-        return Questions.find({sec: 'survey'}).fetch() ;
+        let sub = Sess.subStat();
+        let dataContext = this;
+        if (dataContext.thisSection) {
+            return( Helper.questions( sub, dataContext.thisSection.id, dataContext) );
+        }
     },
     testProceed: Helper.testProceed,
 });
@@ -67,9 +72,9 @@ Template.survey.events({
     'click button#exitSurvey': function ( e ) {
         e.stopPropagation();
         let muid = Meteor.userId();
-        let sub = SubjectsStatus.findOne({ meteorUserId : muid });
+        let sub = Sess.subStat();
         if ( sub.readyToProceed ) {
-            Meteor.call("advanceSubjectSection", muid, "submitHIT");
+            Meteor.call("advanceSubjectSection", muid, "submitHIT", "submitHIT");
         }
     },
 });
@@ -77,7 +82,7 @@ Template.survey.events({
 Template.submitHIT.helpers({
     "testQuizPassed": function() {
         let muid = Meteor.userId();
-        let sub = SubjectsStatus.findOne({ meteorUserId: muid } );
+        let sub = Sess.subStat();
         if (muid && sub ) {
             return( sub.quiz.passed );
         }

@@ -14,53 +14,70 @@ Template.experimenterView.onCreated( function(){
 });
 Template.experimenterViewState.helpers({
     cohortId: function () {
-        return Sess.design().cohortId;
+        let design = Sess.design( );
+        if( !_.isNil( design ) ) {
+            return design.cohortId;
+        }
     },
     section: function () {
-        if( !_.isNil( Sess.subData() ) && !_.isNil( Sess.subData()[0] ) ) {
-            return(Sess.subData()[0].sec_now);
+        let sub = Sess.subData();
+        if( !_.isNil( sub ) && !_.isNil( sub[0] ) ) {
+            return(sub[0].sec_now);
         }
     },
     round: function () {
-        if( !_.isNil( Sess.subData() ) && !_.isNil( Sess.subData()[0] ) ) {
-            return(Sess.subData()[0].sec_rnd_now);
+        let sub = Sess.subData();
+        if( !_.isNil( sub ) && !_.isNil( sub[0] ) ) {
+            return(sub[0].sec_rnd_now);
         }
     },
     maxPlayersInCohort: function () {
         let aDesign = Sess.design();
-        return aDesign.maxPlayersInCohort;
+        if (aDesign) {
+            return aDesign.maxPlayersInCohort;
+        }
     },
     queuePosition: function () {
-        if( !_.isNil( Sess.subData() ) && !_.isNil( Sess.subData()[0] ) ) {
-            return Sess.subData()[0].theData.queuePosition;
+        let sub = Sess.subData();
+        if( sub && !_.isNil( sub ) && !_.isNil( sub[0] ) ) {
+            return sub[0].theData.queuePosition;
         }
     },
     queueCountA: function () {
-        if( !_.isNil( Sess.subData() ) && !_.isNil( Sess.subData()[0] ) ) {
-            return Sess.subData()[0].theData.queueCountA;
+        let sub = Sess.subData();
+        if( !_.isNil( sub ) && !_.isNil( sub[0] ) ) {
+            return sub[0].theData.queueCountA;
         }
     },
     queueCountB: function () {
-        if( !_.isNil( Sess.subData() ) && !_.isNil( Sess.subData()[0] ) ) {
-            return Sess.subData()[0].theData.queueCountB;
+        let sdata = Sess.subData();
+        if( !_.isNil( sdata ) && !_.isNil( sdata[0] ) ) {
+            return sdata[0].theData.queueCountB;
         }
     },
     queueCountNoChoice: function () {
-        if( !_.isNil( Sess.subData() ) && !_.isNil( Sess.subData()[0] ) ) {
-            return Sess.subData()[0].theData.queueCountNoChoice;
+        let sdata = Sess.subData();
+        if( !_.isNil( sdata ) && !_.isNil( sdata[0] ) ) {
+            return sdata[0].theData.queueCountNoChoice;
         }
     },
 });
 
 Template.experimenterViewCurrentSubject.helpers({
     userId: function () {
-        return Sess.subStat().userId;
+        let sub = Sess.subStat();
+        if( !_.isNil( sub ) ) {
+            return sub.userId;
+        }
     },
     meteorUserId: function () {
         return Meteor.userId();
     },
     cohortId: function () {
-        return Sess.design().cohortId;
+        let design = Sess.design( );
+        if( !_.isNil( design ) ) {
+            return design.cohortId;
+        }
     },
 });
 
@@ -71,8 +88,8 @@ Template.experimenterViewPayouts.onCreated( function() {
 Template.experimenterViewPayouts.helpers({
 
     subjects() {
-        //console.log(SubjectsData.find().count(), SubjectsData.find({ sec : "experiment" }).count(), SubjectsData.find() );
-        return SubjectsData.find( { "theData.cohortId": Session.get('selectedChoice'), sec : "experiment" }, { sort: { sec: 1 , sec_rnd : 1, "theData.queuePositionFinal": 1, "theData.queuePosition": 1 } } );
+        //console.log(SubjectsData.find().count(), SubjectsData.find({ sec_type : "experiment" }).count(), SubjectsData.find() );
+        return SubjectsData.find( { "theData.cohortId": Session.get('selectedChoice'), sec_type : "experiment" }, { sort: { sec: 1 , sec_rnd : 1, "theData.queuePositionFinal": 1, "theData.queuePosition": 1 } } );
     },
 
     showExperimentCalc: function() {
@@ -90,7 +107,7 @@ Template.experimenterViewPayout.helpers({
         return(subject.completedChoice);
     },
     completedExperiment: function (subject) {
-        subbk = SubjectsStatus.findOne({ meteorUserId : subject.meteorUserId });
+        let subbk = Sess.subStat();
         return(subbk.completedExperiment);
     },
     completedCohort: function (subject) {
@@ -125,7 +142,7 @@ Template.cohortSelection.helpers({
     //items: ['Foo', 'Bar', 'Baz'],
     //https://coderwall.com/p/o9np9q/get-unique-values-from-a-collection-in-meteor
     items: function() {
-        let allSubs = SubjectsData.find({sec : "experiment"}).fetch();
+        let allSubs = SubjectsData.find({sec_type : "experiment"}).fetch();
         let allCohortIds = _(allSubs).map("theData.cohortId").compact().map(_.toInteger).uniq().sortBy().reverse().value();
         //console.log(_(allSubs).map("theData.cohortId").compact().map(_.toInteger).uniq().sortBy().reverse().value());
         //let allCohortsObj = _.uniqBy(allSubs, (d) =>  parseInt(d.theData.cohortId) );

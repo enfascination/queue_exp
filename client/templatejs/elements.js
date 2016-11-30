@@ -12,8 +12,21 @@ import { Questions } from '../../imports/startup/experiment_prep.js';
 Template.navButton.events({
     "click button.navButton" : function( e ) {
         let val = e.target.value;
-        //console.log("click button.navButton after",_.join( [ '.nav-tabs a[href="#', val, '"]' ], '' ));
-        $( _.join( [ '.nav-tabs a[href="#', val, '"]' ], '' ) ).tab('show');
+        Helper.activateTab( val );
+    },
+});
+Template.navButton.helpers({
+    targetSection : function() {
+        //console.log( "targetSection", this );
+        if ( this.currentTab === this.currentSection.id ) {
+            if (this.currentSection.id === 'instructions') {
+                return(DesignSequence.quiz);
+            } else {
+                return(DesignSequence.instructions);
+            }
+        } else {
+            return( this.currentSection );
+        }
     },
 });
 Template.proceedButton.helpers({
@@ -23,7 +36,8 @@ Template.proceedButton.events({
 
 Template.binaryForcedChoice.helpers({
 	disabled: function( id ){
-        if( Questions.findOne( { _id : id } ).disabled || (Sess.subStat() && Sess.subStat().readyToProceed ) ) {
+        let sub = Sess.subStat();
+        if( Questions.findOne( { _id : id } ).disabled || (sub && sub.readyToProceed ) ) {
             return("disabled");
         }
 	},
@@ -35,7 +49,7 @@ Template.binaryForcedChoice.events({
     },
 	'click div.expChoices': function (e) {
         //console.log("div.expChoices");
-        if ( e.target.hasAttribute( "checked" ) ) {
+        if ( e.target.hasAttribute( "checked" ) ) { //if button already checked
             e.currentTarget.removeAttribute( "choice" );
         } else {
             e.currentTarget.setAttribute( "choice", e.target.getAttribute("choice") );

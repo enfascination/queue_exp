@@ -11,6 +11,13 @@ import { Helper } from '../imports/lib/helper.js';
 import { QueueAssigner } from './assigners-custom.js';
 
 
+// https://dweldon.silvrback.com/common-mistakes
+//
+Meteor.users.deny({
+      update: function() {
+              return true;
+            }
+});
 
     Meteor.startup(function () {
         Batches.upsert({name: Design.batchName }, {name: Design.batchName , active: true});
@@ -58,9 +65,9 @@ import { QueueAssigner } from './assigners-custom.js';
         // this is a reload detector.  if the player has connected before, they will have a data object in progress.
         playerHasConnectedBefore: function( muid ) {
             //console.log("check prior (data) connections",SubjectsStatus.findOne({meteorUserId : muid}),  SubjectsData.find({meteorUserId : muid}, { $sort: {sec : -1, sec_rnd : -1 }}).fetch() );
-            let subjectDatas = SubjectsData.find({meteorUserId : muid}).fetch();
+            let subjectDatas = SubjectsData.find({meteorUserId : muid, completedChoice : false }).fetch();
             try {
-                console.assert( subjectDatas.length <= 1 );
+                console.assert( subjectDatas.length <= 1, "in playerHasConnectedBefore" );
             } catch(err) {
                 console.log( err, subjectDatas );
             }
@@ -84,7 +91,8 @@ import { QueueAssigner } from './assigners-custom.js';
                 mtHitId: idObj.hitId,
                 mtAssignmentId: idObj.assignmentId,
                 mtWorkerId: idObj.workerId,
-                sec_now: 'quiz',
+                sec_now: 'instructions',
+                sec_type_now: 'quiz',
                 sec_rnd_now: 0,
                 sec_rnd_stg_now: 0,
                 readyToProceed: false,
@@ -119,11 +127,11 @@ import { QueueAssigner } from './assigners-custom.js';
                     sec : design.sec, 
                     sec_rnd : design.sec_rnd 
                 }, { sort : {  "theData.cohortId" : -1, "theData.queuePosition" : -1 } });
-                console.log("familiarSubject", dat.design, previousSubject, SubjectsData.findOne( {
-                    "theData.cohortId" : design.cohortId, 
-                    sec : design.sec, 
-                    sec_rnd : design.sec_rnd 
-                }));
+                //console.log("familiarSubject", dat.design, previousSubject, SubjectsData.findOne( {
+                    //"theData.cohortId" : design.cohortId, 
+                    //sec : design.sec, 
+                    //sec_rnd : design.sec_rnd 
+                //}));
                 if (_.isNil(previousSubject)) {
                     return Helper.throwError(403, "something is seriously the matter: you can't play against yourself, but there isn't someone else");
                 }
@@ -165,6 +173,7 @@ import { QueueAssigner } from './assigners-custom.js';
                 userId: sub.userId,
                 meteorUserId: sub.meteorUserId,
                 sec: sub.sec_now,
+                sec_type: sub.sec_type_now,
                 sec_rnd: sub.sec_rnd_now,
                 completedChoice: false,
                 theTimestamp: Date.now(),
@@ -199,13 +208,13 @@ import { QueueAssigner } from './assigners-custom.js';
             // im entering or continuing in the experiment 
             //      as the first subject in my cohort (create a new design object)
             //      as a subsequent subject (use an existing design object)
-            probeDesign = CohortSettings.findOne( { sec : "experiment" }, 
+            probeDesign = CohortSettings.findOne( { sec_type : "experiment" }, 
                 { sort : { cohortId : -1, sec_rnd : -1 } });
 
             // initialize player objects; start with determining state
             if ( _.isNil( probeDesign ) ) { // server has been reset and there are no design in database
                 console.log("First round of install", sub, lastDesign);
-                design = Meteor.call("initializeCohort", cohortId=0, sub.sec_now, sub.sec_rnd_now);
+                design = Meteor.call("initializeCohort", cohortId=0, sub.sec_now, sub.sec_type_now, sub.sec_rnd_now);
                 //console.log("First round of install", design);
             } else {
                 // now try to get a design for the right conditions, still not knowing my cohortId
@@ -226,7 +235,7 @@ import { QueueAssigner } from './assigners-custom.js';
                     }
                     //console.log("First player in cohort/section/round", sub, cohortId, lastDesign);
                     console.log("First player in cohort/section/round");
-                    design = Meteor.call("initializeCohort", cohortId, sub.sec_now, sub.sec_rnd_now);
+                    design = Meteor.call("initializeCohort", cohortId, sub.sec_now, sub.sec_type_now, sub.sec_rnd_now);
                     //console.log("First player in cohort/section/round", design);
                 } else {
                     // if i made it in here, then design defined in this block is the design I want to use and i want its info
@@ -240,7 +249,9 @@ import { QueueAssigner } from './assigners-custom.js';
 
             // various tests
             try {
-                console.assert( _.isNil( lastDesign ) || sub.sec_rnd_now > 0 , "sanity1");
+                // either this is the first deisgn or you're not on round zero or your on a later section.  
+                //    this depends on the frst experimental section being the third (3-1 = 2) in the DesignSequence after instructions and quiz
+                console.assert( _.isNil( lastDesign ) || sub.sec_rnd_now > 0 || _.indexOf( Object.keys( DesignSequence ), sub.sec_now ) > 2, "sanity1");
                 // there is a missing test here because i'm letting you be in different cohorts in different roudns
                 console.assert( sub.sec_now === design.sec, "sanity7");
                 console.assert( sub.sec_rnd_now === design.sec_rnd, "sanity8");
@@ -300,7 +311,7 @@ import { QueueAssigner } from './assigners-custom.js';
 
             return( sub );
         },
-        advanceSubjectSection : function(muid, nextSection) {
+        advanceSubjectSection : function(muid, nextSection, nextSectionType) {
             let sub_old = SubjectsStatus.findOne({ meteorUserId: muid });
 
             let entered = 0;
@@ -308,6 +319,8 @@ import { QueueAssigner } from './assigners-custom.js';
             SubjectsStatus.update({meteorUserId: muid }, {
                 $set: {
                     sec_now: nextSection,
+                    sec_type_now: nextSectionType,
+                    sec_rnd_now: 0,
                     readyToProceed: false, // reset this for the next section
                 },
             });
@@ -319,9 +332,14 @@ import { QueueAssigner } from './assigners-custom.js';
                 // to experiment
                 let asst = TurkServer.Assignment.getAssignment( sub_old.tsAsstId );
                 let batch = TurkServer.Batch.getBatchByName( Design.batchName );
-                TurkServer.setLobbyState( asst, batch );
-                entered = 1;
-            } else if ( sub_old.sec_now === "experiment" ) {
+                if ( nextSection === "experiment1" ) {
+                    TurkServer.setLobbyState( asst, batch );
+                    entered = 1;
+                } else if ( nextSection === "submitHIT" ) {
+                    asst.showExitSurvey();
+                    Meteor.call('goToExitSurvey', Meteor.userId());
+                }
+            } else if ( sub_old.sec_now === "experiment1" || sub_old.sec_now === "experiment2" ) {
                 // to survey
                 //let asst = TurkServer.Assignment.getAssignment( sub_old.tsAsstId );
                 //let batch = TurkServer.Batch.getBatchByName( Design.batchName );
@@ -445,15 +463,16 @@ import { QueueAssigner } from './assigners-custom.js';
         },
         // this takes previous deisgn and increments on it, or takes nothign and makes firs deisgn on global
         // Creates a new CohortSettings object
-        'initializeCohort': function(newCohortId, newSection, newRound ) {
+        'initializeCohort': function(newCohortId, newSection, newSectionType, newRound ) {
             //  http://stackoverflow.com/questions/18887652/are-there-private-server-methods-in-meteor
             //if (this.connection === null) { /// to make method private to server
-            console.log("new design");
+            console.log("initializeCohort", newCohortId, newSection, newSectionType, newRound );
                 let newDesign = _.clone(Design);
                 newDesign.filledCohort = 0;
                 newDesign.completedCohort = false;
                 newDesign.cohortId = newCohortId; // uid for designs, a unique one for each cohort
                 newDesign.sec = newSection;
+                newDesign.sec_type = newSectionType;
                 newDesign.sec_rnd = newRound;
                 CohortSettings.insert( newDesign );
                 CohortSettings._ensureIndex({cohortId : 1, sec : 1, sec_rnd : 1 }, { unique : true } );
@@ -469,6 +488,7 @@ import { QueueAssigner } from './assigners-custom.js';
                 userId: sub.userId,
                 meteorUserId: sub.meteorUserId,
                 sec: sub.sec_now,
+                sec_type: sub.sec_type_now,
                 sec_rnd: 0,
                 theData: theData,
                 completedChoice : theData.answered,

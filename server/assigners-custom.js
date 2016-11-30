@@ -7,7 +7,8 @@ export let QueueAssigner = class extends TurkServer.Assigners.SimpleAssigner {
     userJoined(asst) {
         var currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
         // has to be before the super call.
-        console.log("assigner", Meteor.users.findOne(asst.userId).turkserver.state );
+        //console.log("assigner" );
+        console.log("assigner", Meteor.users.findOne(asst.userId).turkserver.state, currentUser );
         if (asst.getInstances().length === 0) { // before experiment
             // this will be for the instructions in the lobby before the experiment
             if(!currentUser){
@@ -16,18 +17,18 @@ export let QueueAssigner = class extends TurkServer.Assigners.SimpleAssigner {
                 currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
             }
 
-            if ( currentUser.sec_now === 'quiz' ) {
+            if ( currentUser.sec_type_now === 'quiz' ) {
                 console.log("in quiz");
                 this.lobby.pluckUsers([asst.userId]);
                 TurkServer.setQuizState(asst);
-            } else if ( currentUser.sec_now === 'experiment' ) { // no mention of survey state intentional
+            } else if ( currentUser.sec_type_now === 'experiment' ) { // no mention of survey state intentional
                 //console.log("in2", asst );// asst.userId is the meteor userid
                 // if user hasn't yet been sent to experiment, create them an id based on the ids of preceding subjects
                 console.log("in experiment");
                 const treatments = this.batch.getTreatments() || [];
                 this.assignToNewInstance([asst], treatments);
                 TurkServer.setExperimentState(asst, this);
-            } else if ( currentUser.sec_now === 'submitHIT' ) { //failed quiz too many times
+            } else if ( currentUser.sec_type_now === 'submitHIT' ) { //failed quiz too many times
                 console.log("in exit survey");
                 //console.log("in3");
                 this.lobby.pluckUsers([asst.userId]);

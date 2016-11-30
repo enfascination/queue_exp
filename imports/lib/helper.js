@@ -8,6 +8,55 @@ let questionHasError = function ( el, hasError ) {
     //console.log("questionHasError", el, el.id, Questions.find({section: "quiz"}).fetch() );
     let output = Questions.update( {_id : el.id }, { $set : { "hasError" : hasError }} );
 };
+let makeTabDOMEl = function( tab ) {
+    return(  _.join( [ ".expTabs a[data-target='#", tab, "']" ], '' ) );
+};
+let makeTabEl = function( tab ) {
+    return(  $( _.join( [ ".expTabs a[data-target='#", tab, "']" ], '' ) )  );
+};
+let makeTabPaneEl = function( tab ) {
+    return(  $( _.join( [ "div.tab-pane#", tab, "" ], '' ) )  );
+};
+let enableTab = function enableTab( tab ) {
+    let el = makeTabEl( tab );
+    console.log("enabling", makeTabDOMEl( tab ));
+    el.removeAttr('cursor');
+    el.attr('data-toggle', 'tab');
+    el.parent().removeClass('disabled');
+    el.attr('href', "#"+tab );
+    // also give active tabs updating events
+    el.on("click", function(e) {
+        //e.stopPropagation();
+        //e.preventDefault();
+        // if the tab gets clicked, activate it
+        //activateTab( tab );
+    });
+};
+let activateTab = function( tab ) {
+    enableTab( tab );
+    let el = makeTabEl( tab );
+    el.on("shown.bs.tab", function(e) {console.log("shown event", e.target);});
+    el.tab();
+    let ret = el.tab('show');
+    console.log("activateTab", ret.get(0));
+    // kludge to set pane explicitly as well as tab itself
+    let tabPaneEl = makeTabPaneEl( tab );
+    //tabPaneEl.addClass('active');
+    //tabEl.attr('aria-expanded', 'false');
+
+};
+let disableTab = function( tab ) {
+    //console.log(el.attr('cursor'), el.attr('data.toggle'), el.attr('href'), el.id );
+    let el = makeTabEl( tab );
+    el.attr('cursor', "not-allowed");
+    el.removeAttr('data-toggle');
+    el.parent().addClass('disabled');
+    el.parent().removeClass('active');
+    el.attr('href', "");
+    //el.attr('aria-expanded', 'false');
+    //let tabPaneEl = makeTabPaneEl( tab );
+    //tabPaneEl.removeClass('active');
+};
 /* boilerplate blank error return function for validated inputs */
 export const Helper = {
     err_func : function err_func(error, result) { console.log( error ); }, 
@@ -55,7 +104,6 @@ export const Helper = {
     testProceed : function() {
             let muid = Meteor.userId();
             let sub = SubjectsStatus.findOne({ meteorUserId: muid } );
-            //console.log("testProceed", muid, sub );
             if (muid && sub ) {
                 return( sub.readyToProceed );
             }
@@ -81,6 +129,80 @@ export const Helper = {
             let id = this.id;
             let output = Questions.update( {_id : id }, { $set : { disabled : true }} );
         });
+    },
+    activateTab : activateTab,
+    makeTabEl : makeTabEl,
+    disableTab : disableTab,
+    enableTab : enableTab,
+    updateNavBar: function(activeTab, currentSection) {
+        //let tab = templateData.currentTab;
+        let toInclude;
+        let secs = Object.keys( DesignSequence );
+        let sec = currentSection;
+
+        // set reactive var
+
+        // set tabs up
+        //let allTabs = [ 'instructions', 'quiz', 'experiment1', 'experiment2', 'survey', 'submitHIT' ]; ///XXX
+        //let page = this.data.page;
+        //console.log("Helper.updateNavBar. section and sections:", sec, secs);
+        if (sec === "instructions") {
+            toInclude = [ 'instructions', 'quiz' ];
+        } else if (sec === "quiz") {
+            toInclude = [ 'instructions', 'quiz' ];
+        } else if (sec === "experiment1") {
+            toInclude = [ 'instructions', 'experiment1' ];
+        } else if (sec === "experiment2") {
+            toInclude = [ 'instructions', 'experiment2' ];
+        } else if (sec === "survey") {
+            toInclude = [ 'survey']; ///XXX
+        } else if (sec === "submitHIT") {
+            toInclude = [ 'submitHIT' ]; ///XXX
+        } else {
+            console.log("BIG RPOBLEMFDF", sec);
+        }
+        try { // sanity checks
+            console.assert( toInclude.includes( activeTab ), "active tab test");
+            console.assert( toInclude.includes( currentSection ), "current section tab test");
+        } catch(err) {
+            console.log(err);
+        }
+        // disable non-active tabs
+        _.forEach( secs , function(tab) {
+            let tabEl = makeTabEl( tab );
+
+            if (toInclude.includes( tab ) ) {
+                console.log("enabling", tab);
+                enableTab( tab );
+                // set active tab
+                if (tab === activeTab) {
+                    console.log("activating", tab);
+                    activateTab( tab);
+                }
+            } else {
+                console.log("disabling", tab);
+                disableTab( tab );
+            }
+
+
+        } );
+
+        //thi is only here so I can reload the template on command
+        //// cactive tab
+        //let tabRef = _.join( [ ".expTabs a[href='#", UserElements.currentTab.get(), "']" ], '' );
+        //$( tabRef ).tab('show'); //make active
+        //
+        //console.log( "main.onRendered", secObj,  " and page is ", this.data );
+    },
+    questions : function( sub, section, dataContext ) {
+        //console.log("experiment.helpers", this);
+        if ( sub ) {
+            let questions = Questions.find({sec: section, sec_rnd : sub.sec_rnd_now }).fetch();
+            _.forEach( questions, function( q ) {
+                q.context = dataContext;
+            });
+            return( questions );
+        }
     },
 };
 

@@ -7,6 +7,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { TurkServer } from 'meteor/mizzao:turkserver';
+import { Router } from 'meteor/iron:router';
 
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
@@ -37,6 +38,11 @@ Template.quiz.events({
         e.stopPropagation();
         e.preventDefault();
         let muid = Meteor.userId();
+
+        //console.log("quiz event submit", Sess.design(), UserElements.currentSection.get() );
+        // if state is still in instructions, change that
+
+
         //Only allow clients to attempt quiz twice before preventing them from doing so
         /////////////////////
         //// ARE INPUTS ACCEPTABLE?
@@ -50,6 +56,7 @@ Template.quiz.events({
             //let answer = $.trim(form[q._id].value.toLowerCase());
             //let correct = $.inArray(answer,q.answer) >= 0 ? true: false;
             let element_raw = $(form).children("div#"+q._id)[0];
+            console.log("qs", element_raw);
             let element = $( element_raw );
             let choice = element.attr("choice");
             let answered = !_.isNil( choice );
@@ -79,13 +86,14 @@ Template.quiz.events({
             if ( resultsCount === questionsCount ) {
                 passed = true;
             }
-            let sub = SubjectsStatus.findOne({ meteorUserId: muid });
+            let sub = Sess.subStat();
             let failed = false; // this is not the opposite of passing
             let triesLeft = sub.quiz.triesLeft;
             if ( !passed || sub.quiz.failed) {// have I alrady failed this person?
                 triesLeft = sub.quiz.triesLeft - 1;
                 if ( triesLeft === 0 || triesLeft < 0 ) {
                     failed = true;
+                    Helper.disableTab( "instructions" );
                 }
             }
             /////////////////////
@@ -107,15 +115,19 @@ Template.quiz.events({
         }
     },
     'click button#exitQuiz': function ( e ) {
-        e.stopPropagation();
         let muid = Meteor.userId();
-        let sub = SubjectsStatus.findOne({ meteorUserId : muid });
-        if ( sub.readyToProceed ) {
-            let nextSection = "experiment";
+        let sub = Sess.subStat();
+        console.log("button#exitQuiz", sub);
+        if ( sub && sub.readyToProceed ) {
+            let nextSection = "experiment1";
+            let nextSectionType = "experiment";
             if (sub.quiz.failed) {
                 nextSection = "submitHIT";
+                nextSectionType = "submitHIT";
             }
-            Meteor.call("advanceSubjectSection", muid, nextSection);
+            Meteor.call("advanceSubjectSection", muid, nextSection, nextSectionType);
+            // Meteor.call('goToExitSurvey', Meteor.userId()); redundant
+
         }
     },
 });
@@ -130,35 +142,37 @@ const quizTriesLeft = function quizTriesLeft() {
 
 Template.quiz.helpers({
 	questions: function(){
-        return Questions.find({sec: 'quiz'}).fetch() ;
-	},
+        let sub = Sess.subStat();
+        let dataContext = this;
+        if (dataContext.thisSection) {
+            return( Helper.questions( sub, "quiz", dataContext) );  // a little risky to put quiz here bc i might still be int he instrucitons section
+        }
+    },
     //testQuizSubmitted: function() {
         //return( UserElements.quizSubmitted.get() );
     //},
     testQuizPassed: function() {
         //console.log("testQuizPassed", UserElements.quizSubmitted.get(), Sess.subStat().quiz.passed);
-        if( !_.isNil( Sess.subStat() ) ) {
-            return( Sess.subStat().quiz.passed );
+        let sub = Sess.subStat();
+        if( sub && !_.isNil( sub ) ) {
+            return( sub.quiz.passed );
         }
     },
     testQuizWrong: function() {
         //console.log("testQuizWrong", UserElements.quizSubmitted.get(), !Sess.subStat().quiz.passed);
-        if (UserElements.quizSubmitted.get()) {
-            return( !Sess.subStat().quiz.passed );
+        let sub = Sess.subStat();
+        if (sub && UserElements.quizSubmitted.get()) {
+            return( !sub.quiz.passed );
         }
     },
     testQuizFailed: function() {
         //console.log("testQuizFailed", UserElements.quizSubmitted.get(), Sess.subStat().quiz.failed);
-        if( !_.isNil( Sess.subStat() ) ) {
-            return( Sess.subStat().quiz.failed );
+        let sub = Sess.subStat();
+        if( sub && !_.isNil( sub ) ) {
+            return( sub.quiz.failed );
         }
     },
-    testProceed: function() {
-            //console.log("testProceed",  Sess.subStat(), Sess.subStat().quiz.passed , Sess.subStat().quiz.failed);
-        if( !_.isNil( Sess.subStat() ) ) {
-            return( Sess.subStat().readyToProceed );
-        }
-    },
+    testProceed: Helper.testProceed,
     quizTriesLeft: quizTriesLeft,
 });
 Template.questionBinary.events({

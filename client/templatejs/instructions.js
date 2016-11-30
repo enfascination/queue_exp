@@ -13,48 +13,76 @@ Template.experimentInstructions.onCreated( function(){
 });
 Template.experimentInstructions.helpers({
     counterNet: function () {
-        if( !_.isNil( Sess.subData() ) && !_.isNil( Sess.subData()[0] ) ) {
-            return Sess.subData()[0].theData.queuePosition || "XXX";
+        let sdata = Sess.subData();
+        if( !_.isNil( sdata ) && !_.isNil( sdata[0] ) ) {
+            return sdata[0].theData.queuePosition || "XXX";
         }
     },
     earningsAMin: function () {
-        let sub = Sess.subData()[0];
+        let subs = Sess.subData();
         let aDesign = Sess.design();
-        if ( sub && sub.theData ) {
+        if ( subs && aDesign && subs[0] && subs[0].theData ) {
+            let sub = subs[0];
             let qPos = sub.theData.queuePosition * aDesign.positionCosts;
             return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.A + 1.00 - qPos ) );
         }
     },
     earningsAMax: function () {
         let aDesign = Sess.design();
-        return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.A + 1.00 ) );
+        if (aDesign) {
+            return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.A + 1.00 ) );
+        }
     },
     earningsBMin: function () {
         let aDesign = Sess.design();
-        return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.B ) );
+        if (aDesign) {
+            return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.B ) );
+        }
     },
     earningsBMax: function () {
-        let sub = Sess.subData()[0];
+        let subs = Sess.subData();
         let aDesign = Sess.design();
-        if ( sub && sub.theData ) {
+        if ( subs && aDesign && subs[0] && subs[0].theData ) {
+            let sub = subs[0];
             let qPos = sub.theData.queuePosition * aDesign.positionCosts;
             return( Helper.toCash( aDesign.endowment - aDesign.queueCosts.B + 1.00 - qPos ) );
         }
     },
     groupSize: function () {
         let aDesign = Sess.design();
-        return( aDesign.maxPlayersInCohort || "XXX");
+        if (aDesign) {
+            return( aDesign.maxPlayersInCohort || "XXX");
+        }
     },
     positionCosts: function () {
         let aDesign = Sess.design();
-        return( Helper.toCash( aDesign.positionCosts ) );
+        if (aDesign) {
+            return( Helper.toCash( aDesign.positionCosts ) );
+        }
     },
     endowment: function () {
         let aDesign = Sess.design();
-        return( Helper.toCash( aDesign.endowment ) );
+        if (aDesign) {
+            return( Helper.toCash( aDesign.endowment ) );
+        }
     },
     pot: function () {
         let aDesign = Sess.design();
-        return( Helper.toCash( aDesign.pot ) );
+        if (aDesign) {
+            return( Helper.toCash( aDesign.pot ) );
+        }
     },
+});
+Template.main.events({
+    'click button#exitInstructions': function ( e ) {
+    //'click': function ( e ) {
+        let muid = Meteor.userId();
+        let sub = Sess.subStat();
+        //console.log("button#exitInstructions", sub, Template.currentData());
+        if (sub.sec_now === "instructions") {
+            Meteor.call("advanceSubjectSection", muid, "quiz", "quiz");
+        } else {
+            Helper.activateTab( Template.currentData().currentSection.id );
+        }
+    }
 });

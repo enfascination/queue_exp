@@ -1,5 +1,5 @@
 <template name="experiment">
-    <body>
+                <h1>{{section.label}}</h1>
         <div class="page-header">
             <h1 class="center">
                 Welcome to the queue.
@@ -8,8 +8,8 @@
         </div>
 
         <section>
-            {{> experimentInstructions}}
-            {{> experimentInfo}}
+            {{> experimentInstructions thisSection=thisSection}}
+            {{> experimentInfo thisSection=thisSection}}
             <br />
             <div class="exp-info container-fluid">
                 <p>
@@ -32,7 +32,7 @@
                 {{/if}}
             </div>
         </section>
-    </body>
+                    {{> navButton}}
 </template>
 
 <template name="experimentInstructions">

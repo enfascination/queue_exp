@@ -56,6 +56,10 @@ Schemas.SubjectsStatus = new SimpleSchema({
         type: String,
         label: "current section",
     },
+    sec_type_now: {
+        type: String,
+        label: "current section type",
+    },
     sec_rnd_now: {
         type: SimpleSchema.Integer,
         label: "current round",
@@ -89,6 +93,10 @@ Schemas.SubjectsData = new SimpleSchema({
     sec_rnd: {
         type: SimpleSchema.Integer,
         label: "round in the section",
+    },
+    sec_type: {
+        type: String,
+        label: "section type",
     },
     theData: {
         type: Object,
@@ -152,6 +160,10 @@ Schemas.CohortSettings = new SimpleSchema({
     sec: {
         type: String,
         label: "gross section of the experiment",
+    },
+    sec_type: {
+        type: String,
+        label: "section type",
     },
     sec_rnd: {
         type: SimpleSchema.Integer,
