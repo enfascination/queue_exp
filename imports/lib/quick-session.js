@@ -3,7 +3,7 @@
 
 var _ = require('lodash');
 import { Meteor } from 'meteor/meteor';
-import { Amplify } from 'meteor/amplify';
+//import { Amplify } from 'meteor/amplify';
 
 export const Sess = {
     // getter for subject
@@ -28,8 +28,8 @@ export const Sess = {
     setClientSub : function ( sub ) {
         if (sub) {
             //console.log("setclientsub", sub["data"], sub.data);
-            amplify.store("s_status", sub.status );
-            amplify.store("s_data", sub.data );
+            ////amplify.store("s_status", sub.status );
+            //amplify.store("s_data", sub.data );
         }
     },
     design : function () {
@@ -48,7 +48,7 @@ export const Sess = {
     },
     setClientDesign : function (des) {
         if (des) {
-            amplify.store("design", des);
+            //amplify.store("design", des);
         }
     },
     quizTriesLeft : function (uid) {
