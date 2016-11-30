@@ -213,7 +213,7 @@ Meteor.users.deny({
 
             // initialize player objects; start with determining state
             if ( _.isNil( probeDesign ) ) { // server has been reset and there are no design in database
-                console.log("First round of install", sub, lastDesign);
+                //console.log("First round of install", sub, lastDesign);
                 design = Meteor.call("initializeCohort", cohortId=0, sub.sec_now, sub.sec_type_now, sub.sec_rnd_now);
                 //console.log("First round of install", design);
             } else {
@@ -299,7 +299,7 @@ Meteor.users.deny({
 
             if( !lastRound ) {
                 let sub_old = SubjectsStatus.findOne({ meteorUserId: muid });
-                console.log("updating round");
+                //console.log("updating round");
                 SubjectsStatus.update({meteorUserId: muid }, {
                     $set: {
                         //sec_now: next_section,
@@ -357,7 +357,7 @@ Meteor.users.deny({
             }
 
             sub = SubjectsStatus.findOne({ meteorUserId: muid });
-            console.log("end of advancesection", entered, sub.sec_now );
+            //console.log("end of advancesection", entered, sub.sec_now );
             return( sub );
         },
         // updates a CohortSettings object
@@ -379,7 +379,7 @@ Meteor.users.deny({
                 completedChoice: false,
             });
 
-            console.log( "cohort completion", cohortFin.count(), cohortUnfin.count(), design.maxPlayersInCohort );
+            //console.log( "cohort completion", cohortFin.count(), cohortUnfin.count(), design.maxPlayersInCohort );
             if (cohortFin.count() >= design.maxPlayersInCohort ) {
                 // get rid of old cohort (make it outdated/complete)
                 completedCohort = true;
@@ -466,7 +466,7 @@ Meteor.users.deny({
         'initializeCohort': function(newCohortId, newSection, newSectionType, newRound ) {
             //  http://stackoverflow.com/questions/18887652/are-there-private-server-methods-in-meteor
             //if (this.connection === null) { /// to make method private to server
-            console.log("initializeCohort", newCohortId, newSection, newSectionType, newRound );
+            //console.log("initializeCohort", newCohortId, newSection, newSectionType, newRound );
                 let newDesign = _.clone(Design);
                 newDesign.filledCohort = 0;
                 newDesign.completedCohort = false;
@@ -491,7 +491,7 @@ Meteor.users.deny({
                 sec_type: sub.sec_type_now,
                 sec_rnd: 0,
                 theData: theData,
-                completedChoice : theData.answered,
+                completedChoice : true,
                 theTimestamp: Date.now(),
             } );
             return( SubjectsData.findOne( id ) );

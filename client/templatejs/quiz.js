@@ -56,7 +56,7 @@ Template.quiz.events({
             //let answer = $.trim(form[q._id].value.toLowerCase());
             //let correct = $.inArray(answer,q.answer) >= 0 ? true: false;
             let element_raw = $(form).children("div#"+q._id)[0];
-            console.log("qs", element_raw);
+            //console.log("qs", element_raw);
             let element = $( element_raw );
             let choice = element.attr("choice");
             let answered = !_.isNil( choice );
@@ -117,7 +117,7 @@ Template.quiz.events({
     'click button#exitQuiz': function ( e ) {
         let muid = Meteor.userId();
         let sub = Sess.subStat();
-        console.log("button#exitQuiz", sub);
+        //console.log("button#exitQuiz", sub);
         if ( sub && sub.readyToProceed ) {
             let nextSection = "experiment1";
             let nextSectionType = "experiment";

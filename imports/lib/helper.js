@@ -19,7 +19,7 @@ let makeTabPaneEl = function( tab ) {
 };
 let enableTab = function enableTab( tab ) {
     let el = makeTabEl( tab );
-    console.log("enabling", makeTabDOMEl( tab ));
+    //console.log("enabling", makeTabDOMEl( tab ));
     el.removeAttr('cursor');
     el.attr('data-toggle', 'tab');
     el.parent().removeClass('disabled');
@@ -35,10 +35,10 @@ let enableTab = function enableTab( tab ) {
 let activateTab = function( tab ) {
     enableTab( tab );
     let el = makeTabEl( tab );
-    el.on("shown.bs.tab", function(e) {console.log("shown event", e.target);});
+    //el.on("shown.bs.tab", function(e) {console.log("shown event", e.target);});
     el.tab();
     let ret = el.tab('show');
-    console.log("activateTab", ret.get(0));
+    //console.log("activateTab", ret.get(0));
     // kludge to set pane explicitly as well as tab itself
     let tabPaneEl = makeTabPaneEl( tab );
     //tabPaneEl.addClass('active');
@@ -147,7 +147,7 @@ export const Helper = {
         //let page = this.data.page;
         //console.log("Helper.updateNavBar. section and sections:", sec, secs);
         if (sec === "instructions") {
-            toInclude = [ 'instructions', 'quiz' ];
+            toInclude = [ 'instructions'];
         } else if (sec === "quiz") {
             toInclude = [ 'instructions', 'quiz' ];
         } else if (sec === "experiment1") {
@@ -172,15 +172,15 @@ export const Helper = {
             let tabEl = makeTabEl( tab );
 
             if (toInclude.includes( tab ) ) {
-                console.log("enabling", tab);
+                //console.log("enabling", tab);
                 enableTab( tab );
                 // set active tab
                 if (tab === activeTab) {
-                    console.log("activating", tab);
+                    //console.log("activating", tab);
                     activateTab( tab);
                 }
             } else {
-                console.log("disabling", tab);
+                //console.log("disabling", tab);
                 disableTab( tab );
             }
 

@@ -17,7 +17,6 @@ import { Questions } from '../imports/startup/experiment_prep.js';
 Tracker.autorun(function() {
     //console.log("routing", Meteor.users.findOne(asst.userId).turkserver.state );
     console.log("routing", TurkServer.inQuiz(), TurkServer.inExperiment(), TurkServer.inExitSurvey());
-                //Helper.updateNavBar(sec, secs);
     if (TurkServer.inExperiment()) {
         Router.go('/experiment');
     } else if (TurkServer.inQuiz()) {
@@ -32,34 +31,24 @@ Tracker.autorun(function() {
 Template.main.onCreated( function(){
     //initialize ui state
     UserElements.choiceChecked = new ReactiveDict(); // this is so there can be mulplie of these buttons on a page
-
-    // problem with turkserver modal not disappearing
-    // http://stackoverflow.com/questions/11519660/twitter-bootstrap-modal-backdrop-doesnt-disappear
-    //$('.modal-backdrop').remove();
 });
 
 Template.main.onRendered( function(){ 
-        //updateNavBarAfterFlush(this, Template.currentData() ); });
-//let updateNavBarAfterFlush = function(instance, currentDataContext) {
     if ( true ) {
     let instance = this;
-    // for getting tabs right on page load
-    //Helper.updateNavBar( currentDataContext.currentTab, currentDataContext.currentSection.id );
-        //let subscription = instance.subscribe('designs');
     // for getting tabs right on data updates
         instance.autorun(function () {
             let currentDataContext = Template.currentData();
             //if (subscription.ready()) {
-            console.log("main autorun onRendered", this, Template.currentData());
+            //console.log("main autorun onRendered", Template.currentData());
             if ( currentDataContext && currentDataContext.hasOwnProperty('currentSection') ) {
                 // fixed at https://forums.meteor.com/t/bug-onrendered-executes-too-early/17912
                 Tracker.afterFlush(() => {
                     //set local vars
-                    //let reactiveObj = currentDataContext;
                     let sec = currentDataContext.currentSection.id;
-                    console.log("before flush", sec, currentDataContext);
+                    //console.log("before flush", sec, currentDataContext);
                     Helper.updateNavBar(currentDataContext.currentTab, sec);
-                    console.log("after flush", sec, currentDataContext);
+                    //console.log("after flush", sec);
                 });
             }
         });
@@ -67,19 +56,8 @@ Template.main.onRendered( function(){
 }//;
 );
 
-//Template.main.onRendered( updateNavBarAfterFlush() );
-//Template.experiment.onRendered( updateNavBarAfterFlush() );
-//Template.quiz.onRendered( updateNavBarAfterFlush() );
-//Template.survey.onRendered( updateNavBarAfterFlush() );
-//Template.submitHIT.onRendered( updateNavBarAfterFlush() );
-//Template.main.onRendered( function(){ updateNavBarAfterFlush(this, Template.currentData() ); });
-//Template.experiment.onRendered( function(){ updateNavBarAfterFlush(this, Template.currentData() ); });
-//Template.quiz.onRendered( function(){ updateNavBarAfterFlush(this, Template.currentData() ); });
-////Template.survey.onRendered( function(){ updateNavBarAfterFlush(this, Template.currentData() ); });
-//Template.submitHIT.onRendered( function(){ updateNavBarAfterFlush(this, Template.currentData() ); });
-
 Tracker.autorun(function() {
-    
+   /* 
     if (false) {
         if ( TurkServer.inQuiz() ) {
             Meteor.subscribe('s_status');
@@ -97,6 +75,7 @@ Tracker.autorun(function() {
             Meteor.subscribe('designs');
         }
 }
+*/
 });
 
 //Tracker.autorun(function() {

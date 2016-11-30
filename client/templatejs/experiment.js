@@ -31,13 +31,13 @@ Template.experiment.onCreated( function(){
             let newData, newCohort, updateSession;
             let sub = state.status;
             let data = state.data;
-            if ( _.isEmpty( data ) ) { // player is new to me if they are int he experiment, they have no incomplete data, and they aren't ready to proceeed to a next stage
+            if ( !sub.readyToProceed && _.isEmpty( data ) ) { // player is new to me if they are int he experiment, they have no incomplete data, and they aren't ready to proceeed to a next stage
                 // record groupid, in case I need it one day
                 console.log("new sub");
                 Meteor.call("addGroupId", muid, group );
                 Meteor.call('initializeRound', sub=muid, lastDesign=null, asyncCallback=function(err, data) {
                     if (err) { throw( err ); }
-                    console.log("initializeRound", data.s_data.theData.cohortId, data.design.cohortId);
+                    //console.log("initializeRound", data.s_data.theData.cohortId, data.design.cohortId);
                     updateSession = true;
                     newData = { "status" : data.s_status, "data" : data.s_data };
                     newCohort = data.design;
