@@ -89,7 +89,7 @@ Template.experimenterViewCurrentSubjectData.helpers({
 Template.experimenterViewCurrentSubjectDataPoint.helpers({
     dataString : function( dataPoint ) {
         let sectionData = dataPoint.theData;
-        console.log(  this, dataPoint );
+        //console.log(  this, dataPoint );
         if (dataPoint.sec === "experiment1" || dataPoint.sec == "experiment2" ) {
             return( JSON.stringify( _.pick(sectionData, ["choice", "earnings2"])) );
         } else if (dataPoint.sec === "survey" ) {
