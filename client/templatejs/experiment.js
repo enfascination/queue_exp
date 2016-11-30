@@ -28,7 +28,7 @@ Template.experiment.onCreated( function(){
         //console.log("experiment render", this, Template.currentData());
         console.log("experiment render", Template.currentData());
         Meteor.call("playerHasConnectedBefore", muid, function(err,state) { // think of this cb as an if statement
-            let newData, newCohort, updateSession;
+            let newData, newCohort;//, updateSession;
             let sub = state.status;
             let data = state.data;
             if ( !sub.readyToProceed && _.isEmpty( data ) ) { // player is new to me if they are int he experiment, they have no incomplete data, and they aren't ready to proceeed to a next stage
@@ -38,20 +38,20 @@ Template.experiment.onCreated( function(){
                 Meteor.call('initializeRound', sub=muid, lastDesign=null, asyncCallback=function(err, data) {
                     if (err) { throw( err ); }
                     //console.log("initializeRound", data.s_data.theData.cohortId, data.design.cohortId);
-                    updateSession = true;
+                    //updateSession = true;
                     newData = { "status" : data.s_status, "data" : data.s_data };
                     newCohort = data.design;
                 } );
             } else if ( sub.sec_type_now === "experiment" && _.some( data, (x) => x.completedChoice === false ) ) { // player is refreshing or reconnecting mid choice in experiment
-                updateSession = false;
+                //updateSession = false;
             } else if ( sub.sec_type_now === "experiment" && _.every( data, (x) => x.completedChoice === true ) ) { // player is refreshing or reconnecting post choice in experiment
-                updateSession = false;
+                //updateSession = false;
             }
-            if (updateSession) {
-                //console.log("setting client side");
-                Sess.setClientSub( newData );
-                Sess.setClientDesign( newCohort );
-            }
+            //if (updateSession) {
+                ////console.log("setting client side");
+                //Sess.setClientSub( newData );
+                //Sess.setClientDesign( newCohort );
+            //}
 
             //update ui
             let sec = templateCurrentData.currentSection.id;
@@ -164,8 +164,8 @@ Template.experiment.events({
                     // create the next cohort object (which might have no members actually);
                     Meteor.call('initializeRound', sub=updatedSub, lastDesign=design, asyncCallback=function(err, data) {
                         if (err) { return(err); }
-                        Sess.setClientSub( { "status" : data.s_status, "data" : data.s_data } );
-                        Sess.setClientDesign( data.design );
+                        //Sess.setClientSub( { "status" : data.s_status, "data" : data.s_data } );
+                        //Sess.setClientDesign( data.design );
                     });
                     // routing?
                     //Router.go('/experiment');
