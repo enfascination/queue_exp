@@ -11,6 +11,8 @@
             {{> experimenterViewState }}
             <h4> Underlying subject's state. </h4> 
             {{> experimenterViewCurrentSubject }}
+            <h4> Underlying subject's data. </h4> 
+            {{> experimenterViewCurrentSubjectData }}
             <h4> Final payoffs. </h4> 
             {{> experimenterViewPayouts }}
         </div>
@@ -74,6 +76,43 @@
             </td>
         </tr>
     </table>
+</template>
+<template name="experimenterViewCurrentSubjectData">
+    <table class="table table-bordered">
+                <thead>
+        <tr>
+            <td>
+                section
+            </td>
+            <td>
+                round
+            </td>
+            <td>
+                choice
+            </td>
+        </tr>
+                </thead>
+                <tbody>
+                    {{#each datapoint in data}}
+                        {{> experimenterViewCurrentSubjectDataPoint datapoint=datapoint}}
+                    {{else}}
+                        <tr><td>No subject data</td></tr>
+                    {{/each}}
+                </tbody>
+    </table>
+</template>
+<template name="experimenterViewCurrentSubjectDataPoint">
+                <tr>
+                    <td>
+                        {{datapoint.sec}}
+                    </td>
+                    <td>
+                        {{datapoint.sec_rnd}}
+                    </td>
+                    <td>
+                        {{dataString datapoint}}
+                    </td>
+                </tr>
 </template>
 
 <template name="experimenterViewPayouts">
@@ -177,7 +216,7 @@
 
 <template name="cohortSelection">
     <select class="dropdown__menu" id="category-select">
-        <option disabled="disabled" selected="selected">Please Select</option> 
+        <!-- <option disabled="disabled" selected="selected">Please Select</option> -->
         {{#each items}}
             <option value="{{this}}">{{this}}</option>
         {{/each}}

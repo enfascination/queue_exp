@@ -91,11 +91,13 @@ Tracker.autorun(function() {
 Template.main.helpers({
     testProceed: Helper.testProceed,
     testTest : function() {
-        console.log( Template.instance(), Template.currentData(), 'lllll' );
+        //console.log( Template.instance(), Template.currentData(), 'lllll' );
     },
     showExperimenterView: function() {
+        //console.log("showExperimenterView", UserElements.experimenterView, Sess.subStat() );
         return( ( UserElements.experimenterView || TurkServer.isAdmin() ) &&
-              ( Sess.design() && Sess.subData() ) );
+              //( Sess.design() && Sess.subData() ) );
+              ( Sess.subStat() && Sess.subStat().sec_type_now === "experiment" ) );
     },
     expSectionTabs : function() {
         let design = Sess.design() || Design;

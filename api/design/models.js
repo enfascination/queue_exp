@@ -53,7 +53,7 @@ DesignSequence = {
         },
     };
 Design = {
-    maxPlayersInCohort : 2,
+    maxPlayersInCohort : 5,
     endowment : 1.00,
     pot : 1.00,
     queueNames : [ 'A', 'B' ],

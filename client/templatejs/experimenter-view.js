@@ -80,6 +80,23 @@ Template.experimenterViewCurrentSubject.helpers({
         }
     },
 });
+Template.experimenterViewCurrentSubjectData.helpers({
+    data() {
+        let sub = Sess.subStat();
+        return SubjectsData.find( { meteorUserId : sub.meteorUserId }, { sort: { sec: 1 , sec_rnd : 1} } );
+    },
+});
+Template.experimenterViewCurrentSubjectDataPoint.helpers({
+    dataString : function( dataPoint ) {
+        let sectionData = dataPoint.theData;
+        console.log(  this, dataPoint );
+        if (dataPoint.sec === "experiment1" || dataPoint.sec == "experiment2" ) {
+            return( JSON.stringify( _.pick(sectionData, ["choice", "earnings2"])) );
+        } else if (dataPoint.sec === "survey" ) {
+            return( JSON.stringify( _.pick(sectionData, ["text", "answered", "choice"])) );
+        }
+    },
+});
 
 Template.experimenterViewPayouts.onCreated( function() {
     Session.set('showExperimentCalc', false);
@@ -103,7 +120,7 @@ Template.experimenterViewPayout.helpers({
         return Sess.subStat().userId;
     },
     completedChoice: function (subject) {
-        console.log(subject.completedChoice);
+        //console.log(subject.completedChoice);
         return(subject.completedChoice);
     },
     completedExperiment: function (subject) {
@@ -137,22 +154,34 @@ Template.cohortSelection.onCreated( function(){
     //let allSubs = SubjectsData.find().fetch();
     //console.log("from sub sub top" ,_.map(allSubs, (s) => s.cohortId));
 });
+Template.cohortSelection.onRendered( function(){
+    // make the default option the most recent new group
+    // http://stackoverflow.com/questions/1414276/how-to-make-first-option-of-select-selected-with-jquery
+    let selectJQ = $( 'select#category-select' );
+    selectJQ.change(); // trigger load activities in "change" event handler below
+    //console.log( "cohortSelection.onRendered",selectJQ.length);
+    selectJQ[0].selectedIndex = 0;
+
+});
 // https://github.com/lookback/meteor-dropdowns
 Template.cohortSelection.helpers({
     //items: ['Foo', 'Bar', 'Baz'],
     //https://coderwall.com/p/o9np9q/get-unique-values-from-a-collection-in-meteor
     items: function() {
-        let allSubs = SubjectsData.find({sec_type : "experiment"}).fetch();
-        let allCohortIds = _(allSubs).map("theData.cohortId").compact().map(_.toInteger).uniq().sortBy().reverse().value();
+        let allSubs = SubjectsData.find({sec_type : "experiment"}, {sort : {cohortId : -1}}).fetch();
+        //console.log( "items", allSubs );
+        let allCohortIds = _(allSubs).map("theData.cohortId").map(_.toInteger).uniq().sortBy().value().reverse();
         //console.log(_(allSubs).map("theData.cohortId").compact().map(_.toInteger).uniq().sortBy().reverse().value());
+        //console.log(allCohortIds, _(allSubs).map("theData.cohortId").map(_.toInteger).uniq().sortBy().reverse().value());
         //let allCohortsObj = _.uniqBy(allSubs, (d) =>  parseInt(d.theData.cohortId) );
         //let allCohortIds = _.map(allCohortsObj, "theData.cohortId").sort();
+        //console.log( "items", allCohortIds );
         return(allCohortIds);
   },
 });
 // http://stackoverflow.com/questions/28528660/meteor-dropdown-list-get-and-set
 Template.cohortSelection.events({
-    "change .dropdown__menu": function (e, template) {
+    "change .dropdown__menu, onLoad .dropdown__menu": function (e, template) {
         let cohortToCalculate = +$(e.currentTarget).val();
         Session.set('selectedChoice', cohortToCalculate);
         // (re)calculate earnings
