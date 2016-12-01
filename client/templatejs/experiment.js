@@ -53,10 +53,11 @@ Template.experiment.onCreated( function(){
                 //Sess.setClientDesign( newCohort );
             //}
 
-            //update ui
-            let sec = templateCurrentData.currentSection.id;
-            //Helper.updateNavBar( sec );
         });
+        //update ui
+        let currentSection = templateCurrentData.currentSection;
+        let subStat = templateCurrentData.subStat;
+        // AND?
     }
 });
 
@@ -82,7 +83,7 @@ Template.experiment.helpers({
 });
 Template.experiment.events({
     'submit form#nextStage': function(e){
-        //console.log("experiment.events", this);
+        console.log("experiment.events submit", this, e);
         e.stopPropagation();
         e.preventDefault();
         let muid = Meteor.userId();
@@ -160,26 +161,28 @@ Template.experiment.events({
             Meteor.call('advanceSubjectState', Meteor.userId(), lastGameRound,
                 function(err, updatedSub) {
 
-                // experiment navigation
-                if ( !lastGameRound ) {  // calculate the logic for this out of the callbacks because things get confusing
-                    //console.log("continuing");
-                    // go to the next round
-                    // uncheck buttons in UI
-                    Helper.buttonsReset( e.currentTarget );
-                    // create the next cohort object (which might have no members actually);
-                    Meteor.call('initializeRound', sub=updatedSub, lastDesign=design, asyncCallback=function(err, data) {
-                        if (err) { return(err); }
-                        //Sess.setClientSub( { "status" : data.s_status, "data" : data.s_data } );
-                        //Sess.setClientDesign( data.design );
-                    });
-                    // routing?
-                    //Router.go('/experiment');
-                } else {
-                    //console.log("ready?");
-                    Meteor.call( "setReadyToProceed", muid );
-                    Helper.buttonsDisable( e.currentTarget );
-                }
-            });
+                    // experiment navigation
+                    if ( !lastGameRound ) {  // calculate the logic for this out of the callbacks because things get confusing
+                        //console.log("continuing");
+                        // go to the next round
+                        // uncheck buttons in UI
+                        Helper.buttonsReset( e.currentTarget );
+                        // create the next cohort object (which might have no members actually);
+                        Meteor.call('initializeRound', sub=updatedSub, lastDesign=design, asyncCallback=function(err, data) {
+                            if (err) { return(err); }
+                            //Sess.setClientSub( { "status" : data.s_status, "data" : data.s_data } );
+                            //Sess.setClientDesign( data.design );
+                        });
+                        // routing?
+                        //Router.go('/experiment');
+                    } else {
+                        //console.log("ready?");
+                        Meteor.call( "setReadyToProceed", muid );
+                        Helper.buttonsDisable( e.currentTarget );
+                    }
+
+                });
+
         }
     },
     'click button#nextSection': function ( e ) {

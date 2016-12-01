@@ -31,12 +31,12 @@ Tracker.autorun(function() {
 Template.main.onCreated( function(){
     //initialize ui state
     UserElements.choiceChecked = new ReactiveDict(); // this is so there can be mulplie of these buttons on a page
-    UserElements.currentlyViewing = new ReactiveDict(); // this is so there can be mulplie of these buttons on a page
 });
 
 Template.main.onRendered( function(){ 
     if ( true ) {
     let instance = this;
+    //console.log("main.onRendered", this.data, Template.currentData());
     // for getting tabs right on data updates
         instance.autorun(function () {
             let currentDataContext = Template.currentData();
@@ -49,8 +49,6 @@ Template.main.onRendered( function(){
                     let sec = currentDataContext.currentSection.id;
                     //console.log("before flush", sec, currentDataContext);
                     Helper.updateNavBar(currentDataContext.currentTab, sec);
-                    UserElements.currentlyViewing.set("sec", currentDataContext.currentTab);
-                    //UserElements.currentlyViewing.set("sec_rnd", currentDataContext.currentTab);
                     //console.log("after flush", sec);
                 });
             }
@@ -114,11 +112,13 @@ Template.main.helpers({
         return(d);
     },
 });
+Template.expSectionTab.onCreated( function() {
+});
 Template.expSectionTab.helpers({
-    currentSectionExperiment: function( expSection ) {
+    currentSectionExperiment: function( currentSection ) {
         //console.log( "currentSectionExperiment", this);
         let sub = Sess.subStat();
-        if (sub && sub.sec_now === expSection.id) {
+        if (sub && sub.sec_now === currentSection.id) {
             return( true );
         }
     },
@@ -126,47 +126,37 @@ Template.expSectionTab.helpers({
         //console.log( "expSectionRoundTabs", this, Template.currentData());
         let currentSection = Template.currentData().currentSection;
         let subStat = Template.currentData().subStat;
+
         let roundObjs = _.map([0,1,2], function( e ) {
+            let tabState = subStat.sec_rnd_now === e ? "present" : (subStat.sec_rnd_now > e ? "past" : "future"); 
+            let tabDisabled = "";
+            let tabClasses = "";
+            if (tabState === "past") {
+                tabClasses += "past text-info";
+            } else if (tabState === "present") {
+                tabClasses += "present text-primary";
+            } else if (tabState === "future") {
+                tabClasses += "future text-muted";
+            }
             return( {
                 number : e,
                 name : "round " + e,
                 id : "round" + e,
-                hidden     : subStat.sec_rnd_now === e ? false : true, 
-                hiddenHTML : subStat.sec_rnd_now === e ? "show" : "hidden", 
-                state      : subStat.sec_rnd_now === e ? "present" : (subStat.sec_rnd_now > e ? "past" : "future"), 
-                stateHTML  : subStat.sec_rnd_now === e ? "text-primary" : (subStat.sec_rnd_now > e ? "text-info" : "text-muted"), 
-                subStat : subStat,
-                currentSection : currentSection,
+                state      : tabState, 
+                HTMLDisabled : tabDisabled,
+                HTMLClasses : tabClasses,
+                //subStat : subStat,
+                //currentSection : currentSection,
             });
         });
         return( roundObjs ) ;
     },
 });
-Template.expSectionRoundTab.onRendered( function() {
-    // access round tabs
-    //console.log( "roundTab on rendered", this.$("li").find(".expSubTab")[0] );
-    let roundTab = this.$("li").find(".expSubTab")[0];
-    let tab = $( roundTab );
-        if (tab.attr("data-state") === "present") {
-            tab.addClass( "present text-primary" );
-            tab.attr("data-toggle", "tab");
-        } else if (tab.attr("data-state") === "past") {
-            tab.addClass( "past text-info" );
-            tab.attr("data-toggle", "tab");
-            UserElements.currentlyViewing.set( _.toInteger( tab.value ) );
-        } else if (tab.attr("data-state") === "future") {
-            tab.addClass( "future text-muted" );
-            tab.parent().addClass("disabled");
-        } 
-        // prep round tabs based on their states
-        // prep relevant tab panes based on the states of their tabs
-    }
-);
 Template.expSectionTabPane.helpers({
     currentSectionExperiment: function() {
         let sub = Sess.subStat();
         //console.log("expSectionTabPane", this, sub);
-        if (sub && sub.sec_now === this.expSection.id) {
+        if (sub && sub.sec_now === this.currentSection.id) {
             return( true );
         }
     },

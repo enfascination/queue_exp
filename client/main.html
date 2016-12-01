@@ -19,8 +19,8 @@
                 <ul class="nav nav-tabs nav-stacked expTabs" role="tab-list">
                     <li role="presentation"><a data-target="#instructions" href="#instructions" aria-controls="instructions" role="tab" data-toggle="tab">Instructions</a></li>
                     <li role="presentation"><a data-target="#quiz" href="#quiz" aria-controls="quiz" role="tab" data-toggle="tab">Start</a></li>
-                    {{#each expSection in expSectionTabs }}
-                        {{> expSectionTab expSection=expSection subStat=subStat}}
+                    {{#each currentSection in expSectionTabs }}
+                        {{> expSectionTab currentSection=currentSection subStat=subStat}}
                     {{/each}}
                     <li role="presentation"><a data-target="#submitHIT" href="#submitHIT" aria-controls="submitHIT" role="tab" data-toggle="tab">Submit</a></li>
                     {{#if showExperimenterView}}
@@ -56,18 +56,18 @@
 </template>
 <template name="expSectionTab">
     <li role="presentation">
-        <a data-target="#{{expSection.id}}" href="#{{expSection.id}}" aria-controls="{{expSection.id}}" role="tab" data-toggle="tab">{{expSection.label}}</a>
-    {{#if currentSectionExperiment expSection}}
+        <a data-target="#{{currentSection.id}}" href="#{{currentSection.id}}" aria-controls="{{currentSection.id}}" role="tab" data-toggle="tab">{{currentSection.label}}</a>
+    {{#if currentSectionExperiment currentSection}}
         <ul class="nav nav-pills nav-stacked expSubTabs" role="tab-list">
             {{#each round in expSectionRoundTabs}}
-                {{> expSectionRoundTab round=round expSection=expSection subStat=subStat}}
+                {{> expSectionRoundTab round=round currentSection=currentSection subStat=subStat}}
             {{/each}}
         </ul>
     {{/if}}
     </li>
 </template>
 <template name="expSectionRoundTab">
-    <li role="presentation"><a class="expSubTab" id={{round.id}} data-state="{{round.state}}" value="{{round.number}}">{{round.name}} {{round.state}} {{round.hidden}} </a></li>
+    <li role="presentation" class="{{round.HTMLDisabled}}"><a class="expSubTab {{round.HTMLClasses}}" id={{round.id}} data-state="{{round.state}}" value="{{round.number}}">{{round.name}} {{round.state}} {{round.hidden}} </a></li>
 </template>
 
 
