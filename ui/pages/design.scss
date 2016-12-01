@@ -114,6 +114,7 @@ h2, h3, h4 {
 .expSubTabs {
     text-align: right;
     background-color: LightGrey;
+    pointer-events : none; /* from http://stackoverflow.com/questions/5069110/remove-hover-css-behavior-from-element */
 }
 .expHeader {
     background-color: White;

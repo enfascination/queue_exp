@@ -127,8 +127,8 @@ Template.expSectionTab.helpers({
         let currentSection = Template.currentData().currentSection;
         let subStat = Template.currentData().subStat;
 
-        let roundObjs = _.map([0,1,2], function( e ) {
-            let tabState = subStat.sec_rnd_now === e ? "present" : (subStat.sec_rnd_now > e ? "past" : "future"); 
+        let roundObjs = _.map( _.range(currentSection.rounds), function( num ) {
+            let tabState = subStat.sec_rnd_now === num ? "present" : (subStat.sec_rnd_now > num ? "past" : "future"); 
             let tabDisabled = "";
             let tabClasses = "";
             if (tabState === "past") {
@@ -139,9 +139,9 @@ Template.expSectionTab.helpers({
                 tabClasses += "future text-muted";
             }
             return( {
-                number : e,
-                name : "round " + e,
-                id : "round" + e,
+                number : num,
+                name : "round " + num,
+                id : "round" + num,
                 state      : tabState, 
                 HTMLDisabled : tabDisabled,
                 HTMLClasses : tabClasses,
