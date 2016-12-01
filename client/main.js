@@ -116,7 +116,7 @@ Template.expSectionTab.onCreated( function() {
 });
 Template.expSectionTab.helpers({
     currentSectionExperiment: function( currentSection ) {
-        //console.log( "currentSectionExperiment", this);
+        //console.log( "expSectionTab.helper, currentSectionExperiment", this);
         let sub = Sess.subStat();
         if (sub && sub.sec_now === currentSection.id) {
             return( true );

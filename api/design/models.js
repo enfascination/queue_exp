@@ -3,7 +3,7 @@
 import { TurkServer } from 'meteor/mizzao:turkserver';
 import { Schemas } from './schemas.js';
 
-DesignSequence = { 
+DesignSequence = {
         "instructions" : { 
             "name" : "instructions", 
             "type" : "quiz" , 

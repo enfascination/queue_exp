@@ -13,12 +13,10 @@ Router.configure({
         let sub = Sess.subStat();
         if ( sub ) {
             return({
-                currentSectionName : sub.sec_now,
                 currentTab : sub.sec_now,
                 subStat : sub,
-                expSection : DesignSequence[ sub.sec_now ],
-                thisSection : DesignSequence[ sub.sec_now ],
                 currentSection : DesignSequence[ sub.sec_now ],
+                design : Design,
             }); 
         }
     },
@@ -47,6 +45,17 @@ Router.route('/start', function() {
 Router.route('/experiment', function() {
     this.render('expSectionTabPane');
 },{
+    data : function() { // enrich the global data object in this section
+        let data = Router.options.data();
+        //console.log("router, experiment, data",data);
+        let subData = Sess.subData();
+        let design = Sess.design();
+        if ( data && subData && design ) {
+            data.subData = subData;
+            data.design = design;
+        }
+        return( data );
+    },
     waitOn : function () {
         return([
             Meteor.subscribe('s_status'),

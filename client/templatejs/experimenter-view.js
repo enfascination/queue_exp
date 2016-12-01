@@ -14,52 +14,19 @@ Template.experimenterView.onCreated( function(){
 });
 Template.experimenterViewState.helpers({
     cohortId: function () {
-        let design = Sess.design( );
-        if( !_.isNil( design ) ) {
-            return design.cohortId;
-        }
-    },
-    section: function () {
-        let sub = Sess.subData();
-        if( !_.isNil( sub ) && !_.isNil( sub[0] ) ) {
-            return(sub[0].sec_now);
-        }
-    },
-    round: function () {
-        let sub = Sess.subData();
-        if( !_.isNil( sub ) && !_.isNil( sub[0] ) ) {
-            return(sub[0].sec_rnd_now);
-        }
-    },
-    maxPlayersInCohort: function () {
-        let aDesign = Sess.design();
-        if (aDesign) {
-            return aDesign.maxPlayersInCohort;
-        }
+        return this.design.cohortId;
     },
     queuePosition: function () {
-        let sub = Sess.subData();
-        if( sub && !_.isNil( sub ) && !_.isNil( sub[0] ) ) {
-            return sub[0].theData.queuePosition;
-        }
+        return(this.subData[0].theData.queuePosition);
     },
     queueCountA: function () {
-        let sub = Sess.subData();
-        if( !_.isNil( sub ) && !_.isNil( sub[0] ) ) {
-            return sub[0].theData.queueCountA;
-        }
+        return(this.subData[0].theData.queueCountA);
     },
     queueCountB: function () {
-        let sdata = Sess.subData();
-        if( !_.isNil( sdata ) && !_.isNil( sdata[0] ) ) {
-            return sdata[0].theData.queueCountB;
-        }
+        return(this.subData[0].theData.queueCountB);
     },
     queueCountNoChoice: function () {
-        let sdata = Sess.subData();
-        if( !_.isNil( sdata ) && !_.isNil( sdata[0] ) ) {
-            return sdata[0].theData.queueCountNoChoice;
-        }
+        return(this.subData[0].theData.queueCountNoChoice);
     },
 });
 

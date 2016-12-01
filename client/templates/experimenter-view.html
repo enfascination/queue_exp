@@ -8,7 +8,7 @@
         <h3> Experimenter View </h3> 
         <div class="container-fluid">
             <h4> Underlying background state. </h4> 
-            {{> experimenterViewState }}
+            {{> experimenterViewState ..}}
             <h4> Underlying subject's state. </h4> 
             {{> experimenterViewCurrentSubject }}
             <h4> Underlying subject's data. </h4> 
@@ -35,13 +35,13 @@
                     Current queue: {{cohortId}}
                 </td>
                 <td>
-                    Current section: {{section}}
+                    Current section: {{subStat.sec_now}}
                 </td>
                 <td>
-                    Current round: {{round}}
+                    Current round: {{subStat.sec_rnd_now}}
                 </td>
                 <td>
-                    Max per queue: {{maxPlayersInCohort}}
+                    Max per queue: {{design.maxPlayersInCohort}}
                 </td>
             </tr>
             <tr>
