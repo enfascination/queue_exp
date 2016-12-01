@@ -14,8 +14,8 @@ Template.survey.helpers({
 	questions: function(){
         let sub = Sess.subStat();
         let dataContext = this;
-        if (dataContext.thisSection) {
-            return( Helper.questions( sub, dataContext.thisSection.id, dataContext) );
+        if (dataContext.currentSection) {
+            return( Helper.questions( sub, dataContext.currentSection.id, dataContext) );
         }
     },
     testProceed: Helper.testProceed,

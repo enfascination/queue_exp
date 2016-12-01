@@ -65,15 +65,20 @@ Template.experiment.helpers({
         //console.log("experiment.helpers", this);
         let sub = Sess.subStat();
         let dataContext = this;
-        if (dataContext.thisSection) {
-            return( Helper.questions( sub, dataContext.thisSection.id, dataContext) );
+        if (dataContext.currentSection) {
+            return( Helper.questions( sub, dataContext.currentSection.id, dataContext) );
         }
     },
     testProceed: Helper.testProceed,
     section: function() {
+        //console.log( "expeirment.helper section", this );
         let dataContext = this;
-        return( dataContext.thisSection );
-    }
+        return( dataContext.currentSection );
+    },
+    subjectStatus: function() {
+        let dataContext = this;
+        return( dataContext.subStat );
+    },
 });
 Template.experiment.events({
     'submit form#nextStage': function(e){
@@ -87,7 +92,7 @@ Template.experiment.events({
         //// ARE INPUTS ACCEPTABLE?
         /////////////////////
         //Only allow clients to attempt quiz twice before preventing them from doing so
-        let qs = Questions.find({sec: this.thisSection.id, sec_rnd : sub.sec_rnd_now }).forEach( function( q ) {
+        let qs = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).forEach( function( q ) {
             let form = e.target;
             let element_raw = $(form).children("div#"+q._id)[0];
             let element = $( element_raw );
@@ -100,10 +105,10 @@ Template.experiment.events({
                 Helper.questionHasError( element_raw, false );
             }
         });
-        let answeredCount = Questions.find({sec: this.thisSection.id, sec_rnd : sub.sec_rnd_now , answered:true}).count();
-        let questionsCount = Questions.find({sec: this.thisSection.id, sec_rnd : sub.sec_rnd_now }).count();
-        //console.log(sub.sec_rnd_now, Questions.findOne({sec: this.thisSection.id}));
-        let choice = Questions.findOne({sec: this.thisSection.id, sec_rnd : sub.sec_rnd_now }).choice;
+        let answeredCount = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now , answered:true}).count();
+        let questionsCount = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).count();
+        //console.log(sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
+        let choice = Questions.findOne({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).choice;
 
         if ( answeredCount === questionsCount ) {
             let design = Sess.design();
@@ -203,7 +208,7 @@ Template.experimentInfo.helpers({
         let sub = Sess.subStat();
         if (sub) {
             //console.log("experimentInfo.helpers", this, sub );
-            let q = Questions.findOne({ sec: this.thisSection.id, sec_rnd : sub.sec_rnd_now });
+            let q = Questions.findOne({ sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now });
             //console.log("experimentInfo.helpers", this, sub, q );
             if (UserElements.choiceChecked && !_.isNil(sub) && !_.isNil( q )) {
                 return UserElements.choiceChecked.get( q._id );

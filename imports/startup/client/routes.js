@@ -45,7 +45,7 @@ Router.route('/start', function() {
 });
 
 Router.route('/experiment', function() {
-    this.render('expSectionTabPane2');
+    this.render('expSectionTabPane');
 },{
     waitOn : function () {
         return([

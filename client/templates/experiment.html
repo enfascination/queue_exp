@@ -1,15 +1,14 @@
 <template name="experiment">
-                <h1>{{section.label}}</h1>
         <div class="page-header">
             <h1 class="center">
-                Welcome to the queue.
-                <small>An experiment</small>
+                {{section.label}}
+                <small>Round {{subjectStatus.sec_rnd_now}}</small>
             </h1>
         </div>
 
         <section>
-            {{> experimentInstructions thisSection=thisSection}}
-            {{> experimentInfo thisSection=thisSection}}
+            {{> experimentInstructions currentSection=currentSection}}
+            {{> experimentInfo currentSection=currentSection}}
             <br />
             <div class="exp-info container-fluid">
                 <p>

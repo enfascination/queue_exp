@@ -144,7 +144,7 @@ Template.quiz.helpers({
 	questions: function(){
         let sub = Sess.subStat();
         let dataContext = this;
-        if (dataContext.thisSection) {
+        if (dataContext.currentSection) {
             return( Helper.questions( sub, "quiz", dataContext) );  // a little risky to put quiz here bc i might still be int he instrucitons section
         }
     },

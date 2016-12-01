@@ -31,6 +31,7 @@ Tracker.autorun(function() {
 Template.main.onCreated( function(){
     //initialize ui state
     UserElements.choiceChecked = new ReactiveDict(); // this is so there can be mulplie of these buttons on a page
+    UserElements.currentlyViewing = new ReactiveDict(); // this is so there can be mulplie of these buttons on a page
 });
 
 Template.main.onRendered( function(){ 
@@ -48,6 +49,8 @@ Template.main.onRendered( function(){
                     let sec = currentDataContext.currentSection.id;
                     //console.log("before flush", sec, currentDataContext);
                     Helper.updateNavBar(currentDataContext.currentTab, sec);
+                    UserElements.currentlyViewing.set("sec", currentDataContext.currentTab);
+                    //UserElements.currentlyViewing.set("sec_rnd", currentDataContext.currentTab);
                     //console.log("after flush", sec);
                 });
             }
@@ -101,44 +104,74 @@ Template.main.helpers({
     },
     expSectionTabs : function() {
         let design = Sess.design() || Design;
-        //console.log( "expSectionTabs", design , this);
+        let dataContext = Template.currentData();
+        //console.log( "expSectionTabs", design, dataContext );
         let d = _( design.sequence ).omit( [ "instructions", "quiz", "submitHIT" ] ).toArray().value();
         //console.log(d);
+        _.forEach( d, function( q ) {
+            q.context = dataContext;
+        });
         return(d);
     },
 });
 Template.expSectionTab.helpers({
-    currentSectionExperiment: function() {
+    currentSectionExperiment: function( expSection ) {
+        //console.log( "currentSectionExperiment", this);
         let sub = Sess.subStat();
-        if (sub && sub.sec_now === this.id) {
+        if (sub && sub.sec_now === expSection.id) {
             return( true );
         }
     },
-    expSection: function() {
-        return(this);
+    expSectionRoundTabs : function () {
+        //console.log( "expSectionRoundTabs", this, Template.currentData());
+        let currentSection = Template.currentData().currentSection;
+        let subStat = Template.currentData().subStat;
+        let roundObjs = _.map([0,1,2], function( e ) {
+            return( {
+                number : e,
+                name : "round " + e,
+                id : "round" + e,
+                hidden     : subStat.sec_rnd_now === e ? false : true, 
+                hiddenHTML : subStat.sec_rnd_now === e ? "show" : "hidden", 
+                state      : subStat.sec_rnd_now === e ? "present" : (subStat.sec_rnd_now > e ? "past" : "future"), 
+                stateHTML  : subStat.sec_rnd_now === e ? "text-primary" : (subStat.sec_rnd_now > e ? "text-info" : "text-muted"), 
+                subStat : subStat,
+                currentSection : currentSection,
+            });
+        });
+        return( roundObjs ) ;
     },
 });
+Template.expSectionRoundTab.onRendered( function() {
+    // access round tabs
+    //console.log( "roundTab on rendered", this.$("li").find(".expSubTab")[0] );
+    let roundTab = this.$("li").find(".expSubTab")[0];
+    let tab = $( roundTab );
+        if (tab.attr("data-state") === "present") {
+            tab.addClass( "present text-primary" );
+            tab.attr("data-toggle", "tab");
+        } else if (tab.attr("data-state") === "past") {
+            tab.addClass( "past text-info" );
+            tab.attr("data-toggle", "tab");
+            UserElements.currentlyViewing.set( _.toInteger( tab.value ) );
+        } else if (tab.attr("data-state") === "future") {
+            tab.addClass( "future text-muted" );
+            tab.parent().addClass("disabled");
+        } 
+        // prep round tabs based on their states
+        // prep relevant tab panes based on the states of their tabs
+    }
+);
 Template.expSectionTabPane.helpers({
     currentSectionExperiment: function() {
         let sub = Sess.subStat();
-        if (sub && sub.sec_now === this.id) {
-            return( true );
-        }
-    },
-    expSection: function() {
-        return(this);
-    },
-});
-Template.expSectionTabPane2.helpers({
-    currentSectionExperiment: function() {
-        let sub = Sess.subStat();
-        //console.log("expSectionTabPane2", this, sub);
+        //console.log("expSectionTabPane", this, sub);
         if (sub && sub.sec_now === this.expSection.id) {
             return( true );
         }
     },
     isSection: function( aSection ){
-        return( this.thisSection.id === aSection );
+        return( this.currentSection.id === aSection );
     },
 });
 

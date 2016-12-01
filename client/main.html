@@ -15,12 +15,12 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-2">
+            <div class="col-md-2 pull-left">
                 <ul class="nav nav-tabs nav-stacked expTabs" role="tab-list">
                     <li role="presentation"><a data-target="#instructions" href="#instructions" aria-controls="instructions" role="tab" data-toggle="tab">Instructions</a></li>
                     <li role="presentation"><a data-target="#quiz" href="#quiz" aria-controls="quiz" role="tab" data-toggle="tab">Start</a></li>
-                    {{#each expSectionTabs}}
-                        {{> expSectionTab}}
+                    {{#each expSection in expSectionTabs }}
+                        {{> expSectionTab expSection=expSection subStat=subStat}}
                     {{/each}}
                     <li role="presentation"><a data-target="#submitHIT" href="#submitHIT" aria-controls="submitHIT" role="tab" data-toggle="tab">Submit</a></li>
                     {{#if showExperimenterView}}
@@ -43,7 +43,7 @@
                     {{/if}}
                 </div>
             </div>
-            <div class="col-md-2 expInfoPanel">
+            <div class="col-md-2 pull-right expInfoPanel">
                 Subject Info
                 <br>
                 <br>
@@ -57,31 +57,26 @@
 <template name="expSectionTab">
     <li role="presentation">
         <a data-target="#{{expSection.id}}" href="#{{expSection.id}}" aria-controls="{{expSection.id}}" role="tab" data-toggle="tab">{{expSection.label}}</a>
-    {{#if currentSectionExperiment expSection.id}}
+    {{#if currentSectionExperiment expSection}}
         <ul class="nav nav-pills nav-stacked expSubTabs" role="tab-list">
-            {{#each expSectionRoundTabs}}
-                {{> expSectionRoundTab}}
+            {{#each round in expSectionRoundTabs}}
+                {{> expSectionRoundTab round=round expSection=expSection subStat=subStat}}
             {{/each}}
         </ul>
     {{/if}}
     </li>
 </template>
 <template name="expSectionRoundTab">
-    <li role="presentation"><a data-target="#{{expSectionRoundId}}" href="#{{expSectionRoundId}}" aria-controls="{{expSectionRoundId}}" role="tab" data-toggle="tab">{{expSectionRoundLabel}}</a></li>
+    <li role="presentation"><a class="expSubTab" id={{round.id}} data-state="{{round.state}}" value="{{round.number}}">{{round.name}} {{round.state}} {{round.hidden}} </a></li>
 </template>
 
-<template name="expSectionTabPane">
-    {{#if currentSectionExperiment expSection.id}}
-            {{> experiment thisSection=expSection}}
-    {{/if}}
-</template>
 
 <template name="quizSectionTabPane">
     <h1>QUIZZZ!!!</h1>
                     {{> quiz}}
                     {{> navButton}}
 </template>
-<template name="expSectionTabPane2">
+<template name="expSectionTabPane">
     <h1>EXPZZZ!!!</h1>
     {{#if currentSectionExperiment}}
             {{#unless isSection "survey"}}
@@ -92,7 +87,7 @@
     {{/if}}
 </template>
 <template name="submitHITSectionTabPane">
-    <h1>SUBMITZZZ!!!</h1>
+    <h1>IT SUBMITS THE HIT</h1>
     {{> submitHIT}}
 </template>
 
