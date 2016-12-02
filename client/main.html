@@ -9,43 +9,49 @@
 
 <template name="main">
         <div class="expWindow bg">
-        <div class="row">
-            <div class="col-md-7 col-md-offset-3 expHeader">
-                <h1>The Experiment</h1>
-            </div>
-        </div>
+            <hr/>
         <div class="row">
             <div class="col-md-2 pull-left">
+                <div class="expHeader">
+                    <h1>The Experiment</h1>
+                </div>
                 <ul class="nav nav-tabs nav-stacked expTabs" role="tab-list">
-                    <li role="presentation"><a data-target="#instructions" href="#instructions" aria-controls="instructions" role="tab" data-toggle="tab">Instructions</a></li>
-                    <li role="presentation"><a data-target="#quiz" href="#quiz" aria-controls="quiz" role="tab" data-toggle="tab">Start</a></li>
+                    <li><a data-target="#instructions" href="#instructions" aria-controls="instructions" data-toggle="tab">Instructions</a></li>
+                    <li><a data-target="#quiz" href="#quiz" aria-controls="quiz" data-toggle="tab">Start</a></li>
                     {{#each currentSection in expSectionTabs }}
                         {{> expSectionTab currentSection=currentSection subStat=subStat}}
                     {{/each}}
-                    <li role="presentation"><a data-target="#submitHIT" href="#submitHIT" aria-controls="submitHIT" role="tab" data-toggle="tab">Submit</a></li>
+                    <li><a data-target="#submitHIT" href="#submitHIT" aria-controls="submitHIT" data-toggle="tab">Submit</a></li>
                     {{#if showExperimenterView}}
                     <li role="presentation"><a data-target="#experimenterView" href="#experimenterView" aria-controls="experimenterView" role="tab" data-toggle="tab">Data view</a></li>
                     {{/if}}
                 </ul>
             </div>
             <div class="col-md-7 col-md-offset-1 expMainPanel">
-                <div class="tab-content" id="tabs" data-tabs="tabs">
-                    <div role="tabpanel" class="tab-pane expPane" id="instructions">
-                        {{> mainInstructions}}
+                <div class="row">
+                    <div class="tab-content" id="tabs" data-tabs="tabs">
+                        <div role="tabpanel" class="tab-pane expPane" id="instructions">
+                            <h2 class="sectionHeader" >Instructions</h2>
+                            {{> mainInstructions}}
+                        </div>
+                        <div role="tabpanel" class="tab-pane expPane" id="{{currentSection.id}}">
+                        {{> yield }}
+                        </div>
+                        {{#if showExperimenterView}}
+                        <div role="tabpanel" class="tab-pane expPane" id="experimenterView">
+                            <h2 class="sectionHeader" > Experimenter View </h2> 
+                            {{> experimenterView ..}}
+                        </div>
+                        {{/if}}
+                        <div class="container"></div><!--no idea why I need this, but i do or widths on differnte section  is wierd-->
                     </div>
-                    <div role="tabpanel" class="tab-pane expPane" id="{{currentSection.id}}">
-                    {{> yield }}
-                    </div>
-                    {{#if showExperimenterView}}
-                    <div role="tabpanel" class="tab-pane expPane" id="experimenterView">
-                        {{> experimenterView ..}}
-                    </div>
-                    {{/if}}
-                    <div class="container"></div><!--no idea why I need this, but i do or widths on differnte section  is wierd-->
+                </div>
+                <div class="row">
+                    {{> proceedButton}}
                 </div>
             </div>
             <div class="col-md-2 pull-right expInfoPanel">
-                Subject Info
+                <h3>Subject Info</h3>
                 <br>
                 {{> yield "infoBox"}}
                 <br>
@@ -55,6 +61,7 @@
                 <br>
             </div>
         </div>
+            <hr/>
         </div>
 </template>
 <template name="expSectionTab">
@@ -77,19 +84,26 @@
 
 
 <template name="quizSectionTabPane">
+                <h2 class="sectionHeader" >Quiz</h2>
                     {{> quiz}}
-                    {{> navButton}}
 </template>
 <template name="expSectionTabPane">
     {{#if currentSectionExperiment currentSection}}
             {{#unless isSection "survey"}}
+            <h2 class="sectionHeader" >
+                {{currentSection.label}} <br/>
+                <small>Round {{subStat.sec_rnd_now}}</small>
+            </h2>
+            <br/>
                 {{> experiment ..}}
             {{else}}
+                <h2 class="sectionHeader" >Survey</h2>
                 {{> survey}}
             {{/unless}}
     {{/if}}
 </template>
 <template name="submitHITSectionTabPane">
+                <h2 class="sectionHeader" >Submit</h2>
     {{> submitHIT}}
 </template>
 

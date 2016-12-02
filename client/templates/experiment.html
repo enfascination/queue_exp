@@ -1,13 +1,8 @@
 <template name="experiment">
-        <div class="page-header">
-            <h1 class="center">
-                {{section.label}}
-                <small>Round {{subjectStatus.sec_rnd_now}}</small>
-            </h1>
-        </div>
 
         <section>
             {{> experimentInstructions currentSection=currentSection}}
+        <div> <p>These are the instructions.  {{> navButton}}</p>  </div>
             <br />
                 <p>
                 <b>Make your selection here:</b>
@@ -28,7 +23,6 @@
                 {{> proceedButton id="nextSection"}}
                 {{/if}}
         </section>
-                    {{> navButton}}
 </template>
 
 <template name="experimentInstructions">
@@ -50,7 +44,7 @@
 
 <template name="experimentInfo">
     {{> expGeneralInfoBox}}
-    <div class="expInfoBox">
+    <div class="expInfoTable">
         <ul class="list-group">
             <li class="list-group-item">
                 <p>

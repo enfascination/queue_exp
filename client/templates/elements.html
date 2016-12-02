@@ -16,25 +16,25 @@
 
 <template name="proceedButton">
     <div> 
-        <button type=button class="btn btn-success btn-sm" id={{id}} autofocus >Proceed</button>
+        <button type=button class="btn btn-sm proceedButton pull-right" id={{id}} autofocus >Next</button>
     </div> 
 </template>
 
 <template name="submitButton">
-    <button type="submit" class = "btn btn-primary btn-sm" aria-label="Left Align" style="margin-left:auto; margin-right:auto; display:block" autofocus >
-        Submit Answers
+    <button type="submit" class = "btn btn-primary btn-sm submitButton" aria-label="Left Align" style="margin-left:auto; margin-right:auto; display:block" autofocus >
+        OK
     </button>
 </template>
 
 <template name="navButton">
-    <button type="button" class = "btn btn-primary btn-sm navButton" aria-label="Left Align" style="margin-left:auto; margin-right:auto; display:block" value={{targetSection.id}} autofocus >
+    <button type="button" class = "btn-link navButton" aria-label="Left Align" style="margin-left:auto; margin-right:auto; display:block" value={{targetSection.id}} autofocus >
         {{targetSection.label}}
     </button>
 </template>
 
 <template name="binaryForcedChoice" >
     <div>
-        <div id={{id}} name={{id}} class="btn-group btn-group-lg expChoices" role="group">
+        <div id={{id}} name={{id}} class="expChoices" role="group">
             <button type=button class="btn btn-primary btn-lg experimentChoices expChoice {{disabled id}}" choice="A" >
                 {{texta}}
             </button>
@@ -46,16 +46,14 @@
 </template>
 
 <template name="expGeneralInfoBox">
-    <table class="table table-bordered expInfoBox">
-        <tr>
-            <td>
+    <div class="expInfoTable">
+        <ul class="list-group">
+            <li class="list-group-item">
                 Assignment Id: {{subStat.userId}}
-            </td>
-        </tr>
-        <tr>
-            <td>
+            </li>
+            <li class="list-group-item">
                 Meteor Id: {{subStat.meteorUserId}}
-            </td>
-        </tr>
-    </table>
+            </li>
+        </ul>
+    </div>
 </template>

@@ -79,14 +79,23 @@
     src: url("/fonts/Inconsolata.otf") format("opentype");
 }
 
+
+// bootstrapg class
+.btn, .btn-lg {
+    border-radius: 0;
+}
+.btn-primary{
+    background-color: #3B9AB2;
+}
+
 body {
     //width: 80%;
     //max-width: 960px;
-    padding: 50px 50px 50px 50px;
-    background: LightGrey;
-    margin: auto;
+    background: White;
+    //margin: auto;
 }
 .expWindow {
+    padding: 0px 50px 50px 50px;
     font-family: "Matterhorn";
 }
 h1 {
@@ -97,41 +106,74 @@ h2, h3, h4 {
 }
 .bg {
     float: right;
-    background: url('data:image/svg+xml;utf8,<svg id="circle" height="200" xmlns="http://www.w3.org/2000/svg"><circle id="greencircle" cx="30" cy="30" r="30" fill="green" /></svg>') no-repeat;
+    //background: url('data:image/svg+xml;utf8,<svg id="circle" height="200" xmlns="http://www.w3.org/2000/svg"><circle id="greencircle" cx="30" cy="30" r="30" fill="green" /></svg>') no-repeat;
+    background: url('data:image/svg+xml;utf8,<svg id="circle" height="20" width="20" xmlns="http://www.w3.org/2000/svg"><circle id="greencircle" cx="30" cy="30" r="30" fill="#fff8dc" /></svg>') repeat;
+}
+hr {
+    display: none;
+    border-width: 4px;
+    color: "LightGrey";
 }
 .expMainPanel {
     background-color: White;
-    border: 1px solid DarkGrey;
+    //border: 1px solid DarkGrey;
+    //box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, 0.2), 6px 6px 20px -6px rgba(0, 0, 0, 0.19);
+    border-left: 2px solid LightGrey;
+    border-right: 2px solid LightGrey;
 }
 .expPane {
     text-align: center;
 }
-.expTabs {
-    text-align: left;
-    background-color: White;
-    border: 1px solid DarkGrey;
-    text-align: left;
-}
-.expSubTabs {
-    text-align: right;
-    background-color: LightGrey;
-    pointer-events : none; /* from http://stackoverflow.com/questions/5069110/remove-hover-css-behavior-from-element */
-}
 .expHeader {
     background-color: White;
-    border: 1px solid DarkGrey;
+    color: hsl(200,90,70);
+    text-transform: uppercase;
+
+    //border: 1px solid DarkGrey;
+    //box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, 0.2), 6px 6px 20px -6px rgba(0, 0, 0, 0.19);
 }
-.expInfoPanel {
-    background-color: White;
-    border: 1px solid DarkGrey;
-    text-align: right;
-}
-.expInfoBox {
-    font-size: 75%;
+.expHeader h2 {
+    margin: 0;
 }
 
-.btn[checked], .btn[checked]:focus, .btn[checked]:hover, .btn[checked]:focus:hover {
-    background-color: Red;
+
+//// EXPERIMENT INFO
+.expInfoPanel {
+    background-color: White;
+    //border: 1px solid DarkGrey;
+    text-align: right;
+    //box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, 0.2), 6px 6px 20px -6px rgba(0, 0, 0, 0.19);
+}
+.expInfoPanel h3{
+    padding-top: 30px;
+    text-align: center;
+}
+.expInfoTable {
+    font-size: 75%;
+}
+.expInfoTable li {
+    background-color: hsl(0,0,95);
+    border: 0;
+    margin: 5px;
+}
+
+
+//// EXPERIMENT
+h2.sectionHeader {
+    font-family: "Matterhorn Serif";
+}
+
+.expChoice.btn {
+    border-radius: 50px;
+}
+.expChoice.btn[checked], .expChoice.btn[checked]:focus, .expChoice.btn[checked]:hover, .expChoice.btn[checked]:focus:hover {
+    //background-color: Red;
+}
+.expChoice.btn-primary button.btn-primary:hover {
+    background-color: #78B7C5;
+}
+.expChoice.btn-primary[checked]{
+    background-color: rgb(55,161,81);
 }
 /*
 This does nothing?
@@ -155,4 +197,73 @@ This does nothing?
 
 .navButton {
     min-width: 50px;
+}
+.submitButton, .submitButton:focus {
+    padding: 5px 15px 5px 15px;
+    font-size: 120%;
+    background-color: hsl(0, 0, 50);
+}
+.submitButton:hover {
+    background-color: hsl(0, 0, 60);
+}
+.proceedButton, .proceedButton:focus {
+    background-color: Black;
+    color: White;
+    text-transform: uppercase;
+    margin: 15px;
+    padding: 15px;
+}
+.proceedButton:hover {
+    color: White;
+    background-color: hsl(0, 0, 25);
+}
+
+
+////// NAV AND TAB CSS
+// attributes of the active tab in all mouse states
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+    border: 0;
+    border-radius: 0;
+    background-color: hsl(0, 0, 95);
+    color: hsl(0, 0, 10);
+}
+// attributes of other navigable tabs in all mouse states
+.nav-tabs > li > a, .nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
+    border: 0;
+    border-radius: 0;
+    background-color: hsl(0, 0, 100);
+    color: hsl(0, 0, 10);
+}
+.nav-tabs > li > a:hover {
+    background-color: hsl(0, 0, 97);
+}
+// attributes of disabled tabs in all mouse states
+.nav > li.disabled > a:hover, .nav > li.disabled > a {
+    border-color: transparent;
+    color: hsl(0, 0, 85);
+    background-color: hsl(0, 0, 100);
+}
+.expTabs {
+    font-family: "Matterhorn Serif";
+    text-align: left;
+    background-color: White;
+    //border: 1px solid DarkGrey;
+    text-align: left;
+    //box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, 0.2), 6px 6px 20px -6px rgba(0, 0, 0, 0.19);
+}
+.expSubTabs {
+    text-align: left;
+    background-color: transparent;
+    pointer-events : none; /* from http://stackoverflow.com/questions/5069110/remove-hover-css-behavior-from-element */
+    font-size: 90%;
+    padding-left: 30px;
+}
+.expSubTab.text-primary {
+    color: hsl(0, 0, 10);
+}
+.expSubTab.text-info {
+    color: hsl(0, 0, 75);
+}
+.expSubTab.text-muted {
+    color: hsl(0, 0, 75);
 }
