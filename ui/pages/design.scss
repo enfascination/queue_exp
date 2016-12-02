@@ -88,7 +88,6 @@ body {
 }
 .expWindow {
     font-family: "Matterhorn";
-    text-align: center;
 }
 h1 {
     font-weight: 600;
@@ -103,7 +102,9 @@ h2, h3, h4 {
 .expMainPanel {
     background-color: White;
     border: 1px solid DarkGrey;
-    min-width: 40%;
+}
+.expPane {
+    text-align: center;
 }
 .expTabs {
     text-align: left;
@@ -124,6 +125,9 @@ h2, h3, h4 {
     background-color: White;
     border: 1px solid DarkGrey;
     text-align: right;
+}
+.expInfoBox {
+    font-size: 75%;
 }
 
 .btn[checked], .btn[checked]:focus, .btn[checked]:hover, .btn[checked]:focus:hover {

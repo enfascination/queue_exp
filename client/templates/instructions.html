@@ -1,6 +1,7 @@
 
 <template name="mainInstructions">
                 <h1>Instructions</h1>
+    <section>
     <p class="center-block"> 
     This experiment consists of one choice.  You are playing a game with other Turkers that simulates waiting in line. You are person #{{counterNet}} out of a series of {{groupSize}} people making the same decision and with whom your choices will interact.  You are not yet in line, and the game is currently paused while you make your choice to enter the line. This game will end when {{groupSize}} people have joined the line, and everyone will recieve their earnings at this time. 
     </p> 
@@ -14,4 +15,5 @@
     Based on your position in this experiment, joining group A will result in a minimum of {{earningsAMin}} and a maximum of {{earningsAMax}}, while joining group B will result in a minimum of {{earningsBMin}} and a maximum of {{earningsBMax}}. 
     </p>
     {{> proceedButton id="exitInstructions"}}
+    </section>
 </template>

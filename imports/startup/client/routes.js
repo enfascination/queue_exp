@@ -39,11 +39,21 @@ Router.route('/', function() {
 
 Router.route('/start', function() {
     this.render('quizSectionTabPane');
+    this.render( 'expGeneralInfoBox', { to : 'infoBox' } );
 }, {
 });
 
 Router.route('/experiment', function() {
-    this.render('expSectionTabPane');
+    // main template
+    this.render( 'expSectionTabPane' );
+
+    // infobox template contingent on section
+    let data = Router.options.data();
+    if (data && data.currentSection.id != 'survey') {
+        this.render( 'experimentInfo', { to : 'infoBox' } );
+    } else {
+        this.render( 'expGeneralInfoBox', { to : 'infoBox' } );
+    }
 },{
     data : function() { // enrich the global data object in this section
         let data = Router.options.data();
@@ -67,5 +77,6 @@ Router.route('/experiment', function() {
 
 Router.route('/submitHIT', function() {
     this.render('submitHITSectionTabPane');
+    this.render( 'expGeneralInfoBox', { to : 'infoBox' } );
 });
 

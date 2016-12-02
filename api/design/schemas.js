@@ -71,7 +71,11 @@ Schemas.SubjectsStatus = new SimpleSchema({
     readyToProceed: {
         type: Boolean,
         label: "completed major section?",
-    }
+    },
+    totalEarnings: {
+        type: SimpleSchema.Integer,
+        label: "experiment earnings",
+    },
 });
 
 Schemas.SubjectsData = new SimpleSchema({

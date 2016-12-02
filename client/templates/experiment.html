@@ -8,9 +8,7 @@
 
         <section>
             {{> experimentInstructions currentSection=currentSection}}
-            {{> experimentInfo currentSection=currentSection}}
             <br />
-            <div class="exp-info container-fluid">
                 <p>
                 <b>Make your selection here:</b>
                 </p>
@@ -29,7 +27,6 @@
                 {{#if testProceed}}
                 {{> proceedButton id="nextSection"}}
                 {{/if}}
-            </div>
         </section>
                     {{> navButton}}
 </template>
@@ -52,7 +49,8 @@
 </template>
 
 <template name="experimentInfo">
-    <div class="exp-info container-fluid">
+    {{> expGeneralInfoBox}}
+    <div class="expInfoBox">
         <ul class="list-group">
             <li class="list-group-item">
                 <p>

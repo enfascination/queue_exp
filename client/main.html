@@ -30,21 +30,24 @@
             </div>
             <div class="col-md-7 col-md-offset-1 expMainPanel">
                 <div class="tab-content" id="tabs" data-tabs="tabs">
-                    <div role="tabpanel" class="tab-pane" id="instructions">
+                    <div role="tabpanel" class="tab-pane expPane" id="instructions">
                         {{> mainInstructions}}
                     </div>
-                    <div role="tabpanel" class="tab-pane" id="{{currentSection.id}}">
+                    <div role="tabpanel" class="tab-pane expPane" id="{{currentSection.id}}">
                     {{> yield }}
                     </div>
                     {{#if showExperimenterView}}
-                    <div role="tabpanel" class="tab-pane" id="experimenterView">
+                    <div role="tabpanel" class="tab-pane expPane" id="experimenterView">
                         {{> experimenterView ..}}
                     </div>
                     {{/if}}
+                    <div class="container"></div><!--no idea why I need this, but i do or widths on differnte section  is wierd-->
                 </div>
             </div>
             <div class="col-md-2 pull-right expInfoPanel">
                 Subject Info
+                <br>
+                {{> yield "infoBox"}}
                 <br>
                 <br>
                 <br>
@@ -97,3 +100,4 @@
 <template name="loading">
     <h1>Loading ...</h1>
 </template>
+

@@ -1,10 +1,10 @@
 
 <template name="survey">
-                <h1>Additional information</h1>
+                <h1>Survey</h1>
 
     <!--{{instructionOptions}}-->
-	<h4>Survey</h4>
-	<p>Anwer these optional survey quetsions for additional earnings</p>
+    <section>
+	<p>Answer these optional survey questions for additional earnings</p>
 	<p><i>You have two opportunities to submit your responses</i></p>
 
         <form class = "survey" id="submitSurvey">
@@ -18,10 +18,12 @@
     {{#if testProceed }}
         {{> proceedButton id="exitSurvey"}}
     {{/if}}
+    </section>
     <br/>
 </template>
 
 	<template name = "submitHIT">
+    <section>
     <br/>
     <br/>
     {{#unless testQuizPassed }}
@@ -31,7 +33,7 @@
             <form class="submitHIT">
                 <!--<p>You chose {{userSelection}}</p>
                     <p></p><br>-->
-                    <div class="center-block">
+                    <div class="">
                         <label>
                             Do you have any feedback for us? <br/>
                             Did you encounter any confusion, bugs, or ambiguities in the instructions?
@@ -42,4 +44,5 @@
                     <br/>
                     <button type="submit" class="btn btn-success navButton" autofocus >Submit the HIT</button>
             </form>
+    </section>
 	</template>

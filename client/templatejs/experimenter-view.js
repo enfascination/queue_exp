@@ -17,36 +17,19 @@ Template.experimenterViewState.helpers({
         return this.design.cohortId;
     },
     queuePosition: function () {
-        return(this.subData[0].theData.queuePosition);
+        return( this.subData ? this.subData[0].theData.queuePosition : "" );
     },
     queueCountA: function () {
-        return(this.subData[0].theData.queueCountA);
+        return( this.subData ? this.subData[0].theData.queueCountA : "" );
     },
     queueCountB: function () {
-        return(this.subData[0].theData.queueCountB);
+        return( this.subData ? this.subData[0].theData.queueCountB : "" );
     },
     queueCountNoChoice: function () {
-        return(this.subData[0].theData.queueCountNoChoice);
+        return( this.subData ? this.subData[0].theData.queueCountNoChoice : "" );
     },
 });
 
-Template.experimenterViewCurrentSubject.helpers({
-    userId: function () {
-        let sub = Sess.subStat();
-        if( !_.isNil( sub ) ) {
-            return sub.userId;
-        }
-    },
-    meteorUserId: function () {
-        return Meteor.userId();
-    },
-    cohortId: function () {
-        let design = Sess.design( );
-        if( !_.isNil( design ) ) {
-            return design.cohortId;
-        }
-    },
-});
 Template.experimenterViewCurrentSubjectData.helpers({
     data() {
         let sub = Sess.subStat();
@@ -83,19 +66,12 @@ Template.experimenterViewPayouts.helpers({
 
 });
 Template.experimenterViewPayout.helpers({
-    userId: function () {
-        return Sess.subStat().userId;
-    },
-    completedChoice: function (subject) {
-        //console.log(subject.completedChoice);
-        return(subject.completedChoice);
-    },
     completedExperiment: function (subject) {
-        let subbk = Sess.subStat();
-        return(subbk.completedExperiment);
+        let substat = SubjectsStatus.findOne({ meteorUserId : subject.meteorUserId });
+        return( substat ? substat.completedExperiment : '' );
     },
     completedCohort: function (subject) {
-        cohort = CohortSettings.findOne({ cohortId : subject.theData.cohortId, sec : subject.sec , sec_rnd : subject.sec_rnd });
+        let cohort = CohortSettings.findOne({ cohortId : subject.theData.cohortId, sec : subject.sec , sec_rnd : subject.sec_rnd });
         if (cohort) {
             return(cohort.completedCohort);
         }
@@ -137,7 +113,7 @@ Template.cohortSelection.helpers({
     items: function() {
         let allSubs = SubjectsData.find({sec_type : "experiment"}, {sort : {cohortId : -1}}).fetch();
         //console.log( "items", allSubs );
-        let allCohortIds = _(allSubs).map("theData.cohortId").map(_.toInteger).uniq().sortBy().value().reverse();
+        let allCohortIds = _(allSubs).map("theData.cohortId").map(_.toInteger).sortBy().sortedUniq().value().reverse();
         //console.log(_(allSubs).map("theData.cohortId").compact().map(_.toInteger).uniq().sortBy().reverse().value());
         //console.log(allCohortIds, _(allSubs).map("theData.cohortId").map(_.toInteger).uniq().sortBy().reverse().value());
         //let allCohortsObj = _.uniqBy(allSubs, (d) =>  parseInt(d.theData.cohortId) );

@@ -3,24 +3,18 @@
     <br/>
     <br/>
     <br/>
+        <h1> Experimenter View </h1> 
     <section>
     <div class="experimenter-view">
-        <h3> Experimenter View </h3> 
-        <div class="container-fluid">
             <h4> Underlying background state. </h4> 
             {{> experimenterViewState ..}}
-            <h4> Underlying subject's state. </h4> 
-            {{> experimenterViewCurrentSubject }}
             <h4> Underlying subject's data. </h4> 
             {{> experimenterViewCurrentSubjectData }}
             <h4> Final payoffs. </h4> 
             {{> experimenterViewPayouts }}
-        </div>
-        <br/>
-        <p> 
-        </p>
     </div>
     </section>
+        <br/>
     <br/>
     <br/>
     <br/>
@@ -62,21 +56,6 @@
     </table>
 </template>
 
-<template name="experimenterViewCurrentSubject">
-    <table class="table table-bordered">
-        <tr>
-            <td>
-                Assignment Id: {{userId}}
-            </td>
-            <td>
-                Meteor Id: {{meteorUserId}}
-            </td>
-            <td>
-                cohort Id: {{cohortId}}
-            </td>
-        </tr>
-    </table>
-</template>
 <template name="experimenterViewCurrentSubjectData">
     <table class="table table-bordered">
                 <thead>

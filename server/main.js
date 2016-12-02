@@ -96,6 +96,7 @@ Meteor.users.deny({
                 sec_rnd_now: 0,
                 sec_rnd_stg_now: 0,
                 readyToProceed: false,
+                totalEarnings: 0,
             } );
 
             //ensure uniqueness

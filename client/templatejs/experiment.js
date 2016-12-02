@@ -15,7 +15,6 @@ import { Schemas } from '../../api/design/schemas.js';
 
 
 Template.experiment.onCreated( function(){
-    UserElements.userAccount = new ReactiveVar();
 
     let group = TurkServer.group();
     if (_.isNil(group) ) return;
