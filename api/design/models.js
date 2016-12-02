@@ -9,15 +9,17 @@ DesignSequence = {
             "type" : "quiz" , 
             "id" : "instructions" , 
             "label" : "Instructions" , 
-            "rounds" : 0, 
-            "stages" : 1 
+            "roundCount" : 0, 
+            "rounds" : { "0" : {id:"round0", label:"Round 0"}, },
+            "stages" : 1,
         }, 
         "quiz" : { 
             "name" : "quiz", 
             "type" : "quiz" , 
             "id" : "quiz" , 
             "label" : "Start" , 
-            "rounds" : 1, 
+            "roundCount" : 1, 
+            "rounds" : { "0" : {id:"round0", label:"Round 0"}, },
             "stages" : 1 
         }, 
         "experiment1" : { 
@@ -25,7 +27,8 @@ DesignSequence = {
             "type" : "experiment" , 
             "id" : "experiment1" , 
             "label" : "Experiment:\nPart 1" , 
-            "rounds" : 2, 
+            "roundCount" : 2, 
+            "rounds" : { "0" : {id:"round0", label:"Round 0"},  "1" : {id:"round1", label:"Round 1"}, },
             "stages" : 1 
         }, 
         "experiment2" : {
@@ -33,7 +36,8 @@ DesignSequence = {
             "type" : "experiment" , 
             "id" : "experiment2" , 
             "label" : "Experiment:\nPart 2" , 
-            "rounds" : 2, 
+            "roundCount" : 2, 
+            "rounds" : { "0" : {id:"round0", label:"Round 0"},  "1" : {id:"round1", label:"Round 1"}, },
             "stages" : 1 
         }, 
         "survey" : { 
@@ -41,26 +45,26 @@ DesignSequence = {
             "type" : "experiment" , 
             "id" : "survey" , 
             "label" : "Survey" , 
-            "rounds" : 1, 
+            "roundCount" : 1, 
+            "rounds" : { "0" : {id:"round0", label:"Round 0"}, },
             "stages" : 1 },
         "submitHIT" : { 
             "name" : "submitHIT", 
             "type" : "submitHIT" , 
             "id" : "submitHIT" , 
             "label" : "Submit" , 
-            "rounds" : 0, 
+            "roundCount" : 0, 
+            "rounds" : { "0" : {id:"round0", label:"Round 0"}, },
             "stages" : 0 
         },
     };
 Design = {
-    maxPlayersInCohort : 5,
+    maxPlayersInCohort : 4,
     endowment : 1.00,
     pot : 1.00,
     queueNames : [ 'A', 'B' ],
     queueCosts : { "A": 0.50, 'B': 0.00 },
     maxQuizFails : 2,
-    //sequence : { 0: {name:"experiment", "rounds":1, "stages" : 1 }, 1: {name:"done", "rounds":1, "stages" : 1 } },
-    //sequence : { 0: {name:"quiz", "rounds":1 }, 1: {name:"experiment", "rounds":2 }, 2: {name:"survey", "rounds":1 } },
     sequence : DesignSequence,
     positionCosts : 0.25,
     batchName : "main",

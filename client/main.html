@@ -77,13 +77,11 @@
 
 
 <template name="quizSectionTabPane">
-    <h1>QUIZZZ!!!</h1>
                     {{> quiz}}
                     {{> navButton}}
 </template>
 <template name="expSectionTabPane">
-    <h1>EXPZZZ!!!</h1>
-    {{#if currentSectionExperiment}}
+    {{#if currentSectionExperiment currentSection}}
             {{#unless isSection "survey"}}
                 {{> experiment ..}}
             {{else}}
@@ -92,7 +90,6 @@
     {{/if}}
 </template>
 <template name="submitHITSectionTabPane">
-    <h1>IT SUBMITS THE HIT</h1>
     {{> submitHIT}}
 </template>
 

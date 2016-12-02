@@ -124,11 +124,10 @@ Template.expSectionTab.helpers({
         }
     },
     expSectionRoundTabs : function () {
-        //console.log( "expSectionRoundTabs", this, Template.currentData());
         let currentSection = Template.currentData().currentSection;
         let subStat = Template.currentData().subStat;
 
-        let roundObjs = _.map( _.range(currentSection.rounds), function( num ) {
+        let roundObjs = _.map( _.range(currentSection.roundCount), function( num ) {
             let tabState = subStat.sec_rnd_now === num ? "present" : (subStat.sec_rnd_now > num ? "past" : "future"); 
             let tabDisabled = "";
             let tabClasses = "";
@@ -141,8 +140,8 @@ Template.expSectionTab.helpers({
             }
             return( {
                 number : num,
-                name : "round " + num,
-                id : "round" + num,
+                name : DesignSequence[subStat.sec_now].rounds[ num.toString() ].label,
+                id : DesignSequence[subStat.sec_now].rounds[ num.toString() ].id,
                 state      : tabState, 
                 HTMLDisabled : tabDisabled,
                 HTMLClasses : tabClasses,
@@ -154,10 +153,10 @@ Template.expSectionTab.helpers({
     },
 });
 Template.expSectionTabPane.helpers({
-    currentSectionExperiment: function() {
+    currentSectionExperiment: function( currentSection ) {
         let sub = Sess.subStat();
         //console.log("expSectionTabPane", this, sub);
-        if (sub && sub.sec_now === this.currentSection.id) {
+        if (sub && sub.sec_now === currentSection.id) {
             return( true );
         }
     },
