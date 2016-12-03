@@ -1,6 +1,15 @@
 <head>
     <title>Mechanical Turk collective behavior laboratory experiment with cash payment</title>
     <noscript>Please either enable JavaScript on your browser or return this HIT.</noscript>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/icons/favicon-32x32.png?v=2" sizes="32x32">
+    <link rel="icon" type="image/png" href="/icons/favicon-16x16.png?v=2" sizes="16x16">
+    <link rel="manifest" href="/icons/manifest.json">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="shortcut icon" href="/icons/favicon.ico?v=2">
+    <meta name="msapplication-config" content="/icons/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
 </head>
 
 <template name="home">
@@ -8,14 +17,14 @@
 </template>
 
 <template name="main">
-        <div class="expWindow bg">
+        <div class="expMTWindow bg">
             <hr/>
         <div class="row">
             <div class="col-md-2 pull-left">
                 <div class="expHeader">
                     <h1>The Experiment</h1>
                 </div>
-                <ul class="nav nav-tabs nav-stacked expTabs" role="tab-list">
+                <ul class="nav nav-tabs nav-stacked expTabs expWindow" role="tab-list">
                     <li><a data-target="#instructions" href="#instructions" aria-controls="instructions" data-toggle="tab">Instructions</a></li>
                     <li><a data-target="#quiz" href="#quiz" aria-controls="quiz" data-toggle="tab">Start</a></li>
                     {{#each currentSection in expSectionTabs }}
@@ -27,7 +36,7 @@
                     {{/if}}
                 </ul>
             </div>
-            <div class="col-md-7 col-md-offset-1 expMainPanel">
+            <div class="col-md-7 col-md-offset-1 expMainPanel expWindow">
                 <div class="row">
                     <div class="tab-content" id="tabs" data-tabs="tabs">
                         <div role="tabpanel" class="tab-pane expPane" id="instructions">
@@ -50,7 +59,7 @@
                     {{> proceedButton}}
                 </div>
             </div>
-            <div class="col-md-2 pull-right expInfoPanel">
+            <div class="col-md-2 pull-right expInfoPanel expWindow">
                 <h3>Subject Info</h3>
                 <br>
                 {{> yield "infoBox"}}
