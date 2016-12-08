@@ -21,23 +21,25 @@
             <hr/>
         <div class="row">
             <div class="col-md-2 pull-left">
-                <div class="expHeader">
-                    <h1>The Experiment</h1>
-                </div>
-                <ul class="nav nav-tabs nav-stacked expTabs expWindow" role="tab-list">
-                    <li><a data-target="#instructions" href="#instructions" aria-controls="instructions" data-toggle="tab">Instructions</a></li>
-                    <li><a data-target="#quiz" href="#quiz" aria-controls="quiz" data-toggle="tab">Start</a></li>
-                    {{#each currentSection in expSectionTabs }}
+                <div class="expTabs expWindow">
+                    <div class="expHeader">
+                        <h1>Decision Laboratory</h1>
+                    </div>
+                    <ul class="nav nav-tabs nav-stacked" role="tab-list">
+                        <li><a data-target="#instructions" href="#instructions" aria-controls="instructions" data-toggle="tab">Instructions</a></li>
+                        <li><a data-target="#quiz" href="#quiz" aria-controls="quiz" data-toggle="tab">Start</a></li>
+                        {{#each currentSection in expSectionTabs }}
                         {{> expSectionTab currentSection=currentSection subStat=subStat}}
-                    {{/each}}
-                    <li><a data-target="#submitHIT" href="#submitHIT" aria-controls="submitHIT" data-toggle="tab">Submit</a></li>
-                    {{#if showExperimenterView}}
-                    <li role="presentation"><a data-target="#experimenterView" href="#experimenterView" aria-controls="experimenterView" role="tab" data-toggle="tab">Data view</a></li>
-                    {{/if}}
-                </ul>
+                        {{/each}}
+                        <li><a data-target="#submitHIT" href="#submitHIT" aria-controls="submitHIT" data-toggle="tab">Submit</a></li>
+                        {{#if showExperimenterView}}
+                        <li role="presentation"><a data-target="#experimenterView" href="#experimenterView" aria-controls="experimenterView" role="tab" data-toggle="tab">Data view</a></li>
+                        {{/if}}
+                    </ul>
+                </div>
             </div>
-            <div class="col-md-7 col-md-offset-1 expWindow expMainWindow">
-                <div class="row expMainPanel">
+            <div class="col-md-7 col-md-offset-1 expMainWindow">
+                <div class="row expWindow expMainPanel">
                     <div class="tab-content" id="tabs" data-tabs="tabs">
                         <div role="tabpanel" class="tab-pane container expPane" id="instructions">
                             <h2 class="sectionHeader" >Instructions</h2>

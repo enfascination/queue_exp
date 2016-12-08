@@ -2,6 +2,7 @@
 
 
 /// palette: http://davidjohnstone.net/pages/lch-lab-colour-gradient-picker#dbedff,57a8ff
+///          https://material.google.com/style/color.html#color-color-palette
 
 @font-face {
     font-family: "Matterhorn";
@@ -83,29 +84,9 @@
 }
 
 
-// bootstrapg class
-.btn, .btn:focus, .btn:hover, .btn:focus:hover {
-    border-radius: 50px;
-    min-width: 70px;
-    padding: 15px 15px 15px 15px;
-    border: 0;
-    background-color: #4FC3F7;//hsl(0, 0, 50);
-    outline: 0 none;
-}
-.btn[checked], .btn[checked]:focus, .btn[checked]:hover, .btn[checked]:focus:hover {
-    background-color: #0277BD;
-    opacity: 1.00;  // on clicking a button, you don't see hover dimming, 
-                    //    but on unclicking a button, you do (no opacity:1 above);
-}
-.btn:hover, .btn[checked]:hover {
-    opacity: 0.80;
-}
-.btn.disabled, .btn.disabled:hover, .btn.disabled:focus {
-    //background-color: #E1F5FE;//hsl(0, 0, 50);
-    //color: #BDBDBD;
-    background-color: #40C4FF;
-    opacity: 0.40;
-}
+///////////////////////
+// bootstrap class
+///////////////////////
 .alert-info {
     background-color: #E1F5FE;
 }
@@ -113,16 +94,14 @@
     background-color: #FFF9C4;
 }
 
+///////////////////////
+// gross HTML
+///////////////////////
 body {
-    //width: 80%;
     //max-width: 960px;
-    background: White;
     //margin: auto;
+    background: White;
     font-size: 12pt;
-}
-.expMTWindow {
-    padding: 0px 50px 50px 50px;
-    font-family: "Matterhorn";
 }
 h1 {
     font-weight: 600;
@@ -130,21 +109,27 @@ h1 {
 h2, h3, h4 {
     font-family: "Matterhorn Serif";
 }
-svg {box-shadow:0 0 0 2px;}
+p {
+    text-align: justify;
+    line-height: 16pt;
+    width: 560px; // http://baymard.com/blog/line-length-readability
+    color: black;
+}
+//svg {box-shadow:0 0 0 2px;}
 .bg {
     //background: url('data:image/svg+xml;utf8,<svg id="circle" height="200" xmlns="http://www.w3.org/2000/svg"><circle id="greencircle" cx="30" cy="30" r="30" fill="green" /></svg>') no-repeat;
     background: url('data:image/svg+xml;utf8,
     <svg width="144px" height="166.28px" viewBox="0 0 288 332.56" xmlns="http://www.w3.org/2000/svg" version="1.1">
         <polygon style="fill:#ECEFF1;stroke:#FFFFFF;stroke-width:0px" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" />
         <svg x="0px" y="166.28px">
-            <polygon style="fill:#FAFAFA;stroke:#FFFFFF;stroke-width:0px" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" />
+            <polygon style="fill:#FAFAFA" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" />
         </svg>
     </svg>
     ') 0 0 repeat, url('data:image/svg+xml;utf8,
     <svg width="144px" height="166.28px" viewBox="0 0 288 332.56" xmlns="http://www.w3.org/2000/svg" version="1.1">
-        <polygon style="fill:#FFFFFF;stroke:#FFFFFF;stroke-width:0px" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28"  />
+        <polygon style="fill:#FFFFFF" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28"  />
         <svg x="0px" y="166.28px">
-            <polygon style="fill:#F5F5F5;stroke:#FFFFFF;stroke-width:0px" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" />
+            <polygon style="fill:#F5F5F5" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" />
         </svg>
     </svg>
     ') 72px 41.57px repeat;
@@ -157,11 +142,28 @@ hr {
     border-width: 4px;
     color: "LightGrey";
 }
-.expWindow {
-    //border: 1px solid black;
+strong {
+    font-weight: 600;
+}
+strong strong {
+    font-weight: 700;
+}
+
+
+//////////////////////// ////////////////////////
+// experiment specific elements
+//////////////////////// ////////////////////////
+.expMTWindow {
+    padding: 0px 50px 50px 50px;
+    font-family: "Matterhorn";
+    color: #424242;
 }
 .expMainWindow {
     background-color: White;
+}
+.expWindow {
+    //border: 1px solid black;
+    margin-top: 30px;
 }
 .expMainPanel {
     //border: 1px solid DarkGrey;
@@ -170,17 +172,25 @@ hr {
     //border-right: 2px solid LightGrey;
 }
 .expPane {
-    display: float;
-    text-align: justify;
-    line-height: 15pt;
-    width: 560px; // http://baymard.com/blog/line-length-readability
+    //display: float;
+    width: 560px; 
+    color: black;
 }
-.expHeader {
+.expWindow.expTabs {
+    background: url('data:image/svg+xml;utf8,
+    <svg width="144px" height="166.28px" viewBox="0 0 288 332.56" xmlns="http://www.w3.org/2000/svg" version="1.1">
+        <polygon style="fill:white;stroke:#80D8FF;stroke-width:15px" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" transform="rotate(90) translate(35 -130) scale(0.7)" />
+    </svg>
+    ') 0px 0px no-repeat;
     background-color: White;
-    //color: hsl(205,71,80);//hsl(195,75,70);
-    color: #424242;
-    text-transform: uppercase;
-
+    background-position: left top;
+}
+.expHeader h1 {
+    //text-transform: uppercase;
+    font-variant: small-caps;
+    font-size: 36pt;
+    color: #212121;
+    padding-left: 16px;
     //border: 1px solid DarkGrey;
     //box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, 0.2), 6px 6px 20px -6px rgba(0, 0, 0, 0.19);
 }
@@ -192,8 +202,8 @@ hr {
 //// EXPERIMENT INFO
 .expInfoPanel {
     background-color: White;
-    //border: 1px solid DarkGrey;
     text-align: right;
+    //border: 1px solid DarkGrey;
     //box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, 0.2), 6px 6px 20px -6px rgba(0, 0, 0, 0.19);
 }
 .expInfoPanel h3{
@@ -201,12 +211,16 @@ hr {
     text-align: center;
 }
 .expInfoTable {
-    font-size: 75%;
+    font-size: 85%;
 }
 .expInfoTable li {
     background-color: #E1F5FE;//hsl(0,0,95);
     border: 0;
     margin: 5px;
+}
+
+.expQuestion {
+    text-align: center;
 }
 
 
@@ -217,11 +231,6 @@ h2.sectionHeader {
     color: #212121;
 }
 
-/*
-This does nothing?
-.checked:active {
-    background-color: DarkRed;
-}*/
 .warning {
     border: 1px solid red;
 }
@@ -237,14 +246,42 @@ This does nothing?
     border: 1px solid black;
 }
 
+
+/////////////////////
+// buttons
+/////////////////////
+.btn, .btn:focus, .btn:hover, .btn:focus:hover {
+    border-radius: 50px;
+    min-width: 70px;
+    padding: 15px 15px 15px 15px;
+    margin: 15px 20px 15px 20px;
+    border: 0;
+    background-color: #4FC3F7;//hsl(0, 0, 50);
+    outline: 0 none;
+}
+.btn[checked], .btn[checked]:focus, .btn[checked]:hover, .btn[checked]:focus:hover {
+    background-color: #0277BD; //light blue 800
+    background-color: #01579B; //light blue 900
+    opacity: 1.00;  // on clicking a button, you don't see hover dimming, 
+                    //    but on unclicking a button, you do 
+                    //    (no opacity:1 for .btn:focus:hover above)
+}
+.btn:hover, .btn[checked]:hover {
+    opacity: 0.85;
+}
+.btn.disabled, .btn.disabled:hover, .btn.disabled:focus {
+    background-color: #40C4FF;
+    opacity: 0.40;
+}
 .generalNavButton, .generalNavButton:hover, .generalNavButton:focus  {
     font-size: 120%;
     font-weight: bold;
+    color: #1A237E;//Black;
     color: Black;
     //box-shadow:0 0 0 3px;
 }
 .generalNavButton:hover {
-    background-color: #00B0FF; //hsl(0, 0, 60);
+    background-color: #03A9F4; //lightblue500//hsl(0, 0, 60);
     opacity: 1.00;
 }
 .proceedButton, .proceedButton:hover, .proceedButton:focus {
@@ -283,6 +320,8 @@ This does nothing?
     text-align: left;
     background-color: White;
     //border: 1px solid DarkGrey;
+    //padding-right: 50px;
+    padding: 5px;
     text-align: left;
     //box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, 0.2), 6px 6px 20px -6px rgba(0, 0, 0, 0.19);
 }
