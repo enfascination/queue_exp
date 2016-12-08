@@ -15,9 +15,9 @@
                     {{#if testQuizIncomplete}}
                     <div class = "alert alert-warning">You did not answer all of the questions.</div>
                     {{/if}}
-                    {{#unless testProceed}}
+                    {{!- {{#unless testProceed}} 
                     {{> submitButton}}
-                    {{/unless}}
+                    {{!- {{/unless}} 
                 </form>
                 {{#if testProceed}}
                 {{> proceedButton id="nextSection"}}

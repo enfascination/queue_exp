@@ -36,18 +36,18 @@
                     {{/if}}
                 </ul>
             </div>
-            <div class="col-md-7 col-md-offset-1 expMainPanel expWindow">
-                <div class="row">
+            <div class="col-md-7 col-md-offset-1 expWindow expMainWindow">
+                <div class="row expMainPanel">
                     <div class="tab-content" id="tabs" data-tabs="tabs">
-                        <div role="tabpanel" class="tab-pane expPane" id="instructions">
+                        <div role="tabpanel" class="tab-pane container expPane" id="instructions">
                             <h2 class="sectionHeader" >Instructions</h2>
                             {{> mainInstructions}}
                         </div>
-                        <div role="tabpanel" class="tab-pane expPane" id="{{currentSection.id}}">
+                        <div role="tabpanel" class="tab-pane container expPane" id="{{currentSection.id}}">
                         {{> yield }}
                         </div>
                         {{#if showExperimenterView}}
-                        <div role="tabpanel" class="tab-pane expPane" id="experimenterView">
+                        <div role="tabpanel" class="tab-pane container expPane" id="experimenterView">
                             <h2 class="sectionHeader" > Experimenter View </h2> 
                             {{> experimenterView ..}}
                         </div>
@@ -59,15 +59,17 @@
                     {{> proceedButton}}
                 </div>
             </div>
-            <div class="col-md-2 pull-right expInfoPanel expWindow">
-                <h3>Subject Info</h3>
-                <br>
-                {{> yield "infoBox"}}
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
+            <div class="col-md-2 pull-right">
+                <div class="expInfoPanel expWindow">
+                    <h3>Subject Info</h3>
+                    <br>
+                    {{> yield "infoBox"}}
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+            </div>
             </div>
         </div>
             <hr/>

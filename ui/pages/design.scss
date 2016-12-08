@@ -1,5 +1,8 @@
 @import "../../../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 
+
+/// palette: http://davidjohnstone.net/pages/lch-lab-colour-gradient-picker#dbedff,57a8ff
+
 @font-face {
     font-family: "Matterhorn";
     font-style: normal;
@@ -81,11 +84,33 @@
 
 
 // bootstrapg class
-.btn, .btn-lg {
-    border-radius: 0;
+.btn, .btn:focus, .btn:hover, .btn:focus:hover {
+    border-radius: 50px;
+    min-width: 70px;
+    padding: 15px 15px 15px 15px;
+    border: 0;
+    background-color: #4FC3F7;//hsl(0, 0, 50);
+    outline: 0 none;
 }
-.btn-primary{
-    background-color: #3B9AB2;
+.btn[checked], .btn[checked]:focus, .btn[checked]:hover, .btn[checked]:focus:hover {
+    background-color: #0277BD;
+    opacity: 1.00;  // on clicking a button, you don't see hover dimming, 
+                    //    but on unclicking a button, you do (no opacity:1 above);
+}
+.btn:hover, .btn[checked]:hover {
+    opacity: 0.80;
+}
+.btn.disabled, .btn.disabled:hover, .btn.disabled:focus {
+    //background-color: #E1F5FE;//hsl(0, 0, 50);
+    //color: #BDBDBD;
+    background-color: #40C4FF;
+    opacity: 0.40;
+}
+.alert-info {
+    background-color: #E1F5FE;
+}
+.alert-warning {
+    background-color: #FFF9C4;
 }
 
 body {
@@ -93,6 +118,7 @@ body {
     //max-width: 960px;
     background: White;
     //margin: auto;
+    font-size: 12pt;
 }
 .expMTWindow {
     padding: 0px 50px 50px 50px;
@@ -104,10 +130,27 @@ h1 {
 h2, h3, h4 {
     font-family: "Matterhorn Serif";
 }
+svg {box-shadow:0 0 0 2px;}
 .bg {
-    float: right;
-    ////background: url('data:image/svg+xml;utf8,<svg id="circle" height="200" xmlns="http://www.w3.org/2000/svg"><circle id="greencircle" cx="30" cy="30" r="30" fill="green" /></svg>') no-repeat;
-    //background: url('data:image/svg+xml;utf8,<svg id="circle" height="20" width="20" xmlns="http://www.w3.org/2000/svg"><circle id="greencircle" cx="30" cy="30" r="30" fill="#FaFaFa" /></svg>') repeat;
+    //background: url('data:image/svg+xml;utf8,<svg id="circle" height="200" xmlns="http://www.w3.org/2000/svg"><circle id="greencircle" cx="30" cy="30" r="30" fill="green" /></svg>') no-repeat;
+    background: url('data:image/svg+xml;utf8,
+    <svg width="144px" height="166.28px" viewBox="0 0 288 332.56" xmlns="http://www.w3.org/2000/svg" version="1.1">
+        <polygon style="fill:#ECEFF1;stroke:#FFFFFF;stroke-width:0px" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" />
+        <svg x="0px" y="166.28px">
+            <polygon style="fill:#FAFAFA;stroke:#FFFFFF;stroke-width:0px" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" />
+        </svg>
+    </svg>
+    ') 0 0 repeat, url('data:image/svg+xml;utf8,
+    <svg width="144px" height="166.28px" viewBox="0 0 288 332.56" xmlns="http://www.w3.org/2000/svg" version="1.1">
+        <polygon style="fill:#FFFFFF;stroke:#FFFFFF;stroke-width:0px" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28"  />
+        <svg x="0px" y="166.28px">
+            <polygon style="fill:#F5F5F5;stroke:#FFFFFF;stroke-width:0px" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" />
+        </svg>
+    </svg>
+    ') 72px 41.57px repeat;
+    min-height: 100%;
+    background-color:White;
+    opacity:0.7;
 }
 hr {
     display: none;
@@ -117,19 +160,25 @@ hr {
 .expWindow {
     //border: 1px solid black;
 }
-.expMainPanel {
+.expMainWindow {
     background-color: White;
+}
+.expMainPanel {
     //border: 1px solid DarkGrey;
     //box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, 0.2), 6px 6px 20px -6px rgba(0, 0, 0, 0.19);
-    border-left: 2px solid LightGrey;
-    border-right: 2px solid LightGrey;
+    //border-left: 2px solid LightGrey;
+    //border-right: 2px solid LightGrey;
 }
 .expPane {
-    text-align: center;
+    display: float;
+    text-align: justify;
+    line-height: 15pt;
+    width: 560px; // http://baymard.com/blog/line-length-readability
 }
 .expHeader {
     background-color: White;
-    color: hsl(195,75,70);
+    //color: hsl(205,71,80);//hsl(195,75,70);
+    color: #424242;
     text-transform: uppercase;
 
     //border: 1px solid DarkGrey;
@@ -155,7 +204,7 @@ hr {
     font-size: 75%;
 }
 .expInfoTable li {
-    background-color: hsl(0,0,95);
+    background-color: #E1F5FE;//hsl(0,0,95);
     border: 0;
     margin: 5px;
 }
@@ -164,20 +213,10 @@ hr {
 //// EXPERIMENT
 h2.sectionHeader {
     font-family: "Matterhorn Serif";
+    font-weight: 600;
+    color: #212121;
 }
 
-.expChoice.btn {
-    border-radius: 50px;
-}
-.expChoice.btn[checked], .expChoice.btn[checked]:focus, .expChoice.btn[checked]:hover, .expChoice.btn[checked]:focus:hover {
-    //background-color: Red;
-}
-.expChoice.btn-primary button.btn-primary:hover {
-    background-color: #78B7C5;
-}
-.expChoice.btn-primary[checked]{
-    background-color: rgb(55,161,81);
-}
 /*
 This does nothing?
 .checked:active {
@@ -198,27 +237,20 @@ This does nothing?
     border: 1px solid black;
 }
 
-.navButton {
-    min-width: 50px;
-}
-.submitButton, .submitButton:focus {
-    padding: 5px 15px 5px 15px;
+.generalNavButton, .generalNavButton:hover, .generalNavButton:focus  {
     font-size: 120%;
-    background-color: hsl(0, 0, 50);
+    font-weight: bold;
+    color: Black;
+    //box-shadow:0 0 0 3px;
 }
-.submitButton:hover {
-    background-color: hsl(0, 0, 60);
+.generalNavButton:hover {
+    background-color: #00B0FF; //hsl(0, 0, 60);
+    opacity: 1.00;
 }
-.proceedButton, .proceedButton:focus {
-    background-color: Black;
-    color: White;
+.proceedButton, .proceedButton:hover, .proceedButton:focus {
     text-transform: uppercase;
     margin: 15px;
     padding: 15px;
-}
-.proceedButton:hover {
-    color: White;
-    background-color: hsl(0, 0, 25);
 }
 
 
@@ -226,14 +258,14 @@ This does nothing?
 // attributes of the active tab in all mouse states
 .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
     border: 0;
-    border-radius: 0;
-    background-color: hsl(0, 0, 95);
+    //border-radius: 50;
+    background-color: #E1F5FE;//hsl(0, 0, 95);
     color: hsl(0, 0, 10);
 }
 // attributes of other navigable tabs in all mouse states
 .nav-tabs > li > a, .nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
     border: 0;
-    border-radius: 0;
+    //border-radius: 50;
     background-color: hsl(0, 0, 100);
     color: hsl(0, 0, 10);
 }
@@ -241,7 +273,7 @@ This does nothing?
     background-color: hsl(0, 0, 97);
 }
 // attributes of disabled tabs in all mouse states
-.nav > li.disabled > a:hover, .nav > li.disabled > a {
+.nav > li.disabled > a, .nav > li.disabled > a:hover, .nav > li.disabled > a:focus, .nav > li.disabled > a:focus:hover {
     border-color: transparent;
     color: hsl(0, 0, 85);
     background-color: hsl(0, 0, 100);
