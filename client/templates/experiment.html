@@ -3,10 +3,8 @@
         <section>
             {{> experimentInstructions currentSection=currentSection}}
         <div> <p>These are the instructions.  {{> navButton}}</p>  </div>
-            <br />
-                <p>
-                <b>Make your selection here:</b>
-                </p>
+        <br />
+                <p> <b>Make your selection here:</b> </p>
                 <br/>
                 <form class="experiment" id="nextStage">
                     {{#each questions}}
@@ -15,6 +13,8 @@
                     {{#if testQuizIncomplete}}
                     <div class = "alert alert-warning">You did not answer all of the questions.</div>
                     {{/if}}
+                <br>
+                <br>
                     {{!- {{#unless testProceed}} 
                     {{> submitButton}}
                     {{!- {{/unless}} 

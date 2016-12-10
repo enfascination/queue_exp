@@ -135,7 +135,7 @@ p {
     ') 72px 41.57px repeat;
     min-height: 100%;
     background-color:White;
-    opacity:0.7;
+    opacity:0.85;
 }
 hr {
     display: none;
@@ -160,10 +160,11 @@ strong strong {
 }
 .expMainWindow {
     background-color: White;
+    margin-top: 25px;
 }
 .expWindow {
     //border: 1px solid black;
-    margin-top: 30px;
+    margin-top: 25px;
 }
 .expMainPanel {
     //border: 1px solid DarkGrey;
@@ -179,7 +180,7 @@ strong strong {
 .expWindow.expTabs {
     background: url('data:image/svg+xml;utf8,
     <svg width="144px" height="166.28px" viewBox="0 0 288 332.56" xmlns="http://www.w3.org/2000/svg" version="1.1">
-        <polygon style="fill:white;stroke:#80D8FF;stroke-width:15px" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" transform="rotate(90) translate(35 -130) scale(0.7)" />
+        <polygon style="fill:white;stroke:#80D8FF;stroke-width:15px" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" transform="rotate(90) translate(15 -130) scale(0.7)" />
     </svg>
     ') 0px 0px no-repeat;
     background-color: White;
@@ -188,9 +189,9 @@ strong strong {
 .expHeader h1 {
     //text-transform: uppercase;
     font-variant: small-caps;
-    font-size: 36pt;
+    font-size: 30pt;
     color: #212121;
-    padding-left: 16px;
+    padding-left: 20px;
     //border: 1px solid DarkGrey;
     //box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, 0.2), 6px 6px 20px -6px rgba(0, 0, 0, 0.19);
 }
@@ -229,6 +230,8 @@ h2.sectionHeader {
     font-family: "Matterhorn Serif";
     font-weight: 600;
     color: #212121;
+    margin: 0;
+    font-size: 30pt;
 }
 
 .warning {
