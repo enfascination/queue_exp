@@ -1,0 +1,71 @@
+<template name="gameNormalForm">
+    Hello, {{gameChoice}}
+    <table class="gameNormalFormGame">
+        <thead>
+            <tr>
+                <td></td>
+                <td></td>
+                <td colspan=2 style="text-align: center;">
+                    Top player
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <th scope="col">
+                    Choice L
+                </th>
+                <th scope="col">
+                    Choice R
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td rowspan=3>
+                    Side player
+                </td>
+            </tr>
+            <tr class="gameTableRow" >
+                <th scope="row">
+                    Choice U
+                </th>
+                <td class="gameNormalFormOutcome" id="payoffUL" >
+                    {{> gameOutcomeGraphic payoffId="payoffUL" payoffPlayerTop=3 payoffPlayerSide=3}}
+                </td>
+                <td class="gameNormalFormOutcome" id="payoffUR" >
+                    {{> gameOutcomeGraphic payoffId="payoffUR" payoffPlayerTop=4 payoffPlayerSide=1}}
+                </td>
+            </tr>
+            <tr class="gameTableRow" >
+                <th scope="row">
+                    Choice D
+                </th>
+                <td class="gameNormalFormOutcome" id="payoffDR" >
+                    {{> gameOutcomeGraphic payoffId="payoffDL" payoffPlayerTop=1 payoffPlayerSide=4}}
+                </td>
+                <td class="gameNormalFormOutcome" id="payoffDR" >
+                    {{> gameOutcomeGraphic payoffId="payoffDR" payoffPlayerTop=2 payoffPlayerSide=2}}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    Hello
+</template>
+<template name="gameOutcomeGraphic">
+                    <svg width="200" height="200px" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                        <line x1="0" y1="0" x2="100" y2="100" style="stroke:#000000;stroke-width:5px" /> <!--width is 5 (half 10) because viewbox is zoomed in to give me a uniform coordinate system in boxes-->
+                        <g class="gameNormalFormPayoff gamePlayerTop" id="{{payoffId}}T" data-value={{payoffPlayerTop}}>
+                        <polygon fill="white" fill-opacity=0 stroke="#80D8FF" stroke-width="5px" points="0,0 100,0 100,100 0,0" />
+                        <text x="75" y="25" font-family="Verdana" font-size="36" fill="blue" text-anchor="middle" alignment-baseline="middle">
+                        {{payoffPlayerTop}}
+                        </text>
+                        </g>
+                        <g class="gameNormalFormPayoff gamePlayerSide" id="{{payoffId}}S" data-value={{payoffPlayerSide}} >
+                        <polygon fill="white" fill-opacity=0 stroke="#80D8FF" stroke-width="5px" points="0,0 0,100 100,100 0,0" />
+                        <text x="25" y="75" font-family="Verdana" font-size="36" fill="blue" text-anchor="middle" alignment-baseline="middle" >
+                        {{payoffPlayerSide}}
+                        </text>
+                        </g>
+                    </svg>
+</template>

@@ -344,3 +344,60 @@ h2.sectionHeader {
 .expSubTab.text-muted {
     color: hsl(0, 0, 75);
 }
+
+
+
+///////////////////////////////////
+// GAME design
+///////////////////////////////////
+.gameNormalFormGame {
+    background-color: hsla(351, 100%, 86%, 0.30); //light red
+    padding: 20px;
+    margin: 20px;
+    border: 10px solid black;
+}
+
+.gameNormalFormOutcome {
+    background-color: hsla(120, 73%, 75%, 0.40); //light green
+    padding: 20px;
+    margin: 20px;
+    height: 200px;
+    width: 200px;
+    border: 10px solid black;
+    position: relative; // this is for the positioning of the below welements to work
+}
+g.gameNormalFormPayoff {
+    cursor: pointer;
+    position:absolute;
+    top: 0;
+    left: 0;
+}
+.gameNormalFormGame tr.gameTableRow:hover polygon {
+    //fill:Red;
+    fill: hsla(60, 100%, 83%, 0.50); //lightyellow
+    fill-opacity: 1;
+}
+.gameNormalFormGame tr.gameTableRow:hover g.gameNormalFormPayoff:hover polygon {
+    //fill:Red;
+    fill: hsla(60, 100%, 83%, 0.80); //lightyellow
+    fill-opacity: 1;
+}
+.gameNormalFormPayoff {
+    background-color: LightBlue; //LightBlue
+    padding: 20px;
+    margin: 20px;
+}
+.gameNormalFormPayoff.gamePlayerTop {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.gameNormalFormPayoff.gamePlayerSide {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+.gameNormalFormGame td.gameTableRow:hover::after ,
+.gameNormalFormGame tr.gameTableRow:hover {
+    background-color: hsla(60, 100%, 83%, 0.50); //lightyellow
+}

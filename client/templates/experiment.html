@@ -8,6 +8,7 @@
                 <br/>
                 <form class="experiment" id="nextStage">
                     {{#each questions}}
+                    {{> gameNormalForm}}
                     {{> questionBinary}}
                     {{/each}}
                     {{#if testQuizIncomplete}}
@@ -27,7 +28,7 @@
 
 <template name="experimentInstructions">
     <p class="center-block"> 
-    This experiment consists of one choice.  You are playing a game with other Turkers that simulates waiting in line. You are person #{{counterNet}} out of a series of {{groupSize}} people making the same decision and with whom your choices will interact.  You are not yet in line, and the game is currently paused while you make your choice to enter the line. This game will end when {{groupSize}} people have joined the line, and everyone will recieve their earnings at this time. 
+    instructions
     </p> 
    <!-- 
        <p> 
