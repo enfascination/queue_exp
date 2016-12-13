@@ -1,71 +1,107 @@
 <template name="gameNormalForm">
-    Hello, {{gameChoice}}
-    <table class="gameNormalFormGame">
-        <thead>
-            <tr>
-                <td></td>
-                <td></td>
-                <td colspan=2 style="text-align: center;">
-                    Top player
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <th scope="col">
-                    Choice L
-                </th>
-                <th scope="col">
-                    Choice R
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td rowspan=3>
-                    Side player
-                </td>
-            </tr>
-            <tr class="gameTableRow" >
-                <th scope="row">
-                    Choice U
-                </th>
-                <td class="gameNormalFormOutcome" id="payoffUL" >
-                    {{> gameOutcomeGraphic payoffId="payoffUL" payoffPlayerTop=3 payoffPlayerSide=3}}
-                </td>
-                <td class="gameNormalFormOutcome" id="payoffUR" >
-                    {{> gameOutcomeGraphic payoffId="payoffUR" payoffPlayerTop=4 payoffPlayerSide=1}}
-                </td>
-            </tr>
-            <tr class="gameTableRow" >
-                <th scope="row">
-                    Choice D
-                </th>
-                <td class="gameNormalFormOutcome" id="payoffDR" >
-                    {{> gameOutcomeGraphic payoffId="payoffDL" payoffPlayerTop=1 payoffPlayerSide=4}}
-                </td>
-                <td class="gameNormalFormOutcome" id="payoffDR" >
-                    {{> gameOutcomeGraphic payoffId="payoffDR" payoffPlayerTop=2 payoffPlayerSide=2}}
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    Hello
+    <!--
+    <table class="gameChoiceFeedback">
+        <tr>
+            <td></td>
+            <th> Strategy </th>
+            <th> Outcome </th>
+            <th> Payoff </th>
+        </tr>
+        <tr>
+            <td> Value </td>
+            <td> {{textGameFeedback "strategy" }} </td>
+            <td> {{textGameFeedback "outcome" }} </td>
+            <td> {{textGameFeedback "payoff" }} </td>
+        </tr>
+    </table> 
+    -->
+                <span style="float:left; clear:both;">
+        <table id="{{gameId}}" class="gameNormalFormGame gameNormalFormGameData {{choiceType}} btn-group" role="group">
+                    <colgroup></colgroup>
+                    <colgroup></colgroup>
+                    <colgroup></colgroup>
+                    <thead>
+                        <tr>
+                            <td></td>
+                            <th scope="col" class="gameTableCol">
+                                Left
+                            </th>
+                            <th scope="col" class="gameTableCol">
+                                Right
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="gameTableRow gameNormalFormChoice" data-strategy="top" >
+                            <th>
+                                Top
+                            </th>
+                            <td scope="row">
+                                <button type="button" class="gameNormalFormOutcome" id="outcomeTL" data-game-id={{gameId}} data-strategy="top" data-toggle="button" >
+                                    {{> visualGame payoffIdPrefix="outcomeTL" payoffPlayerTop=3 payoffPlayerSide=3}}
+                                </button>
+                            </td>
+                            <td scope="row" class="" >
+                                <button type="button" class="gameNormalFormOutcome" id="outcomeTR" data-game-id={{gameId}} data-strategy="top" data-toggle="button" >
+                                    {{> visualGame payoffIdPrefix="outcomeTR" payoffPlayerTop=4 payoffPlayerSide=1}}
+                                </button>
+                            </td>
+                        </tr>
+                        <tr class="gameTableRow gameNormalFormChoice" data-strategy="bottom" >
+                            <th class="" >
+                                Bottom
+                            </th>
+                            <td scope="row" class="" >
+                                <button type="button" class="gameNormalFormOutcome" id="outcomeBL" data-game-id={{gameId}} data-strategy="bottom" data-toggle="button" >
+                                    {{> visualGame payoffIdPrefix="outcomeBL" payoffPlayerTop=1 payoffPlayerSide=4}}
+                                </button>
+                            </td>
+                            <td scope="row" class="" >
+                                <button type="button" class="gameNormalFormOutcome" id="outcomeBR" data-game-id={{gameId}} data-strategy="bottom" data-toggle="button" >
+                                    {{> visualGame payoffIdPrefix="outcomeBR" payoffPlayerTop=2 payoffPlayerSide=2}}
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                </span>
+                <br>
+                <span class="gameVisualText">
+                    When <span class="player you">you</span> choose <span class="strategy you">{{textGameFeedbackStrategy}}</span>,<br/>
+                    the <span class="player other">Other Player</span> will either<br/>
+                    &emsp;earn <span class="payoff other">{{textGamePayoffs "left" textGameFeedbackStrategy "other"}}</span> <br/>
+                    &emsp;&emsp;&thinsp;or <span class="payoff other">{{textGamePayoffs "right" textGameFeedbackStrategy "other"}}</span> quarters .<br/>
+                    Specifically, if they choose <span class="strategy other">Left</span>,<br/>
+                    &emsp;&emsp;they will earn 
+                        <span class="payoff other">{{textGamePayoffs "left" textGameFeedbackStrategy "other"}}</span><br/>
+                        &emsp;&emsp;and <span class="player you">you</span> will earn 
+                        <span class="payoff you">{{textGamePayoffs "left" textGameFeedbackStrategy "you"}}</span>and<br/>
+                    &emsp;if <span class="player other">Other Player</span> chooses <span class="strategy other">Right</span>,<br/>
+                    &emsp;&emsp;they will earn 
+                        <span class="payoff other">{{textGamePayoffs "right" textGameFeedbackStrategy "other"}}</span><br/>
+                        &emsp;&emsp;and <span class="player you">you</span> will earn 
+                        <span class="payoff you">{{textGamePayoffs "right" textGameFeedbackStrategy "you"}}</span><br/>
+                </span>
+                <br>
+                <br>
+                <br>
+                <hr style="display:block">
 </template>
-<template name="gameOutcomeGraphic">
-                    <svg width="200" height="200px" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1">
-                        <line x1="0" y1="0" x2="100" y2="100" style="stroke:#000000;stroke-width:5px" /> <!--width is 5 (half 10) because viewbox is zoomed in to give me a uniform coordinate system in boxes-->
-                        <g class="gameNormalFormPayoff gamePlayerTop" id="{{payoffId}}T" data-value={{payoffPlayerTop}}>
-                        <polygon fill="white" fill-opacity=0 stroke="#80D8FF" stroke-width="5px" points="0,0 100,0 100,100 0,0" />
-                        <text x="75" y="25" font-family="Verdana" font-size="36" fill="blue" text-anchor="middle" alignment-baseline="middle">
-                        {{payoffPlayerTop}}
-                        </text>
+<template name="visualGame">
+                    <svg width="130" height="130px" viewBox="0 0 100 100" 
+                            xmlns="http://www.w3.org/2000/svg" version="1.1">
+                        <!--<line x1="0" y1="0" x2="100" y2="100" stroke="#000000" stroke-width="0px" /> width is 5 (half 10) because viewbox is zoomed in to give me a uniform coordinate system in boxes -->
+                        <g class="gameNormalFormPayoff gamePlayerTop gamePlayerOther" id="{{payoffIdPrefix}}T" data-value={{payoffPlayerTop}}>
+                            <polygon fill="none" pointer-events="all" stroke="#80D8FF" stroke-width="0px" points="0,0 100,0 100,100 0,0" />
+                            <text x="75" y="30" text-anchor="middle" alignment-baseline="middle">
+                                {{payoffPlayerTop}}
+                            </text>
                         </g>
-                        <g class="gameNormalFormPayoff gamePlayerSide" id="{{payoffId}}S" data-value={{payoffPlayerSide}} >
-                        <polygon fill="white" fill-opacity=0 stroke="#80D8FF" stroke-width="5px" points="0,0 0,100 100,100 0,0" />
-                        <text x="25" y="75" font-family="Verdana" font-size="36" fill="blue" text-anchor="middle" alignment-baseline="middle" >
-                        {{payoffPlayerSide}}
-                        </text>
+                        <g class="gameNormalFormPayoff gamePlayerSide gamePlayerYou" id="{{payoffIdPrefix}}S" data-value={{payoffPlayerSide}} >
+                            <polygon fill="none" pointer-events="all" stroke="#80D8FF" stroke-width="0px" points="0,0 0,100 100,100 0,0" />
+                            <text x="25" y="75" text-anchor="middle" alignment-baseline="middle" >
+                                {{payoffPlayerSide}}
+                            </text>
                         </g>
                     </svg>
 </template>

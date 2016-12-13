@@ -1,87 +1,3 @@
-@import "../../../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
-
-
-/// palette: http://davidjohnstone.net/pages/lch-lab-colour-gradient-picker#dbedff,57a8ff
-///          https://material.google.com/style/color.html#color-color-palette
-
-@font-face {
-    font-family: "Matterhorn";
-    font-style: normal;
-    font-weight: 400;
-    src: url("/fonts/Matterhorn-Regular.otf") format("opentype");
-}
-@font-face {
-    font-family: "Matterhorn";
-    font-style: normal;
-    font-weight: 700;
-    src: url("/fonts/Matterhorn-Bold.otf") format("opentype");
-}
-@font-face {
-    font-family: "Matterhorn";
-    font-weight: 600;
-    font-style: normal;
-    src: url("/fonts/Matterhorn-SemiBold.otf") format("opentype");
-}
-@font-face {
-    font-family: "Matterhorn";
-    font-style: italic;
-    font-weight: 400;
-    src: url("/fonts/Matterhorn-Italic.otf") format("opentype");
-}
-@font-face {
-    font-family: "Matterhorn";
-    font-style: oblique;
-    font-weight: 400;
-    src: url("/fonts/Matterhorn-Italic.otf") format("opentype");
-}
-@font-face {
-    font-family: "Matterhorn";
-    font-weight: 700;
-    font-style: italic;
-    src: url("/fonts/Matterhorn-BoldItalic.otf") format("opentype");
-}
-@font-face {
-    font-family: "Matterhorn";
-    font-weight: 700;
-    font-style: oblique;
-    src: url("/fonts/Matterhorn-BoldItalic.otf") format("opentype");
-}
-@font-face {
-    font-family: "Matterhorn";
-    font-weight: 600;
-    font-style: italic;
-    src: url("/fonts/Matterhorn-SemiBoldItalic.otf") format("opentype");
-}
-@font-face {
-    font-family: "Matterhorn";
-    font-weight: 600;
-    font-style: oblique;
-    src: url("/fonts/Matterhorn-SemiBoldItalic.otf") format("opentype");
-}
-@font-face {
-    font-family: "Matterhorn Serif";
-    font-weight: 400;
-    font-style: normal;
-    src: url("/fonts/MatterhornSerif-Regular.otf") format("opentype");
-}
-@font-face {
-    font-family: "Matterhorn Serif";
-    font-weight: 600;
-    font-style: normal;
-    src: url("/fonts/MatterhornSerif-SemiBold.otf") format("opentype");
-}
-@font-face {
-    font-family: "Matterhorn Serif";
-    font-weight: 700;
-    font-style: normal;
-    src: url("/fonts/MatterhornSerif-Bold.otf") format("opentype");
-}
-@font-face {
-    font-family: "Inconsolata";
-    font-style: normal;
-    font-weight: 400;
-    src: url("/fonts/Inconsolata.otf") format("opentype");
-}
 
 
 ///////////////////////
@@ -116,6 +32,10 @@ p {
     color: black;
 }
 //svg {box-shadow:0 0 0 2px;}
+th {
+    font-weight: normal;
+    text-align: center;
+}
 .bg {
     //background: url('data:image/svg+xml;utf8,<svg id="circle" height="200" xmlns="http://www.w3.org/2000/svg"><circle id="greencircle" cx="30" cy="30" r="30" fill="green" /></svg>') no-repeat;
     background: url('data:image/svg+xml;utf8,
@@ -161,6 +81,7 @@ strong strong {
 .expMainWindow {
     background-color: White;
     margin-top: 25px;
+    padding-top: 15px;
 }
 .expWindow {
     //border: 1px solid black;
@@ -174,13 +95,12 @@ strong strong {
 }
 .expPane {
     //display: float;
-    width: 560px; 
     color: black;
 }
 .expWindow.expTabs {
     background: url('data:image/svg+xml;utf8,
-    <svg width="144px" height="166.28px" viewBox="0 0 288 332.56" xmlns="http://www.w3.org/2000/svg" version="1.1">
-        <polygon style="fill:white;stroke:#80D8FF;stroke-width:15px" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" transform="rotate(90) translate(15 -130) scale(0.7)" />
+    <svg width="144px" height="166.28px" viewBox="0 0 288 332.56" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid slice">
+    <polygon style="fill:white;stroke:#80D8FF;stroke-width:15px" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" transform="rotate(90) translate(15 -130) scale(0.7)" />
     </svg>
     ') 0px 0px no-repeat;
     background-color: White;
@@ -192,6 +112,8 @@ strong strong {
     font-size: 30pt;
     color: #212121;
     padding-left: 20px;
+    padding-left: 0px;
+    margin-top: 0px;
     //border: 1px solid DarkGrey;
     //box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, 0.2), 6px 6px 20px -6px rgba(0, 0, 0, 0.19);
 }
@@ -203,21 +125,26 @@ strong strong {
 //// EXPERIMENT INFO
 .expInfoPanel {
     background-color: White;
-    text-align: right;
+    margin-top: 60px;
     //border: 1px solid DarkGrey;
     //box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, 0.2), 6px 6px 20px -6px rgba(0, 0, 0, 0.19);
 }
 .expInfoPanel h3{
     padding-top: 30px;
-    text-align: center;
+    padding-left: 12px;
+    text-align: left;
+    font-size: 95%;
+    font-weight: 600;
 }
 .expInfoTable {
-    font-size: 85%;
+    font-size: 75%;
+    text-align: left;
 }
 .expInfoTable li {
-    background-color: #E1F5FE;//hsl(0,0,95);
+    background-color: hsl(199, 10%, 95%); //#E1F5FE;//hsl(0, 0, 95);
     border: 0;
     margin: 5px;
+    padding: 5px 7px;
 }
 
 .expQuestion {
@@ -232,6 +159,7 @@ h2.sectionHeader {
     color: #212121;
     margin: 0;
     font-size: 30pt;
+    padding-bottom: 40px;
 }
 
 .warning {
@@ -282,31 +210,32 @@ h2.sectionHeader {
     color: #1A237E;//Black;
     color: Black;
     //box-shadow:0 0 0 3px;
+    text-transform: uppercase;
+    margin: 15px;
+    padding: 15px;
 }
 .generalNavButton:hover {
     background-color: #03A9F4; //lightblue500//hsl(0, 0, 60);
     opacity: 1.00;
 }
 .proceedButton, .proceedButton:hover, .proceedButton:focus {
-    text-transform: uppercase;
-    margin: 15px;
-    padding: 15px;
 }
 
 
 ////// NAV AND TAB CSS
+// attributes of other navigable tabs in all mouse states
+.nav-tabs > li > a, .nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
+    border: 0;
+    border-radius: 3px;
+    background-color: hsl(0, 0, 100);
+    color: hsl(0, 0, 10);
+    padding: 3px 5px;
+}
 // attributes of the active tab in all mouse states
 .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
     border: 0;
     //border-radius: 50;
-    background-color: #E1F5FE;//hsl(0, 0, 95);
-    color: hsl(0, 0, 10);
-}
-// attributes of other navigable tabs in all mouse states
-.nav-tabs > li > a, .nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
-    border: 0;
-    //border-radius: 50;
-    background-color: hsl(0, 0, 100);
+    background-color: hsl(199, 94%, 94%); //#E1F5FE;//hsl(0, 0, 95);
     color: hsl(0, 0, 10);
 }
 .nav-tabs > li > a:hover {
@@ -324,7 +253,7 @@ h2.sectionHeader {
     background-color: White;
     //border: 1px solid DarkGrey;
     //padding-right: 50px;
-    padding: 5px;
+    padding: 25px;
     text-align: left;
     //box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, 0.2), 6px 6px 20px -6px rgba(0, 0, 0, 0.19);
 }
@@ -334,6 +263,9 @@ h2.sectionHeader {
     pointer-events : none; /* from http://stackoverflow.com/questions/5069110/remove-hover-css-behavior-from-element */
     font-size: 90%;
     padding-left: 30px;
+}
+.expSubTabs a.expSubTab {
+    padding: 5px 0px 0px 0px;
 }
 .expSubTab.text-primary {
     color: hsl(0, 0, 10);
@@ -346,58 +278,3 @@ h2.sectionHeader {
 }
 
 
-
-///////////////////////////////////
-// GAME design
-///////////////////////////////////
-.gameNormalFormGame {
-    background-color: hsla(351, 100%, 86%, 0.30); //light red
-    padding: 20px;
-    margin: 20px;
-    border: 10px solid black;
-}
-
-.gameNormalFormOutcome {
-    background-color: hsla(120, 73%, 75%, 0.40); //light green
-    padding: 20px;
-    margin: 20px;
-    height: 200px;
-    width: 200px;
-    border: 10px solid black;
-    position: relative; // this is for the positioning of the below welements to work
-}
-g.gameNormalFormPayoff {
-    cursor: pointer;
-    position:absolute;
-    top: 0;
-    left: 0;
-}
-.gameNormalFormGame tr.gameTableRow:hover polygon {
-    //fill:Red;
-    fill: hsla(60, 100%, 83%, 0.50); //lightyellow
-    fill-opacity: 1;
-}
-.gameNormalFormGame tr.gameTableRow:hover g.gameNormalFormPayoff:hover polygon {
-    //fill:Red;
-    fill: hsla(60, 100%, 83%, 0.80); //lightyellow
-    fill-opacity: 1;
-}
-.gameNormalFormPayoff {
-    background-color: LightBlue; //LightBlue
-    padding: 20px;
-    margin: 20px;
-}
-.gameNormalFormPayoff.gamePlayerTop {
-    position: absolute;
-    top: 0;
-    right: 0;
-}
-.gameNormalFormPayoff.gamePlayerSide {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-}
-.gameNormalFormGame td.gameTableRow:hover::after ,
-.gameNormalFormGame tr.gameTableRow:hover {
-    background-color: hsla(60, 100%, 83%, 0.50); //lightyellow
-}

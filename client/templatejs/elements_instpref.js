@@ -12,10 +12,9 @@ import { Questions } from '../../imports/startup/experiment_prep.js';
 
 Template.gameNormalForm.onCreated( function(){
     UserElements.choiceConsidered = new ReactiveDict();
-    UserElements.choiceConsidered.set("game", "");
-    UserElements.choiceChecked.set("game", "");
 });
-
+Template.gameNormalForm.onCreated( function(){
+});
 Template.gameNormalForm.helpers({
 	//disabled: function( id ){
         //let sub = Sess.subStat();
@@ -23,56 +22,128 @@ Template.gameNormalForm.helpers({
             //return("disabled");
         //}
 	//},
-    gameChoice : function() {
-        if ( UserElements.choiceConsidered ) {
-            return( "consider: " + UserElements.choiceConsidered.get( "game" ) + "     chose: " + UserElements.choiceChecked.get( "game" ) );
+    textGameFeedback : function( feedbackType) {
+        let gameId = Template.currentData().gameId;
+        let feedbackId = gameId + "_" + feedbackType;
+        let rVal = "default";
+        //console.log("feedback", feedbackType, gameId, UserElements.choiceConsidered.get( gameId ), UserElements.choiceChecked.get( gameId ) );
+        if ( !_.isNil( UserElements.choiceConsidered ) && UserElements.choiceConsidered.get( gameId ) ) {
+            rVal = UserElements.choiceConsidered.get( feedbackId );
+        } else if ( !_.isNil( UserElements.choiceChecked ) && UserElements.choiceChecked.get( gameId ) ) {
+            rVal =  UserElements.choiceChecked.get( feedbackId );
         }
+        return( rVal );
+    },
+    textGameFeedbackStrategy : function() {
+        let gameId = Template.currentData().gameId;
+        let feedbackId = gameId + "_" + "strategy";
+        let rVal = "___";
+        if ( !_.isNil( UserElements.choiceConsidered ) && UserElements.choiceConsidered.get( gameId ) ) {
+            rVal = UserElements.choiceConsidered.get( feedbackId );
+        } else if ( !_.isNil( UserElements.choiceChecked ) && UserElements.choiceChecked.get( gameId ) ) {
+            rVal =  UserElements.choiceChecked.get( feedbackId );
+        }
+        return( rVal );
+    },
+    textGamePayoffs : function( lOrR, tOrB, yOrO) {
+        let rVal = "__";
+               if (lOrR === "right" && tOrB === "top"    && yOrO === "you"   ) { rVal = 1;
+        } else if (lOrR === "right" && tOrB === "top"    && yOrO === "other" ) { rVal = 4;
+        } else if (lOrR === "right" && tOrB === "bottom" && yOrO === "you"   ) { rVal = 2;
+        } else if (lOrR === "right" && tOrB === "bottom" && yOrO === "other" ) { rVal = 2;
+        } else if (lOrR === "left"  && tOrB === "top"    && yOrO === "you"   ) { rVal = 3;
+        } else if (lOrR === "left"  && tOrB === "top"    && yOrO === "other" ) { rVal = 3;
+        } else if (lOrR === "left"  && tOrB === "bottom" && yOrO === "you"   ) { rVal = 4;
+        } else if (lOrR === "left"  && tOrB === "bottom" && yOrO === "other" ) { rVal = 1;
+        }
+        return( rVal );
     },
 });
 
 Template.gameNormalForm.events({
-	'mouseover .gameNormalFormOutcome': function (e) {
-        let c = $( e.currentTarget );
-        //console.log(c[0], c.find('g:hover')[0]);
+	'click .chooseOutcome button.gameNormalFormOutcome, mouseover .chooseOutcome button.gameNormalFormOutcome, mouseout .chooseOutcome button.gameNormalFormOutcome': function (e) { /// GUI and UX elements for the "choose element" versionof the question
+        let c = $( e.currentTarget ); //the button
+        let choiceStrategy = c.attr('data-strategy');
+        let choiceOutcome = c.attr('id');
+        let choicePayoff = c.find('g:hover').attr("data-value");
+        let gameId = c.attr('data-game-id');
         //UserElements.choiceConsidered.set( "game", c.attr('id');
-        UserElements.choiceConsidered.set( "game", c.attr('id')+" "+c.find('g:hover').attr("data-value") );
-    },
-	'mouseout .gameNormalFormOutcome': function (e) {
-        UserElements.choiceConsidered.set( "game", "" );
-    },
-	'click .gameNormalFormOutcome': function (e) {
-        let c = $( e.currentTarget );
-        let cVal;
-        //cVal = c.attr('id')+" "+c.find('g:hover').attr("data-value");
-        cVal = c.attr('id');
-        if ( UserElements.choiceChecked.get("game") != cVal ) {
-            UserElements.choiceChecked.set( "game",  cVal );
-            //UserElements.choiceChecked.set( "game"+c.attr('id'), cVal );
-        } else {
-            UserElements.choiceChecked.set( "game", "" );
-        }
-    },
-	'click button.expChoice': function (e) {
-        //console.log("button.expChoice");
-    },
-	'click div.expChoices': function (e) {
-        //console.log("div.expChoices");
-        if ( e.target.hasAttribute( "checked" ) ) { //if button already checked
-            e.currentTarget.removeAttribute( "choice" );
-        } else {
-            e.currentTarget.setAttribute( "choice", e.target.getAttribute("choice") );
-        }
-        for (let child of e.currentTarget.children) {
-            if (!$( child ).hasClass("disabled")) {
-                if ( e.target.getAttribute("choice") === child.getAttribute("choice") && !child.hasAttribute("checked")) {
-                    child.setAttribute("checked", '');
-                } 
-                else {// uncheck a checked button
-                    child.removeAttribute("checked");
-                }
-            } else {
-                e.stopPropagation();
+        //https://css-tricks.com/row-and-column-highlighting/
+            //console.log("mouseover chooseoutcome", e.type, gameId, UserElements.choiceConsidered.get( gameId ), UserElements.choiceChecked.get( gameId ));
+        if (e.type === 'mouseover') {
+            c.addClass("hover"); //self is button
+            c.parent().parent().addClass("hover"); // parent is tr
+            $("table#"+gameId+" "+"colgroup").eq( c.parent().index() ).addClass("hover");
+            UserElements.choiceConsidered.set( gameId, true );
+            UserElements.choiceConsidered.set( gameId+"_strategy", choiceStrategy );
+            UserElements.choiceConsidered.set( gameId+"_outcome", choiceOutcome );
+            UserElements.choiceConsidered.set( gameId+"_payoff", choicePayoff );
+            // this is a hack to get the helper updating
+            if ( _.isNil( UserElements.choiceChecked.get( gameId ) ) ) {
+                UserElements.choiceChecked.set( gameId, false );
             }
         }
-	}, 
+        else if (e.type === 'mouseout') {
+            c.removeClass("hover"); //self is button
+            c.parent().parent().removeClass("hover"); // parent is td, grandparent is tr
+            $("table#"+gameId+" "+"colgroup").eq( c.parent().index() ).removeClass("hover");
+            UserElements.choiceConsidered.set( gameId, false );
+            UserElements.choiceConsidered.set( gameId+"_strategy", '' );
+            UserElements.choiceConsidered.set( gameId+"_outcome", '' );
+            UserElements.choiceConsidered.set( gameId+"_payoff", '' );
+        }
+        else if (e.type === 'click') {
+            if ( UserElements.choiceChecked.get( gameId+"_outcome" ) != choiceOutcome ) {
+                $(".gameNormalFormGameData").find(".gameNormalFormOutcome.active").removeClass("active").attr("aria-pressed", false);
+                c.addClass("active"); // parent is tr
+                UserElements.choiceChecked.set( gameId, true );
+                UserElements.choiceChecked.set( gameId+"_strategy", choiceStrategy );
+                UserElements.choiceChecked.set( gameId+"_outcome", choiceOutcome );
+                UserElements.choiceChecked.set( gameId+"_payoff", choicePayoff );
+                //UserElements.choiceChecked.set( "game"+c.attr('id'), choiceOutcome );
+            } else {
+                c.removeClass("active"); // parent is tr
+                UserElements.choiceChecked.set( gameId, false );
+                UserElements.choiceChecked.set( gameId+"_strategy", '' );
+                UserElements.choiceChecked.set( gameId+"_outcome", '' );
+                UserElements.choiceChecked.set( gameId+"_payoff", '' );
+            }
+        }
+    },
+	'click .chooseStrategy .gameNormalFormChoice, mouseover .chooseStrategy .gameNormalFormChoice, mouseout .chooseStrategy .gameNormalFormChoice': function (e) { /// GUI and UX elements for the "choose element" versionof the question
+        let c = $( e.currentTarget ); //the button
+        let choiceStrategy = c.attr('data-strategy');
+        let choiceOutcome = "none";
+        let choicePayoff = "none";
+        let gameId = c.parent().parent().attr('id'); //grandparent is the table
+        //console.log("choosestrategy", gameId);
+        //UserElements.choiceConsidered.set( "game", c.attr('id');
+        //https://css-tricks.com/row-and-column-highlighting/
+        if (e.type == 'mouseover') {
+            c.addClass("hover"); //self is tr
+            UserElements.choiceConsidered.set( gameId, true );
+            UserElements.choiceConsidered.set( gameId+"_strategy", choiceStrategy );
+            // this is a hack to get the helper updating
+            if ( _.isNil( UserElements.choiceChecked.get( gameId ) ) ) {
+                UserElements.choiceChecked.set( gameId, false );
+            }
+        }
+        else if (e.type == 'mouseout') {
+            c.removeClass("hover"); //self is button
+            UserElements.choiceConsidered.set( gameId, false );
+            UserElements.choiceConsidered.set( gameId+"_strategy", '' );
+        }
+        else if (e.type == 'click') {
+            if ( UserElements.choiceChecked.get( gameId+"_strategy" ) != choiceStrategy ) {
+                c.parent().find(".gameNormalFormChoice.active").removeClass("active").attr("aria-pressed", false);
+                c.addClass("active"); // parent is tr
+                UserElements.choiceChecked.set( gameId, true );
+                UserElements.choiceChecked.set( gameId+"_strategy", choiceStrategy );
+            } else {
+                c.removeClass("active"); // parent is tr
+                UserElements.choiceChecked.set( gameId, false );
+                UserElements.choiceChecked.set( gameId+"_strategy", '' );
+            }
+        }
+    },
 });

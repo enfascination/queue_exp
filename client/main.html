@@ -21,7 +21,7 @@
             <hr/>
         <div class="row">
             <div class="col-md-2 pull-left">
-                <div class="expTabs expWindow">
+                <div class="col-md-12 expTabs expWindow">
                     <div class="expHeader">
                         <h1>Social Lab</h1>
                     </div>
@@ -39,7 +39,7 @@
                 </div>
             </div>
             <div class="col-md-7 col-md-offset-1 expMainWindow">
-                <div class="row expWindow expMainPanel">
+                <div class="col-md-12 row expWindow expMainPanel">
                     <div class="tab-content" id="tabs" data-tabs="tabs">
                         <div role="tabpanel" class="tab-pane container expPane" id="instructions">
                             <h2 class="sectionHeader" >Instructions</h2>
@@ -62,13 +62,9 @@
                 </div>
             </div>
             <div class="col-md-2 pull-right">
-                <div class="expInfoPanel expWindow">
-                    <h3>Subject Info</h3>
-                    <br>
+                <div class="col-md-12 expInfoPanel expWindow">
+                    <h3>Your Info</h3>
                     {{> yield "infoBox"}}
-                    <br>
-                    <br>
-                    <br>
                     <br>
                     <br>
             </div>
@@ -92,7 +88,7 @@
     </li>
 </template>
 <template name="expSectionRoundTab">
-    <li role="presentation" class="{{round.HTMLDisabled}}"><a class="expSubTab {{round.HTMLClasses}}" id={{round.id}} data-state="{{round.state}}" value="{{round.number}}">{{round.name}} {{round.state}} {{round.hidden}} </a></li>
+    <li role="presentation" class="{{round.HTMLDisabled}}"><a class="expSubTab {{round.HTMLClasses}}" id={{round.id}} data-state="{{round.state}}" value="{{round.number}}">{{round.name}}</a></li>
 </template>
 
 

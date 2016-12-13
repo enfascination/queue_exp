@@ -1,0 +1,159 @@
+
+///////////////////////////////////
+// GAME design
+///////////////////////////////////
+form.experiment {
+    background-color: hsla(199, 94%, 94%, 0.50);//#E1F5FE;//hsl(0, 0, 95);
+    width: 900px;
+}
+.gameNormalFormGame {
+    background-color: transparent;
+    margin: 20px;
+    //border: 7px solid hsl(202, 98%, 57%); bright blue
+    //background-color: hsla(199, 98%, 60%, 0.20); //light blue 800
+    border: 7px solid hsl(202, 98%, 0%);
+    background-color: hsla(199, 100%, 100%, 0.10); 
+}
+.gameNormalFormGame td{
+    background-color: transparent;
+}
+.gameNormalFormGame th{
+    padding: 10px 5px;
+    font-family: "Matterhorn Serif";
+    font-size: 24pt;
+    font-weight: 600;
+    color: #424242;
+}
+.gameNormalFormGame .gameTableRow th {
+    color: hsla(199, 98%, 38%, 1.0);
+}
+tr.gameNormalFormChoice {
+    //border-top: 7px solid hsl(202, 98%, 57%);
+    border-top: 7px solid hsl(202, 98%, 0%);
+}
+.gameNormalFormOutcome {
+    background-color: transparent;
+    border: 5px #80D8FF;
+    margin: 0;
+    padding: 10px;
+    outline: 0 none;
+    height: 150px;
+    width: 150px;
+    position: relative; // this is for the positioning of the below welements to work
+}
+.gameNormalFormPayoff {
+    cursor: pointer;
+    //background-color: LightBlue; //LightBlue
+    background-color: transparent;
+    padding: 20px;
+    margin: 20px;
+}
+.gameNormalFormPayoff.gamePlayerTop {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.gameNormalFormPayoff.gamePlayerSide {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+//http://stackoverflow.com/questions/41079839/hovering-over-transparent-svgs/41079948?noredirect=1#comment69376426_41079948--
+.gameNormalFormPayoff text {
+    //font-family: "Matterhorn Serif";
+    //font-family: "Verdana"; 
+    font-size: 36pt;
+}
+.gameNormalFormPayoff.gamePlayerOther polygon {
+    fill: hsl(199, 5%, 84%);//#BDBDBD;//hsla(60, 100%, 83%, 0.50); //lightyellow
+    fill-opacity: 0.5;
+}
+.gameNormalFormPayoff.gamePlayerYou polygon {
+    fill: hsl(199, 98%, 38%);//hsla(60, 100%, 83%, 0.50); //lightyellow
+    fill-opacity: 0.5;
+}
+.gameNormalFormPayoff.gamePlayerOther text {
+    //fill: hsl(199, 99%, 65%);// #03A9F4;//hsla(60, 100%, 83%, 0.50); //lightyellow
+    fill: hsl(199, 5%, 55%);//#BDBDBD;//hsla(60, 100%, 83%, 0.50); //lightyellow
+    fill-opacity: 0.9;
+    font-size: 24pt;
+}
+.gameNormalFormPayoff.gamePlayerYou text {
+    fill: hsl(199, 5%, 95%);//#BDBDBD;//hsla(60, 100%, 83%, 0.50); //lightyellow
+    fill-opacity: 0.9;
+}
+
+//.gameNormalFormGame tr.gameTableRow:hover g.gameNormalFormPayoff:hover polygon {  //payofflevel hightling, rather than outcome level
+    //fill: hsla(60, 100%, 83%, 0.80); //lightyellow
+    //fill-opacity: 1;
+//}
+tr.hover {
+    background-color: hsla(199, 98%, 0%, 0.2); //lightblue500//hsl(0, 0, 60);
+}
+table.gameChoiceFeedback, table.gameChoiceFeedback td, table.gameChoiceFeedback th {
+    padding: 5px;
+    border: 2px solid black;
+    margin: 5px;
+}
+
+/// outcome selection
+.chooseOutcome .gameNormalFormOutcome.active, .gameNormalFormOutcome.hover.active{
+    background-color: #0277BD; 
+}
+.chooseOutcome colgroup.hover {
+    background-color: hsla(199, 98%, 0%, 0.2); //lightblue500//hsl(0, 0, 60);
+}
+
+.chooseStrategy tr.gameNormalFormChoice.active {
+    background-color: #0277BD; 
+}
+.chooseStrategy tr.gameNormalFormChoice.active th{
+    color: #FFF;
+}
+
+//text
+.gameVisualText {
+    font-family: "Matterhorn";
+    font-size: 19pt;
+}
+.gameVisualText .strategy, .gameVisualText .player, .gameVisualText .payoff, {
+    text-transform: capitalize;
+    font-weight: 600;
+    padding: 5px;
+}
+.gameVisualText .you {
+    color: hsla(199, 98%, 38%, 1.0);
+}
+.gameVisualText .other {
+    color:hsla(199, 5%, 34%, 1.0);
+}
+.gameVisualText .strategy {
+    background-color: White;
+}
+.gameVisualText .payoff {
+    display: inline-block;
+    width: 30px;
+    padding: 0 3px;
+}
+.gameVisualText .payoff.you {
+    background: url('data:image/svg+xml;utf8,
+    <svg width="30px" height="30px" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid slice">
+        <polygon fill="hsla(199, 98%, 38%, 0.4)" pointer-events="all" stroke="#80D8FF" stroke-width="0px" points="0,0 0,100 100,100 0,0" />
+    </svg>
+    ') 0px 0px no-repeat;
+    background-position: center center;
+    background-color: White;
+    text-align: left;
+    padding-right: 0px;
+}
+.gameVisualText .payoff.other {
+    background: url('data:image/svg+xml;utf8,
+    <svg width="30px" height="30px" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid slice">
+        <polygon fill="hsla(199, 5%, 84%, 0.5)" pointer-events="all" stroke="#80D8FF" stroke-width="0px" points="0,0 100,0 100,100 0,0" />
+    </svg>
+    ') 0px 0px no-repeat;
+    background-position: center top;
+    background-color: White;
+    text-align: right;
+    padding-left: 0px;
+}
