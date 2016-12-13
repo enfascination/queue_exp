@@ -58,7 +58,6 @@ th {
     opacity:0.85;
 }
 hr {
-    display: none;
     border-width: 4px;
     color: "LightGrey";
 }
@@ -97,6 +96,15 @@ strong strong {
     //display: float;
     color: black;
 }
+.expPaneMargin {
+    width: 560px; 
+    margin-left: 100px;
+}
+.expPaneNoMargin {
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
 .expWindow.expTabs {
     background: url('data:image/svg+xml;utf8,
     <svg width="144px" height="166.28px" viewBox="0 0 288 332.56" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid slice">
@@ -105,6 +113,10 @@ strong strong {
     ') 0px 0px no-repeat;
     background-color: White;
     background-position: left top;
+}
+.experiment {
+    background-color: hsla(199, 94%, 94%, 0.50);//#E1F5FE;//hsl(0, 0, 95);
+    width: 750px;
 }
 .expHeader h1 {
     //text-transform: uppercase;
@@ -159,7 +171,12 @@ h2.sectionHeader {
     color: #212121;
     margin: 0;
     font-size: 30pt;
-    padding-bottom: 40px;
+    padding-top: 30px;
+    padding-bottom: 20px;
+    padding-left: 40px;
+    // from expPaneMargin
+    width: 560px; 
+    margin-left: 100px;
 }
 
 .warning {

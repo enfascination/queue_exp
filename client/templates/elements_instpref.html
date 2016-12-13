@@ -1,4 +1,68 @@
+<template name="instPrefInstructions">
+        <section class="expPaneMargin">
+            <p>Please review these instructions carefully. Participation in this experiment is based on your passing a comprehension test.</p>
+            <h3>Basic description</h3>
+            <p>
+                <strong><strong>You are going to play a series of games.</strong></strong>
+                You will earn many based on your choices, but also based on the choices of the people you will interact with.
+            </p> 
+            <p>
+                <strong>In each game you will have two choices</strong>, and the player you are matched with will also have two choices.
+                This means that each game has four outcomes, which results from combining your choice with the other player's.
+            </p>
+            <p>
+                <strong>The amount you earn will depend on which of the four outcomes you and the other player end with.</strong>
+                An outcome has two numbers 1&ndash;4. One describes your payoff in points, and the other describes the payoff to the other player. 
+            </p> 
+            <p><strong>Each point you or the other player earn will be worth 25&cent; USD.</strong> For example, if you recieve a payoff of 4 points, you will earn $1.00 USD.</p>
+
+            <h3>Other player</h3>
+            <p><strong><strong>The other player will be a different Turker for each game you play.</strong></strong>  You will both play blind; neither player will have a chance to see the other's choice before choosing. You can assume that the other Turker is about as motivated as you to maximize earnings.  </p>
+            <p>
+            Because the outcome determining your earnings depends both on your choice and the other players, <strong>you should always think about what the other player might choose before making your own choice.</strong>
+            </p>
+            <h3>Experiment flow</h3>
+            <p><strong><strong>Before you begin the experiment, you will complete a quiz</strong></strong> that tests your comprehension of the rules and the experiment interface. You must answer all questions correctly.  You will have multiple attempts to pass. If you fail, you will earn the HIT price, but no bonuses, and you will not be able to complete the survey. If you pass the test, you will proceed to the main experiment.</p> 
+            <p><strong>You will play three sections of three games each.</strong> For each game, you will have to answer two questions, one in which you chose a strategy and one in which you select your ideal outcome. After completing the first two games, you will be asked which game you would like to play a second time, and you will have a chance to play that game a second time, for the same reward.</p> 
+            <p><strong>You will repeat this procedure three times, for a total of nine games.</strong> Afterwards, you will complete the Survey, and then submit.</p> 
+        </section>
+        <section class="expPaneMargin">
+            <h3>Game interface</h3>
+            <p>
+                <strong><strong>Below is a sample game with interactive elements.</strong></strong>
+                You will see that you have two choices, <strong><strong>Top</strong></strong> and <strong><strong>Bottom</strong></strong>.
+                By hovering over the two choices, you can see how they differ in the outcomes they provide to you and the other player. Each outcome can give different numbers of points.  In the outcome square, the number in blue describes your payoff, while the grey one describes the other player's.
+            </p>
+            <p>
+            For the example of this game, if you pick <strong><strong>Top</strong></strong> and the other player picks <strong><strong>Left</strong></strong>, you will both earn <strong>3 points</strong>.  
+            Alternatively, if the other player picks <strong><strong>Right</strong></strong> when you pick <strong><strong>Top</strong></strong>, you will earn <strong>1 point</strong> while the other players earns <strong>4 points</strong>.  
+            </p>
+            <p>
+            Because the outcome depends both on your choice and the other players, <strong>you should always think about what the other player might choose while making your own choice.</strong>
+            </p>
+        </section>
+        <hr class="expPaneMargin"/>
+        <section class="expPaneNoMargin">
+                    <p><strong><strong>EXAMPLE GAME INTERFACE:</strong></strong></p>
+                    {{> gameNormalForm gameId="tutorial" choiceType="chooseStrategy"}}
+                    <p class="expPaneMargin" style="display:center;"><em>This is a sample of the game interface that will be used through the experiment</em></p>
+        </section>
+        <hr class="expPaneMargin"/>
+        <section class="expPaneMargin">
+            <!--
+                <figure class='tutorial'>
+                    {{> visualGame payoffIdPrefix="tutorial" payoffPlayerTop=2 payoffPlayerSide=3}}
+                    <figcaption>
+                        This is a game outcome with two payoffs.  The numbers are the payoffs, and the one in blue is yours. A game consists of four outcomes. Each outcome can pay different numbers of points to you and the other player.  <strong>In this example outcome, you would earn 3 points and the other player would earn 2.</strong>
+                    </figcaption>
+                </figure>
+                -->
+            <p><strong>Next you will take a comprehension quiz</strong> You will be able to return and review these instructions during the quiz and through most of the experiment. Just click the <strong><strong>Instructions</strong></strong> tab in the upper left. On the upper right you will see information about your current choices and earnings.</p> 
+            <p><strong><strong>Click NEXT to begin the quiz.</strong></strong></p>
+        </section>
+</template>
 <template name="gameNormalForm">
+    <div class="gameNormalForm">
     <!--
     <table class="gameChoiceFeedback">
         <tr>
@@ -15,8 +79,8 @@
         </tr>
     </table> 
     -->
-                <span style="float:left; clear:both;">
-        <table id="{{gameId}}" class="gameNormalFormGame gameNormalFormGameData {{choiceType}} btn-group" role="group">
+                <span style="float:left;">
+        <table id="{{gameId}}" class="gameNormalFormGame {{choiceType}} btn-group" role="group">
                     <colgroup></colgroup>
                     <colgroup></colgroup>
                     <colgroup></colgroup>
@@ -65,7 +129,6 @@
                     </tbody>
                 </table>
                 </span>
-                <br>
                 <span class="gameVisualText">
                     When <span class="player you">you</span> choose <span class="strategy you">{{textGameFeedbackStrategy}}</span>,<br/>
                     the <span class="player other">Other Player</span> will either<br/>
@@ -81,14 +144,13 @@
                         <span class="payoff other">{{textGamePayoffs "right" textGameFeedbackStrategy "other"}}</span><br/>
                         &emsp;&emsp;and <span class="player you">you</span> will earn 
                         <span class="payoff you">{{textGamePayoffs "right" textGameFeedbackStrategy "you"}}</span><br/>
+                        <br/>
+                        <br/>
                 </span>
-                <br>
-                <br>
-                <br>
-                <hr style="display:block">
+    </div>
 </template>
 <template name="visualGame">
-                    <svg width="130" height="130px" viewBox="0 0 100 100" 
+                    <svg width="110px" height="110px" viewBox="0 0 100 100" 
                             xmlns="http://www.w3.org/2000/svg" version="1.1">
                         <!--<line x1="0" y1="0" x2="100" y2="100" stroke="#000000" stroke-width="0px" /> width is 5 (half 10) because viewbox is zoomed in to give me a uniform coordinate system in boxes -->
                         <g class="gameNormalFormPayoff gamePlayerTop gamePlayerOther" id="{{payoffIdPrefix}}T" data-value={{payoffPlayerTop}}>

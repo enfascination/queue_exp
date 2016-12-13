@@ -1,20 +1,22 @@
 <template name="experiment">
-
-        <section>
+        <section class="expPaneNoMargin">
             <!--{{! {{> experimentInstructions currentSection=currentSection}}
             <div> <p>These are the instructions.  {{> navButton}}</p>  </div>
             <br />-->
-            <p>In the following simple games, you will be matched randomly with other Turkers.  You will have a choice between two options, as will the other player.  You will get paid for your choice, but the amounts you each earn will depend not just on your choice, but on other player's choice.  Below you will have a choice between Top and Bottom.</p> 
                 <br/>
-                <form class="experiment" id="nextStage">
+                <form id="nextStage">
                     {{#each questions}}
+                    <div class="experiment"> 
                     {{! {{> questionBinary}}
                     <h3>Question One</h3>
                     <p> <b>Select a choice, either Top or Bottom</b> </p>
                     {{> gameNormalForm gameId="chooseStrategy" choiceType="chooseStrategy"}}
+                    </div>
+                    <div class="experiment"> 
                     <h3>Question Two</h3>
                     <p> <b>Hypothetically, if you had control over both your choice and the other player's, which of the four outcomes would you prefer?</b> </p>
                     {{> gameNormalForm gameId="chooseOutcome" choiceType="chooseOutcome"}}
+                    </div>
                     {{/each}}
                     {{#if testQuizIncomplete}}
                     <div class = "alert alert-warning">You did not answer all of the questions.</div>
@@ -25,10 +27,10 @@
                     {{> submitButton}}
                     {{!- {{/unless}} 
                 </form>
+        </section>
                 {{#if testProceed}}
                 {{> proceedButton id="nextSection"}}
                 {{/if}}
-        </section>
 </template>
 
 <template name="experimentInstructions">

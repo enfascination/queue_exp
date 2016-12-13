@@ -2,17 +2,25 @@
 ///////////////////////////////////
 // GAME design
 ///////////////////////////////////
-form.experiment {
-    background-color: hsla(199, 94%, 94%, 0.50);//#E1F5FE;//hsl(0, 0, 95);
-    width: 900px;
+.gameNormalForm {
+    margin: 10px;
+    //background-color: White;
+    background-color: hsla(199, 100%, 100%, 0.10); 
+}
+.gameVisualText {
+    display: inline;
 }
 .gameNormalFormGame {
-    background-color: transparent;
-    margin: 20px;
     //border: 7px solid hsl(202, 98%, 57%); bright blue
     //background-color: hsla(199, 98%, 60%, 0.20); //light blue 800
     border: 7px solid hsl(202, 98%, 0%);
-    background-color: hsla(199, 100%, 100%, 0.10); 
+    border-radius: 7px;
+    margin-right: 10px;
+}
+.gameVisualText {
+    font-family: "Matterhorn";
+    font-size: 16pt;
+    color: #616161;
 }
 .gameNormalFormGame td{
     background-color: transparent;
@@ -20,7 +28,7 @@ form.experiment {
 .gameNormalFormGame th{
     padding: 10px 5px;
     font-family: "Matterhorn Serif";
-    font-size: 24pt;
+    font-size: 20pt;
     font-weight: 600;
     color: #424242;
 }
@@ -37,8 +45,8 @@ tr.gameNormalFormChoice {
     margin: 0;
     padding: 10px;
     outline: 0 none;
-    height: 150px;
-    width: 150px;
+    height: 130px;
+    width: 130px;
     position: relative; // this is for the positioning of the below welements to work
 }
 .gameNormalFormPayoff {
@@ -88,7 +96,7 @@ tr.gameNormalFormChoice {
     //fill-opacity: 1;
 //}
 tr.hover {
-    background-color: hsla(199, 98%, 0%, 0.2); //lightblue500//hsl(0, 0, 60);
+    background-color: hsla(199, 98%, 0%, 0.07); //lightblue500//hsl(0, 0, 60);
 }
 table.gameChoiceFeedback, table.gameChoiceFeedback td, table.gameChoiceFeedback th {
     padding: 5px;
@@ -101,7 +109,7 @@ table.gameChoiceFeedback, table.gameChoiceFeedback td, table.gameChoiceFeedback 
     background-color: #0277BD; 
 }
 .chooseOutcome colgroup.hover {
-    background-color: hsla(199, 98%, 0%, 0.2); //lightblue500//hsl(0, 0, 60);
+    background-color: hsla(199, 98%, 0%, 0.07); //lightblue500//hsl(0, 0, 60);
 }
 
 .chooseStrategy tr.gameNormalFormChoice.active {
@@ -112,10 +120,6 @@ table.gameChoiceFeedback, table.gameChoiceFeedback td, table.gameChoiceFeedback 
 }
 
 //text
-.gameVisualText {
-    font-family: "Matterhorn";
-    font-size: 19pt;
-}
 .gameVisualText .strategy, .gameVisualText .player, .gameVisualText .payoff, {
     text-transform: capitalize;
     font-weight: 600;
@@ -156,4 +160,24 @@ table.gameChoiceFeedback, table.gameChoiceFeedback td, table.gameChoiceFeedback 
     background-color: White;
     text-align: right;
     padding-left: 0px;
+}
+
+
+///////////////////////
+///Instructions
+///////////////////////
+figure.tutorial {
+    float:right;
+    width:200px;
+    margin:15px;
+    padding:5px;
+    padding-right:0px;
+    margin-right:0px;
+}
+figure.tutorial svg {
+    width:100%; height:100%;
+}
+figure.tutorial figcaption {
+    font-size: 11pt;
+    line-height: 11pt;
 }
