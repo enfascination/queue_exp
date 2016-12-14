@@ -1,54 +1,48 @@
 <template name="instPrefInstructions">
+    <br/>
         <section class="expPaneMargin">
-            <p>Please review these instructions carefully. Participation in this experiment is based on your passing a comprehension test.</p>
-            <h3>Basic description</h3>
-            <p>
-                <strong><strong>You are going to play a series of games.</strong></strong>
-                You will earn many based on your choices, but also based on the choices of the people you will interact with.
-            </p> 
-            <p>
-                <strong>In each game you will have two choices</strong>, and the player you are matched with will also have two choices.
-                This means that each game has four outcomes, which results from combining your choice with the other player's.
-            </p>
-            <p>
-                <strong>The amount you earn will depend on which of the four outcomes you and the other player end with.</strong>
-                An outcome has two numbers 1&ndash;4. One describes your payoff in points, and the other describes the payoff to the other player. 
-            </p> 
-            <p><strong>Each point you or the other player earn will be worth 25&cent; USD.</strong> For example, if you recieve a payoff of 4 points, you will earn $1.00 USD.</p>
-
-            <h3>Other player</h3>
-            <p><strong><strong>The other player will be a different Turker for each game you play.</strong></strong>  You will both play blind; neither player will have a chance to see the other's choice before choosing. You can assume that the other Turker is about as motivated as you to maximize earnings.  </p>
-            <p>
-            Because the outcome determining your earnings depends both on your choice and the other players, <strong>you should always think about what the other player might choose before making your own choice.</strong>
-            </p>
-            <h3>Experiment flow</h3>
-            <p><strong><strong>Before you begin the experiment, you will complete a quiz</strong></strong> that tests your comprehension of the rules and the experiment interface. You must answer all questions correctly.  You will have multiple attempts to pass. If you fail, you will earn the HIT price, but no bonuses, and you will not be able to complete the survey. If you pass the test, you will proceed to the main experiment.</p> 
-            <p><strong>You will play three sections of three games each.</strong> For each game, you will have to answer two questions, one in which you chose a strategy and one in which you select your ideal outcome. After completing the first two games, you will be asked which game you would like to play a second time, and you will have a chance to play that game a second time, for the same reward.</p> 
-            <p><strong>You will repeat this procedure three times, for a total of nine games.</strong> Afterwards, you will complete the Survey, and then submit.</p> 
+            <p><strong>Please review these instructions carefully.</strong> Participation in this experiment is based on your passing a comprehension test. If you fail the test you will pass the HIT and earn <strong>10&cent;</strong>, but you will be ineligible to participate in the main experiment, which offers a theoretical maximum of <strong>$6.50</strong> in bonus earnings.</p>
         </section>
         <section class="expPaneMargin">
-            <h3>Game interface</h3>
+            <h3>Game description</h3>
             <p>
-                <strong><strong>Below is a sample game with interactive elements.</strong></strong>
-                You will see that you have two choices, <strong><strong>Top</strong></strong> and <strong><strong>Bottom</strong></strong>.
-                By hovering over the two choices, you can see how they differ in the outcomes they provide to you and the other player. Each outcome can give different numbers of points.  In the outcome square, the number in blue describes your payoff, while the grey one describes the other player's.
+                <strong><strong>You are going to play a series of games in which you are matched with others.</strong></strong> 
             </p>
             <p>
-            For the example of this game, if you pick <strong><strong>Top</strong></strong> and the other player picks <strong><strong>Left</strong></strong>, you will both earn <strong>3 points</strong>.  
-            Alternatively, if the other player picks <strong><strong>Right</strong></strong> when you pick <strong><strong>Top</strong></strong>, you will earn <strong>1 point</strong> while the other players earns <strong>4 points</strong>.  
+                <strong>For each game you will have two choices and the other player will have two choices.</strong>  The game's outcome &mdash; the amounts of points you and the other player earn &mdash; depends on both of your choices.  
+            </p>
+            <p><strong>Each point is worth <span class="earnings">25&cent; USD</span>.</strong> For example, if you or the other player recieve the maximum payoff of <span class="earnings">4</span> points, we will add <span class="earnings">$1.00 USD</span>  to your bonus earnings.</p>
+            <p>
+            <strong>Your decision will always be between Choice <span class="you"><strong>Top</strong></span> and Choice <span class="you"><strong>Bottom</strong></span>.</strong> The other player can only pick between Choice <span class="other">Right</span> and Choice <span class="other">Left</span>. 
             </p>
             <p>
-            Because the outcome depends both on your choice and the other players, <strong>you should always think about what the other player might choose while making your own choice.</strong>
+                Because the outcome depends both on your choice and the other player's, <strong>you should always think about what the other player might choose while making your own choice.</strong>
+            </p>
+        </section>
+        <section class="expPaneMargin">
+            <h3>Game Interface</h3>
+            <p>
+            <strong><strong>Below is a version of the interface we will use to show you games in this experiment.</strong></strong> The grid shows four squares. These are the four game outcomes. <span class="you blue">Information related to <strong>You</strong> will be in blue</span>.  For example, in each square the <span class="you blue">blue</span> triangle shows the number of points that that outcome pays to you, while the <span class="other grey">grey triangle shows payoffs to the Other Player</span>.  In the game interface, you can hover over your two choices for a description of how it will influence your payoffs. 
+            </p>
+            <p>
+                <strong>In this example,</strong> if you choose <span class="you blue">Top</span> and the other player chooses <span class="other grey">Left</span> you will both earn <span class="earnings">3</span> points.  On the other hand, if you choose <span class="you blue">Bottom</span> and the other player chooses <span class="other grey">Right</span>, you will both earn <span class="earnings">2</span> points. With some outcomes you each earn different numbers of points: if you choose <span class="you blue">Top</span> and the other player chooses <span class="other grey">Right</span>, you will earn <span class="earnings">1</span> point while the other player earns <span class="earnings">4</span> points. And the opposite outcome results when you choose <span class="you blue">Bottom</span> and the other player chooses <span class="other grey">Left</span>.
             </p>
         </section>
         <hr class="expPaneMargin"/>
         <section class="expPaneNoMargin">
                     <p><strong><strong>EXAMPLE GAME INTERFACE:</strong></strong></p>
                     {{> gameNormalForm gameId="tutorial" choiceType="chooseStrategy"}}
-                    <p class="expPaneMargin" style="display:center;"><em>This is a sample of the game interface that will be used through the experiment</em></p>
+                    <p class="expPaneMargin" style="display:center;"><em>This is a sample of the game interface that will be used through the experiment. Your points are in <span class="you blue">blue</span>.</em></p>
         </section>
         <hr class="expPaneMargin"/>
         <section class="expPaneMargin">
+            <h3>Experiment flow</h3>
+            <p><strong><strong>You will play three sections of three games each.</strong></strong> For each game, you will have to answer two questions, one in which you chose a strategy and one in which you select your ideal outcome. After completing the first two games in a section, you will be asked which game you would like to play a second time, and you will have a chance to play that game a second time, for the same reward. In one of the sections you will get to see the results of the two games before choosing, while in the other you will not get this feedback. </p> 
+            <p><strong>You will repeat this procedure two times, for a total of six games.</strong> Afterwards, you will complete the Survey for an additional <span class="earnings">50&cent;</span>, before submitting this HIT.</p> 
+        </section>
+        <section class="expPaneMargin">
+            <h3>Other player</h3>
+            <p><strong><strong>You will be rematched with a different Turker in each section of the experiment.</strong></strong>  You will both play blind; neither player will have a chance to see the other's choice before choosing. You can assume that the other Turker is about as motivated as you to maximize the number of points they earn.  </p>
             <!--
                 <figure class='tutorial'>
                     {{> visualGame payoffIdPrefix="tutorial" payoffPlayerTop=2 payoffPlayerSide=3}}
@@ -57,7 +51,13 @@
                     </figcaption>
                 </figure>
                 -->
-            <p><strong>Next you will take a comprehension quiz</strong> You will be able to return and review these instructions during the quiz and through most of the experiment. Just click the <strong><strong>Instructions</strong></strong> tab in the upper left. On the upper right you will see information about your current choices and earnings.</p> 
+        </section>
+        <section class="expPaneMargin">
+            <h3>Next</h3>
+            <p><strong><strong>Next you will take a comprehension quiz.</strong></strong> If you want to review these instructions at any point in the experiment, just click the <strong><strong>Instructions</strong></strong> tab in the upper left. On the upper right you will see information about your current choices and earnings.</p> 
+            <p>
+                Once again, because the outcome depends both on your choice and the other player's, <strong>you should always think about what the other player might choose while making your own choice.</strong>
+            </p>
             <p><strong><strong>Click NEXT to begin the quiz.</strong></strong></p>
         </section>
 </template>
@@ -130,20 +130,20 @@
                 </table>
                 </span>
                 <span class="gameVisualText">
-                    When <span class="player you">you</span> choose <span class="strategy you">{{textGameFeedbackStrategy}}</span>,<br/>
+                    When <span class="player you">you</span> choose <span class="strategy you">{{textGameFeedbackStrategy}}</span><br/>
                     the <span class="player other">Other Player</span> will either<br/>
                     &emsp;earn <span class="payoff other">{{textGamePayoffs "left" textGameFeedbackStrategy "other"}}</span> <br/>
                     &emsp;&emsp;&thinsp;or <span class="payoff other">{{textGamePayoffs "right" textGameFeedbackStrategy "other"}}</span> quarters .<br/>
-                    Specifically, if they choose <span class="strategy other">Left</span>,<br/>
+                    Specifically, if they choose <span class="strategy other">Left</span><br/>
                     &emsp;&emsp;they will earn 
                         <span class="payoff other">{{textGamePayoffs "left" textGameFeedbackStrategy "other"}}</span><br/>
                         &emsp;&emsp;and <span class="player you">you</span> will earn 
-                        <span class="payoff you">{{textGamePayoffs "left" textGameFeedbackStrategy "you"}}</span>and<br/>
-                    &emsp;if <span class="player other">Other Player</span> chooses <span class="strategy other">Right</span>,<br/>
+                        <span class="payoff you">{{textGamePayoffs "left" textGameFeedbackStrategy "you"}}</span>,<br/>
+                    &emsp;if <span class="player other">Other Player</span> chooses <span class="strategy other">Right</span><br/>
                     &emsp;&emsp;they will earn 
                         <span class="payoff other">{{textGamePayoffs "right" textGameFeedbackStrategy "other"}}</span><br/>
                         &emsp;&emsp;and <span class="player you">you</span> will earn 
-                        <span class="payoff you">{{textGamePayoffs "right" textGameFeedbackStrategy "you"}}</span><br/>
+                        <span class="payoff you">{{textGamePayoffs "right" textGameFeedbackStrategy "you"}}</span>.<br/>
                         <br/>
                         <br/>
                 </span>

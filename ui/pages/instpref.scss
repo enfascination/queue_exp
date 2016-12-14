@@ -1,4 +1,18 @@
-
+.you {
+    font-weight: 600;
+}
+.other {
+    font-weight: 600;
+}
+.blue {
+    color: hsla(199, 98%, 38%, 1.0);
+}
+.grey, .gray {
+    color: hsla(199, 5%, 34%, 1.0);
+}
+.earnings {
+    font-weight: 700;
+}
 ///////////////////////////////////
 // GAME design
 ///////////////////////////////////
@@ -9,6 +23,7 @@
 }
 .gameVisualText {
     display: inline;
+    cursor: not-allowed;
 }
 .gameNormalFormGame {
     //border: 7px solid hsl(202, 98%, 57%); bright blue
@@ -123,21 +138,26 @@ table.gameChoiceFeedback, table.gameChoiceFeedback td, table.gameChoiceFeedback 
 .gameVisualText .strategy, .gameVisualText .player, .gameVisualText .payoff, {
     text-transform: capitalize;
     font-weight: 600;
+}
+.gameVisualText .strategy {
+    background-color: White;
     padding: 5px;
+}
+.gameVisualText .strategy.you {
+    font-style: italic;
+    font-weight: 700;
+}
+.gameVisualText .payoff {
+    display: inline-block;
+    width: 30px;
+    padding: 0 3px;
+    font-weight: 700;
 }
 .gameVisualText .you {
     color: hsla(199, 98%, 38%, 1.0);
 }
 .gameVisualText .other {
     color:hsla(199, 5%, 34%, 1.0);
-}
-.gameVisualText .strategy {
-    background-color: White;
-}
-.gameVisualText .payoff {
-    display: inline-block;
-    width: 30px;
-    padding: 0 3px;
 }
 .gameVisualText .payoff.you {
     background: url('data:image/svg+xml;utf8,

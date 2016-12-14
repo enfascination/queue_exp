@@ -26,7 +26,7 @@ DesignSequence = {
             "name" : "experiment1" , 
             "type" : "experiment" , 
             "id" : "experiment1" , 
-            "label" : "Experiment:\nPart 1" , 
+            "label" : "Section 1" , 
             "roundCount" : 2, 
             "rounds" : { "0" : {id:"round0", label:"Round 0"},  "1" : {id:"round1", label:"Round 1"}, },
             "stages" : 1 
@@ -35,7 +35,7 @@ DesignSequence = {
             "name" : "experiment2" , 
             "type" : "experiment" , 
             "id" : "experiment2" , 
-            "label" : "Experiment:\nPart 2" , 
+            "label" : "Section 2" , 
             "roundCount" : 2, 
             "rounds" : { "0" : {id:"round0", label:"Round 0"},  "1" : {id:"round1", label:"Round 1"}, },
             "stages" : 1 
