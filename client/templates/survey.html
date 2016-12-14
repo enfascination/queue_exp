@@ -5,18 +5,14 @@
     <section class="expPaneMargin">
 	<p>Answer these optional survey questions for additional earnings</p>
 	<p><i>You have two opportunities to submit your responses</i></p>
-
+    </section>
+    <section class="expPaneNoMargin">
         <form class = "survey" id="submitSurvey">
             {{#each questions}}
                 {{> questionBinary}}
             {{/each}}
-            {{#unless testProceed}}
                 {{> submitButton}}
-            {{/unless}}
         </form>
-    {{#if testProceed }}
-        {{> proceedButton id="exitSurvey"}}
-    {{/if}}
     </section>
     <br/>
 </template>

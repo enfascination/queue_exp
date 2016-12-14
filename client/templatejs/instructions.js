@@ -74,11 +74,11 @@ Template.experimentInstructions.helpers({
     },
 });
 Template.main.events({
-    'click button#exitInstructions': function ( e ) {
+    'click button.proceedButton#instructions, click button.proceedButton#quiz': function ( e ) {
     //'click': function ( e ) {
         let muid = Meteor.userId();
         let sub = Sess.subStat();
-        //console.log("button#exitInstructions", sub, Template.currentData());
+        //console.log("button#proceedButton#instructions and quiz", sub, Template.currentData());
         if (sub.sec_now === "instructions") {
             Meteor.call("advanceSubjectSection", muid, "quiz", "quiz");
         } else {

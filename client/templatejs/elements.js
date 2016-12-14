@@ -45,16 +45,13 @@ Template.binaryForcedChoice.helpers({
 
 Template.binaryForcedChoice.events({
 	'click button.expChoice': function (e) {
-        //console.log("button.expChoice");
-    },
-	'click div.expChoices': function (e) {
-        //console.log("div.expChoices");
+        //console.log("div.expChoices", e.target);
         if ( e.target.hasAttribute( "checked" ) ) { //if button already checked
-            e.currentTarget.removeAttribute( "choice" );
+            e.target.parentElement.removeAttribute( "choice" );
         } else {
-            e.currentTarget.setAttribute( "choice", e.target.getAttribute("choice") );
+            e.target.parentElement.setAttribute( "choice", e.target.getAttribute("choice") );
         }
-        for (let child of e.currentTarget.children) {
+        for (let child of e.target.parentElement.children) {
             if (!$( child ).hasClass("disabled")) {
                 if ( e.target.getAttribute("choice") === child.getAttribute("choice") && !child.hasAttribute("checked")) {
                     child.setAttribute("checked", '');

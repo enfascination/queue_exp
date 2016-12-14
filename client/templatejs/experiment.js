@@ -94,11 +94,12 @@ Template.experiment.events({
         //Only allow clients to attempt quiz twice before preventing them from doing so
         let qs = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).forEach( function( q ) {
             let form = e.target;
-            let element_raw = $(form).children("div#"+q._id)[0];
+            let element_raw = $(form).find(".expQuestion#"+q._id)[0];
             let element = $( element_raw );
             let choice = element.attr("choice");
             let answered = !_.isNil( choice );
             Questions.update({_id: q._id}, {$set: { answered: answered, choice : choice }});
+            console.log($(form).find("div#"+q._id), e.target, q, q._id);
             if (!answered) {
                 Helper.questionHasError( element_raw, true );
             } else {
@@ -184,22 +185,6 @@ Template.experiment.events({
 
         }
     },
-    'click button#nextSection': function ( e ) {
-        e.stopPropagation();
-        let muid = Meteor.userId();
-        let sub = Sess.subStat();
-        if ( sub.readyToProceed ) {
-            if (sub.sec_now === "experiment1" ) {
-                Meteor.call('advanceSubjectSection', Meteor.userId(), "experiment2", "experiment", asyncCallback=function(err, updatedSub) {
-                    if (err) { throw( err ); }
-                    Meteor.call('initializeRound', sub=updatedSub, lastDesign=Sess.design());
-                });
-            } else if (sub.sec_now === "experiment2" ) {
-                Meteor.call('advanceSubjectSection', Meteor.userId(), "survey", "experiment");
-            }
-        } else {
-        }
-    },
 	'click form#nextStage': function (e) {
         //console.log("click form#nextStage");
     },
@@ -266,4 +251,23 @@ Template.questionBinary.events({
 });
 
 
-
+Template.main.events({
+    'click button.proceedButton#experiment1, click button.proceedButton#experiment2': function ( e ) {
+        e.stopPropagation();
+        let muid = Meteor.userId();
+        let sub = Sess.subStat();
+        //console.log("proceedButton#experiment", muid, sub, e.target );
+        if ( sub.readyToProceed ) {
+            if (sub.sec_now === "experiment1" ) {
+                Meteor.call('advanceSubjectSection', Meteor.userId(), "experiment2", "experiment", asyncCallback=function(err, updatedSub) {
+                    if (err) { throw( err ); }
+                    Meteor.call('initializeRound', sub=updatedSub, lastDesign=Sess.design());
+                });
+            } else if (sub.sec_now === "experiment2" ) {
+                Meteor.call('advanceSubjectSection', Meteor.userId(), "survey", "experiment");
+            } else {
+            }
+        } else {
+        }
+    },
+});

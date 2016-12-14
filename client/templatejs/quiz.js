@@ -55,7 +55,7 @@ Template.quiz.events({
             let form = e.target;
             //let answer = $.trim(form[q._id].value.toLowerCase());
             //let correct = $.inArray(answer,q.answer) >= 0 ? true: false;
-            let element_raw = $(form).children("div#"+q._id)[0];
+            let element_raw = $(form).find(".expQuestion#"+q._id)[0];
             //console.log("qs", element_raw);
             let element = $( element_raw );
             let choice = element.attr("choice");
@@ -114,10 +114,12 @@ Template.quiz.events({
         } else {
         }
     },
-    'click button#exitQuiz': function ( e ) {
+});
+Template.main.events({
+    'click button.proceedButton#quiz': function ( e ) {
         let muid = Meteor.userId();
         let sub = Sess.subStat();
-        //console.log("button#exitQuiz", sub);
+        //console.log("button#proceedButton#quiz", sub);
         if ( sub && sub.readyToProceed ) {
             let nextSection = "experiment1";
             let nextSectionType = "experiment";

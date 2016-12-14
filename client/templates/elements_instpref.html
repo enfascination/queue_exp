@@ -29,11 +29,9 @@
             </p>
         </section>
         <hr class="expPaneMargin"/>
-        <section class="expPaneNoMargin">
                     <p><strong><strong>EXAMPLE GAME INTERFACE:</strong></strong></p>
                     {{> gameNormalForm gameId="tutorial" choiceType="chooseStrategy"}}
                     <p class="expPaneMargin" style="display:center;"><em>This is a sample of the game interface that will be used through the experiment. Your points are in <span class="you blue">blue</span>.</em></p>
-        </section>
         <hr class="expPaneMargin"/>
         <section class="expPaneMargin">
             <h3>Experiment flow</h3>
@@ -58,11 +56,11 @@
             <p>
                 Once again, because the outcome depends both on your choice and the other player's, <strong>you should always think about what the other player might choose while making your own choice.</strong>
             </p>
-            <p><strong><strong>Click NEXT to begin the quiz.</strong></strong></p>
+            <p style="text-align: right;"><strong><strong>Click NEXT to begin the quiz.</strong></strong></p>
         </section>
 </template>
 <template name="gameNormalForm">
-    <div class="gameNormalForm">
+    <div class="experiment expPaneNoMargin gameNormalForm ">
     <!--
     <table class="gameChoiceFeedback">
         <tr>

@@ -32,7 +32,7 @@ Template.survey.events({
         //return;
         // AHHHHHHHH
         let qs = Questions.find({sec: 'survey'}).forEach( function( q ) {
-            let element_raw = $(e.target).children("div#"+q._id)[0];
+            let element_raw = $(e.target).find(".expQuestion#"+q._id)[0];
             let element = $( element_raw );
             let choice = element.attr("choice");
             let answered = !_.isNil( choice );
@@ -69,10 +69,14 @@ Template.survey.events({
         //console.log("form#submitSurvey");
         Meteor.call( "setReadyToProceed", Meteor.userId() );
     },
-    'click button#exitSurvey': function ( e ) {
+});
+
+Template.main.events({
+    'click button.proceedButton#survey': function ( e ) {
         e.stopPropagation();
         let muid = Meteor.userId();
         let sub = Sess.subStat();
+        //console.log("button#proceedButton#experiment survey", sub);
         if ( sub.readyToProceed ) {
             Meteor.call("advanceSubjectSection", muid, "submitHIT", "submitHIT");
         }

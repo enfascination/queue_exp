@@ -6,32 +6,31 @@
     <!--{{instructionOptions}}-->
 	<h4> You must answer all following questions correctly in order to be eligible for participation</h4>
 	<p><i>You have two opportunities to submit your responses</i></p>
+    </section>
 
 	<form class="quiz" id="submitQuiz">
 		{{#each questions}}
         {{> questionBinary}}
 		{{/each}}
+    <section class="expPaneMargin">
 		{{#if testQuizPassed}}
-			<div class = "alert alert-success">You have successfully passed the quiz! Click <em>Proceed</em>.</div>
+			<div class = "alert alert-success">You have successfully passed the quiz! Click <em>NEXT</em>.</div>
 		{{else}} {{#if testQuizIncomplete}}
 				<div class = "alert alert-warning">You did not answer all of the questions.</div>
 		{{else}} {{#if testQuizFailed}}
-        <div class = "alert alert-danger">You have exhausted your attempts to pass the quiz and demonstrate comprehension of the instructions. Click <em>Proceed</em>.</div>
+        <div class = "alert alert-danger">You have exhausted your attempts to pass the quiz and demonstrate comprehension of the instructions. Click <em>NEXT</em>.</div>
 		{{else}} {{#if testQuizWrong }}
             <div class = "alert alert-warning">One or more of your answers are incorrect. Attempts remaining: {{quizTriesLeft}}.</div>
 		{{else}} 
-            <div class = "alert alert-info">Answer all questions carefully and click submit.</div>
+        <div class = "alert alert-info">Answer all questions carefully and click <em>SUBMIT</em>.</div>
 		{{/if}}				
 		{{/if}}				
 		{{/if}}
 		{{/if}}
-        {{#unless testProceed}}
             {{> submitButton}}
-        {{/unless}}
+        </section>
 	</form>
-    {{#if testProceed}}
-        {{> proceedButton id="exitQuiz"}}
-    {{/if}}
+    <section class="expPaneMargin">
     </section>
     <br/>
 </template>

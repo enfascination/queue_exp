@@ -41,7 +41,7 @@ export let QueueAssigner = class extends TurkServer.Assigners.SimpleAssigner {
             this.lobby.pluckUsers([asst.userId]);
             asst.showExitSurvey();
         }
-        console.log("assigner out", Meteor.users.findOne(asst.userId).turkserver.state );
+        //console.log("assigner out", Meteor.users.findOne(asst.userId).turkserver.state );
     }
 
     userStatusChanged(asst, newStatus) {

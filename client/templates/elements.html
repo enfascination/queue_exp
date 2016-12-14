@@ -1,9 +1,11 @@
 <template name = "questionBinary">
+    <section class="expPaneNoMargin experiment"> 
     <div class = "expQuestion {{questionClass}} form-group {{hasError _id}}" id="{{_id}}">
         <label for="{{_id}}" class = "control-label">{{text}}</label>
         <!--<input id="{{_id}}" name="{{_id}}" class = "sm-width form-control">-->
         {{> binaryForcedChoice id=_id texta="Queue A" textb="Queue B"  }}
     </div>
+    </section> 
 </template>
 
 <template name = "questionForm">
@@ -16,12 +18,12 @@
 
 <template name="proceedButton">
     <div> 
-        <button type=button class="btn btn-sm generalNavButton proceedButton pull-right" id={{id}} autofocus >Next</button>
+        <button type=button id="{{id}}" class="btn btn-sm generalNavButton proceedButton pull-right" autofocus >Next</button>
     </div> 
 </template>
 
 <template name="submitButton">
-    <button type="submit" class = "btn btn-primary btn-sm generalNavButton submitButton" aria-label="Left Align" style="margin-left:auto; margin-right:auto; display:block" autofocus >
+    <button type="submit" id="{{id}}" class="btn btn-primary btn-sm generalNavButton submitButton" aria-label="Left Align" style="margin-left:auto; margin-right:auto; display:block" autofocus >
         Submit
     </button>
 </template>
