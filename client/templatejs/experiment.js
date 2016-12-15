@@ -126,9 +126,9 @@ Template.experiment.events({
             //  the maxes and mins are to get sane section values while development
             let lastGameRound = ( sub.sec_rnd_now >= ( design.sequence[ sub.sec_now ].roundCount - 1 ) );
 
-            //console.log( "submitting answers, advancing state", design, lastGameRound );
             //console.log( lastGameRound );
             let subData = SubjectsData.findOne({ meteorUserId: Meteor.userId() , "theData.cohortId" : cohortId, sec : sub.sec_now, sec_rnd : sub.sec_rnd_now });
+            //console.log( "submitting answers, advancing state", subData, design, lastGameRound );
             let theData = subData.theData;
             theData.choice = choice; // user input might be dirty;
             try {
