@@ -218,10 +218,11 @@ h2.sectionHeader {
     opacity: 0.85;
 }
 .btn.disabled, .btn.disabled:hover, .btn.disabled:focus {
+    pointer-events : none; //http://stackoverflow.com/questions/7833854/jquery-detect-click-on-disabled-submit-button;
     background-color: #40C4FF;
     opacity: 0.40;
 }
-.generalNavButton, .generalNavButton:hover, .generalNavButton:focus  {
+.generalNavButton, .generalNavButton:hover, .generalNavButton:focus, .generalNavButton:hover:focus {
     font-size: 120%;
     font-weight: bold;
     color: #1A237E;//Black;

@@ -18,12 +18,18 @@
 
 <template name="proceedButton">
     <div> 
-        <button type=button id="{{id}}" class="btn btn-sm generalNavButton proceedButton pull-right" autofocus >Next</button>
+        {{#if equals id "instructions"}}
+            <button type=button id="{{id}}" class="btn btn-sm generalNavButton proceedButton pull-right" autofocus >Next</button>
+        {{else}} {{#if equals id "submitHIT"}}
+        {{else}}
+            <button type=button id="{{id}}" class="btn btn-sm generalNavButton proceedButton pull-right {{disabled}}" autofocus >Next</button>
+        {{/if}}
+        {{/if}}
     </div> 
 </template>
 
 <template name="submitButton">
-    <button type="submit" id="{{id}}" class="btn btn-primary btn-sm generalNavButton submitButton" aria-label="Left Align" style="margin-left:auto; margin-right:auto; display:block" autofocus >
+    <button type="submit" class="btn btn-primary btn-sm generalNavButton answersForm {{disabled}}" aria-label="Left Align" style="margin-left:auto; margin-right:auto; display:block" autofocus >
         Submit
     </button>
 </template>

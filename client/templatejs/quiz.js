@@ -34,7 +34,7 @@ Template.quiz.onCreated( function(){
 });
 
 Template.quiz.events({
-    'submit form#submitQuiz': function(e) {
+    'submit form.answersForm#quiz': function(e) {
         e.stopPropagation();
         e.preventDefault();
         let muid = Meteor.userId();
@@ -174,7 +174,6 @@ Template.quiz.helpers({
             return( sub.quiz.failed );
         }
     },
-    testProceed: Helper.testProceed,
     quizTriesLeft: quizTriesLeft,
 });
 Template.questionBinary.events({

@@ -75,7 +75,6 @@ Template.experimentInstructions.helpers({
 });
 Template.main.events({
     'click button.proceedButton#instructions, click button.proceedButton#quiz': function ( e ) {
-    //'click': function ( e ) {
         let muid = Meteor.userId();
         let sub = Sess.subStat();
         //console.log("button#proceedButton#instructions and quiz", sub, Template.currentData());

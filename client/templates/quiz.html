@@ -8,26 +8,26 @@
 	<p><i>You have two opportunities to submit your responses</i></p>
     </section>
 
-	<form class="quiz" id="submitQuiz">
+    <form class="answersForm" id="{{currentSection.id}}" >
 		{{#each questions}}
         {{> questionBinary}}
 		{{/each}}
     <section class="expPaneMargin">
 		{{#if testQuizPassed}}
-			<div class = "alert alert-success">You have successfully passed the quiz! Click <em>NEXT</em>.</div>
+			<div class = "alert alert-success">You have successfully passed the quiz! Click <strong>NEXT</strong>.</div>
 		{{else}} {{#if testQuizIncomplete}}
 				<div class = "alert alert-warning">You did not answer all of the questions.</div>
 		{{else}} {{#if testQuizFailed}}
-        <div class = "alert alert-danger">You have exhausted your attempts to pass the quiz and demonstrate comprehension of the instructions. Click <em>NEXT</em>.</div>
+        <div class = "alert alert-danger">You have exhausted your attempts to pass the quiz and demonstrate comprehension of the instructions. Click <strong>NEXT</strong>.</div>
 		{{else}} {{#if testQuizWrong }}
             <div class = "alert alert-warning">One or more of your answers are incorrect. Attempts remaining: {{quizTriesLeft}}.</div>
 		{{else}} 
-        <div class = "alert alert-info">Answer all questions carefully and click <em>SUBMIT</em>.</div>
+        <div class = "alert alert-info">Answer all questions carefully and click <strong>SUBMIT</strong>.</div>
 		{{/if}}				
 		{{/if}}				
 		{{/if}}
 		{{/if}}
-            {{> submitButton}}
+        {{> submitButton}}
         </section>
 	</form>
     <section class="expPaneMargin">

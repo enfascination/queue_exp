@@ -29,7 +29,22 @@ Template.navButton.helpers({
         }
     },
 });
+Template.submitButton.helpers({
+	disabled: function( ){
+        let sub = Sess.subStat();
+        if( sub && sub.readyToProceed ) {
+            return("disabled");
+        }
+	},
+});
 Template.proceedButton.helpers({
+	disabled: function( ){
+        let sub = Sess.subStat();
+        if( sub && sub.readyToProceed ) {
+        } else {
+            return("disabled");
+        }
+	},
 });
 Template.proceedButton.events({
 });
@@ -44,26 +59,26 @@ Template.binaryForcedChoice.helpers({
 });
 
 Template.binaryForcedChoice.events({
-	'click button.expChoice': function (e) {
+    'click button.expChoice': function (e) {
         //console.log("div.expChoices", e.target);
-        if ( e.target.hasAttribute( "checked" ) ) { //if button already checked
-            e.target.parentElement.removeAttribute( "choice" );
-        } else {
-            e.target.parentElement.setAttribute( "choice", e.target.getAttribute("choice") );
-        }
-        for (let child of e.target.parentElement.children) {
-            if (!$( child ).hasClass("disabled")) {
+        if (!$( e.target ).hasClass("disabled")) {
+            if ( e.target.hasAttribute( "checked" ) ) { //if button already checked
+                e.target.parentElement.removeAttribute( "choice" );
+            } else {
+                e.target.parentElement.setAttribute( "choice", e.target.getAttribute("choice") );
+            }
+            for (let child of e.target.parentElement.children) {
                 if ( e.target.getAttribute("choice") === child.getAttribute("choice") && !child.hasAttribute("checked")) {
                     child.setAttribute("checked", '');
                 } 
                 else {// uncheck a checked button
                     child.removeAttribute("checked");
                 }
-            } else {
-                e.stopPropagation();
             }
+        } else {
+            e.stopPropagation();
         }
-	}, 
+    }, 
 });
 Template.questionBinary.helpers({
 	hasError: function( id ){

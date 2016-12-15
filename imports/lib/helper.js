@@ -101,13 +101,6 @@ export const Helper = {
             throw error;
         }
     },
-    testProceed : function() {
-            let muid = Meteor.userId();
-            let sub = SubjectsStatus.findOne({ meteorUserId: muid } );
-            if (muid && sub ) {
-                return( sub.readyToProceed );
-            }
-    },
     questionHasError : questionHasError, 
     buttonsReset : function (form) {
         //console.log("buttonsReset", $( form ).children(".expQuestion"));

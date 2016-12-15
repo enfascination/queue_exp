@@ -6,14 +6,14 @@
 	<p>Answer these optional survey questions for additional earnings</p>
 	<p><i>You have two opportunities to submit your responses</i></p>
     </section>
-    <section class="expPaneNoMargin">
-        <form class = "survey" id="submitSurvey">
+        <form class="answersForm" id="{{currentSection.id}}" >
             {{#each questions}}
                 {{> questionBinary}}
             {{/each}}
-                {{> submitButton}}
+            <section class="expPaneMargin">
+                {{> submitButton }}
+            </section>
         </form>
-    </section>
     <br/>
 </template>
 
@@ -25,7 +25,7 @@
         <div class="alert alert-info">You failed the test.  You may not participate in the experiment, but you may submit the HIT.</div>
     {{/unless}}
     <br/>
-            <form class="submitHIT">
+            <form class="answersForm" id="{{currentSection.id}}" >
                 <!--<p>You chose {{userSelection}}</p>
                     <p></p><br>-->
                     <div class="">

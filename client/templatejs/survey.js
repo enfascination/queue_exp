@@ -18,10 +18,9 @@ Template.survey.helpers({
             return( Helper.questions( sub, dataContext.currentSection.id, dataContext) );
         }
     },
-    testProceed: Helper.testProceed,
 });
 Template.survey.events({
-    'submit form#submitSurvey': function (e) {
+    'submit form.answersForm#survey': function (e) {
         e.preventDefault();
 
         /////////////////////
@@ -93,7 +92,8 @@ Template.submitHIT.helpers({
 	},
 });
 Template.submitHIT.events({
-    'submit form.submitHIT': function (e) {
+    //'submit form.submitHIT': function (e) {
+    'submit form.answersForm#submitHIT': function (e) {
         e.preventDefault();
         let theData = { feedback: e.target.feedback.value };
         try {

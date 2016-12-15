@@ -91,7 +91,6 @@ Tracker.autorun(function() {
 
 //""" takes javascript element referring to a Bootstrap navigation tab and disables it"""
 Template.main.helpers({
-    testProceed: Helper.testProceed,
     testTest : function() {
         //console.log( Template.instance(), Template.currentData(), 'lllll' );
     },
@@ -165,3 +164,9 @@ Template.expSectionTabPane.helpers({
     },
 });
 
+/// http://stackoverflow.com/questions/24650658/check-for-equality-in-spacebars
+Template.registerHelper('equals',
+    function(v1, v2) {
+        return (v1 === v2);
+    }
+);

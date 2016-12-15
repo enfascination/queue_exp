@@ -69,7 +69,6 @@ Template.experiment.helpers({
             return( Helper.questions( sub, dataContext.currentSection.id, dataContext) );
         }
     },
-    testProceed: Helper.testProceed,
     section: function() {
         //console.log( "expeirment.helper section", this );
         let dataContext = this;
@@ -81,7 +80,7 @@ Template.experiment.helpers({
     },
 });
 Template.experiment.events({
-    'submit form#nextStage': function(e){
+    'submit form.answersForm#experiment1, submit form.answersForm#experiment2': function(e){
         console.log("experiment.events submit", this, e);
         e.stopPropagation();
         e.preventDefault();
@@ -99,7 +98,6 @@ Template.experiment.events({
             let choice = element.attr("choice");
             let answered = !_.isNil( choice );
             Questions.update({_id: q._id}, {$set: { answered: answered, choice : choice }});
-            console.log($(form).find("div#"+q._id), e.target, q, q._id);
             if (!answered) {
                 Helper.questionHasError( element_raw, true );
             } else {
