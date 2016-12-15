@@ -13,32 +13,62 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
 
             // if this is here, then I've seen anyone at all make it to this part of the experiment before.
             probeDesign = CohortSettings.findOne( { sec_type : "experiment" }, 
-                { sort : { cohortId : 1, sec_rnd : -1 } });
+                { sort : { cohortId : -1, sec_rnd : -1 } });
 
-            if (matching.noMatching) { // everyone should be a sinigle person cohort, no matching
+            if ( _.isNil( probeDesign ) ) { // server has been reset and there are no design in database
+                console.log("First round of install", sub, lastDesign);
+                design = Meteor.call("initializeCohort", cohortId=0, sub.sec_now, sub.sec_type_now, sub.sec_rnd_now);
+                //console.log("First round of install", design);
+            } else if (matching.noMatching) { // everyone should be a sinigle person cohort, no matching
                 let cohortId;
-                if ( _.isNil( probeDesign ) ) { // server has been reset and there are no design in database
-                    cohortId = 0;
+                if ( sub.sec_rnd_now === 0 ) {
+                    cohortId = probeDesign.cohortId + 1;
                 } else {
-                    if ( sub.sec_rnd_now === 0 ) {
-                        cohortId = probeDesign.cohortId + 1;
-                    } else {
-                        cohortId = probeDesign.cohortId;
-                    }
+                    cohortId = probeDesign.cohortId;
                 }
                 console.log("no matching");
-                    try {
-                        design = Meteor.call("initializeCohort", cohortId=cohortId, sub.sec_now, sub.sec_type_now, sub.sec_rnd_now);
-                    } catch (err) {
-                        console.log("BADNESS: Recovering from earlier corruption due to error between initializing cohort and initiliazeing corespongding data object");
-                        design = CohortSettings.findOne( { 
-                            cohortId : cohortId, 
-                            sec : sub.sec_now, 
-                            sec_rnd : sub.sec_rnd_now,
-                        } );
-                        return( { design, familiarCohort : false });
-                    }
-            } else if (matching.selfMatching) {
+                try {
+                    design = Meteor.call("initializeCohort", cohortId=cohortId, sub.sec_now, sub.sec_type_now, sub.sec_rnd_now);
+                } catch (err) {
+                    console.log("BADNESS: Recovering from earlier corruption due to error between initializing cohort and initiliazeing corespongding data object");
+                    design = CohortSettings.findOne( { 
+                        cohortId : cohortId, 
+                        sec : sub.sec_now, 
+                        sec_rnd : sub.sec_rnd_now,
+                    } );
+                    return( { design, familiarCohort : false });
+                }
+            } else if (false || matching.selfMatching) {
+                //console.log("self matching");
+                //// reffing subjectsdata in this function is unusual, but necessary for spotting past cohorts including this partiicpants
+                //let previousByThisSubject = SubjectsData.find( {
+                    //meteorUserId : sub.meteorUserId, 
+                    ////// Here i'm defining self matching to send the subject to he same 
+                    ////// cohort regardless of what round or section they are in.  
+                    ////sec : sub.sec_now, 
+                    ////sec_rnd : sub.sec_rnd_now, 
+                //}, { sort : {  "theData.cohortId" : 1, "theData.queuePosition" : -1, sec : 1, sec_rnd : 1 } });
+                //previousByThisSubject.forEach( function( subjectData ) {
+                    //let innerDesign = CohortSettings.findOne( { 
+                        //"cohortId" : subjectData.theData.cohortId,
+                        //"sec" : subjectData.sec,
+                        //"sec_rnd" : subjectData.sec_rnd,
+                        //$where: "this.filledCohort < this.maxPlayersInCohort", 
+                    //});
+                    ////console.log("inner", innerDesign);
+                    //if ( !_.isNil(innerDesign) ) {
+                        //design = innerDesign;
+                    //}
+                ////});
+                //console.log( "self matching test", previousByThisSubject.fetch().length, design );
+                //if ( _.isNil(design) ) {
+                    //let cohortId = probeDesign.cohortId + 1;
+                    //design = Meteor.call("initializeCohort", cohortId=cohortId, sub.sec_now, sub.sec_type_now, sub.sec_rnd_now);
+                    //familiarCohort = false;
+                //} else {
+                    //design = design;
+                    //familiarCohort = true;
+                //}
             } else if (matching.ensureSubjectMismatchAcrossSections) {
             } else if (matching.ensureSubjectMatchAcrossSections) {
             } else { // default: i don't care how subjects match or rematch across sections or within rounds
@@ -51,11 +81,6 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                 //      as a subsequent subject (use an existing design object)
 
                 // initialize player objects; start with determining state
-                if ( _.isNil( probeDesign ) ) { // server has been reset and there are no design in database
-                    console.log("First round of install", sub, lastDesign);
-                    design = Meteor.call("initializeCohort", cohortId=0, sub.sec_now, sub.sec_type_now, sub.sec_rnd_now);
-                    //console.log("First round of install", design);
-                } else {
                     // now try to get a design for the right conditions, still not knowing my cohortId
                     design = CohortSettings.findOne( { 
                         $where: "this.filledCohort < this.maxPlayersInCohort", 
@@ -94,7 +119,6 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                         //console.log( "Found round for continuing player", design );
                         console.log( "Found round for continuing player");
                     }
-                }
 
                 // various tests
                 try {
@@ -122,7 +146,7 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
             }
             return( { design, familiarCohort } );
         };
-Experiment.findSubsData = function( sub, lastDesign, dat ) {
+Experiment.findSubsData = function( sub, lastDesign, dat, matching ) {
             let subjectPos, countInA, countInB, countInNoChoice;
             let design = dat.design;
 
@@ -130,20 +154,31 @@ Experiment.findSubsData = function( sub, lastDesign, dat ) {
             // experiment-specific logic
             // some state below depends on if the design object I got back was new or old
             if (dat.familiarCohort) {
-                /// previous subject  who isn't the main player
-                let previousSubject = SubjectsData.findOne( {
-                    meteorUserId : { $ne : sub.meteorUserId }, 
-                    "theData.cohortId" : design.cohortId, 
-                    sec : design.sec, 
-                    sec_rnd : design.sec_rnd 
-                }, { sort : {  "theData.cohortId" : -1, "theData.queuePosition" : -1 } });
-                //console.log("familiarCohort", dat.design, previousSubject, SubjectsData.findOne( {
-                    //"theData.cohortId" : design.cohortId, 
-                    //sec : design.sec, 
-                    //sec_rnd : design.sec_rnd 
-                //}));
-                if (_.isNil(previousSubject)) {
-                    return Helper.throwError(403, "something is seriously the matter: you can't play against yourself, but there isn't someone else");
+                let previousSubject;
+                if ( true || !matching.selfMatching ) {
+                    /// previous subject  who isn't the main player
+                    previousSubject = SubjectsData.findOne( {
+                        meteorUserId : { $ne : sub.meteorUserId }, 
+                        "theData.cohortId" : design.cohortId, 
+                        sec : design.sec, 
+                        sec_rnd : design.sec_rnd 
+                    }, { sort : {  "theData.cohortId" : -1, "theData.queuePosition" : -1 } });
+                    //console.log("familiarCohort", dat.design, previousSubject, SubjectsData.findOne( {
+                        //"theData.cohortId" : design.cohortId, 
+                        //sec : design.sec, 
+                        //sec_rnd : design.sec_rnd 
+                    //}));
+                    if (_.isNil(previousSubject)) {
+                        return Helper.throwError(403, "something is seriously the matter: you can't play against yourself, but there isn't someone else");
+                    }
+                } else {
+                    //previousSubject = SubjectsData.findOne( {
+                        //meteorUserId : sub.meteorUserId, 
+                        //"theData.cohortId" : design.cohortId, 
+                        //sec : design.sec,  
+                        //sec_rnd : design.sec_rnd,
+                    //});
+                    //console.log("debugself-matchinfinddata", design.cohortId, SubjectsData.findOne( { meteorUserId : sub.meteorUserId, "theData.cohortId" : design.cohortId,}), SubjectsData.findOne( { meteorUserId : sub.meteorUserId,})  );
                 }
                 subjectPos = previousSubject.theData.queuePosition + 1;
                 countInA = SubjectsData.find({ "theData.cohortId": design.cohortId, 

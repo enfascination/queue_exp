@@ -71,7 +71,7 @@ Design = {
     matching : {
         ensureSubjectMismatchAcrossSections : false,
         ensureSubjectMatchAcrossSections : false,
-        selfMatching : false,
+        selfMatching : false,//DANGER lots of bad broken useless code in the relevant if statements
         noMatching : false,
     },
 };

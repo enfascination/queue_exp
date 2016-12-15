@@ -122,7 +122,7 @@ Meteor.users.deny({
 
             //  experiment specific
             // retrieve the appropriiate data for the subject in this state
-            theData = Experiment.findSubsData( sub, lastDesign, dat );
+            theData = Experiment.findSubsData( sub, lastDesign, dat, Design.matching );
             //console.log("outerinit", theData);
 
             //console.log("new subject data", theData);
