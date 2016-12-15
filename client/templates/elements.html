@@ -1,9 +1,21 @@
 <template name = "questionBinary">
     <section class="expPaneNoMargin experiment"> 
-    <div class = "expQuestion {{questionClass}} form-group {{hasError _id}}" id="{{_id}}">
+    <div class = "expQuestion {{questionClass}} form-group {{getHasError _id}}" id="{{_id}}">
         <label for="{{_id}}" class = "control-label">{{text}}</label>
         <!--<input id="{{_id}}" name="{{_id}}" class = "sm-width form-control">-->
         {{> binaryForcedChoice id=_id texta="Queue A" textb="Queue B"  }}
+    </div>
+    </section> 
+</template>
+
+<template name = "questionQuad">
+    <section class="expPaneNoMargin experiment"> 
+    <div class = "expQuestion {{questionClass}} form-group {{getHasError _id}}" id="{{_id}}">
+        <label for="{{_id}}" class = "control-label">{{text}}</label>
+        {{! {{#each options}}
+        {{! {{> button}}
+        {{! {{/each}}
+        Quad
     </div>
     </section> 
 </template>

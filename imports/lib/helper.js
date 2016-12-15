@@ -4,8 +4,8 @@ var _ = require('lodash');
 import { Questions } from '../../imports/startup/experiment_prep_instpref.js';
 
 /// local used below
-let questionHasError = function ( el, hasError ) {
-    //console.log("questionHasError", el, el.id, Questions.find({section: "quiz"}).fetch() );
+let setHasError = function ( el, hasError ) {
+    //console.log("setHasError", el, el.id, Questions.find({section: "quiz"}).fetch() );
     let output = Questions.update( {_id : el.id }, { $set : { "hasError" : hasError }} );
 };
 let makeTabDOMEl = function( tab ) {
@@ -101,14 +101,19 @@ export const Helper = {
             throw error;
         }
     },
-    questionHasError : questionHasError, 
+    setHasError : setHasError, 
+	getHasError: function( id ){
+        if (Questions.findOne( id ).hasError ) {
+            return("has-error");
+        }
+	},
     buttonsReset : function (form) {
         //console.log("buttonsReset", $( form ).children(".expQuestion"));
         $( form ).children(".expQuestion").each( function( el ) {
             //let id = b.id;
             let id = this.id;
             // uncheck all buttons in this question
-            questionHasError( this, false);
+            setHasError( this, false);
             $( this ).find( "button.expChoice" ).each( function( el ) {
                 $( this ).removeAttr( "checked" );
             });

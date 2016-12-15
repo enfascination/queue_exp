@@ -69,10 +69,10 @@ Template.quiz.events({
                correct = false;
             }
             if (!correct) {
-                Helper.questionHasError( element_raw, true );
+                Helper.setHasError( element_raw, true );
                 console.log("Quiz Failure", q._id, theData, element_raw);
             } else {
-                Helper.questionHasError( element_raw, false );
+                Helper.setHasError( element_raw, false );
             }
         });
         let resultsCount = Questions.find({sec: 'quiz', correct:true}).count();

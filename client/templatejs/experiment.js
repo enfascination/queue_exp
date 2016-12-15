@@ -99,9 +99,9 @@ Template.experiment.events({
             let answered = !_.isNil( choice );
             Questions.update({_id: q._id}, {$set: { answered: answered, choice : choice }});
             if (!answered) {
-                Helper.questionHasError( element_raw, true );
+                Helper.setHasError( element_raw, true );
             } else {
-                Helper.questionHasError( element_raw, false );
+                Helper.setHasError( element_raw, false );
             }
         });
         let answeredCount = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now , answered:true}).count();

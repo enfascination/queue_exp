@@ -81,10 +81,9 @@ Template.binaryForcedChoice.events({
     }, 
 });
 Template.questionBinary.helpers({
-	hasError: function( id ){
-        if (Questions.findOne( id ).hasError ) {
-            return("has-error");
-        }
-	},
+	getHasError: Helper.getHasError,
+});
+Template.questionQuad.helpers({
+	getHasError: Helper.getHasError,
 });
 

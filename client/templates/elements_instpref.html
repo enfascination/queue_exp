@@ -136,7 +136,7 @@
 <template name = "questionGame">
     <section class="expPaneNoMargin experiment"> 
         <h3>{{title}}</h3>
-        <div class = "expQuestion {{type}} form-group {{hasError}}" id="{{_id}}">
+        <div class = "expQuestion {{type}} form-group {{getHasError _id}}" id="{{_id}}">
             <label for="{{_id}}" class = "control-label">{{text}}</label>
             <!--<input id="{{_id}}" name="{{_id}}" class = "sm-width form-control">-->
             {{! {{> binaryForcedChoice id=_id texta="Queue A" textb="Queue B"  }}

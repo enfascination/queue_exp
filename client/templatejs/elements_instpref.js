@@ -166,3 +166,6 @@ Template.questionGame.events({
         }
     },
 });
+Template.questionGame.helpers({
+	getHasError: Helper.getHasError,
+});
