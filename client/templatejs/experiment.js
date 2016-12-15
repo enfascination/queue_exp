@@ -106,9 +106,9 @@ Template.experiment.events({
         });
         let answeredCount = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now , answered:true}).count();
         let questionsCount = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).count();
-        //console.log(sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
         let choice = Questions.findOne({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).choice;
-
+        let choices = _.map( Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).fetch(), "choice");
+        console.log(choices,answeredCount ,questionsCount, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
         if ( answeredCount === questionsCount ) {
             let design = Sess.design();
             let cohortId = design.cohortId;
@@ -129,6 +129,7 @@ Template.experiment.events({
             //console.log( lastGameRound );
             let subData = SubjectsData.findOne({ meteorUserId: Meteor.userId() , "theData.cohortId" : cohortId, sec : sub.sec_now, sec_rnd : sub.sec_rnd_now });
             console.log( "submitting answers, advancing state", subData, design, lastGameRound );
+
             if (_.isNil(subData)) {
                 console.log( "BADNESS: initialize round failed during load");
                 Meteor.call('initializeRound', sub=sub, lastDesign=null, asyncCallback=function(err, data) {
@@ -138,27 +139,28 @@ Template.experiment.events({
                 });
             }
             let theData = subData.theData;
-            theData.choice = choice; // user input might be dirty;
+            //theData.choice = choice; // user input might be dirty;
+            theData.choice = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).fetch();
             try {
-                check(theData, Schemas.ExperimentAnswers);
+                //check(theData, Schemas.ExperimentAnswers);
             } catch (err) {
                 console.log("Data failed validation");
                 throw(err);
             }
-            // continue if clean
-            // experiment-specific logic
-            if (choice === "A") {
-                theData.earnings1 = design.endowment - design.queueCosts.A;
-            } else if (choice === "B") {
-                theData.earnings1 = design.endowment - design.queueCosts.B;
-            }
+            //// continue if clean
+            //// experiment-specific logic
+            //if (choice === "A") {
+                //theData.earnings1 = design.endowment - design.queueCosts.A;
+            //} else if (choice === "B") {
+                //theData.earnings1 = design.endowment - design.queueCosts.B;
+            //}
             
 
             // submit choice and do clean up on previousness
             Meteor.call('submitExperimentChoice', Meteor.userId(), sub.sec_now, sub.sec_rnd_now, theData, asyncCallback=function(err, data) {
                 if (err) { throw( err ); }
                 // determine if end of cohort
-                Meteor.call('tryToCompleteCohort', design);
+                if(false) Meteor.call('tryToCompleteCohort', design);
             });
 
             /////////////////////

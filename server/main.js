@@ -10,7 +10,7 @@ import { Helper } from '../imports/lib/helper.js';
 
 import { QueueAssigner } from './assigners-custom.js';
 
-import { Experiment } from './exp_queueing.js';
+import { Experiment } from './exp_instpref.js';
 
 // https://dweldon.silvrback.com/common-mistakes
 //
@@ -168,18 +168,8 @@ Meteor.users.deny({
         },
         // this updates a SubjectsData object
         submitExperimentChoice: function(muid, sec, sec_rnd, theData) {
-
-            SubjectsData.update({ meteorUserId: muid , "theData.cohortId" : theData.cohortId, sec : sec, sec_rnd : sec_rnd }, {
-                $set: {
-                    "theData.choice": theData.choice,
-                    "theData.earnings1": theData.earnings1,
-                    "completedChoice" : true,
-                },
-            });
-            //console.log("submitExperimentChoice");
-            //let ss = SubjectsStatus.findOne({ meteorUserId: muid });
-            //let sd = SubjectsData.findOne({ meteorUserId: muid , theData.cohortId : cohortId, sec : section, sec_rnd : round });
-            //return({ "s_status" : ss, "s_data" : sd });
+            Experiment.submitExperimentChoice(muid, sec, sec_rnd, theData);
+            // no return value
         },
         // this updates a SubjectsStatus object
         advanceSubjectState : function(muid, lastRound) {

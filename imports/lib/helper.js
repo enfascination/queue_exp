@@ -114,8 +114,10 @@ export const Helper = {
             let id = this.id;
             // uncheck all buttons in this question
             setHasError( this, false);
-            $( this ).find( "button.expChoice" ).each( function( el ) {
+            $( this ).find( ".expChoice" ).each( function( el ) {
                 $( this ).removeAttr( "checked" );
+                $( this ).removeClass( "active" );
+                $( this ).removeAttr( "choice" );
             });
         });
     },
