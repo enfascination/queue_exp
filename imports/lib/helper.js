@@ -122,6 +122,7 @@ export const Helper = {
             let id = this.id;
             let output = Questions.update( {_id : id }, { $set : { disabled : true }} );
         });
+        //$( form ).addClass( "disabled" ); //didn't use. might.
     },
     activateTab : activateTab,
     makeTabEl : makeTabEl,

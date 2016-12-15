@@ -226,8 +226,9 @@ Template.experimentInfo.helpers({
 Template.questionBinary.events({
 	'click div.expQuestion': function (e) {
         e.stopPropagation();
+        //console.log("div.experimentQuestion out", this, e.target, e.currentTarget, e.target.getAttribute("choice"));
+        if( $( e.target.firstElementChild ).hasClass( "disabled" ) || !$( e.target ).hasClass("btn")) return;// this is my disabled button test.  not sure why it works
         let questionData = this;
-        //console.log("div.experimentQuestion", this, e.currentTarget.getAttribute("choice"), e.target.getAttribute("choice"));
         if ( questionData.context.currentSection.type === "experiment" ) {
             let des = Sess.design();
             let choice = e.target.getAttribute("choice");

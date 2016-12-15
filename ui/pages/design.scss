@@ -236,6 +236,9 @@ h2.sectionHeader {
     background-color: #03A9F4; //lightblue500//hsl(0, 0, 60);
     opacity: 1.00;
 }
+.generalNavButton.disabled {
+    color: #757575;
+}
 .proceedButton, .proceedButton:hover, .proceedButton:focus {
 }
 
