@@ -11,18 +11,42 @@ let questions = [
 {
     sec: 'quiz',
     sec_rnd: 0,
-    type: 'binary',
-	text: '1) You should press B',
-	correctAnswer: ["B"],
-	correct: false,
+    type: 'quad',
+	text: 'What is the greatest number of points you can earn',
+    options: [1,2,3,4],
+	correctAnswer: [4],
 },
 {
     sec: 'quiz',
     sec_rnd: 0,
-    type: 'binary',
-	text: '2) You should press A',
-	correctAnswer: ["A"],
-	correct: false,
+    type: 'quad',
+	text: 'If you knew in advance that the other player was going to select Right, which of your two choices would you pick to earn the most points?',
+    options: ["Left", "Right", "Top", "Bottom"],
+	correctAnswer: ["Bottom"],
+},
+{
+    sec: 'quiz',
+    sec_rnd: 0,
+    type: 'quad',
+	text: 'If you knew in advance that the other player was going to select Left, which of your two choices would you pick to earn the most points?',
+    options: ["Left", "Right", "Top", "Bottom"],
+	correctAnswer: ["Top"],
+},
+{
+    sec: 'quiz',
+    sec_rnd: 0,
+    type: 'quad',
+	text: 'If the other player knew in advance that you were going to select Top, which of their two choices would they pick to earn the most points?',
+    options: ["Left", "Right", "Top", "Bottom"],
+	correctAnswer: ["Left"],
+},
+{
+    sec: 'quiz',
+    sec_rnd: 0,
+    type: 'quad',
+	text: 'If the other player knew in advance that you were going to select Bottom, which of their two choices would they pick to earn the most points?',
+    options: ["Left", "Right", "Top", "Bottom"],
+	correctAnswer: ["Right"],
 },
 {
     sec: 'experiment1',
@@ -108,6 +132,9 @@ for(var q of idxs){
         hasError: false,
         order : q,
     });
+    if( questions[q].section === 'quiz' ) {
+        questions[q].correct = false;
+    }
     Questions.insert(questions[q]);
 }
 
