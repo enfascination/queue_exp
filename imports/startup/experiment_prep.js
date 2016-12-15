@@ -15,7 +15,7 @@ questions[0] = {
     sec_rnd: 0,
 	text: '1) You should press B',
     type: 'binary',
-	answer: ["B"],
+	correctAnswer: ["B"],
     choice: null,
 	correct: false,
 	answered: false,
@@ -27,7 +27,7 @@ questions[1] = {
     sec_rnd: 0,
 	text: '2) You should press A',
     type: 'binary',
-	answer: ["A"],
+	correctAnswer: ["A"],
     choice: null,
 	correct: false,
 	answered: false,
@@ -97,20 +97,20 @@ questions[7] = {
 /*
 questions[2] = {
 	text: '3) If there are ' + groupSize + ' players, and each player contributes 50 points, what is the total in the group account after the multiplier (1.5x) is applied? (enter a number)',
-	answer: [String(50*groupSize*1.5)],
+	correctAnswer: [String(50*groupSize*1.5)],
 	correct: false,
 	answered: false
 };
 
 questions[3] = {
 	text: '4) How many other players will you be communicating with during the game?',
-	answer: ['one','1'],
+	correctAnswer: ['one','1'],
 	correct: false,
 	answered: false
 };
 questions[4] = {
 	text: '5) How many messages will you be able to send and receive during communication?',
-	answer: ['two','2'],
+	correctAnswer: ['two','2'],
 	correct: false,
 	answered: false
 };

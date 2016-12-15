@@ -11,7 +11,7 @@ import { Router } from 'meteor/iron:router';
 
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
-import { Questions } from '../../imports/startup/experiment_prep.js';
+import { Questions } from '../../imports/startup/experiment_prep_instpref.js';
 import { Schemas } from '../../api/design/schemas.js';
 
 // controller
@@ -54,13 +54,13 @@ Template.quiz.events({
         let qs = Questions.find({sec: 'quiz'}).forEach( function( q ) {
             let form = e.target;
             //let answer = $.trim(form[q._id].value.toLowerCase());
-            //let correct = $.inArray(answer,q.answer) >= 0 ? true: false;
+            //let correct = $.inArray(answer,q.correctAnswer) >= 0 ? true: false;
             let element_raw = $(form).find(".expQuestion#"+q._id)[0];
             //console.log("qs", element_raw);
             let element = $( element_raw );
             let choice = element.attr("choice");
             let answered = !_.isNil( choice );
-            let correct = answered && ( choice === q.answer[0] );
+            let correct = answered && ( choice === q.correctAnswer[0] );
             let theData = {correct: correct, answered: answered, choice : choice };
             // double check correctness before udpating
             if (Match.test(theData, Schemas.QuizAnswers) ) {
@@ -147,7 +147,7 @@ Template.quiz.helpers({
         let sub = Sess.subStat();
         let dataContext = this;
         if (dataContext.currentSection) {
-            return( Helper.questions( sub, "quiz", dataContext) );  // a little risky to put quiz here bc i might still be int he instrucitons section
+            return( Helper.questions( sub, "quiz", dataContext, shuffled=true) );  // a little risky to put quiz here bc i might still be int he instrucitons section
         }
     },
     //testQuizSubmitted: function() {

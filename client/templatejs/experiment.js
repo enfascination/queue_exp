@@ -10,7 +10,7 @@ import { Router } from 'meteor/iron:router';
 
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
-import { Questions } from '../../imports/startup/experiment_prep.js';
+import { Questions } from '../../imports/startup/experiment_prep_instpref.js';
 import { Schemas } from '../../api/design/schemas.js';
 
 

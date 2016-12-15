@@ -60,66 +60,34 @@
         </section>
 </template>
 <template name="gameNormalForm">
-    <div class="experiment expPaneNoMargin gameNormalForm ">
-    <!--
-    <table class="gameChoiceFeedback">
-        <tr>
-            <td></td>
-            <th> Strategy </th>
-            <th> Outcome </th>
-            <th> Payoff </th>
-        </tr>
-        <tr>
-            <td> Value </td>
-            <td> {{textGameFeedback "strategy" }} </td>
-            <td> {{textGameFeedback "outcome" }} </td>
-            <td> {{textGameFeedback "payoff" }} </td>
-        </tr>
-    </table> 
-    -->
+    <div class="expPaneNoMargin gameNormalForm ">
                 <span style="float:left;">
         <table id="{{gameId}}" class="gameNormalFormGame {{choiceType}} btn-group" role="group">
-                    <colgroup></colgroup>
-                    <colgroup></colgroup>
-                    <colgroup></colgroup>
-                    <thead>
-                        <tr>
-                            <td></td>
-                            <th scope="col" class="gameTableCol">
-                                Left
-                            </th>
-                            <th scope="col" class="gameTableCol">
-                                Right
-                            </th>
-                        </tr>
-                    </thead>
+                    <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+                    <thead> <tr> <td></td> <th scope="col" class="gameTableCol"> Left </th> <th scope="col" class="gameTableCol"> Right </th> </tr> </thead>
                     <tbody>
-                        <tr class="gameTableRow gameNormalFormChoice" data-strategy="top" >
-                            <th>
-                                Top
-                            </th>
+                        <tr class="gameTableRow gameNormalFormChoice {{#if equals choiceType 'chooseStrategy'}}expChoice{{/if}}" id={{gameId}} data-strategy="top" >
+                            <th> Top </th>
                             <td scope="row">
-                                <button type="button" class="gameNormalFormOutcome" id="outcomeTL" data-game-id={{gameId}} data-strategy="top" data-toggle="button" >
+                                <button type="button" class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" id={{gameId}} data-strategy="top" data-outcome="outcomeTL" data-toggle="button" >
                                     {{> visualGame payoffIdPrefix="outcomeTL" payoffPlayerTop=3 payoffPlayerSide=3}}
                                 </button>
                             </td>
                             <td scope="row" class="" >
-                                <button type="button" class="gameNormalFormOutcome" id="outcomeTR" data-game-id={{gameId}} data-strategy="top" data-toggle="button" >
+                                <button type="button" class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" id={{gameId}} data-strategy="top" data-outcome="outcomeTR" data-toggle="button" >
                                     {{> visualGame payoffIdPrefix="outcomeTR" payoffPlayerTop=4 payoffPlayerSide=1}}
                                 </button>
                             </td>
                         </tr>
-                        <tr class="gameTableRow gameNormalFormChoice" data-strategy="bottom" >
-                            <th class="" >
-                                Bottom
-                            </th>
+                        <tr class="gameTableRow gameNormalFormChoice {{#if equals choiceType 'chooseStrategy'}}expChoice{{/if}}" id={{gameId}} data-strategy="bottom" >
+                            <th class="" > Bottom </th>
                             <td scope="row" class="" >
-                                <button type="button" class="gameNormalFormOutcome" id="outcomeBL" data-game-id={{gameId}} data-strategy="bottom" data-toggle="button" >
+                                <button type="button" class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" id={{gameId}} data-strategy="bottom" data-outcome="outcomeBL" data-toggle="button" >
                                     {{> visualGame payoffIdPrefix="outcomeBL" payoffPlayerTop=1 payoffPlayerSide=4}}
                                 </button>
                             </td>
                             <td scope="row" class="" >
-                                <button type="button" class="gameNormalFormOutcome" id="outcomeBR" data-game-id={{gameId}} data-strategy="bottom" data-toggle="button" >
+                                <button type="button" class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" id={{gameId}} data-strategy="bottom" data-outcome="outcomeBR" data-toggle="button" >
                                     {{> visualGame payoffIdPrefix="outcomeBR" payoffPlayerTop=2 payoffPlayerSide=2}}
                                 </button>
                             </td>
@@ -164,4 +132,15 @@
                             </text>
                         </g>
                     </svg>
+</template>
+<template name = "questionGame">
+    <section class="expPaneNoMargin experiment"> 
+        <h3>{{title}}</h3>
+        <div class = "expQuestion {{type}} form-group {{hasError}}" id="{{_id}}">
+            <label for="{{_id}}" class = "control-label">{{text}}</label>
+            <!--<input id="{{_id}}" name="{{_id}}" class = "sm-width form-control">-->
+            {{! {{> binaryForcedChoice id=_id texta="Queue A" textb="Queue B"  }}
+            {{> gameNormalForm gameId=_id choiceType=type}}
+        </div>
+    </section> 
 </template>

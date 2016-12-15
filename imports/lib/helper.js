@@ -1,7 +1,7 @@
 /*jshint esversion: 6 */
 
 var _ = require('lodash');
-import { Questions } from '../../imports/startup/experiment_prep.js';
+import { Questions } from '../../imports/startup/experiment_prep_instpref.js';
 
 /// local used below
 let questionHasError = function ( el, hasError ) {
@@ -188,14 +188,18 @@ export const Helper = {
         //
         //console.log( "main.onRendered", secObj,  " and page is ", this.data );
     },
-    questions : function( sub, section, dataContext ) {
+    questions : function( sub, section, dataContext, shuffled=false ) {
         //console.log("experiment.helpers", this);
         if ( sub ) {
-            let questions = Questions.find({sec: section, sec_rnd : sub.sec_rnd_now }).fetch();
+            let questions = Questions.find({sec: section, sec_rnd : sub.sec_rnd_now }, {$sort : { order : 1 }}).fetch();
             _.forEach( questions, function( q ) {
                 q.context = dataContext;
             });
-            return( questions );
+            if (shuffled) {
+                return( _.shuffle( questions ) );
+            } else {
+                return( questions );
+            }
         }
     },
 };

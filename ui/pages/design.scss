@@ -117,6 +117,7 @@ strong strong {
 .experiment {
     background-color: hsla(199, 94%, 94%, 0.50);//#E1F5FE;//hsl(0, 0, 95);
     width: 750px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);  // https://codepen.io/sdthornton/pen/wBZdXq
 }
 .expHeader h1 {
     //text-transform: uppercase;

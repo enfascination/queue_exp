@@ -7,7 +7,7 @@ import { TurkServer } from 'meteor/mizzao:turkserver';
 
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
-import { Questions } from '../../imports/startup/experiment_prep.js';
+import { Questions } from '../../imports/startup/experiment_prep_instpref.js';
 
 Template.navButton.events({
     "click button.navButton" : function( e ) {
