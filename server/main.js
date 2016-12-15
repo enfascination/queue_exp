@@ -117,7 +117,7 @@ Meteor.users.deny({
 
             //  experiment specific
             // retrieve the appropriiate design for the subject in this state
-            dat = Experiment.findSubsCohort( sub, lastDesign );
+            dat = Experiment.findSubsCohort( sub, lastDesign, Design.matching );
             design = dat.design;
 
             //  experiment specific
@@ -156,6 +156,9 @@ Meteor.users.deny({
             ct = CohortSettings.findOne({ cohortId: design.cohortId, sec: design.sec, sec_rnd : design.sec_rnd });
             return( { "s_status" : ss, "s_data" : sd, "design" : ct } );
         },
+        //findSubsCohort: function(sub, lastDesign) {
+            //return(Experiment.findSubsCohort(sub, lastDesign));
+        //},
         // this modfiies a SubjectsStatus object
         addGroupId: function( meteorUserId, groupId ) {
             if ("undefined" in SubjectsStatus.find({meteorUserId: meteorUserId}, { fields: {'tsGroupId':1} }).fetch()) {
@@ -359,7 +362,12 @@ Meteor.users.deny({
                 newDesign.sec_type = newSectionType;
                 newDesign.sec_rnd = newRound;
                 CohortSettings.insert( newDesign );
-                CohortSettings._ensureIndex({cohortId : 1, sec : 1, sec_rnd : 1 }, { unique : true } );
+                try {
+                    CohortSettings._ensureIndex({cohortId : 1, sec : 1, sec_rnd : 1 }, { unique : true } );
+                } catch (err) {
+                    console.log("Data failed uniqueness: CohortSettings");
+                    throw(err);
+                }
                 return( newDesign );
             //} else {
                 //throw(new Meteor.Error(500, 'Permission denied!'));

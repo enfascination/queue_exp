@@ -128,7 +128,15 @@ Template.experiment.events({
 
             //console.log( lastGameRound );
             let subData = SubjectsData.findOne({ meteorUserId: Meteor.userId() , "theData.cohortId" : cohortId, sec : sub.sec_now, sec_rnd : sub.sec_rnd_now });
-            //console.log( "submitting answers, advancing state", subData, design, lastGameRound );
+            console.log( "submitting answers, advancing state", subData, design, lastGameRound );
+            if (_.isNil(subData)) {
+                console.log( "BADNESS: initialize round failed during load");
+                Meteor.call('initializeRound', sub=sub, lastDesign=null, asyncCallback=function(err, data) {
+                    if (err) { throw( err ); }
+                    //try again
+                    subData = SubjectsData.findOne({ meteorUserId: Meteor.userId() , "theData.cohortId" : cohortId, sec : sub.sec_now, sec_rnd : sub.sec_rnd_now });
+                });
+            }
             let theData = subData.theData;
             theData.choice = choice; // user input might be dirty;
             try {

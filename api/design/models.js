@@ -59,7 +59,7 @@ DesignSequence = {
         },
     };
 Design = {
-    maxPlayersInCohort : 4,
+    maxPlayersInCohort : 2,
     endowment : 1.00,
     pot : 1.00,
     queueNames : [ 'A', 'B' ],
@@ -68,6 +68,12 @@ Design = {
     sequence : DesignSequence,
     positionCosts : 0.25,
     batchName : "main",
+    matching : {
+        ensureSubjectMismatchAcrossSections : false,
+        ensureSubjectMatchAcrossSections : false,
+        selfMatching : false,
+        noMatching : false,
+    },
 };
 UserElements = {
     experimenterView : true,
