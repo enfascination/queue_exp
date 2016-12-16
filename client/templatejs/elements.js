@@ -29,22 +29,19 @@ Template.navButton.helpers({
         }
     },
 });
-Template.submitButton.helpers({
-	disabled: function( ){
+let navDisabled = function( ){
         let sub = Sess.subStat();
         if( sub && sub.readyToProceed ) {
             return("disabled");
         }
-	},
+	};
+Template.submitButton.helpers({
+	disabled: navDisabled,
 });
 Template.proceedButton.helpers({
-	disabled: function( ){
-        let sub = Sess.subStat();
-        if( sub && sub.readyToProceed ) {
-        } else {
-            return("disabled");
-        }
-	},
+	disabled: function() {
+        return( !navDisabled() );
+    }
 });
 Template.proceedButton.events({
 });
@@ -94,18 +91,14 @@ Template.questionBinary.events({
 });
 Template.questionBinary.helpers({
 	getHasError: Helper.getHasError,
-	disabled: function( id ){
-        let sub = Sess.subStat();
-        if( Questions.findOne( { _id : id } ).disabled || (sub && sub.readyToProceed ) ) {
-            return("disabled");
-        }
-	},
+	disabled: Helper.questionDisabled,
 });
 Template.questionQuad.events({
     'click button.expChoice': expChoiceHandler,
 });
 Template.questionQuad.helpers({
 	getHasError: Helper.getHasError,
+	disabled: Helper.questionDisabled,
 	options: function() {
         let dataContext = this;
         return( _.map( dataContext.options ,  (e)=> {return({"name" : e, "id" : dataContext._id , "disabled" : dataContext.disabled });} ));

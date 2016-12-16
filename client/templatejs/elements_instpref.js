@@ -52,6 +52,7 @@ Template.gameNormalForm.helpers({
         }
         return( rVal );
     },
+	disabled: Helper.questionDisabled,
 });
 
 Template.gameNormalForm.events({
@@ -162,4 +163,5 @@ Template.questionGame.events({
 });
 Template.questionGame.helpers({
 	getHasError: Helper.getHasError,
+	disabled: Helper.questionDisabled,
 });

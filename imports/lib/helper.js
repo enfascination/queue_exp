@@ -2,6 +2,7 @@
 
 var _ = require('lodash');
 import { Questions } from '../../imports/startup/experiment_prep_instpref.js';
+import { Sess } from '../../imports/lib/quick-session.js';
 
 /// local used below
 let setHasError = function ( el, hasError ) {
@@ -122,14 +123,14 @@ export const Helper = {
         });
     },
     buttonsDisable : function (form) {
-        console.log("buttonsDisable", $( form ).find(".expQuestion"));
+        //console.log("buttonsDisable", $( form ).find(".expQuestion"));
         $( form ).find(".expQuestion").each( function( el ) {
             //let b = $( this );
             //let id = b.id;
             let id = this.id;
             let output = Questions.update( {_id : id }, { $set : { disabled : true }} );
+            // disable label
         });
-        //$( form ).addClass( "disabled" ); //didn't use. might.
     },
     activateTab : activateTab,
     makeTabEl : makeTabEl,
@@ -210,6 +211,22 @@ export const Helper = {
             }
         }
     },
+    questionDisabled : function( id ){
+        let sub;
+        console.log("questiondisabled", id, Template.currentData(), Questions.findOne( { _id : id } ) );
+        // all the sanity checks are because I have an inconsistent interface across uses of this helper
+        if (_.isNil(Template.currentData().context)) {
+            sub = Sess.subStat();
+        } else {
+            sub = Template.currentData().context.subStat;
+        }
+        if ( _.isNil(id) ) {
+            id = Template.currentData().id;
+        }
+        if( Questions.findOne( { _id : id } ).disabled || (sub && sub.readyToProceed ) ) {
+            return("disabled");
+        }
+	},
 };
 
 

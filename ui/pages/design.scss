@@ -9,6 +9,13 @@
 .alert-warning {
     background-color: #FFF9C4;
 }
+.control-label.disabled {
+    color: #757575;
+    font-weight: normal;
+}
+.control-label h3 {
+    text-align: left;
+}
 
 ///////////////////////
 // gross HTML
@@ -220,7 +227,6 @@ h2.sectionHeader {
 }
 .btn.disabled, .btn.disabled:hover, .btn.disabled:focus {
     pointer-events : none; //http://stackoverflow.com/questions/7833854/jquery-detect-click-on-disabled-submit-button;
-    background-color: #40C4FF;
     opacity: 0.40;
 }
 .generalNavButton, .generalNavButton:hover, .generalNavButton:focus, .generalNavButton:hover:focus {
@@ -237,8 +243,9 @@ h2.sectionHeader {
     background-color: #03A9F4; //lightblue500//hsl(0, 0, 60);
     opacity: 1.00;
 }
-.generalNavButton.disabled, .generalNavButton.disabled:hover {
+.generalNavButton.disabled, .generalNavButton.disabled:focus, .generalNavButton.disabled:hover {
     color: White;
+    background-color: #40C4FF;
 }
 .proceedButton, .proceedButton:hover, .proceedButton:focus {
 }

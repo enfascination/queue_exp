@@ -114,11 +114,6 @@ tr.gameNormalFormChoice {
 tr.hover {
     background-color: hsla(199, 98%, 0%, 0.07); //lightblue500//hsl(0, 0, 60);
 }
-table.gameChoiceFeedback, table.gameChoiceFeedback td, table.gameChoiceFeedback th {
-    padding: 5px;
-    border: 2px solid black;
-    margin: 5px;
-}
 
 /// outcome selection
 .chooseOutcome .gameNormalFormOutcome.active, .gameNormalFormOutcome.hover.active{
@@ -133,6 +128,17 @@ table.gameChoiceFeedback, table.gameChoiceFeedback td, table.gameChoiceFeedback 
 }
 .chooseStrategy tr.gameNormalFormChoice.active th{
     color: #FFF;
+}
+
+// handling disabling of questions of both types
+.gameNormalFormGame.disabled, .gameNormalFormGame.disabled:hover, .gameNormalFormGame.disabled:focus {
+    opacity: 0.40;
+}
+.gameNormalFormGame.disabled, .gameNormalFormGame.disabled:hover, .gameNormalFormGame.disabled:focus,
+.gameNormalFormGame.disabled button, .gameNormalFormGame.disabled:hover button, .gameNormalFormGame.disabled:focus button,
+.gameNormalFormGame.disabled polygon, .gameNormalFormGame.disabled:hover polygon, .gameNormalFormGame.disabled:focus polygon,
+.gameNormalFormGame.disabled tr, .gameNormalFormGame.disabled:hover tr, .gameNormalFormGame.disabled:focus tr {
+    pointer-events : none; //http://stackoverflow.com/questions/7833854/jquery-detect-click-on-disabled-submit-button;
 }
 
 //text
@@ -181,6 +187,11 @@ table.gameChoiceFeedback, table.gameChoiceFeedback td, table.gameChoiceFeedback 
     background-color: White;
     text-align: right;
     padding-left: 0px;
+}
+table.gameChoiceFeedback, table.gameChoiceFeedback td, table.gameChoiceFeedback th {
+    padding: 5px;
+    border: 2px solid black;
+    margin: 5px;
 }
 
 

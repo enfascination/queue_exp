@@ -62,7 +62,7 @@
 <template name="gameNormalForm">
     <div class="expPaneNoMargin gameNormalForm ">
                 <span style="float:left;">
-        <table id="{{gameId}}" class="gameNormalFormGame {{choiceType}} btn-group" role="group">
+        <table id="{{gameId}}" class="gameNormalFormGame {{choiceType}} btn-group {{disabled id}}" role="group">
                     <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
                     <thead> <tr> <td></td> <th scope="col" class="gameTableCol"> Left </th> <th scope="col" class="gameTableCol"> Right </th> </tr> </thead>
                     <tbody>
@@ -135,12 +135,10 @@
 </template>
 <template name = "questionGame">
     <section class="expPaneNoMargin experiment"> 
-        <h3>{{title}}</h3>
+
         <div class = "expQuestion {{type}} form-group {{getHasError _id}}" id="{{_id}}">
-            <label for="{{_id}}" class = "control-label">{{text}}</label>
-            <!--<input id="{{_id}}" name="{{_id}}" class = "sm-width form-control">-->
-            {{! {{> binaryForcedChoice id=_id texta="Queue A" textb="Queue B"  }}
-            {{> gameNormalForm gameId=_id choiceType=type}}
+            <label for="{{_id}}" class = "control-label {{disabled _id}}"><h3>{{title}}</h3>{{text}}</label>
+            {{> gameNormalForm id=_id gameId=_id choiceType=type context=..}}
         </div>
     </section> 
 </template>

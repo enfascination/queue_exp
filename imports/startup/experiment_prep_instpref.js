@@ -75,6 +75,20 @@ let questions = [
 	text: 'Which queue do you choose now?',
 },
 {
+    sec: 'experiment1',
+    sec_rnd: 1,
+    type: 'chooseStrategy',
+	title: 'Question One',
+	text: 'Select a choice, either Top or Bottom',
+},
+{
+    sec: 'experiment1',
+    sec_rnd: 1,
+    type: 'chooseOutcome',
+	title: 'Question Two',
+	text: 'Hypothetically, if you had control over both your choice and the other player\'s, which of the four outcomes would you prefer?',
+},
+{
     sec: 'experiment2',
     sec_rnd: 0,
     type: 'binary',
@@ -85,6 +99,20 @@ let questions = [
     sec_rnd: 1,
     type: 'binary',
 	text: 'part two: Which queue do you choose now?',
+},
+{
+    sec: 'experiment2',
+    sec_rnd: 1,
+    type: 'chooseStrategy',
+	title: 'Question One',
+	text: 'Select a choice, either Top or Bottom',
+},
+{
+    sec: 'experiment2',
+    sec_rnd: 1,
+    type: 'chooseOutcome',
+	title: 'Question Two',
+	text: 'Hypothetically, if you had control over both your choice and the other player\'s, which of the four outcomes would you prefer?',
 },
 {
     sec: 'survey',

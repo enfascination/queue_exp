@@ -5,7 +5,7 @@
                             {{> questionBinary}}
                         {{else}} 
                             {{#if equals type "quad"}}
-                                {{> questionQuad}}
+                                {{> questionQuad this context=..}}
                             {{else}}
                                 {{#if equals type "chooseStrategy"}}
                                 {{> questionGame}}
@@ -30,8 +30,6 @@
             <div class = "alert alert-danger">You have exhausted your attempts to pass the quiz and demonstrate comprehension of the instructions. Click <strong>NEXT</strong>.</div>
             {{else}} {{#if testQuizWrong }}
                 <div class = "alert alert-warning">One or more of your answers are incorrect. Attempts remaining: {{quizTriesLeft}}.</div>
-            {{else}} 
-            <div class = "alert alert-info">Answer all questions carefully and click <strong>SUBMIT</strong>.</div>
             {{/if}}				
             {{/if}}
             {{/if}}
@@ -46,7 +44,7 @@
 <template name = "questionBinary">
     <section class="expPaneNoMargin experiment"> 
     <div class = "expQuestion {{questionClass}} form-group {{getHasError _id}}" id="{{_id}}">
-        <label for="{{_id}}" class = "control-label">{{text}}</label>
+        <label for="{{_id}}" class = "control-label {{disabled _id}}">{{text}}</label>
         <div id={{_id}} name={{_id}} class="expChoices" role="group">
             <button type=button class="btn btn-primary btn-lg experimentChoices expChoice {{disabled _id}}" choice="A" >
                 Queue A
@@ -62,7 +60,7 @@
 <template name = "questionQuad">
     <section class="expPaneNoMargin experiment"> 
     <div class = "expQuestion {{questionClass}} form-group {{getHasError _id}}" id="{{_id}}">
-        <label for="{{_id}}" class = "control-label">{{text}}</label>
+        <label for="{{_id}}" class = "control-label {{disabled _id}}">{{text}}</label>
         <div id={{id}} name={{id}} class="expChoices" role="group">
             {{#each options dataContext=.. }}
                 <button type=button
