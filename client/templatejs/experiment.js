@@ -61,14 +61,6 @@ Template.experiment.onCreated( function(){
 });
 
 Template.experiment.helpers({
-	questions: function(){
-        //console.log("experiment.helpers", this);
-        let sub = Sess.subStat();
-        let dataContext = this;
-        if (dataContext.currentSection) {
-            return( Helper.questions( sub, dataContext.currentSection.id, dataContext) );
-        }
-    },
     section: function() {
         //console.log( "expeirment.helper section", this );
         let dataContext = this;
@@ -79,9 +71,16 @@ Template.experiment.helpers({
         return( dataContext.subStat );
     },
 });
-Template.experiment.events({
+Template.answersForm.helpers({
+    testQuizIncomplete: function() {
+        //console.log("testQuizIncomplete", this);
+        let dataContext = this;
+        return( dataContext.subStat ); /// this is just a stub
+    },
+});
+Template.answersForm.events({
     'submit form.answersForm#experiment1, submit form.answersForm#experiment2': function(e){
-        console.log("experiment.events submit", this, e);
+        //console.log("experiment.events submit", this, e);
         e.stopPropagation();
         e.preventDefault();
         let muid = Meteor.userId();
@@ -108,7 +107,7 @@ Template.experiment.events({
         let questionsCount = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).count();
         let choice = Questions.findOne({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).choice;
         let choices = _.map( Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).fetch(), "choice");
-        console.log(choices,answeredCount ,questionsCount, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
+        //console.log(choices,answeredCount ,questionsCount, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
         if ( answeredCount === questionsCount ) {
             let design = Sess.design();
             let cohortId = design.cohortId;
@@ -128,7 +127,7 @@ Template.experiment.events({
 
             //console.log( lastGameRound );
             let subData = SubjectsData.findOne({ meteorUserId: Meteor.userId() , "theData.cohortId" : cohortId, sec : sub.sec_now, sec_rnd : sub.sec_rnd_now });
-            console.log( "submitting answers, advancing state", subData, design, lastGameRound );
+            //console.log( "submitting answers, advancing state", subData, design, lastGameRound );
 
             if (_.isNil(subData)) {
                 console.log( "BADNESS: initialize round failed during load");
@@ -192,9 +191,6 @@ Template.experiment.events({
                 });
 
         }
-    },
-	'click form#nextStage': function (e) {
-        //console.log("click form#nextStage");
     },
 });
 

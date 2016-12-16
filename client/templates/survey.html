@@ -6,14 +6,7 @@
 	<p>Answer these optional survey questions for additional earnings</p>
 	<p><i>You have two opportunities to submit your responses</i></p>
     </section>
-        <form class="answersForm" id="{{currentSection.id}}" >
-            {{#each questions}}
-                {{> questionBinary}}
-            {{/each}}
-            <section class="expPaneMargin">
-                {{> submitButton }}
-            </section>
-        </form>
+    {{> answersForm ..}}
     <br/>
 </template>
 

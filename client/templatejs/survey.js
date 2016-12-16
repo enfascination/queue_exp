@@ -11,13 +11,6 @@ import { Questions } from '../../imports/startup/experiment_prep_instpref.js';
 import { Schemas } from '../../api/design/schemas.js';
 
 Template.survey.helpers({
-	questions: function(){
-        let sub = Sess.subStat();
-        let dataContext = this;
-        if (dataContext.currentSection) {
-            return( Helper.questions( sub, dataContext.currentSection.id, dataContext) );
-        }
-    },
 });
 Template.survey.events({
     'submit form.answersForm#survey': function (e) {

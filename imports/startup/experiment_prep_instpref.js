@@ -12,7 +12,7 @@ let questions = [
     sec: 'quiz',
     sec_rnd: 0,
     type: 'quad',
-	text: 'What is the greatest number of points you can earn',
+	text: 'What is the greatest number of points you can earn?',
     options: [1,2,3,4],
 	correctAnswer: [4],
 },

@@ -1,9 +1,63 @@
+<template name = "answersForm">
+    <form class="answersForm" id="{{currentSection.id}}" >
+		{{#each questions}}
+                    Howdy
+                        {{#if equals type "binary"}}
+                            {{> questionBinary}}
+                            Hi
+                        {{else}} 
+                            {{#if equals type "quad"}}
+                                {{> questionQuad}}
+                                Hello
+                            {{else}}
+                                {{#if equals type "chooseStrategy"}}
+                                {{> questionGame}}
+                                {{else}} 
+                                    {{#if equals type "chooseOutcome"}}
+                                        {{> questionGame}}
+                                    {{/if}}
+                                {{/if}}
+                            {{/if}}
+                        {{/if}}
+		{{/each}}
+        {{#if equals currentSection.type "experiment"}}
+                    {{#if testQuizIncomplete}}
+                    <div class = "alert alert-warning">You did not answer all of the questions.</div>
+                    {{/if}}
+        {{else}}
+        {{#if equals currentSection.id "quiz"}}
+            <section class="expPaneMargin">
+            {{#if testQuizPassed}}
+                <div class = "alert alert-success">You have successfully passed the quiz! Click <strong>NEXT</strong>.</div>
+            {{else}} {{#if testQuizFailed}}
+            <div class = "alert alert-danger">You have exhausted your attempts to pass the quiz and demonstrate comprehension of the instructions. Click <strong>NEXT</strong>.</div>
+            {{else}} {{#if testQuizWrong }}
+                <div class = "alert alert-warning">One or more of your answers are incorrect. Attempts remaining: {{quizTriesLeft}}.</div>
+            {{else}} 
+            <div class = "alert alert-info">Answer all questions carefully and click <strong>SUBMIT</strong>.</div>
+            {{/if}}				
+            {{/if}}
+            {{/if}}
+            </section>
+        {{/if}}
+        {{/if}}
+        <section class="expPaneMargin">
+        {{> submitButton}}
+        </section>
+	</form>
+</template>
 <template name = "questionBinary">
     <section class="expPaneNoMargin experiment"> 
     <div class = "expQuestion {{questionClass}} form-group {{getHasError _id}}" id="{{_id}}">
         <label for="{{_id}}" class = "control-label">{{text}}</label>
-        <!--<input id="{{_id}}" name="{{_id}}" class = "sm-width form-control">-->
-        {{> binaryForcedChoice id=_id texta="Queue A" textb="Queue B"  }}
+        <div id={{_id}} name={{_id}} class="expChoices" role="group">
+            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice {{disabled _id}}" choice="A" >
+                Queue A
+            </button>
+            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice {{disabled _id}}" choice="B" >
+                Queue B
+            </button>
+        </div>
     </div>
     </section> 
 </template>
@@ -12,10 +66,15 @@
     <section class="expPaneNoMargin experiment"> 
     <div class = "expQuestion {{questionClass}} form-group {{getHasError _id}}" id="{{_id}}">
         <label for="{{_id}}" class = "control-label">{{text}}</label>
-        {{! {{#each options}}
-        {{! {{> button}}
-        {{! {{/each}}
-        Quad
+        <div id={{id}} name={{id}} class="expChoices" role="group">
+            {{#each options dataContext=.. }}
+                <button type=button
+                    class="btn btn-primary btn-lg experimentChoices expChoice {{#if disabled}}disabled{{/if}}" 
+                    choice="{{name}}" >
+                    {{name}}
+            </button>
+            {{/each}}
+        </div>
     </div>
     </section> 
 </template>
@@ -53,16 +112,6 @@
 </template>
 
 <template name="binaryForcedChoice" >
-    <div>
-        <div id={{id}} name={{id}} class="expChoices" role="group">
-            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice {{disabled id}}" choice="A" >
-                {{texta}}
-            </button>
-            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice {{disabled id}}" choice="B" >
-                {{textb}}
-            </button>
-        </div>
-    </div>
 </template>
 
 <template name="expGeneralInfoBox">

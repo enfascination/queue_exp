@@ -196,11 +196,12 @@ export const Helper = {
         //console.log( "main.onRendered", secObj,  " and page is ", this.data );
     },
     questions : function( sub, section, dataContext, shuffled=false ) {
-        //console.log("experiment.helpers", this);
+        //console.log("experiment.helpers qusetions", this, shuffled);
         if ( sub ) {
             let questions = Questions.find({sec: section, sec_rnd : sub.sec_rnd_now }, {$sort : { order : 1 }}).fetch();
             _.forEach( questions, function( q ) {
                 q.context = dataContext;
+                //console.log("experiment.helpers qusetions per q", q);
             });
             if (shuffled) {
                 return( _.shuffle( questions ) );

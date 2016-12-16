@@ -4,34 +4,8 @@
             <div> <p>These are the instructions.  {{> navButton}}</p>  </div>
             <br />-->
         </section>
-                <br/>
-                <form class="answersForm" id="{{currentSection.id}}" >
-                    {{#each questions}}
-                        {{#if equals type "binary"}}
-                            {{> questionBinary}}
-                        {{else}} 
-                            {{#if equals type "quad"}}
-                                {{> questionQuad}}
-                            {{else}}
-                                {{#if equals type "chooseStrategy"}}
-                                {{> questionGame}}
-                                {{else}} 
-                                    {{#if equals type "chooseOutcome"}}
-                                        {{> questionGame}}
-                                    {{/if}}
-                                {{/if}}
-                            {{/if}}
-                        {{/if}}
-                    {{/each}}
-                    {{#if testQuizIncomplete}}
-                    <div class = "alert alert-warning">You did not answer all of the questions.</div>
-                    {{/if}}
-                <br>
-                <br>
-                    <section class="expPaneMargin">
-                        {{> submitButton}}
-                    </section>
-                </form>
+        {{> answersForm ..}}
+    <br/>
 </template>
 
 

@@ -49,17 +49,7 @@ Template.proceedButton.helpers({
 Template.proceedButton.events({
 });
 
-Template.binaryForcedChoice.helpers({
-	disabled: function( id ){
-        let sub = Sess.subStat();
-        if( Questions.findOne( { _id : id } ).disabled || (sub && sub.readyToProceed ) ) {
-            return("disabled");
-        }
-	},
-});
-
-Template.binaryForcedChoice.events({
-    'click button.expChoice': function (e) {
+let expChoiceHandler = function (e) {
         //console.log("div.expChoices", e.target);
         if (!$( e.target ).hasClass("disabled")) {
             if ( e.target.hasAttribute( "checked" ) ) { //if button already checked
@@ -78,12 +68,44 @@ Template.binaryForcedChoice.events({
         } else {
             e.stopPropagation();
         }
-    }, 
+    }; 
+
+Template.answersForm.helpers({
+	questions: function(){
+        let shuffled;
+        let sub = Sess.subStat();
+        let dataContext = this;
+        if (dataContext.currentSection.shuffledQuestions) {
+            shuffled = true;// namely in the quiz
+        } else { 
+            shuffled = false;
+        }
+        if (dataContext.currentSection) {
+            return( Helper.questions( sub, dataContext.currentSection.id, dataContext, shuffled ) );
+        }
+    },
+});
+
+Template.questionBinary.events({
+    'click button.expChoice': expChoiceHandler,
 });
 Template.questionBinary.helpers({
 	getHasError: Helper.getHasError,
+	disabled: function( id ){
+        let sub = Sess.subStat();
+        if( Questions.findOne( { _id : id } ).disabled || (sub && sub.readyToProceed ) ) {
+            return("disabled");
+        }
+	},
+});
+Template.questionQuad.events({
+    'click button.expChoice': expChoiceHandler,
 });
 Template.questionQuad.helpers({
 	getHasError: Helper.getHasError,
+	options: function() {
+        let dataContext = this;
+        return( _.map( dataContext.options ,  (e)=> {return({"name" : e, "id" : dataContext._id , "disabled" : dataContext.disabled });} ));
+    },
 });
 

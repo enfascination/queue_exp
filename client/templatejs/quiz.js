@@ -142,14 +142,7 @@ const quizTriesLeft = function quizTriesLeft() {
     return( UserElements.quizTriesLeft.get() );
 };
 
-Template.quiz.helpers({
-	questions: function(){
-        let sub = Sess.subStat();
-        let dataContext = this;
-        if (dataContext.currentSection) {
-            return( Helper.questions( sub, "quiz", dataContext, shuffled=true) );  // a little risky to put quiz here bc i might still be int he instrucitons section
-        }
-    },
+Template.answersForm.helpers({
     //testQuizSubmitted: function() {
         //return( UserElements.quizSubmitted.get() );
     //},

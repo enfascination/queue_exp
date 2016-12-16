@@ -16,12 +16,6 @@ Template.gameNormalForm.onCreated( function(){
 Template.gameNormalForm.onCreated( function(){
 });
 Template.gameNormalForm.helpers({
-	//disabled: function( id ){
-        //let sub = Sess.subStat();
-        //if( Questions.findOne( { _id : id } ).disabled || (sub && sub.readyToProceed ) ) {
-            //return("disabled");
-        //}
-	//},
     textGameFeedback : function( feedbackType) {
         let gameId = Template.currentData().gameId;
         let feedbackId = gameId + "_" + feedbackType;

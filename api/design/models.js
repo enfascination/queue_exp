@@ -20,7 +20,8 @@ DesignSequence = {
             "label" : "Start" , 
             "roundCount" : 1, 
             "rounds" : { "0" : {id:"round0", label:"Round 0"}, },
-            "stages" : 1 
+            "stages" : 1 ,
+            "shuffledQuestions" : true,
         }, 
         "experiment1" : { 
             "name" : "experiment1" , 
@@ -29,7 +30,7 @@ DesignSequence = {
             "label" : "Section 1" , 
             "roundCount" : 2, 
             "rounds" : { "0" : {id:"round0", label:"Round 0"},  "1" : {id:"round1", label:"Round 1"}, },
-            "stages" : 1 
+            "stages" : 1 ,
         }, 
         "experiment2" : {
             "name" : "experiment2" , 
@@ -38,7 +39,7 @@ DesignSequence = {
             "label" : "Section 2" , 
             "roundCount" : 2, 
             "rounds" : { "0" : {id:"round0", label:"Round 0"},  "1" : {id:"round1", label:"Round 1"}, },
-            "stages" : 1 
+            "stages" : 1 ,
         }, 
         "survey" : { 
             "name" : "survey", 
@@ -64,7 +65,7 @@ Design = {
     pot : 1.00,
     queueNames : [ 'A', 'B' ],
     queueCosts : { "A": 0.50, 'B': 0.00 },
-    maxQuizFails : 2,
+    maxQuizFails : 40,
     sequence : DesignSequence,
     positionCosts : 0.25,
     batchName : "main",
