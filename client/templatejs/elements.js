@@ -70,6 +70,9 @@ let expChoiceHandler = function (e) {
         }
     }; 
 
+Template.answersForm.onCreated( function() {
+    UserElements.questionsIncomplete = new ReactiveVar(false);
+});
 Template.answersForm.helpers({
 	questions: function(){
         let shuffled;

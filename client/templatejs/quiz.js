@@ -33,13 +33,13 @@ Template.quiz.onCreated( function(){
     });
 });
 
-Template.quiz.events({
+Template.answersForm.events({
     'submit form.answersForm#quiz': function(e) {
         e.stopPropagation();
         e.preventDefault();
         let muid = Meteor.userId();
 
-        //console.log("quiz event submit", Sess.design(), UserElements.currentSection.get() );
+        console.log("quiz event submit", Sess.design(), Sess.subStat() );
         // if state is still in instructions, change that
 
 
@@ -56,7 +56,7 @@ Template.quiz.events({
             //let answer = $.trim(form[q._id].value.toLowerCase());
             //let correct = $.inArray(answer,q.correctAnswer) >= 0 ? true: false;
             let element_raw = $(form).find(".expQuestion#"+q._id)[0];
-            //console.log("qs", element_raw);
+            console.log("qs", element_raw);
             let element = $( element_raw );
             let choice = element.attr("choice");
             let answered = !_.isNil( choice );
@@ -78,7 +78,7 @@ Template.quiz.events({
         let resultsCount = Questions.find({sec: 'quiz', correct:true}).count();
         let answeredCount = Questions.find({sec: 'quiz', answered:true}).count();
         let questionsCount = Questions.find({sec: 'quiz'}).count();
-        //console.log("counts", questionsCount, answeredCount, resultsCount);
+        console.log("counts", questionsCount, answeredCount, resultsCount);
         //if ( answeredCount === questionsCount ) {
         if ( true ) {
             UserElements.quizSubmitted.set( true );
@@ -169,14 +169,22 @@ Template.answersForm.helpers({
     },
     quizTriesLeft: quizTriesLeft,
 });
-Template.questionBinary.events({
-	'click div.expQuestion': function (e) {
+
+let questionFloatToExpQuestion = function (e) {
         e.stopPropagation();
-        if ( e.target.hasAttribute( "checked" ) ) {
-            e.currentTarget.setAttribute( "choice", e.target.getAttribute("choice") );
-        } else {
-            e.currentTarget.removeAttribute( "choice" );
+        let oe = $(e.target);
+        if ( oe.hasClass( "btn" ) ) {
+            if ( e.target.hasAttribute( "checked" ) ) {
+                e.currentTarget.setAttribute( "choice", oe.attr("choice") );
+            } else {
+                e.currentTarget.removeAttribute( "choice" );
+            }
         }
-    },
+    };
+Template.questionBinary.events({
+	'click div.expQuestion': questionFloatToExpQuestion,
+});
+Template.questionQuad.events({
+	'click div.expQuestion': questionFloatToExpQuestion,
 });
 

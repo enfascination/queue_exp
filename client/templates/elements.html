@@ -1,14 +1,11 @@
 <template name = "answersForm">
     <form class="answersForm" id="{{currentSection.id}}" >
 		{{#each questions}}
-                    Howdy
                         {{#if equals type "binary"}}
                             {{> questionBinary}}
-                            Hi
                         {{else}} 
                             {{#if equals type "quad"}}
                                 {{> questionQuad}}
-                                Hello
                             {{else}}
                                 {{#if equals type "chooseStrategy"}}
                                 {{> questionGame}}

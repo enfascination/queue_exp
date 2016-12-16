@@ -108,8 +108,8 @@ export const Helper = {
         }
 	},
     buttonsReset : function (form) {
-        //console.log("buttonsReset", $( form ).children(".expQuestion"));
-        $( form ).children(".expQuestion").each( function( el ) {
+        //console.log("buttonsReset", $( form ).find(".expQuestion"));
+        $( form ).find(".expQuestion").each( function( el ) {
             //let id = b.id;
             let id = this.id;
             // uncheck all buttons in this question
@@ -122,8 +122,8 @@ export const Helper = {
         });
     },
     buttonsDisable : function (form) {
-        //console.log("buttonsDisable", $( form ).children(".expQuestion"));
-        $( form ).children(".expQuestion").each( function( el ) {
+        console.log("buttonsDisable", $( form ).find(".expQuestion"));
+        $( form ).find(".expQuestion").each( function( el ) {
             //let b = $( this );
             //let id = b.id;
             let id = this.id;

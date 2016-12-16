@@ -12,7 +12,7 @@ import { Schemas } from '../../api/design/schemas.js';
 
 Template.survey.helpers({
 });
-Template.survey.events({
+Template.answersForm.events({
     'submit form.answersForm#survey': function (e) {
         e.preventDefault();
 

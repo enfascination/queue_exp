@@ -75,7 +75,7 @@ Template.answersForm.helpers({
     testQuizIncomplete: function() {
         //console.log("testQuizIncomplete", this);
         let dataContext = this;
-        return( dataContext.subStat ); /// this is just a stub
+        return( UserElements.questionsIncomplete.get()); /// this is just a stub
     },
 });
 Template.answersForm.events({
@@ -99,6 +99,7 @@ Template.answersForm.events({
             Questions.update({_id: q._id}, {$set: { answered: answered, choice : choice }});
             if (!answered) {
                 Helper.setHasError( element_raw, true );
+                UserElements.questionsIncomplete.set(true);
             } else {
                 Helper.setHasError( element_raw, false );
             }
@@ -109,6 +110,7 @@ Template.answersForm.events({
         let choices = _.map( Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).fetch(), "choice");
         //console.log(choices,answeredCount ,questionsCount, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
         if ( answeredCount === questionsCount ) {
+            UserElements.questionsIncomplete.set(false);
             let design = Sess.design();
             let cohortId = design.cohortId;
 
@@ -174,6 +176,7 @@ Template.answersForm.events({
                         // go to the next round
                         // uncheck buttons in UI
                         Helper.buttonsReset( e.currentTarget );
+                        UserElements.questionsIncomplete.set(false);
                         // create the next cohort object (which might have no members actually);
                         Meteor.call('initializeRound', sub=updatedSub, lastDesign=design, asyncCallback=function(err, data) {
                             if (err) { return(err); }
