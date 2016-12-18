@@ -213,7 +213,7 @@ export const Helper = {
     },
     questionDisabled : function( id ){
         let sub;
-        console.log("questiondisabled", id, Template.currentData(), Questions.findOne( { _id : id } ) );
+        //console.log("questiondisabled", id, Template.currentData(), Questions.findOne( { _id : id } ) );
         // all the sanity checks are because I have an inconsistent interface across uses of this helper
         if (_.isNil(Template.currentData().context)) {
             sub = Sess.subStat();
@@ -223,7 +223,7 @@ export const Helper = {
         if ( _.isNil(id) ) {
             id = Template.currentData().id;
         }
-        if( Questions.findOne( { _id : id } ).disabled || (sub && sub.readyToProceed ) ) {
+        if( (sub && sub.readyToProceed ) || (Questions.findOne( { _id : id } ) && Questions.findOne( { _id : id } ).disabled) ) {
             return("disabled");
         }
 	},

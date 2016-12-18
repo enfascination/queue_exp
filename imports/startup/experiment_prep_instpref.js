@@ -19,7 +19,7 @@ let questions = [
 {
     sec: 'quiz',
     sec_rnd: 0,
-    type: 'quad',
+    type: 'chooseStrategy',
 	text: 'If you knew in advance that the other player was going to select Right, which of your two choices would you pick to earn the most points?',
     options: ["Left", "Right", "Top", "Bottom"],
 	correctAnswer: ["Bottom"],
@@ -27,7 +27,7 @@ let questions = [
 {
     sec: 'quiz',
     sec_rnd: 0,
-    type: 'quad',
+    type: 'chooseStrategy',
 	text: 'If you knew in advance that the other player was going to select Left, which of your two choices would you pick to earn the most points?',
     options: ["Left", "Right", "Top", "Bottom"],
 	correctAnswer: ["Top"],
@@ -35,7 +35,7 @@ let questions = [
 {
     sec: 'quiz',
     sec_rnd: 0,
-    type: 'quad',
+    type: 'chooseStrategyTop',
 	text: 'If the other player knew in advance that you were going to select Top, which of their two choices would they pick to earn the most points?',
     options: ["Left", "Right", "Top", "Bottom"],
 	correctAnswer: ["Left"],
@@ -43,10 +43,26 @@ let questions = [
 {
     sec: 'quiz',
     sec_rnd: 0,
-    type: 'quad',
+    type: 'chooseStrategyTop',
 	text: 'If the other player knew in advance that you were going to select Bottom, which of their two choices would they pick to earn the most points?',
     options: ["Left", "Right", "Top", "Bottom"],
 	correctAnswer: ["Right"],
+},
+{
+    sec: 'quiz',
+    sec_rnd: 0,
+    type: 'chooseOutcome',
+	text: 'Which outcome confers the greatest earnings to the other player?',
+    options: ["Top,Left", "Top,Right", "Bottom,Left", "Bottom,Right"],
+	correctAnswer: ["Top,Right"],
+},
+{
+    sec: 'quiz',
+    sec_rnd: 0,
+    type: 'chooseOutcome',
+	text: 'Which outcome confers the greatest number of points to both players, in total?',
+    options: ["Top,Left", "Top,Right", "Bottom,Left", "Bottom,Right"],
+	correctAnswer: ["Top,Left"],
 },
 {
     sec: 'experiment1',

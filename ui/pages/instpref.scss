@@ -119,14 +119,20 @@ tr.hover {
 .chooseOutcome .gameNormalFormOutcome.active, .gameNormalFormOutcome.hover.active{
     background-color: #0277BD; 
 }
-.chooseOutcome colgroup.hover {
+.chooseOutcome colgroup.hover, .chooseStrategyTop colgroup.hover {
     background-color: hsla(199, 98%, 0%, 0.07); //lightblue500//hsl(0, 0, 60);
 }
 
 .chooseStrategy tr.gameNormalFormChoice.active {
     background-color: #0277BD; 
 }
-.chooseStrategy tr.gameNormalFormChoice.active th{
+.chooseStrategy tr.gameNormalFormChoice.active th {
+    color: #FFF;
+}
+.chooseStrategyTop colgroup.active {
+    background-color: #0277BD; 
+}
+.chooseStrategyTop colgroup.active ~ thead th {
     color: #FFF;
 }
 

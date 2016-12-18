@@ -1,17 +1,6 @@
 <template name="quiz">
-    <section class="expPaneMargin">
-        <div> <p>These are the instructions.  </p> {{> navButton}} </div>
-    <br/>
-
-            <div>Answer all questions carefully and click <strong>SUBMIT</strong>.</div>
-    <!--{{instructionOptions}}-->
-	<h4> You must answer all following questions correctly in order to be eligible for participation</h4>
-	<p><i>You have two opportunities to submit your responses</i></p>
-    </section>
-
+    {{> instPrefQuiz context=..}}
     {{> answersForm }}
-    <section class="expPaneMargin">
-    </section>
     <br/>
 </template>
 

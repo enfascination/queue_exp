@@ -40,15 +40,16 @@ Template.gameNormalForm.helpers({
         return( rVal );
     },
     textGamePayoffs : function( lOrR, tOrB, yOrO) {
+        //console.log( lOrR, tOrB, yOrO);
         let rVal = "__";
-               if (lOrR === "right" && tOrB === "top"    && yOrO === "you"   ) { rVal = 1;
-        } else if (lOrR === "right" && tOrB === "top"    && yOrO === "other" ) { rVal = 4;
-        } else if (lOrR === "right" && tOrB === "bottom" && yOrO === "you"   ) { rVal = 2;
-        } else if (lOrR === "right" && tOrB === "bottom" && yOrO === "other" ) { rVal = 2;
-        } else if (lOrR === "left"  && tOrB === "top"    && yOrO === "you"   ) { rVal = 3;
-        } else if (lOrR === "left"  && tOrB === "top"    && yOrO === "other" ) { rVal = 3;
-        } else if (lOrR === "left"  && tOrB === "bottom" && yOrO === "you"   ) { rVal = 4;
-        } else if (lOrR === "left"  && tOrB === "bottom" && yOrO === "other" ) { rVal = 1;
+               if (lOrR === "Right" && tOrB === "Top"    && yOrO === "You"   ) { rVal = 1;
+        } else if (lOrR === "Right" && tOrB === "Top"    && yOrO === "Other" ) { rVal = 4;
+        } else if (lOrR === "Right" && tOrB === "Bottom" && yOrO === "You"   ) { rVal = 2;
+        } else if (lOrR === "Right" && tOrB === "Bottom" && yOrO === "Other" ) { rVal = 2;
+        } else if (lOrR === "Left"  && tOrB === "Top"    && yOrO === "You"   ) { rVal = 3;
+        } else if (lOrR === "Left"  && tOrB === "Top"    && yOrO === "Other" ) { rVal = 3;
+        } else if (lOrR === "Left"  && tOrB === "Bottom" && yOrO === "You"   ) { rVal = 4;
+        } else if (lOrR === "Left"  && tOrB === "Bottom" && yOrO === "Other" ) { rVal = 1;
         }
         return( rVal );
     },
@@ -56,93 +57,61 @@ Template.gameNormalForm.helpers({
 });
 
 Template.gameNormalForm.events({
-	'click .chooseStrategy .gameNormalFormChoice, mouseover .chooseStrategy .gameNormalFormChoice, mouseout .chooseStrategy .gameNormalFormChoice': function (e) { /// GUI and UX elements for the "choose element" versionof the question
+	'click .gameNormalFormGame, mouseover .gameNormalFormGame, mouseout .gameNormalFormGame': function (e) { /// GUI and UX elements for the "choose element" versionof the question
         let c = $( e.currentTarget ); //the button
-        let choiceStrategy = c.attr('data-strategy');
-        let choiceOutcome = "none";
-        let choicePayoff = "none";
-        let gameId = c.parent().parent().attr('id'); //grandparent is the table
-        //console.log("choosestrategy", gameId);
+        let gameId = c.attr('id'); //self is the table
+        let parentCol;
+        {
+            let cell = $( e.target ).closest('th,td');
+            let colIndex =  cell.parent().children().index( cell) ;
+            parentCol = c.find("colgroup").eq( colIndex );
+        }
+        let choiceStrategy;
+        //c.find("colgroup.gameNormalFormChoice").eq( choiceStrategyEl.parent().index() ).addClass("hover");
+        if (!c.hasClass("chooseStrategyTop")) {
+            choiceStrategy = $(e.target).closest(".expChoice").attr('data-value');
+        } else {
+            choiceStrategy = parentCol.attr("data-value");
+        }
+        let choiceStrategyEl = c.find('.expChoice[data-value="'+choiceStrategy+'"]');
+        let parentTr = choiceStrategyEl.closest('tr.gameNormalFormChoice' );
+        //console.log("choosestrategy", gameId, choiceStrategy, c.hasClass( "chooseOutcome" ), choiceStrategyEl[0], colIndex);
         //UserElements.choiceConsidered.set( "game", c.attr('id');
         //https://css-tricks.com/row-and-column-highlighting/
         if (e.type == 'mouseover') {
-            c.addClass("hover"); //self is tr
+            choiceStrategyEl.addClass("hover"); //self is tr
             UserElements.choiceConsidered.set( gameId, true );
             UserElements.choiceConsidered.set( gameId+"_strategy", choiceStrategy );
+            if ( c.hasClass( "chooseOutcome" ) && choiceStrategyEl.hasClass( "gameNormalFormOutcome" )) {
+                parentTr.addClass("hover");
+                parentCol.addClass("hover");
+            }
             // this is a hack to get the helper updating
             if ( _.isNil( UserElements.choiceChecked.get( gameId ) ) ) {
                 UserElements.choiceChecked.set( gameId, false );
             }
         }
         else if (e.type == 'mouseout') {
-            c.removeClass("hover"); //self is tr
+            choiceStrategyEl.removeClass("hover"); //self is tr
             UserElements.choiceConsidered.set( gameId, false );
             UserElements.choiceConsidered.set( gameId+"_strategy", '' );
+            if ( c.hasClass( "chooseOutcome" ) && choiceStrategyEl.hasClass( "gameNormalFormOutcome" )) {
+                parentTr.removeClass("hover");
+                parentCol.removeClass("hover");
+            }
         }
-        else if (e.type == 'click') {
+        else if (e.type == 'click' && !c.hasClass('noactive') ) {
             if ( UserElements.choiceChecked.get( gameId+"_strategy" ) != choiceStrategy ) {
-                c.parent().find(".gameNormalFormChoice.active").removeClass("active").removeAttr("choice").attr("aria-pressed", false);
-                c.addClass("active"); // for ux
-                c.attr("choice", choiceStrategy); // for data handling within form
+                c.find(".expChoice.active").removeClass("active").removeAttr("choice").attr("aria-pressed", false);
+                choiceStrategyEl.addClass("active"); //self is tr
+                choiceStrategyEl.attr("choice", choiceStrategy); // for data handling within form
                 UserElements.choiceChecked.set( gameId, true );
                 UserElements.choiceChecked.set( gameId+"_strategy", choiceStrategy );
             } else {
-                c.removeClass("active"); 
-                c.removeAttr("choice"); 
+                choiceStrategyEl.removeClass("active"); 
+                choiceStrategyEl.removeAttr("choice"); 
                 UserElements.choiceChecked.set( gameId, false );
                 UserElements.choiceChecked.set( gameId+"_strategy", '' );
-            }
-        }
-    },
-	'click .chooseOutcome button.gameNormalFormOutcome, mouseover .chooseOutcome button.gameNormalFormOutcome, mouseout .chooseOutcome button.gameNormalFormOutcome': function (e) { /// GUI and UX elements for the "choose element" versionof the question
-        let c = $( e.currentTarget ); //the button
-        let choiceStrategy = c.attr('data-strategy');
-        let choiceOutcome = c.attr('data-outcome');
-        let choicePayoff = c.find('g:hover').attr("data-value");
-        let gameId = c.attr('id');
-        //UserElements.choiceConsidered.set( "game", c.attr('id');
-        //https://css-tricks.com/row-and-column-highlighting/
-            //console.log("mouseover chooseoutcome", e.type, gameId, UserElements.choiceConsidered.get( gameId ), UserElements.choiceChecked.get( gameId ));
-        if (e.type === 'mouseover') {
-            c.addClass("hover"); //self is button
-            c.parent().parent().addClass("hover"); // parent is tr
-            $("table#"+gameId+" "+"colgroup").eq( c.parent().index() ).addClass("hover");
-            UserElements.choiceConsidered.set( gameId, true );
-            UserElements.choiceConsidered.set( gameId+"_strategy", choiceStrategy );
-            UserElements.choiceConsidered.set( gameId+"_outcome", choiceOutcome );
-            UserElements.choiceConsidered.set( gameId+"_payoff", choicePayoff );
-            // this is a hack to get the helper updating
-            if ( _.isNil( UserElements.choiceChecked.get( gameId ) ) ) {
-                UserElements.choiceChecked.set( gameId, false );
-            }
-        }
-        else if (e.type === 'mouseout') {
-            c.removeClass("hover"); //self is button
-            c.parent().parent().removeClass("hover"); // parent is td, grandparent is tr
-            $("table#"+gameId+" "+"colgroup").eq( c.parent().index() ).removeClass("hover");
-            UserElements.choiceConsidered.set( gameId, false );
-            UserElements.choiceConsidered.set( gameId+"_strategy", '' );
-            UserElements.choiceConsidered.set( gameId+"_outcome", '' );
-            UserElements.choiceConsidered.set( gameId+"_payoff", '' );
-        }
-        else if (e.type === 'click') {
-            //console.log("outcome click", gameId, choiceStrategy, choiceOutcome, UserElements.choiceChecked.get( gameId+"_outcome" ) );
-            if ( UserElements.choiceChecked.get( gameId+"_outcome" ) != choiceOutcome ) {
-                $(".gameNormalFormGame").find(".gameNormalFormOutcome.active").removeClass("active").removeAttr("choice").attr("aria-pressed", false);
-                c.addClass("active"); // parent is tr
-                c.attr("choice", choiceOutcome); // for data handling within form
-                UserElements.choiceChecked.set( gameId, true );
-                UserElements.choiceChecked.set( gameId+"_strategy", choiceStrategy );
-                UserElements.choiceChecked.set( gameId+"_outcome", choiceOutcome );
-                UserElements.choiceChecked.set( gameId+"_payoff", choicePayoff );
-                //UserElements.choiceChecked.set( "game"+c.attr('data-outcome'), choiceOutcome );
-            } else {
-                c.removeClass("active"); 
-                c.removeAttr("choice"); // for data handling within form
-                UserElements.choiceChecked.set( gameId, false );
-                UserElements.choiceChecked.set( gameId+"_strategy", '' );
-                UserElements.choiceChecked.set( gameId+"_outcome", '' );
-                UserElements.choiceChecked.set( gameId+"_payoff", '' );
             }
         }
     },
