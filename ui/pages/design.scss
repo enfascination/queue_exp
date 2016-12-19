@@ -37,7 +37,6 @@ h2, h3, h4 {
 p {
     text-align: justify;
     line-height: 16pt;
-    width: 560px; // http://baymard.com/blog/line-length-readability
     color: black;
 }
 //svg {box-shadow:0 0 0 2px;}
@@ -100,6 +99,9 @@ strong strong {
     //box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, 0.2), 6px 6px 20px -6px rgba(0, 0, 0, 0.19);
     //border-left: 2px solid LightGrey;
     //border-right: 2px solid LightGrey;
+}
+.expMainPanel p {
+    width: 560px; // http://baymard.com/blog/line-length-readability
 }
 .expPane {
     //display: float;

@@ -106,10 +106,10 @@ Template.answersForm.events({
         });
         let answeredCount = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now , answered:true}).count();
         let questionsCount = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).count();
-        let choice = Questions.findOne({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).choice;
-        let choices = _.map( Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).fetch(), "choice");
         //console.log(choices,answeredCount ,questionsCount, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
         if ( answeredCount === questionsCount ) {
+            //let choice = Questions.findOne({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).choice;
+            let choices = _.map( Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).fetch(), "choice");
             UserElements.questionsIncomplete.set(false);
             let design = Sess.design();
             let cohortId = design.cohortId;
@@ -144,12 +144,14 @@ Template.answersForm.events({
             theData.choice = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).fetch();
             try {
                 //check(theData, Schemas.ExperimentAnswers);
+                // when i reactive thsi, make sure that zeros questions work and the lmultiples do too
             } catch (err) {
                 console.log("Data failed validation");
                 throw(err);
             }
             //// continue if clean
             //// experiment-specific logic
+            // when i reactive thsi, make sure that zeros questions work and the lmultiples do too
             //if (choice === "A") {
                 //theData.earnings1 = design.endowment - design.queueCosts.A;
             //} else if (choice === "B") {
@@ -177,6 +179,7 @@ Template.answersForm.events({
                         // uncheck buttons in UI
                         Helper.buttonsReset( e.currentTarget );
                         UserElements.questionsIncomplete.set(false);
+                        window.scrollTo(0, 0);
                         // create the next cohort object (which might have no members actually);
                         Meteor.call('initializeRound', sub=updatedSub, lastDesign=design, asyncCallback=function(err, data) {
                             if (err) { return(err); }

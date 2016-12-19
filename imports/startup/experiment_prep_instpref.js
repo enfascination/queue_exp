@@ -389,20 +389,6 @@ let questions = [
 {
     sec: 'survey',
     sec_rnd: 0,
-    type: 'binary',
-	text: 'hello',
-},
-{
-    sec: 'survey',
-    sec_rnd: 0,
-    type: 'quad',
-	text: 'What is the greatest number of points you can earn?',
-    options: ["1", "2", "3", "4"],
-	correctAnswer: ["4"],
-},
-{
-    sec: 'survey',
-    sec_rnd: 0,
     type: 'dropdown',
 	text: 'What country are you from?',
     options: countryCodes,
