@@ -75,7 +75,7 @@ Template.answersForm.helpers({
         let shuffled;
         let sub = Sess.subStat();
         let dataContext = this;
-        if (dataContext.currentSection.shuffledQuestions) {
+        if (false && dataContext.currentSection.shuffledQuestions) {
             shuffled = true;// namely in the quiz
         } else { 
             shuffled = false;

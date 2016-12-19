@@ -8,18 +8,19 @@ export let Questions = new Mongo.Collection( null );
 //export let Questions = new Mongo.Collection( "questions" );
 
 let questions = [
-{
+/*{
     sec: 'quiz',
     sec_rnd: 0,
     type: 'quad',
 	text: 'What is the greatest number of points you can earn?',
     options: ["1", "2", "3", "4"],
 	correctAnswer: ["4"],
-},
+},*/
 {
     sec: 'quiz',
     sec_rnd: 0,
     type: 'chooseStrategy',
+	title: 'Question 1',
 	text: 'If you knew in advance that the other player was going to select Right, which of your two choices would you pick to earn the most points?',
     options: ["Left", "Right", "Top", "Bottom"],
 	correctAnswer: ["Bottom"],
@@ -28,22 +29,25 @@ let questions = [
     sec: 'quiz',
     sec_rnd: 0,
     type: 'chooseStrategy',
+	title: 'Question 2',
 	text: 'If you knew in advance that the other player was going to select Left, which of your two choices would you pick to earn the most points?',
     options: ["Left", "Right", "Top", "Bottom"],
-	correctAnswer: ["Top"],
+	correctAnswer: ["Bottom"],
 },
 {
     sec: 'quiz',
     sec_rnd: 0,
     type: 'chooseStrategyTop',
+	title: 'Question 3',
 	text: 'If the other player knew in advance that you were going to select Top, which of their two choices would they pick to earn the most points?',
     options: ["Left", "Right", "Top", "Bottom"],
-	correctAnswer: ["Left"],
+	correctAnswer: ["Right"],
 },
 {
     sec: 'quiz',
     sec_rnd: 0,
     type: 'chooseStrategyTop',
+	title: 'Question 4',
 	text: 'If the other player knew in advance that you were going to select Bottom, which of their two choices would they pick to earn the most points?',
     options: ["Left", "Right", "Top", "Bottom"],
 	correctAnswer: ["Right"],
@@ -52,7 +56,8 @@ let questions = [
     sec: 'quiz',
     sec_rnd: 0,
     type: 'chooseOutcome',
-	text: 'Which outcome confers the greatest earnings to the other player?',
+	title: 'Question 5',
+	text: 'Which of the four outcomes confers the greatest earnings to the other player?',
     options: ["Top,Left", "Top,Right", "Bottom,Left", "Bottom,Right"],
 	correctAnswer: ["Top,Right"],
 },
@@ -60,7 +65,8 @@ let questions = [
     sec: 'quiz',
     sec_rnd: 0,
     type: 'chooseOutcome',
-	text: 'Which outcome confers the greatest number of points to both players, in total?',
+	title: 'Question 6',
+	text: 'Which of the four outcomes confers the greatest number of points to both players, in total?',
     options: ["Top,Left", "Top,Right", "Bottom,Left", "Bottom,Right"],
 	correctAnswer: ["Top,Left"],
 },
@@ -75,7 +81,7 @@ let questions = [
     sec_rnd: 0,
     type: 'chooseStrategy',
 	title: 'Question One',
-	text: 'Select a choice, either Top or Bottom',
+	text: 'Please select a choice, either Top or Bottom.',
 },
 {
     sec: 'experiment1',
@@ -95,7 +101,7 @@ let questions = [
     sec_rnd: 1,
     type: 'chooseStrategy',
 	title: 'Question One',
-	text: 'Select a choice, either Top or Bottom',
+	text: 'Please select a choice, either Top or Bottom.',
 },
 {
     sec: 'experiment1',
@@ -121,7 +127,7 @@ let questions = [
     sec_rnd: 1,
     type: 'chooseStrategy',
 	title: 'Question One',
-	text: 'Select a choice, either Top or Bottom',
+	text: 'Please select a choice, either Top or Bottom.',
 },
 {
     sec: 'experiment2',

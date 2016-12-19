@@ -13,8 +13,10 @@
     color: #757575;
     font-weight: normal;
 }
-.control-label h3 {
+.expQuestion .questionTitle {
     text-align: left;
+    font-weight: 600;
+    padding: 10px 15px;
 }
 
 ///////////////////////
@@ -167,8 +169,8 @@ strong strong {
     padding: 5px 7px;
 }
 
-.expQuestion {
-    text-align: center;
+.expQuestion label {
+    padding: 5px 30px;
 }
 
 

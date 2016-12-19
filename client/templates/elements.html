@@ -10,8 +10,12 @@
                                 {{#if equals type "chooseStrategy"}}
                                 {{> questionGame}}
                                 {{else}} 
-                                    {{#if equals type "chooseOutcome"}}
+                                    {{#if equals type "chooseStrategyTop"}}
                                         {{> questionGame}}
+                                    {{else}} 
+                                        {{#if equals type "chooseOutcome"}}
+                                            {{> questionGame}}
+                                        {{/if}}
                                     {{/if}}
                                 {{/if}}
                             {{/if}}
@@ -36,7 +40,9 @@
             </section>
         {{/if}}
         {{/if}}
+        <br/>
         <section class="expPaneMargin">
+        <br/>
         {{> submitButton}}
         </section>
 	</form>

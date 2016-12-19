@@ -25,6 +25,7 @@
 .gameVisualText {
     display: inline;
     cursor: not-allowed;
+    text-align:left;
 }
 .gameNormalFormGame {
     //border: 7px solid hsl(202, 98%, 57%); bright blue
@@ -66,7 +67,6 @@ tr.gameNormalFormChoice {
     position: relative; // this is for the positioning of the below welements to work
 }
 .gameNormalFormPayoff {
-    cursor: pointer;
     //background-color: LightBlue; //LightBlue
     background-color: transparent;
     padding: 20px;
@@ -116,6 +116,9 @@ tr.hover {
 }
 
 /// outcome selection
+.expChoice {
+    cursor: pointer;
+}
 .chooseOutcome .gameNormalFormOutcome.active, .gameNormalFormOutcome.hover.active{
     background-color: #0277BD; 
 }
