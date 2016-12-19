@@ -169,8 +169,12 @@ strong strong {
     padding: 5px 7px;
 }
 
-.expQuestion label {
-    padding: 5px 30px;
+.expQuestion {
+    padding: 10px 0px;
+}
+.expQuestion label, .expQuestion .expChoices {
+    padding: 0px 30px;
+    font-size: 14pt;
 }
 
 

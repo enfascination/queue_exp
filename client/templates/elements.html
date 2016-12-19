@@ -15,6 +15,14 @@
                                     {{else}} 
                                         {{#if equals type "chooseOutcome"}}
                                             {{> questionGame}}
+                                        {{else}} 
+                                            {{#if equals type "dropdown"}}
+                                                {{> questionDropdown this}}
+                                            {{else}} 
+                                                {{#if equals type "text"}}
+                                                    {{> questionText this}}
+                                                {{/if}}
+                                            {{/if}}
                                         {{/if}}
                                     {{/if}}
                                 {{/if}}
@@ -79,13 +87,32 @@
     </div>
     </section> 
 </template>
-
-<template name = "questionForm">
-    <!-- <div class = "{{questionClass}} form-group {{#if incorrect}}has-error{{/if}}" id="{{_id}}"> -->
-    <div class = "expQuestion {{questionClass}} form-group" id="{{_id}}">
-        <label for="{{_id}}" class = "control-label">{{text}}</label>
-        <input id="{{_id}}" name="{{_id}}" class = "sm-width form-control">
+<template name = "questionDropdown">
+    <section class="expPaneNoMargin experiment"> 
+    <div class = "expQuestion {{questionClass}} form-group {{getHasError _id}}" id="{{_id}}">
+        <label for="{{_id}}" class = "control-label {{disabled _id}}">{{text}}</label>
+        <div id={{_id}} name={{_id}} class="expChoices" role="group">
+            <select class="dropdown__menu" id="category-select" {{disabled _id}}>
+                <option hidden="hidden" value='' {{disabled _id}} >Please Select</option>
+                {{#each options dataContext=.. }}
+                    <option class='expChoice' choice="{{name}}" value="{{name}}" {{disabled _id}} >{{name}}</option>
+                {{/each}}
+            </select>
+        </div>
     </div>
+    </section> 
+</template>
+
+<template name = "questionText">
+    <section class="expPaneNoMargin experiment"> 
+    <div class = "expQuestion {{questionClass}} form-group {{getHasError _id}}" id="{{_id}}">
+        <label for="{{_id}}" class = "control-label {{disabled _id}}">{{text}}</label>
+        <div id={{_id}} name={{_id}} class="expChoices" role="group">
+            <!-- <input id="{{_id}}" name="{{_id}}" value="text" class = "sm-width form-control expChoice"> -->
+            <input id="{{_id}}" name="{{_id}}" type="text" class="sm-width form-control expChoice" title="{{fieldname}}" pattern="{{pattern}}" {{disabled _id}} />
+        </div>
+    </div>
+    </section> 
 </template>
 
 <template name="proceedButton">

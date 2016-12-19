@@ -234,7 +234,7 @@ Schemas.SurveyAnswers = new SimpleSchema({
         type: Boolean,
         label: "answered",
     },
-    answer: {
+    choice: {
         type: String,
         label: "answer",
         optional: true,

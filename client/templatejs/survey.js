@@ -14,6 +14,7 @@ Template.survey.helpers({
 });
 Template.answersForm.events({
     'submit form.answersForm#survey': function (e) {
+        e.stopPropagation();
         e.preventDefault();
 
         /////////////////////
@@ -26,40 +27,81 @@ Template.answersForm.events({
         let qs = Questions.find({sec: 'survey'}).forEach( function( q ) {
             let element_raw = $(e.target).find(".expQuestion#"+q._id)[0];
             let element = $( element_raw );
-            let choice = element.attr("choice");
+            let choice;
+            if (q.type === 'dropdown') {
+                // http://stackoverflow.com/questions/1085801/get-selected-value-in-dropdown-list-using-javascript#1085810
+                choice = element.find("select option:selected:not([hidden])").val();
+            } else if (q.type === 'text') {
+                choice = element.find("input").val();
+            } else {
+                choice = element.attr("choice");
+            }
             let answered = !_.isNil( choice );
             Questions.update({_id: q._id}, {$set: { answered: answered, choice : choice }});
-        });
-        /////////////////////
-        //// IF INPUTS OK, SUBMIT ANSWERS AND ....
-        /////////////////////
-        qs = Questions.find({sec: 'survey'}).forEach( function( q ) {
+
+            // data validation for better check of answered
             let theData = {
                 questionType: q.type,
                 question: q.text,
-                answer: q.choice,
-                answered: q.answered,
+                choice: choice,
+                answered: answered,
             };
             try {
                 check(theData, Schemas.SurveyAnswers);
             } catch (err) {
                 console.log("Data failed validation");
-                throw(err);
+                answered=false;
             }
-            Meteor.call("initializeSurveyData", Meteor.userId(), Questions.findOne({_id: q._id}), function(err,data) {
-                if (err) { throw( err ); }
-                //console.log("initSurvey cb", answered, choice, data);
-            } );
+            // custom restricted text test
+            if (q.type==='text' && q.pattern && !(new RegExp(q.pattern)).test( choice )) { 
+                answered=false;
+                console.log(q.text, q.pattern, (new RegExp(q.pattern)), (new RegExp(q.pattern)).test( choice ));
+            }
+
+            // require all answers
+            if (!answered) {
+                Helper.setHasError( element_raw, true );
+                UserElements.questionsIncomplete.set(true);
+            } else {
+                Helper.setHasError( element_raw, false );
+            }
         });
         /////////////////////
-        //// ... SEPARATELY, ADVANCE STATE 
+        //// IF INPUTS OK, SUBMIT ANSWERS AND ....
         /////////////////////
-        // uncheck buttons in UI
-        //Helper.buttonsReset( e.currentTarget );
-        Helper.buttonsDisable( e.currentTarget );
+        let sub = Sess.subStat();
+        let answeredCount = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now , answered:true}).count();
+        let questionsCount = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).count();
+        //console.log(choices,answeredCount ,questionsCount, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
+        if ( answeredCount === questionsCount ) {
+            qs = Questions.find({sec: 'survey'}).forEach( function( q ) {
+                let theData = {
+                    questionType: q.type,
+                    question: q.text,
+                    choice: q.choice,
+                    answered: q.answered,
+                };
+                try {
+                    check(theData, Schemas.SurveyAnswers);
+                } catch (err) {
+                    console.log("Data failed validation");
+                    throw(err);
+                }
+                Meteor.call("initializeSurveyData", Meteor.userId(), Questions.findOne({_id: q._id}), function(err,data) {
+                    if (err) { throw( err ); }
+                    //console.log("initSurvey cb", answered, choice, data);
+                } );
+            });
+            /////////////////////
+            //// ... SEPARATELY, ADVANCE STATE 
+            /////////////////////
+            // uncheck buttons in UI
+            //Helper.buttonsReset( e.currentTarget );
+            Helper.buttonsDisable( e.currentTarget );
 
-        //console.log("form#submitSurvey");
-        Meteor.call( "setReadyToProceed", Meteor.userId() );
+            //console.log("form#submitSurvey");
+            Meteor.call( "setReadyToProceed", Meteor.userId() );
+        }
     },
 });
 

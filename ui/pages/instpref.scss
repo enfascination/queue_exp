@@ -22,11 +22,6 @@
     background-color: hsla(199, 100%, 100%, 0.10); 
     width: 715px;
 }
-.gameVisualText {
-    display: inline;
-    cursor: not-allowed;
-    text-align:left;
-}
 .gameNormalFormGame {
     //border: 7px solid hsl(202, 98%, 57%); bright blue
     //background-color: hsla(199, 98%, 60%, 0.20); //light blue 800
@@ -35,6 +30,9 @@
     margin-right: 5px;
 }
 .gameVisualText {
+    display: inline;
+    cursor: not-allowed;
+    text-align:left;
     font-family: "Matterhorn";
     font-size: 16pt;
     color: #616161;

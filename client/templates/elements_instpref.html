@@ -33,8 +33,8 @@
         </section>
         <hr class="expPaneMargin"/>
                     <p><strong><strong>EXAMPLE GAME INTERFACE:</strong></strong></p>
-                    {{> gameNormalForm id="tutorial" gameId="tutorial" choiceType="chooseOutcome" context=context}}
-                    <p class="expPaneMargin" style="display:center;"><em>This is a sample of the game interface that will be used through the experiment. Your points are in <span class="you blue">blue</span>.</em></p>
+                    {{> gameNormalForm id="tutorial" gameId="tutorial" choiceType="chooseStrategy" context=context}}
+                    <p class="expPaneMargin" style="display:center;"><em>This is a sample of the game interface that will be used through the experiment. Clicking an option will select it. Your points are in <span class="you blue">blue</span>.</em></p>
         <hr class="expPaneMargin"/>
         <section class="expPaneMargin">
             <h3>Experiment flow</h3>
@@ -79,7 +79,7 @@
 <template name="gameNormalForm">
     <div class="expPaneNoMargin gameNormalForm ">
                 <span style="{{#if equals choiceType 'chooseStrategy'}}float:left;{{/if}}">
-        <table id="{{gameId}}" class="gameNormalFormGame {{choiceType}} btn-group {{disabled id}} {{#if equals gameId 'tutorial'}}noactive{{/if}}" role="group">
+        <table id="{{gameId}}" class="gameNormalFormGame {{choiceType}} btn-group {{disabled id}} {{#if equals gameId 'XXXtutorial'}}noactive{{/if}}" role="group">
                     <colgroup></colgroup> 
                     <colgroup id="{{gameId}}" class="gameNormalFormChoice {{#if equals choiceType 'chooseStrategyTop'}}expChoice{{/if}}" data-value="Left" ></colgroup> 
                     <colgroup id="{{gameId}}" class="gameNormalFormChoice {{#if equals choiceType 'chooseStrategyTop'}}expChoice{{/if}}" data-value="Right" ></colgroup>

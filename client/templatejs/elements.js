@@ -87,21 +87,22 @@ Template.answersForm.helpers({
 });
 
 Template.questionBinary.events({
-    'click button.expChoice': expChoiceHandler,
+    'click .expChoice': expChoiceHandler,
 });
 Template.questionBinary.helpers({
 	getHasError: Helper.getHasError,
 	disabled: Helper.questionDisabled,
 });
-Template.questionQuad.events({
-    'click button.expChoice': expChoiceHandler,
-});
 Template.questionQuad.helpers({
-	getHasError: Helper.getHasError,
-	disabled: Helper.questionDisabled,
 	options: function() {
         let dataContext = this;
         return( _.map( dataContext.options ,  (e)=> {return({"name" : e, "id" : dataContext._id , "disabled" : dataContext.disabled });} ));
     },
 });
+Template.questionQuad.inheritsHelpersFrom('questionBinary');
+Template.questionQuad.inheritsEventsFrom('questionBinary');
+Template.questionDropdown.inheritsHelpersFrom('questionQuad');
+Template.questionDropdown.inheritsEventsFrom('questionQuad');
+Template.questionText.inheritsHelpersFrom('questionBinary');
+Template.questionText.inheritsEventsFrom('questionBinary');
 
