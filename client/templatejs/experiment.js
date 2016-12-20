@@ -92,7 +92,9 @@ Template.answersForm.events({
         //Only allow clients to attempt quiz twice before preventing them from doing so
         let answeredCount = 0;
         let questionsCount = 0;
-        let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now });
+        let choices = [];
+        let qs = Template.currentData().questionsColl;
+        //let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now });
         qs.forEach( function( q ) {
             let form = e.target;
             let element_raw = $(form).find(".expQuestion#"+q._id)[0];
@@ -109,12 +111,13 @@ Template.answersForm.events({
                 answeredCount += 1;
             }
             questionsCount += 1;
-            Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData );
+            Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData, function(err) {
+                if (err) { throw( err ); }
+                choices = _.concat( choices, Questions.find({ meteorUserId : sub.meteorUserId, _id : q._id }));
+            } );
         });
         console.log(qs.count(),answeredCount ,questionsCount, sub.sec_rnd_now, qs.fetch());
         if ( answeredCount === questionsCount ) {
-            //let choice = Questions.findOne({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).choice;
-            let choices = _.map( Questions.find({ meteorUserId : sub.meteorUserId, sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).fetch(), "choice");
             UserElements.questionsIncomplete.set(false);
             let design = Sess.design();
             let cohortId = design.cohortId;
@@ -134,6 +137,10 @@ Template.answersForm.events({
 
             //console.log( lastGameRound );
             let subData = SubjectsData.findOne({ meteorUserId: Meteor.userId() , "theData.cohortId" : cohortId, sec : sub.sec_now, sec_rnd : sub.sec_rnd_now });
+            //let choice = Questions.findOne({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).choice;
+            //theData.choice = choice; // user input might be dirty;
+            let theData = subData.theData;
+            theData.choice = choices;
             //console.log( "submitting answers, advancing state", subData, design, lastGameRound );
 
             if (_.isNil(subData)) {
@@ -144,16 +151,7 @@ Template.answersForm.events({
                     subData = SubjectsData.findOne({ meteorUserId: Meteor.userId() , "theData.cohortId" : cohortId, sec : sub.sec_now, sec_rnd : sub.sec_rnd_now });
                 });
             }
-            let theData = subData.theData;
-            //theData.choice = choice; // user input might be dirty;
-            theData.choice = Questions.find({ meteorUserId : sub.meteorUserId, sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).fetch();
-            try {
-                //check(theData, Schemas.ExperimentAnswers);
-                // when i reactive thsi, make sure that zeros questions work and the lmultiples do too
-            } catch (err) {
-                console.log("Data failed validation");
-                throw(err);
-            }
+
             //// continue if clean
             //// experiment-specific logic
             // when i reactive thsi, make sure that zeros questions work and the lmultiples do too

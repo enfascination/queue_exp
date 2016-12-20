@@ -84,7 +84,7 @@ Template.answersForm.helpers({
             shuffled = false;
         }
         if (dataContext.currentSection && this.questionsColl) {
-            console.log("elements questions", this.questionsColl.fetch());
+            //console.log("elements questions", this.questionsColl.fetch());
             return( Helper.questions( this.questionsColl, sub, dataContext.currentSection.id, dataContext, shuffled) );
         }
     },

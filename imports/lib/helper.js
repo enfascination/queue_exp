@@ -183,7 +183,7 @@ export const Helper = {
         });
     },
     questions : function( questions, sub, section, dataContext, shuffled=false ) {
-        console.log("experiment.helpers qusetions", questions, this, shuffled);
+        //console.log("experiment.helpers qusetions", questions, this, shuffled);
         if ( sub ) {
             //questions = questions.find({sec: section, sec_rnd : sub.sec_rnd_now }, {$sort : { order : 1 }}).fetch();
             questions = questions.fetch();

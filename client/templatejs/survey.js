@@ -27,7 +27,8 @@ Template.answersForm.events({
         // AHHHHHHHH
         let answeredCount = 0;
         let questionsCount = 0;
-        let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: 'survey'});
+        let qs = Template.currentData().questionsColl;
+        //let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: 'survey'});
         qs.forEach( function( q ) {
             let element_raw = $(e.target).find(".expQuestion#"+q._id)[0];
             let element = $( element_raw );
@@ -73,7 +74,7 @@ Template.answersForm.events({
         //console.log(choices,answeredCount ,questionsCount, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
         if ( answeredCount === questionsCount ) {
             qs.forEach( function( q ) {
-                Meteor.call("insertSurveyQuestion", Meteor.userId(), Questions.findOne({ meteorUserId : sub.meteorUserId, _id: q._id}) );
+                Meteor.call("insertSurveyQuestion", Meteor.userId(), q );
             });
             /////////////////////
             //// ... SEPARATELY, ADVANCE STATE 

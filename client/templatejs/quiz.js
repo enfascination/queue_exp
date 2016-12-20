@@ -11,7 +11,6 @@ import { Router } from 'meteor/iron:router';
 
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
-import { QuizQuestions } from '../../imports/startup/experiment_prep_instpref.js';
 import { Schemas } from '../../api/design/schemas.js';
 
 // controller
@@ -40,7 +39,7 @@ Template.answersForm.events({
         let muid = Meteor.userId();
         let sub = Sess.subStat();
 
-        console.log("quiz event submit", Sess.design(), Sess.subStat() );
+        console.log("quiz event submit", Sess.design(), Sess.subStat(), Template.currentData() );
         // if state is still in instructions, change that
 
 
@@ -56,12 +55,13 @@ Template.answersForm.events({
         let questionsCount = 0;
         let resultsCount = 0;
         let form = e.target;
-        let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: 'quiz'});
+        //let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: 'quiz'});
+        let qs = Template.currentData().questionsColl;
         qs.forEach( function( q ) {
             //let answer = $.trim(form[q._id].value.toLowerCase());
             //let correct = $.inArray(answer,q.correctAnswer) >= 0 ? true: false;
             let element_raw = $(form).find(".expQuestion#"+q._id)[0];
-            console.log("qs", element_raw, q, q._id);
+            //console.log("qs", element_raw, q, q._id);
             let element = $( element_raw );
             let choice = element.attr("choice");
             let answered = !_.isNil( choice );
@@ -78,11 +78,9 @@ Template.answersForm.events({
                 resultsCount += correct ? 1 : 0;
             }
             questionsCount += 1;
-            console.log("quiz pass", q._id, theData );
             Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData );
-            console.log("out of quiz pass");
         });
-        console.log("counts", questionsCount, answeredCount, resultsCount, _.map(qs.fetch(), "_id"));
+        //console.log("counts", questionsCount, answeredCount, resultsCount, _.map(qs.fetch(), "_id"));
         //if ( answeredCount === questionsCount ) {
         if ( true ) {
             UserElements.quizSubmitted.set( true );
