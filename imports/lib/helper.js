@@ -1,14 +1,9 @@
 /*jshint esversion: 6 */
 
 var _ = require('lodash');
-import { Questions } from '../../imports/startup/experiment_prep_instpref.js';
-import { Sess } from '../../imports/lib/quick-session.js';
+import { Sess } from './quick-session.js';
 
 /// local used below
-let setHasError = function ( el, hasError ) {
-    //console.log("setHasError", el, el.id, Questions.find({section: "quiz"}).fetch() );
-    let output = Questions.update( {_id : el.id }, { $set : { "hasError" : hasError }} );
-};
 let makeTabDOMEl = function( tab ) {
     return(  _.join( [ ".expTabs a[data-target='#", tab, "']" ], '' ) );
 };
@@ -102,36 +97,6 @@ export const Helper = {
             throw error;
         }
     },
-    setHasError : setHasError, 
-	getHasError: function( id ){
-        if (Questions.findOne( id ).hasError ) {
-            return("has-error");
-        }
-	},
-    buttonsReset : function (form) {
-        //console.log("buttonsReset", $( form ).find(".expQuestion"));
-        $( form ).find(".expQuestion").each( function( el ) {
-            //let id = b.id;
-            let id = this.id;
-            // uncheck all buttons in this question
-            setHasError( this, false);
-            $( this ).find( ".expChoice" ).each( function( el ) {
-                $( this ).removeAttr( "checked" );
-                $( this ).removeClass( "active" );
-                $( this ).removeAttr( "choice" );
-            });
-        });
-    },
-    buttonsDisable : function (form) {
-        //console.log("buttonsDisable", $( form ).find(".expQuestion"));
-        $( form ).find(".expQuestion").each( function( el ) {
-            //let b = $( this );
-            //let id = b.id;
-            let id = this.id;
-            let output = Questions.update( {_id : id }, { $set : { disabled : true }} );
-            // disable label
-        });
-    },
     activateTab : activateTab,
     makeTabEl : makeTabEl,
     disableTab : disableTab,
@@ -196,10 +161,32 @@ export const Helper = {
         //
         //console.log( "main.onRendered", secObj,  " and page is ", this.data );
     },
-    questions : function( sub, section, dataContext, shuffled=false ) {
-        //console.log("experiment.helpers qusetions", this, shuffled);
+	getHasError: function( id ){
+        //console.log(this);
+        let q = this;
+        if (q._id === id && q.hasError ) {
+        //if (Questions.findOne( id ).hasError ) {
+            return("has-error");
+        }
+	},
+    buttonsReset : function (form) {
+        //console.log("buttonsReset", $( form ).find(".expQuestion"));
+        $( form ).find(".expQuestion").each( function( el ) {
+            //let id = b.id;
+            let id = this.id;
+            // uncheck all buttons in this question
+            $( this ).find( ".expChoice" ).each( function( el ) {
+                $( this ).removeAttr( "checked" );
+                $( this ).removeClass( "active" );
+                $( this ).removeAttr( "choice" );
+            });
+        });
+    },
+    questions : function( questions, sub, section, dataContext, shuffled=false ) {
+        console.log("experiment.helpers qusetions", questions, this, shuffled);
         if ( sub ) {
-            let questions = Questions.find({sec: section, sec_rnd : sub.sec_rnd_now }, {$sort : { order : 1 }}).fetch();
+            //questions = questions.find({sec: section, sec_rnd : sub.sec_rnd_now }, {$sort : { order : 1 }}).fetch();
+            questions = questions.fetch();
             _.forEach( questions, function( q ) {
                 q.context = dataContext;
                 //console.log("experiment.helpers qusetions per q", q);
@@ -212,18 +199,22 @@ export const Helper = {
         }
     },
     questionDisabled : function( id ){
-        let sub;
-        //console.log("questiondisabled", id, Template.currentData(), Questions.findOne( { _id : id } ) );
+        let sub, questions;
+        //console.log("questionDisabled ");
         // all the sanity checks are because I have an inconsistent interface across uses of this helper
+        //if ( !_.isNil( Template.currentData()._id ) ) {
+            //return(Template.currentData().disabled);
+        //}
         if (_.isNil(Template.currentData().context)) {
-            sub = Sess.subStat();
-        } else {
-            sub = Template.currentData().context.subStat;
+            return;
         }
+        sub = Template.currentData().context.subStat;
+        questions = Template.currentData().context.questionsColl;
         if ( _.isNil(id) ) {
             id = Template.currentData().id;
         }
-        if( (sub && sub.readyToProceed ) || (Questions.findOne( { _id : id } ) && Questions.findOne( { _id : id } ).disabled) ) {
+        if( !_(questions.fetch()).filter({_id : id, disabled : true}).isEmpty() ) {
+        //if( (sub && sub.readyToProceed ) || (Questions && Questions.findOne( { _id : id } ) && Questions.findOne( { _id : id } ).disabled) ) {
             return("disabled");
         }
 	},

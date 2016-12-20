@@ -7,14 +7,16 @@ export let QueueAssigner = class extends TurkServer.Assigners.SimpleAssigner {
     userJoined(asst) {
         var currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
         // has to be before the super call.
-        //console.log("assigner" );
+        console.log("assigner" );
         //console.log("assigner", Meteor.users.findOne(asst.userId).turkserver.state, currentUser );
         if (asst.getInstances().length === 0) { // before experiment
             // this will be for the instructions in the lobby before the experiment
             if(!currentUser){
                 console.log("created new user", asst.userId, asst.assignmentId );
-                Meteor.call("initializeSubject", asst);
-                currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
+                Meteor.call("initializeSubject", asst, function(err) {
+                    currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
+                    Meteor.call("addSubjectQuestions", currentUser, "quiz" );
+                });
             }
 
             if ( currentUser.sec_type_now === 'quiz' ) {

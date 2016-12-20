@@ -3,6 +3,8 @@
 var _ = require('lodash');
 import { Meteor } from 'meteor/meteor';
 
+export let QuestionData;
+
 // http://www.textfixer.com/resources/dropdowns/country-list-iso-codes.txt
 let countryCodes = [
     'US:United States',
@@ -253,11 +255,7 @@ let countryCodes = [
     'XX:Decline to state',
 ];
 
-// model
-export let Questions = new Mongo.Collection( null );
-//export let Questions = new Mongo.Collection( "questions" );
-
-let questions = [
+QuestionData = [
 /*{
     sec: 'quiz',
     sec_rnd: 0,
@@ -462,18 +460,20 @@ questions[4] = {
 
 
 //let idxs = _.shuffle( _.range( questions.length ) );
-let idxs = _.range( questions.length );
+let idxs = _.range( QuestionData.length );
 for(var q of idxs){
-    questions[q] = _.assign( questions[q], {
+    QuestionData[q] = _.assign( QuestionData[q], {
         choice: null,
         answered: false,
         disabled: false,
         hasError: false,
         order : q,
     });
-    if( questions[q].section === 'quiz' ) {
-        questions[q].correct = false;
+    if( QuestionData[q].section === 'quiz' ) {
+        QuestionData[q].correct = false;
     }
-    Questions.insert(questions[q]);
+    //Meteor.call("addQuestion", questions[q]);
+    //QuizQuestions.insert(questions[q]);
 }
+
 

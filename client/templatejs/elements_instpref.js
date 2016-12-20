@@ -8,7 +8,6 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
-import { Questions } from '../../imports/startup/experiment_prep_instpref.js';
 
 Template.gameNormalForm.onCreated( function(){
     UserElements.choiceConsidered = new ReactiveDict();

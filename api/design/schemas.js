@@ -239,6 +239,10 @@ Schemas.SurveyAnswers = new SimpleSchema({
         label: "answer",
         optional: true,
     },
+    hasError: {
+        type: Boolean,
+        label: "not correct",
+    },
 });
 Schemas.QuizAnswers = new SimpleSchema({
     answered: {
@@ -252,6 +256,10 @@ Schemas.QuizAnswers = new SimpleSchema({
     choice: {
         type: String,
         label: "answer selected",
+    },
+    hasError: {
+        type: Boolean,
+        label: "not correct",
     },
 });
 Schemas.ExitSurveyAnswers = new SimpleSchema({

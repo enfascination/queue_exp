@@ -11,7 +11,7 @@ import { Router } from 'meteor/iron:router';
 
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
-import { Questions } from '../../imports/startup/experiment_prep_instpref.js';
+import { QuizQuestions } from '../../imports/startup/experiment_prep_instpref.js';
 import { Schemas } from '../../api/design/schemas.js';
 
 // controller
@@ -38,6 +38,7 @@ Template.answersForm.events({
         e.stopPropagation();
         e.preventDefault();
         let muid = Meteor.userId();
+        let sub = Sess.subStat();
 
         console.log("quiz event submit", Sess.design(), Sess.subStat() );
         // if state is still in instructions, change that
@@ -51,34 +52,37 @@ Template.answersForm.events({
         //Meteor.call( "setReadyToProceed", Meteor.userId() );
         //return;
         // AHHHHHHHH
-        let qs = Questions.find({sec: 'quiz'}).forEach( function( q ) {
-            let form = e.target;
+        let answeredCount = 0;
+        let questionsCount = 0;
+        let resultsCount = 0;
+        let form = e.target;
+        let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: 'quiz'});
+        qs.forEach( function( q ) {
             //let answer = $.trim(form[q._id].value.toLowerCase());
             //let correct = $.inArray(answer,q.correctAnswer) >= 0 ? true: false;
             let element_raw = $(form).find(".expQuestion#"+q._id)[0];
-            console.log("qs", element_raw);
+            console.log("qs", element_raw, q, q._id);
             let element = $( element_raw );
             let choice = element.attr("choice");
             let answered = !_.isNil( choice );
-            let correct = answered && ( choice === q.correctAnswer[0] );
-            let theData = {correct: correct, answered: answered, choice : choice };
+            let correct = ( choice === q.correctAnswer[0] );
+            let hasError = false;
             // double check correctness before udpating
-            if (Match.test(theData, Schemas.QuizAnswers) ) {
-                Questions.update({_id: q._id}, {$set: theData});
+            let theData = {correct: correct, answered: answered, choice : choice, hasError : hasError };
+            if ( !answered || !correct || !Match.test(theData, Schemas.QuizAnswers) ) {
+                theData.correct = false;
+                theData.hasError = true;
+                console.log("Quiz Failure", q._id, element_raw);
             } else {
-               correct = false;
+                answeredCount += 1;
+                resultsCount += correct ? 1 : 0;
             }
-            if (!correct) {
-                Helper.setHasError( element_raw, true );
-                console.log("Quiz Failure", q._id, theData, element_raw);
-            } else {
-                Helper.setHasError( element_raw, false );
-            }
+            questionsCount += 1;
+            console.log("quiz pass", q._id, theData );
+            Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData );
+            console.log("out of quiz pass");
         });
-        let resultsCount = Questions.find({sec: 'quiz', correct:true}).count();
-        let answeredCount = Questions.find({sec: 'quiz', answered:true}).count();
-        let questionsCount = Questions.find({sec: 'quiz'}).count();
-        console.log("counts", questionsCount, answeredCount, resultsCount);
+        console.log("counts", questionsCount, answeredCount, resultsCount, _.map(qs.fetch(), "_id"));
         //if ( answeredCount === questionsCount ) {
         if ( true ) {
             UserElements.quizSubmitted.set( true );
@@ -105,8 +109,8 @@ Template.answersForm.events({
             //// ... SEPARATELY, ADVANCE STATE 
             /////////////////////
             if ( passed || failed ) {
+                Meteor.call( "disableQuestions", _.map(qs.fetch(), "_id"), reset=failed ? true : false );
                 Meteor.call( "setReadyToProceed", muid );
-                Helper.buttonsDisable( e.currentTarget );
                 if ( failed ) {
                     Helper.buttonsReset( e.currentTarget );
                 }

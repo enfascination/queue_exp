@@ -7,7 +7,7 @@ import { TurkServer } from 'meteor/mizzao:turkserver';
 
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
-import { Questions } from '../../imports/startup/experiment_prep_instpref.js';
+//import { Questions } from '../../imports/startup/experiment_prep_instpref.js';
 import { Schemas } from '../../api/design/schemas.js';
 
 Template.survey.helpers({
@@ -17,6 +17,7 @@ Template.answersForm.events({
         e.stopPropagation();
         e.preventDefault();
 
+        let sub = Sess.subStat();
         /////////////////////
         //// ARE INPUTS ACCEPTABLE?
         /////////////////////
@@ -24,7 +25,10 @@ Template.answersForm.events({
         //Meteor.call( "setReadyToProceed", Meteor.userId() );
         //return;
         // AHHHHHHHH
-        let qs = Questions.find({sec: 'survey'}).forEach( function( q ) {
+        let answeredCount = 0;
+        let questionsCount = 0;
+        let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: 'survey'});
+        qs.forEach( function( q ) {
             let element_raw = $(e.target).find(".expQuestion#"+q._id)[0];
             let element = $( element_raw );
             let choice;
@@ -37,21 +41,8 @@ Template.answersForm.events({
                 choice = element.attr("choice");
             }
             let answered = !_.isNil( choice );
-            Questions.update({_id: q._id}, {$set: { answered: answered, choice : choice }});
+            let hasError = false;
 
-            // data validation for better check of answered
-            let theData = {
-                questionType: q.type,
-                question: q.text,
-                choice: choice,
-                answered: answered,
-            };
-            try {
-                check(theData, Schemas.SurveyAnswers);
-            } catch (err) {
-                console.log("Data failed validation");
-                answered=false;
-            }
             // custom restricted text test
             if (q.type==='text' && q.pattern && !(new RegExp(q.pattern)).test( choice )) { 
                 answered=false;
@@ -59,45 +50,38 @@ Template.answersForm.events({
             }
 
             // require all answers
-            if (!answered) {
-                Helper.setHasError( element_raw, true );
+            // data validation for better check of answered
+            let theData = {
+                questionType: q.type,
+                question: q.text,
+                choice: choice,
+                answered: answered,
+                hasError : hasError,
+            };
+            if (!answered || !Match.test(theData, Schemas.SurveyAnswers) ) {
+                theData.hasError = true;
                 UserElements.questionsIncomplete.set(true);
             } else {
-                Helper.setHasError( element_raw, false );
+                answeredCount += 1;
             }
+            questionsCount += 1;
+            Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData );
         });
         /////////////////////
         //// IF INPUTS OK, SUBMIT ANSWERS AND ....
         /////////////////////
-        let sub = Sess.subStat();
-        let answeredCount = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now , answered:true}).count();
-        let questionsCount = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).count();
         //console.log(choices,answeredCount ,questionsCount, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
         if ( answeredCount === questionsCount ) {
-            qs = Questions.find({sec: 'survey'}).forEach( function( q ) {
-                let theData = {
-                    questionType: q.type,
-                    question: q.text,
-                    choice: q.choice,
-                    answered: q.answered,
-                };
-                try {
-                    check(theData, Schemas.SurveyAnswers);
-                } catch (err) {
-                    console.log("Data failed validation");
-                    throw(err);
-                }
-                Meteor.call("initializeSurveyData", Meteor.userId(), Questions.findOne({_id: q._id}), function(err,data) {
-                    if (err) { throw( err ); }
-                    //console.log("initSurvey cb", answered, choice, data);
-                } );
+            qs.forEach( function( q ) {
+                Meteor.call("insertSurveyQuestion", Meteor.userId(), Questions.findOne({ meteorUserId : sub.meteorUserId, _id: q._id}) );
             });
             /////////////////////
             //// ... SEPARATELY, ADVANCE STATE 
             /////////////////////
             // uncheck buttons in UI
             //Helper.buttonsReset( e.currentTarget );
-            Helper.buttonsDisable( e.currentTarget );
+            UserElements.questionsIncomplete.set(false);
+            Meteor.call( "disableQuestions", _.map(qs.fetch(), "_id"), reset=false );
 
             //console.log("form#submitSurvey");
             Meteor.call( "setReadyToProceed", Meteor.userId() );

@@ -36,6 +36,11 @@ export const Sess = {
             let cs;
             // there's an assumption hardcoded here, that the data i'll want for a subject is the most recent data.  
             //   I don't know if that's true, but that's what's here.
+            let sb = SubjectsStatus.findOne({meteorUserId: Meteor.userId()} );
+            if (sb && (sb.sec_now === "survey" || sb.sec_now === "quiz"  || sb.sec_now === "submitHIT" ) ) {
+                /// cohort isn't a meaningful idea outside of the main experiment
+                return(Design);
+            }
             let sd = SubjectsData.findOne({meteorUserId: Meteor.userId()}, { sort : { sec : -1, sec_rnd : -1 } } );
             if ( !_.isNil( sd ) ) {
                 cs = CohortSettings.findOne({ cohortId: sd.theData.cohortId, sec : sd.sec, sec_rnd : sd.sec_rnd }, { sort : { sec : -1, sec_rnd : -1 } } );

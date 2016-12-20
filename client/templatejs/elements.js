@@ -7,7 +7,6 @@ import { TurkServer } from 'meteor/mizzao:turkserver';
 
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
-import { Questions } from '../../imports/startup/experiment_prep_instpref.js';
 
 Template.navButton.events({
     "click button.navButton" : function( e ) {
@@ -32,15 +31,19 @@ Template.navButton.helpers({
 let navDisabled = function( ){
         let sub = Sess.subStat();
         if( sub && sub.readyToProceed ) {
-            return("disabled");
+            return(true);
+        } else {
+            return(false);
         }
 	};
 Template.submitButton.helpers({
-	disabled: navDisabled,
+	disabled: function() {
+        return( navDisabled() ? "disabled" : null );
+    }
 });
 Template.proceedButton.helpers({
 	disabled: function() {
-        return( !navDisabled() );
+        return( navDisabled() ? null : "disabled" );
     }
 });
 Template.proceedButton.events({
@@ -80,8 +83,9 @@ Template.answersForm.helpers({
         } else { 
             shuffled = false;
         }
-        if (dataContext.currentSection) {
-            return( Helper.questions( sub, dataContext.currentSection.id, dataContext, shuffled ) );
+        if (dataContext.currentSection && this.questionsColl) {
+            console.log("elements questions", this.questionsColl.fetch());
+            return( Helper.questions( this.questionsColl, sub, dataContext.currentSection.id, dataContext, shuffled) );
         }
     },
 });
@@ -92,6 +96,7 @@ Template.questionBinary.events({
 Template.questionBinary.helpers({
 	getHasError: Helper.getHasError,
 	disabled: Helper.questionDisabled,
+	//disabled: function(id) { console.log("inhere", Template.currentData() ); return(Helper.questionDisabled(id));},
 });
 Template.questionQuad.helpers({
 	options: function() {

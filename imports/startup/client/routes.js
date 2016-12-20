@@ -12,16 +12,17 @@ Router.configure({
     data: function () {
         let sub = Sess.subStat();
         if ( sub ) {
-            return({
-                currentTab : sub.sec_now,
-                subStat : sub,
-                currentSection : DesignSequence[ sub.sec_now ],
-                design : Design,
-            }); 
+                return({
+                    currentTab : sub.sec_now,
+                    subStat : sub,
+                    currentSection : DesignSequence[ sub.sec_now ],
+                    design : Design,
+                }); 
         }
     },
     waitOn : function () {
-        return([Meteor.subscribe('s_status')]);
+        //return([Meteor.subscribe('s_status')]);
+        return([ Meteor.subscribe('s_status'), ]);
     },
     onAfterAction : function() {
         // for some reaosn this code breaks everyting: it stops the right tab from activating on reload
@@ -41,6 +42,21 @@ Router.route('/start', function() {
     this.render('quizSectionTabPane');
     this.render( 'expGeneralInfoBox', { to : 'infoBox' } );
 }, {
+    data : function() { // enrich the global data object in this section
+        let data = Router.options.data();
+        if ( data ) {
+            let sub = data.subStat;
+            let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: sub.sec_now, sec_rnd : sub.sec_rnd_now }, {$sort : { order : 1 }});
+            data.questionsColl = qs;
+        }
+        return( data );
+    },
+    waitOn : function () {
+        return([
+            Meteor.subscribe('s_status'),
+            Meteor.subscribe('questions'),
+        ]);
+    },
 });
 
 Router.route('/experiment', function() {
@@ -57,13 +73,17 @@ Router.route('/experiment', function() {
 },{
     data : function() { // enrich the global data object in this section
         let data = Router.options.data();
-        //console.log("router, experiment, data",data);
         let subData = Sess.subData();
         let design = Sess.design();
         if ( data && subData && design ) {
+            let subStat = data.subStat;
             data.subData = subData;
             data.design = design;
+            let qs = Questions.find({ meteorUserId : subStat.meteorUserId, sec: subStat.sec_now, sec_rnd : subStat.sec_rnd_now }, {$sort : { order : 1 }});
+            data.questionsColl = qs;
+            console.log("router, experiment, data inside",qs.fetch());
         }
+        console.log("router, experiment, data",data, subData , design );
         return( data );
     },
     waitOn : function () {
@@ -71,6 +91,7 @@ Router.route('/experiment', function() {
             Meteor.subscribe('s_status'),
             Meteor.subscribe('s_data'),
             Meteor.subscribe('designs'),
+            Meteor.subscribe('questions'),
         ]);
     },
 });

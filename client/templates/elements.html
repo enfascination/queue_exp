@@ -1,6 +1,6 @@
 <template name = "answersForm">
     <form class="answersForm" id="{{currentSection.id}}" >
-		{{#each questions}}
+		{{#each questions questionsColl}}
                         {{#if equals type "binary"}}
                             {{> questionBinary}}
                         {{else}} 
@@ -41,7 +41,7 @@
             {{else}} {{#if testQuizFailed}}
             <div class = "alert alert-danger">You have exhausted your attempts to pass the quiz and demonstrate comprehension of the instructions. Click <strong>NEXT</strong>.</div>
             {{else}} {{#if testQuizWrong }}
-                <div class = "alert alert-warning">One or more of your answers are incorrect. Attempts remaining: {{quizTriesLeft}}.</div>
+                <div class = "alert alert-warning">One or more of your answers is incorrect. Attempts remaining: {{quizTriesLeft}}.</div>
             {{/if}}				
             {{/if}}
             {{/if}}

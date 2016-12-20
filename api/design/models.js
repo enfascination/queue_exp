@@ -2,6 +2,8 @@
 
 import { TurkServer } from 'meteor/mizzao:turkserver';
 import { Schemas } from './schemas.js';
+import { QuestionData } from '../../imports/startup/experiment_prep_instpref.js';
+//import { Questions } from '../../imports/startup/server/server_prep.js';
 
 DesignSequence = {
         "instructions" : { 
@@ -73,7 +75,7 @@ Design = {
         ensureSubjectMismatchAcrossSections : false,
         ensureSubjectMatchAcrossSections : false,
         selfMatching : false,//DANGER lots of bad broken useless code in the relevant if statements
-        noMatching : false,
+        noMatching :true,
     },
 };
 UserElements = {
@@ -85,8 +87,6 @@ SubjectsStatus = new Mongo.Collection('s_status');
 SubjectsData.attachSchema(Schemas.SubjectsData);
 SubjectsStatus.attachSchema(Schemas.SubjectsStatus);
 CohortSettings = new Mongo.Collection('designs');
+Questions = new Mongo.Collection( 'questions' );
 //CohortSettings.attachSchema(Schemas.CohortSettings);
-//TurkServer.partitionCollection(SubjectsData);
 //TurkServer.partitionCollection(CohortSettings);
-
-

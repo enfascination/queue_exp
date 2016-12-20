@@ -11,6 +11,7 @@ import { Helper } from '../imports/lib/helper.js';
 import { QueueAssigner } from './assigners-custom.js';
 
 import { Experiment } from './exp_instpref.js';
+import { QuestionData } from '../imports/startup/experiment_prep_instpref.js';
 
 // https://dweldon.silvrback.com/common-mistakes
 //
@@ -61,6 +62,9 @@ Meteor.users.deny({
     Meteor.publish('designs', function() {
         return CohortSettings.find( {}, { sort : { cohortId : -1, sec : -1, sec_rnd : -1 } } );
     });
+    Meteor.publish('questions', function() {
+        return Questions.find({ meteorUserId: this.userId });
+    });
 
     Meteor.methods({
         // this is a reload detector.  if the player has connected before, they will have a data object in progress.
@@ -103,10 +107,22 @@ Meteor.users.deny({
             //ensure uniqueness
             SubjectsStatus._ensureIndex({userId : 1, meteorUserId : 1}, { unique : true } );
         },
+        addSubjectQuestions : function( sub, sec ) {
+            //import { QuestionData } from '../../imports/startup/experiment_prep_instpref.js';
+            //let idxs = _.shuffle( _.range( questions.length ) );
+            console.log("addQuestions", sec);
+            QuestionData.forEach( function(q) {
+                    if (q.sec === sec) {
+                        q.meteorUserId = sub.meteorUserId;
+                        Questions.insert(q);
+                    }
+            });
+        },
         // initialize cohort should always have been called before this function initializeRound
         // this will create a new SubjectsData object
         // it will update and may create a new CohortSettings object
         initializeRound: function( sub, lastDesign ) {
+            console.log("initRound");
             let design, theData;
 
             if (_.isString(sub)) { 
@@ -119,6 +135,10 @@ Meteor.users.deny({
             // retrieve the appropriiate design for the subject in this state
             dat = Experiment.findSubsCohort( sub, lastDesign, Design.matching );
             design = dat.design;
+
+            if( design.sec_rnd === 0 ) {
+                Meteor.call("addSubjectQuestions", sub, design.sec );
+            }
 
             //  experiment specific
             // retrieve the appropriiate data for the subject in this state
@@ -363,9 +383,9 @@ Meteor.users.deny({
                 //throw(new Meteor.Error(500, 'Permission denied!'));
             //}
         },
-        initializeSurveyData : function(muid, theData ) {
+        insertSurveyQuestion: function(muid, theData ) {
             let sub = SubjectsStatus.findOne({ meteorUserId : muid });
-            //console.log("initializeSurveyData", sub);
+            //console.log("insertSurveyQuestion", sub);
             let id = SubjectsData.insert( {
                 userId: sub.userId,
                 meteorUserId: sub.meteorUserId,
@@ -378,4 +398,22 @@ Meteor.users.deny({
             } );
             return( SubjectsData.findOne( id ) );
         },
+        // server side helper
+        updateSubjectQuestion : function(muid, id, theData) {
+                let output = Questions.update({_id : id, meteorUserId : muid}, {$set : theData});
+        },
+        disableQuestions : function(ids, reset) {
+            ids.forEach( function(id) {
+                let theUpdate = {disabled : true,};
+                if (reset) {
+                    theUpdate = {
+                        disabled : true,
+                        choice: null,
+                        answered: false,
+                        hasError: false,
+                    };
+                }
+                Questions.update({_id: id}, {$set: theUpdate});
+            });
+        }
     });

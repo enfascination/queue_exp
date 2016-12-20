@@ -10,7 +10,7 @@ import { Router } from 'meteor/iron:router';
 
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
-import { Questions } from '../../imports/startup/experiment_prep_instpref.js';
+//import { Questions } from '../../imports/startup/experiment_prep_instpref.js';
 import { Schemas } from '../../api/design/schemas.js';
 
 
@@ -90,26 +90,31 @@ Template.answersForm.events({
         //// ARE INPUTS ACCEPTABLE?
         /////////////////////
         //Only allow clients to attempt quiz twice before preventing them from doing so
-        let qs = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).forEach( function( q ) {
+        let answeredCount = 0;
+        let questionsCount = 0;
+        let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now });
+        qs.forEach( function( q ) {
             let form = e.target;
             let element_raw = $(form).find(".expQuestion#"+q._id)[0];
             let element = $( element_raw );
             let choice = element.attr("choice");
             let answered = !_.isNil( choice );
-            Questions.update({_id: q._id}, {$set: { answered: answered, choice : choice }});
+            let hasError = false;
+            let theData = {answered: answered, choice : choice, hasError : hasError };
+            //if (!answered || !Match.test(theData, Schemas.ExperimentAnswers) ) {
             if (!answered) {
-                Helper.setHasError( element_raw, true );
+                theData.hasError = true;
                 UserElements.questionsIncomplete.set(true);
             } else {
-                Helper.setHasError( element_raw, false );
+                answeredCount += 1;
             }
+            questionsCount += 1;
+            Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData );
         });
-        let answeredCount = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now , answered:true}).count();
-        let questionsCount = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).count();
-        //console.log(choices,answeredCount ,questionsCount, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
+        console.log(qs.count(),answeredCount ,questionsCount, sub.sec_rnd_now, qs.fetch());
         if ( answeredCount === questionsCount ) {
             //let choice = Questions.findOne({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).choice;
-            let choices = _.map( Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).fetch(), "choice");
+            let choices = _.map( Questions.find({ meteorUserId : sub.meteorUserId, sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).fetch(), "choice");
             UserElements.questionsIncomplete.set(false);
             let design = Sess.design();
             let cohortId = design.cohortId;
@@ -141,7 +146,7 @@ Template.answersForm.events({
             }
             let theData = subData.theData;
             //theData.choice = choice; // user input might be dirty;
-            theData.choice = Questions.find({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).fetch();
+            theData.choice = Questions.find({ meteorUserId : sub.meteorUserId, sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).fetch();
             try {
                 //check(theData, Schemas.ExperimentAnswers);
                 // when i reactive thsi, make sure that zeros questions work and the lmultiples do too
@@ -190,8 +195,8 @@ Template.answersForm.events({
                         //Router.go('/experiment');
                     } else {
                         //console.log("ready?");
+                        Meteor.call( "disableQuestions", _.map(qs.fetch(), "_id"), false );
                         Meteor.call( "setReadyToProceed", muid );
-                        Helper.buttonsDisable( e.currentTarget );
                     }
 
                 });
@@ -205,7 +210,7 @@ Template.experimentInfo.helpers({
         let sub = Sess.subStat();
         if (sub) {
             //console.log("experimentInfo.helpers", this, sub );
-            let q = Questions.findOne({ sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now });
+            let q = Questions.findOne({  meteorUserId : sub.meteorUserId, sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now });
             //console.log("experimentInfo.helpers", this, sub, q );
             if (UserElements.choiceChecked && !_.isNil(sub) && !_.isNil( q )) {
                 return UserElements.choiceChecked.get( q._id );
@@ -276,6 +281,7 @@ Template.main.events({
                 });
             } else if (sub.sec_now === "experiment2" ) {
                 Meteor.call('advanceSubjectSection', Meteor.userId(), "survey", "experiment");
+                Meteor.call("addSubjectQuestions", sub, "survey" );
             } else {
             }
         } else {

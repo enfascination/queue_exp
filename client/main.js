@@ -12,7 +12,6 @@ import 'bootstrap-sass';
 import '../imports/startup/client/routes.js';
 import { Helper } from '../imports/lib/helper.js';
 import { Sess } from '../imports/lib/quick-session.js';
-import { Questions } from '../imports/startup/experiment_prep_instpref.js';
 
 Tracker.autorun(function() {
     //console.log("routing", Meteor.users.findOne(asst.userId).turkserver.state );
