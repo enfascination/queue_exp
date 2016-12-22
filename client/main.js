@@ -23,6 +23,7 @@ Tracker.autorun(function() {
     } else if (TurkServer.inExitSurvey()) {
         Router.go('/submitHIT');
     } else {
+        //Router.go('/home');
         console.log("failed into lobby");
     }
 });

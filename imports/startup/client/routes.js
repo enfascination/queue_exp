@@ -81,9 +81,9 @@ Router.route('/experiment', function() {
             data.design = design;
             let qs = Questions.find({ meteorUserId : subStat.meteorUserId, sec: subStat.sec_now, sec_rnd : subStat.sec_rnd_now }, {$sort : { order : 1 }});
             data.questionsColl = qs;
-            console.log("router, experiment, data inside",qs.fetch());
+            //console.log("router, experiment, data inside",qs.fetch());
         }
-        console.log("router, experiment, data",data, subData , design );
+        //console.log("router, experiment, data",data, subData , design );
         return( data );
     },
     waitOn : function () {

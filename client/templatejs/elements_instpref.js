@@ -9,6 +9,28 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
 
+let getPayoff = function(payoffs, loc) {
+    if (_.isNil(payoffs) ) return;
+    let ret;
+           if (loc === 'ytl') { ret = payoffs[0];
+    } else if (loc === 'ytr') { ret = payoffs[1];
+    } else if (loc === 'ybl') { ret = payoffs[2];
+    } else if (loc === 'ybr') { ret = payoffs[3];
+    } else if (loc === 'otl') { ret = payoffs[4];
+    } else if (loc === 'otr') { ret = payoffs[5];
+    } else if (loc === 'obl') { ret = payoffs[6];
+    } else if (loc === 'obr') { ret = payoffs[7];
+    }
+    return(ret);
+};
+
+Template.instPrefInstructions.helpers({
+    question : function() {
+        let q = {};
+        q.payoffs = [3,1,4,2,3,4,1,2];
+        return(q);
+    },
+});
 Template.gameNormalForm.onCreated( function(){
     UserElements.choiceConsidered = new ReactiveDict();
 });
@@ -39,20 +61,30 @@ Template.gameNormalForm.helpers({
         return( rVal );
     },
     textGamePayoffs : function( lOrR, tOrB, yOrO) {
-        //console.log( lOrR, tOrB, yOrO);
+        if (_.isNil(this.question)) return;
+        //console.log( lOrR, tOrB, yOrO, this);
         let rVal = "__";
-               if (lOrR === "Right" && tOrB === "Top"    && yOrO === "You"   ) { rVal = 1;
-        } else if (lOrR === "Right" && tOrB === "Top"    && yOrO === "Other" ) { rVal = 4;
-        } else if (lOrR === "Right" && tOrB === "Bottom" && yOrO === "You"   ) { rVal = 2;
-        } else if (lOrR === "Right" && tOrB === "Bottom" && yOrO === "Other" ) { rVal = 2;
-        } else if (lOrR === "Left"  && tOrB === "Top"    && yOrO === "You"   ) { rVal = 3;
-        } else if (lOrR === "Left"  && tOrB === "Top"    && yOrO === "Other" ) { rVal = 3;
-        } else if (lOrR === "Left"  && tOrB === "Bottom" && yOrO === "You"   ) { rVal = 4;
-        } else if (lOrR === "Left"  && tOrB === "Bottom" && yOrO === "Other" ) { rVal = 1;
+               if (lOrR === "Right" && tOrB === "Top"    && yOrO === "You"   ) { rVal = 'ytr';
+        } else if (lOrR === "Right" && tOrB === "Top"    && yOrO === "Other" ) { rVal = 'otr';
+        } else if (lOrR === "Right" && tOrB === "Bottom" && yOrO === "You"   ) { rVal = 'ybr';
+        } else if (lOrR === "Right" && tOrB === "Bottom" && yOrO === "Other" ) { rVal = 'obr';
+        } else if (lOrR === "Left"  && tOrB === "Top"    && yOrO === "You"   ) { rVal = 'ytl';
+        } else if (lOrR === "Left"  && tOrB === "Top"    && yOrO === "Other" ) { rVal = 'otl';
+        } else if (lOrR === "Left"  && tOrB === "Bottom" && yOrO === "You"   ) { rVal = 'ybl';
+        } else if (lOrR === "Left"  && tOrB === "Bottom" && yOrO === "Other" ) { rVal = 'obl';
         }
-        return( rVal );
+        let payoffs = this.question.payoffs;
+        return( getPayoff(payoffs, rVal));
     },
 	disabled: Helper.questionDisabled,
+    'ytl' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'ytl'),
+    'ytr' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'ytr'),
+    'ybl' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'ybl'),
+    'ybr' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'ybr'),
+    'otl' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'otl'),
+    'otr' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'otr'),
+    'obl' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'obl'),
+    'obr' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'obr'),
 });
 
 Template.gameNormalForm.events({
@@ -138,3 +170,4 @@ Template.questionGame.helpers({
 	getHasError: Helper.getHasError,
 	disabled: Helper.questionDisabled,
 });
+            

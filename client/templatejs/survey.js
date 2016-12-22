@@ -27,8 +27,8 @@ Template.answersForm.events({
         // AHHHHHHHH
         let answeredCount = 0;
         let questionsCount = 0;
-        let qs = Template.currentData().questionsColl;
-        //let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: 'survey'});
+        let qs = Template.currentData().questionsColl.fetch();
+        //let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: 'survey'}).fetch();
         qs.forEach( function( q ) {
             let element_raw = $(e.target).find(".expQuestion#"+q._id)[0];
             let element = $( element_raw );
@@ -66,7 +66,8 @@ Template.answersForm.events({
                 answeredCount += 1;
             }
             questionsCount += 1;
-            Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData );
+            _.assign(q, theData); // client side update: assign is a mutator of q
+            Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData ); //optional?
         });
         /////////////////////
         //// IF INPUTS OK, SUBMIT ANSWERS AND ....
@@ -82,7 +83,7 @@ Template.answersForm.events({
             // uncheck buttons in UI
             //Helper.buttonsReset( e.currentTarget );
             UserElements.questionsIncomplete.set(false);
-            Meteor.call( "disableQuestions", _.map(qs.fetch(), "_id"), reset=false );
+            Meteor.call( "disableQuestions", _.map(qs, "_id"), reset=false );
 
             //console.log("form#submitSurvey");
             Meteor.call( "setReadyToProceed", Meteor.userId() );

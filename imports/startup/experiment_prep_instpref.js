@@ -519,6 +519,7 @@ for(var q of idxs){
         disabled: false,
         hasError: false,
         order : q,
+        payoffs : [3,1,4,2,3,4,1,2],
     });
     if( QuestionData.questions[q].section === 'quiz' ) {
         QuestionData.questions[q].correct = false;

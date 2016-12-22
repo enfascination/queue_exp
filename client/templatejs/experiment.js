@@ -92,8 +92,7 @@ Template.answersForm.events({
         //Only allow clients to attempt quiz twice before preventing them from doing so
         let answeredCount = 0;
         let questionsCount = 0;
-        let choices = [];
-        let qs = Template.currentData().questionsColl;
+        let qs = Template.currentData().questionsColl.fetch();
         //let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now });
         qs.forEach( function( q ) {
             let form = e.target;
@@ -111,12 +110,10 @@ Template.answersForm.events({
                 answeredCount += 1;
             }
             questionsCount += 1;
-            Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData, function(err) {
-                if (err) { throw( err ); }
-                choices = _.concat( choices, Questions.find({ meteorUserId : sub.meteorUserId, _id : q._id }));
-            } );
+            _.assign(q, theData); // client side update: assign is a mutator of q 
+            Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData); //server side update (async) //optional?
         });
-        console.log(qs.count(),answeredCount ,questionsCount, sub.sec_rnd_now, qs.fetch());
+        console.log(qs.length,answeredCount ,questionsCount, sub.sec_rnd_now, qs);
         if ( answeredCount === questionsCount ) {
             UserElements.questionsIncomplete.set(false);
             let design = Sess.design();
@@ -140,8 +137,8 @@ Template.answersForm.events({
             //let choice = Questions.findOne({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).choice;
             //theData.choice = choice; // user input might be dirty;
             let theData = subData.theData;
-            theData.choice = choices;
-            //console.log( "submitting answers, advancing state", subData, design, lastGameRound );
+            theData.choice = qs;
+            console.log( "submitting answers, advancing state", subData, design, lastGameRound, qs );
 
             if (_.isNil(subData)) {
                 console.log( "BADNESS: initialize round failed during load");
@@ -193,7 +190,7 @@ Template.answersForm.events({
                         //Router.go('/experiment');
                     } else {
                         //console.log("ready?");
-                        Meteor.call( "disableQuestions", _.map(qs.fetch(), "_id"), false );
+                        Meteor.call( "disableQuestions", _.map(qs, "_id"), false );
                         Meteor.call( "setReadyToProceed", muid );
                     }
 

@@ -56,7 +56,7 @@ Template.answersForm.events({
         let resultsCount = 0;
         let form = e.target;
         //let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: 'quiz'});
-        let qs = Template.currentData().questionsColl;
+        let qs = Template.currentData().questionsColl.fetch();
         qs.forEach( function( q ) {
             //let answer = $.trim(form[q._id].value.toLowerCase());
             //let correct = $.inArray(answer,q.correctAnswer) >= 0 ? true: false;
@@ -80,7 +80,7 @@ Template.answersForm.events({
             questionsCount += 1;
             Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData );
         });
-        //console.log("counts", questionsCount, answeredCount, resultsCount, _.map(qs.fetch(), "_id"));
+        //console.log("counts", questionsCount, answeredCount, resultsCount, _.map(qs, "_id"));
         //if ( answeredCount === questionsCount ) {
         if ( true ) {
             UserElements.quizSubmitted.set( true );
@@ -107,7 +107,7 @@ Template.answersForm.events({
             //// ... SEPARATELY, ADVANCE STATE 
             /////////////////////
             if ( passed || failed ) {
-                Meteor.call( "disableQuestions", _.map(qs.fetch(), "_id"), reset=failed ? true : false );
+                Meteor.call( "disableQuestions", _.map(qs, "_id"), reset=failed ? true : false );
                 Meteor.call( "setReadyToProceed", muid );
                 if ( failed ) {
                     Helper.buttonsReset( e.currentTarget );

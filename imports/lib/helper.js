@@ -200,9 +200,9 @@ export const Helper = {
     },
     questionDisabled : function( id ){
         let sub, questions;
-        //console.log("questionDisabled ");
+        //console.log("questionDisabled ", Template.currentData());
         // all the sanity checks are because I have an inconsistent interface across uses of this helper
-        //if ( !_.isNil( Template.currentData()._id ) ) {
+        //if ( !_.isNil( Template.currentData().disabled ) ) {
             //return(Template.currentData().disabled);
         //}
         if (_.isNil(Template.currentData().context)) {

@@ -33,7 +33,7 @@
         </section>
         <hr class="expPaneMargin"/>
                     <p><strong><strong>EXAMPLE GAME INTERFACE:</strong></strong></p>
-                    {{> gameNormalForm id="tutorial" gameId="tutorial" choiceType="chooseStrategy" context=context}}
+                    {{> gameNormalForm id="tutorial" gameId="tutorial" choiceType="chooseStrategy" context=context question=question}}
                     <p class="expPaneMargin" style="display:center;"><em>This is a sample of the game interface that will be used through the experiment. Clicking an option will select it. Your points are in <span class="you blue">blue</span>.</em></p>
         <hr class="expPaneMargin"/>
         <section class="expPaneMargin">
@@ -86,15 +86,15 @@
                     <thead> <tr> <td></td> <th scope="col" class="gameTableCol"> Left </th> <th scope="col" class="gameTableCol"> Right </th> </tr> </thead>
                     <tbody>
                         <tr id={{gameId}} class="gameTableRow gameNormalFormChoice {{#if equals choiceType 'chooseStrategy'}}expChoice{{/if}}" data-value="Top" >
-                            <th> Top </th>
+                            <th> Top</th>
                             <td scope="row">
                                 <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" data-value="Top,Left" data-toggle="button" >
-                                    {{> visualGame payoffIdPrefix="outcomeTL" payoffPlayerTop=3 payoffPlayerSide=3}}
+                                    {{> visualGame payoffIdPrefix="outcomeTL" payoffPlayerTop=otl payoffPlayerSide=ytl}}
                                 </button>
                             </td>
                             <td scope="row" class="" >
                                 <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" data-value="Top,Right" data-toggle="button" >
-                                    {{> visualGame payoffIdPrefix="outcomeTR" payoffPlayerTop=4 payoffPlayerSide=1}}
+                                    {{> visualGame payoffIdPrefix="outcomeTR" payoffPlayerTop=otr payoffPlayerSide=ytr}}
                                 </button>
                             </td>
                         </tr>
@@ -102,12 +102,12 @@
                             <th class="" > Bottom </th>
                             <td scope="row" class="" >
                                 <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" data-value="Bottom,Left" data-toggle="button" >
-                                    {{> visualGame payoffIdPrefix="outcomeBL" payoffPlayerTop=1 payoffPlayerSide=4}}
+                                    {{> visualGame payoffIdPrefix="outcomeBL" payoffPlayerTop=obl payoffPlayerSide=ybl}}
                                 </button>
                             </td>
                             <td scope="row" class="" >
                                 <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" data-value="Bottom,Right" data-toggle="button" >
-                                    {{> visualGame payoffIdPrefix="outcomeBR" payoffPlayerTop=2 payoffPlayerSide=2}}
+                                    {{> visualGame payoffIdPrefix="outcomeBR" payoffPlayerTop=obr payoffPlayerSide=ybr}}
                                 </button>
                             </td>
                         </tr>
@@ -160,7 +160,7 @@
         <div class = "expQuestion {{type}} form-group {{getHasError _id}}" id="{{_id}}">
             <h3 class="questionTitle" >{{title}}</h3>
             <label for="{{_id}}" class = "control-label {{disabled _id}}">{{text}}</label>
-            {{> gameNormalForm id=_id gameId=_id choiceType=type context=..}}
+            {{> gameNormalForm id=_id gameId=_id choiceType=type question=this context=..}}
         </div>
     </section> 
 </template>

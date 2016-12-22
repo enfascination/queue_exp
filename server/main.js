@@ -111,11 +111,11 @@ Meteor.users.deny({
             //import { QuestionData } from '../../imports/startup/experiment_prep_instpref.js';
             //let idxs = _.shuffle( _.range( questions.length ) );
             console.log("addQuestions", sec);
+            let payoffs, payoffYou, payoffOther, payoffsBefore, payoffsDiff = _.times(8,()=>0);
+            let payoffOrder = ['Top,Left', 'Top,Right', 'Bottom,Left', 'Bottom,Right'];
+            let payoffOrderPlayers = ['You', 'Other'];
+            let playerPosition = "Side";
             if (sec === "experiment1" || sec === "experiment2" ) {
-                let payoffs, payoffYou, payoffOther, payoffsBefore, payoffsDiff = _.times(8,()=>0);
-                let payoffOrderPlayers = ['You', 'Other'];
-                let payoffOrder = ['Top,Left', 'Top,Right', 'Bottom,Left', 'Bottom,Right'];
-                let playerPosition = "Side";
                 if (sec === "experiment1" ) {
                     // strictly ordinal games (without replacement)
                     let rIndices = _.concat(_.shuffle(_.range(4)), _.shuffle(_.range(4,8)));
@@ -125,7 +125,6 @@ Meteor.users.deny({
                 } else {
                     let qPre = Questions.findOne({
                         meteorUserId : sub.meteorUserId,
-                        sec_type : 'experiment',
                         sec : 'experiment1',
                     });
                     payoffsBefore = qPre.payoffs;
