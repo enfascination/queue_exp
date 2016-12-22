@@ -111,11 +111,45 @@ Meteor.users.deny({
             //import { QuestionData } from '../../imports/startup/experiment_prep_instpref.js';
             //let idxs = _.shuffle( _.range( questions.length ) );
             console.log("addQuestions", sec);
-            QuestionData.forEach( function(q) {
-                    if (q.sec === sec) {
-                        q.meteorUserId = sub.meteorUserId;
-                        Questions.insert(q);
-                    }
+            if (sec === "experiment1" || sec === "experiment2" ) {
+                let payoffs, payoffYou, payoffOther, payoffsBefore, payoffsDiff = _.times(8,()=>0);
+                let payoffOrderPlayers = ['You', 'Other'];
+                let payoffOrder = ['Top,Left', 'Top,Right', 'Bottom,Left', 'Bottom,Right'];
+                let playerPosition = "Side";
+                if (sec === "experiment1" ) {
+                    // strictly ordinal games (without replacement)
+                    let rIndices = _.concat(_.shuffle(_.range(4)), _.shuffle(_.range(4,8)));
+                    payoffs = rIndices.map( (i)=> _.concat(_.range(0,4), _.range(0,4))[i]+1);
+                    // loosely ordinal games (with replacement)
+                    //let payoffs = _.concat( _.times(4, ()=>_.sample([1, 2, 3, 4]) ), _.times(4, ()=>_.sample([1, 2, 3, 4]) ) );
+                } else {
+                    let qPre = Questions.findOne({
+                        meteorUserId : sub.meteorUserId,
+                        sec_type : 'experiment',
+                        sec : 'experiment1',
+                    });
+                    payoffsBefore = qPre.payoffs;
+                    payoffs = QuestionData.tweakGame( payoffsBefore, switchOnly=true );
+                    payoffsDiff = _.map( _.zip(payoffsBefore, payoffs), (e)=> _.subtract(e[1], e[0]) );
+                }
+                payoffYou = _.slice(payoffs, 0,4);
+                payoffOther = _.slice(payoffs,4,8);
+            }
+            QuestionData.questions.forEach( function(q) {
+                if (q.sec === sec) {
+                    if (sec === "experiment1" || sec === "experiment2" ) {
+                        q.payoffOrder = payoffOrder;
+                        q.payoffOrderPlayers = payoffOrderPlayers;
+                        q.playerPosition = playerPosition;
+                        q.payoffs = payoffs;
+                        q.payoffYou = payoffYou;
+                        q.payoffOther = payoffOther;
+                        q.payoffsBefore = payoffsBefore;
+                        q.payoffsDiff = payoffsDiff;
+                    } 
+                    q.meteorUserId = sub.meteorUserId;
+                    Questions.insert(q);
+                }
             });
         },
         // initialize cohort should always have been called before this function initializeRound

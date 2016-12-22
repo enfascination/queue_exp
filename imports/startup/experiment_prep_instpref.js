@@ -3,7 +3,7 @@
 var _ = require('lodash');
 import { Meteor } from 'meteor/meteor';
 
-export let QuestionData;
+export let QuestionData = {};
 
 // http://www.textfixer.com/resources/dropdowns/country-list-iso-codes.txt
 let countryCodes = [
@@ -255,7 +255,7 @@ let countryCodes = [
     'XX:Decline to state',
 ];
 
-QuestionData = [
+QuestionData.questions = [
 /*{
     sec: 'quiz',
     sec_rnd: 0,
@@ -436,6 +436,57 @@ QuestionData = [
     options: _(1).range(7).map(_.toString).concat( '7+', 'Decline to state').value(),
 },
 ];
+QuestionData.tweakGame = function(payoffs, switchOnly=false) {
+                        let payoffYou = _.slice(payoffs, 0,4);
+                        let payoffOther = _.slice(payoffs,4,8);
+                        let payoffsBefore = _.clone( payoffs );
+                        // pick two payoffs to flip or otherwise manipulate
+                        let rIndices = _.shuffle(_.range(8));
+                        let v1i = rIndices[0]; 
+                        let v2i = rIndices[1]; 
+                        let v1 = payoffs[v1i]; 
+                        let v2 = payoffs[v2i]; 
+                        // pick a change to make
+                        let operator, operators;
+                        let changeNature = _.sample([-1,0,1]);
+                        if (switchOnly) {
+                            // of only (mostly) mean payoff conserving manipulations (like flips) are OK.
+                            changeNature = 0;
+                        }
+                        
+                        // many contingencies is many edge cases
+                        if (v1 === 1 && v2 === 1) {
+                            operators = [[1,0],[0,1]];
+                            changeNature = _.sample([1,]);
+                        } else if (v1 === 4 && v2 === 4) {
+                            operators = [[-1,0], [0,-1],];
+                            changeNature = _.sample([-1,]);
+                        } else if (v1 === 1 && v2 === 4) {
+                            operators = [[1,-1], [1,0], [0,-1]];
+                        } else if (v1 === 4 && v2 === 1) {
+                            operators = [[-1,1], [-1,0], [0,1]];
+                        } else if (v1 === 1) {
+                            operators = [[1,-1], [1,0], [0,1], [0,-1]];
+                        } else if (v1 === 4) {
+                            operators = [[-1,1], [-1,0], [0,1], [0,-1]];
+                        } else if (v2 === 1) {
+                            operators = [[-1,1], [0,1], [1,0], [-1,0]];
+                        } else if (v2 === 4) {
+                            operators = [[1,-1], [0,-1], [1,0], [-1,0]];
+                        } else {
+                            operators = [[1,-1], [-1,1], [1,0], [-1,0], [0,1], [0,-1]];
+                        }
+                        // pick the transformation to apply
+                        operator = _(operators).filter( (a)=>_(a).sum() === changeNature).sample();
+                        payoffs[v1i] = payoffs[v1i] + operator[0];
+                        payoffs[v2i] = payoffs[v2i] + operator[1];
+                        // prep detailed outputs.
+                        payoffYou = _.slice(payoffs, 0,4);
+                        payoffOther = _.slice(payoffs,4,8);
+                        payoffsDiff = _.map( _.zip(payoffsBefore, payoffs), (e)=> _.subtract(e[1], e[0]) );
+                        //return( { payoffYou, payoffOther, payoffsDiff } );
+                        return( payoffs );
+                    };
 /*
 questions[2] = {
 	text: '3) If there are ' + groupSize + ' players, and each player contributes 50 points, what is the total in the group account after the multiplier (1.5x) is applied? (enter a number)',
@@ -460,17 +511,17 @@ questions[4] = {
 
 
 //let idxs = _.shuffle( _.range( questions.length ) );
-let idxs = _.range( QuestionData.length );
+let idxs = _.range( QuestionData.questions.length );
 for(var q of idxs){
-    QuestionData[q] = _.assign( QuestionData[q], {
+    QuestionData.questions[q] = _.assign( QuestionData.questions[q], {
         choice: null,
         answered: false,
         disabled: false,
         hasError: false,
         order : q,
     });
-    if( QuestionData[q].section === 'quiz' ) {
-        QuestionData[q].correct = false;
+    if( QuestionData.questions[q].section === 'quiz' ) {
+        QuestionData.questions[q].correct = false;
     }
     //Meteor.call("addQuestion", questions[q]);
     //QuizQuestions.insert(questions[q]);
