@@ -57,14 +57,11 @@ Template.gameNormalForm.helpers({
 
 Template.gameNormalForm.events({
 	'click .gameNormalFormGame, mouseover .gameNormalFormGame, mouseout .gameNormalFormGame': function (e) { /// GUI and UX elements for the "choose element" versionof the question
-        let c = $( e.currentTarget ); //the button
-        let gameId = c.attr('id'); //self is the table
-        let parentCol;
-        {
-            let cell = $( e.target ).closest('th,td');
-            let colIndex =  cell.parent().children().index( cell) ;
-            parentCol = c.find("colgroup").eq( colIndex );
-        }
+        let c = $( e.currentTarget ); //c is the table
+        let gameId = c.attr('id'); 
+        let cell = $( e.target ).closest('th,td');
+        let colIndex =  cell.parent().children().index( cell) ;
+        let parentCol = c.find("colgroup").eq( colIndex );
         let choiceStrategy;
         //c.find("colgroup.gameNormalFormChoice").eq( choiceStrategyEl.parent().index() ).addClass("hover");
         if (!c.hasClass("chooseStrategyTop")) {
@@ -106,11 +103,19 @@ Template.gameNormalForm.events({
                 choiceStrategyEl.attr("choice", choiceStrategy); // for data handling within form
                 UserElements.choiceChecked.set( gameId, true );
                 UserElements.choiceChecked.set( gameId+"_strategy", choiceStrategy );
+                if (c.hasClass("chooseStrategyTop")) {
+                    // this is because cells aren't children of their colgroup
+                    c.find('tr').children().removeClass("colactive");
+                    c.find('tr').children(':nth-child('+(colIndex+1)+')' ).addClass("colactive");
+                }
             } else {
                 choiceStrategyEl.removeClass("active"); 
                 choiceStrategyEl.removeAttr("choice"); 
                 UserElements.choiceChecked.set( gameId, false );
                 UserElements.choiceChecked.set( gameId+"_strategy", '' );
+                if (c.hasClass("chooseStrategyTop")) {
+                    c.find('tr').children(':nth-child('+(colIndex+1)+')' ).removeClass("colactive");
+                }
             }
         }
     },

@@ -130,11 +130,46 @@ tr.hover {
 .chooseStrategy tr.gameNormalFormChoice.active th {
     color: #FFF;
 }
+.gameNormalFormPayoff text {
+    // 'deactivation' animation
+    transition: font-size 40ms linear; 
+}
+.chooseStrategy .expChoice.active .gameNormalFormPayoff.gamePlayerSide text {
+    font-size: 44pt;
+    // https://material.io/guidelines/motion/duration-easing.html#duration-easing-natural-easing-curves
+    transition: font-size 300ms cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+//.chooseStrategyTop colgroup.active ~ thead th {
 .chooseStrategyTop colgroup.active {
     background-color: #0277BD; 
+    background-color: #757575; 
 }
-.chooseStrategyTop colgroup.active ~ thead th {
-    color: #FFF;
+.chooseStrategyTop .colactive {
+    color: #212121;
+}
+.chooseStrategyTop .colactive .gameNormalFormPayoff.gamePlayerTop text {
+    fill: #212121;
+    font-size: 30pt;
+    // https://material.io/guidelines/motion/duration-easing.html#duration-easing-natural-easing-curves
+    transition: font-size 300ms cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+@keyframes outcomePulseSide {
+    0% {font-size: 36pt;}
+    50% {font-size: 44pt;}
+    100% {font-size: 36pt;}
+}
+@keyframes outcomePulseTop {
+    0% {font-size: 24pt;}
+    50% {font-size: 30pt;}
+    100% {font-size: 24pt;}
+}
+.chooseOutcome .expChoice.active .gameNormalFormPayoff.gamePlayerSide text {
+    animation: outcomePulseSide 300ms;
+    animation-iteration-count: 1;
+}
+.chooseOutcome .expChoice.active .gameNormalFormPayoff.gamePlayerTop text {
+    animation: outcomePulseTop 300ms;
+    animation-iteration-count: 1;
 }
 
 // handling disabling of questions of both types
