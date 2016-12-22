@@ -336,7 +336,7 @@ QuestionData.questions = [
     sec_rnd: 0,
     type: 'chooseOutcome',
 	title: 'Question Two',
-	text: 'Hypothetically, if you had control over both your choice and the other player\'s, which of the four outcomes would you prefer?',
+	text: 'Hypothetically, if you had control over both your choice and the other player\'s, and were to decide how much each of you earn in this game, which of the four outcomes would you prefer?',
 },
 {
     sec: 'experiment1',
@@ -356,7 +356,7 @@ QuestionData.questions = [
     sec_rnd: 1,
     type: 'chooseOutcome',
 	title: 'Question Two',
-	text: 'Hypothetically, if you had control over both your choice and the other player\'s, which of the four outcomes would you prefer?',
+	text: 'Hypothetically, if you had control over both your choice and the other player\'s, and were to decide how much each of you earn in this game, which of the four outcomes would you prefer?',
 },
 {
     sec: 'experiment2',
@@ -382,7 +382,7 @@ QuestionData.questions = [
     sec_rnd: 1,
     type: 'chooseOutcome',
 	title: 'Question Two',
-	text: 'Hypothetically, if you had control over both your choice and the other player\'s, which of the four outcomes would you prefer?',
+	text: 'Hypothetically, if you had control over both your choice and the other player\'s, and were to decide how much each of you earn in this game, which of the four outcomes would you prefer?',
 },
 {
     sec: 'survey',

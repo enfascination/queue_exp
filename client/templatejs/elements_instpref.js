@@ -113,6 +113,10 @@ Template.gameNormalForm.events({
             if ( c.hasClass( "chooseOutcome" ) && choiceStrategyEl.hasClass( "gameNormalFormOutcome" )) {
                 parentTr.addClass("hover");
                 parentCol.addClass("hover");
+            } else if (c.hasClass("chooseStrategyTop")) {
+                // this is because cells aren't children of their colgroup
+                c.find('tr').children().removeClass("colhover");
+                c.find('tr').children(':nth-child('+(colIndex+1)+')' ).addClass("colhover");
             }
             // this is a hack to get the helper updating
             if ( _.isNil( UserElements.choiceChecked.get( gameId ) ) ) {
@@ -126,7 +130,9 @@ Template.gameNormalForm.events({
             if ( c.hasClass( "chooseOutcome" ) && choiceStrategyEl.hasClass( "gameNormalFormOutcome" )) {
                 parentTr.removeClass("hover");
                 parentCol.removeClass("hover");
-            }
+            } if (c.hasClass("chooseStrategyTop")) {
+                    c.find('tr').children(':nth-child('+(colIndex+1)+')' ).removeClass("colhover");
+                }
         }
         else if (e.type == 'click' && !c.hasClass('noactive') ) {
             if ( UserElements.choiceChecked.get( gameId+"_strategy" ) != choiceStrategy ) {
