@@ -117,18 +117,28 @@ tr.hover {
 .expChoice {
     cursor: pointer;
 }
+.expQuestion.chooseOutcome,
+.expQuestion.chooseStrategyTop {
+    text-align: center;
+}
 .chooseOutcome .gameNormalFormOutcome.active, .gameNormalFormOutcome.hover.active{
     background-color: #0277BD; 
 }
 .chooseOutcome colgroup.hover, .chooseStrategyTop colgroup.hover {
     background-color: hsla(199, 98%, 0%, 0.07); //lightblue500//hsl(0, 0, 60);
 }
-
 .chooseStrategy tr.gameNormalFormChoice.active {
     background-color: #0277BD; 
 }
 .chooseStrategy tr.gameNormalFormChoice.active th {
     color: #FFF;
+}
+
+.chooseGame table.hover {
+    background-color: hsla(199, 98%, 0%, 0.07); //lightblue500//hsl(0, 0, 60);
+}
+.chooseGame table.active {
+    background-color: #0277BD; 
 }
 .gameNormalFormPayoff text {
     // 'deactivation' animation
@@ -168,16 +178,26 @@ tr.hover {
     100% {font-size: 24pt;}
 }
 .chooseOutcome .expChoice.active .gameNormalFormPayoff.gamePlayerSide text ,
-.chooseOutcome .expChoice.hover .gameNormalFormPayoff.gamePlayerSide text {
+.chooseOutcome .expChoice:hover .gameNormalFormPayoff.gamePlayerSide text {
     animation: outcomePulseSide 300ms;
     animation-iteration-count: 1;
 }
 .chooseOutcome .expChoice.active .gameNormalFormPayoff.gamePlayerTop text ,
-.chooseOutcome .expChoice.hover .gameNormalFormPayoff.gamePlayerTop text {
+.chooseOutcome .expChoice:hover .gameNormalFormPayoff.gamePlayerTop text {
     animation: outcomePulseTop 300ms;
     animation-iteration-count: 1;
 }
 
+.chooseGame.expChoice.active .gameNormalFormPayoff.gamePlayerSide text ,
+.chooseGame.expChoice:hover .gameNormalFormPayoff.gamePlayerSide text {
+    animation: outcomePulseSide 300ms;
+    animation-iteration-count: 1;
+}
+.chooseGame.expChoice.active .gameNormalFormPayoff.gamePlayerTop text ,
+.chooseGame.expChoice:hover .gameNormalFormPayoff.gamePlayerTop text {
+    animation: outcomePulseTop 300ms;
+    animation-iteration-count: 1;
+}
 // handling disabling of questions of both types
 .gameNormalFormGame.disabled, .gameNormalFormGame.disabled:hover, .gameNormalFormGame.disabled:focus {
     opacity: 0.40;
@@ -187,6 +207,58 @@ tr.hover {
 .gameNormalFormGame.disabled polygon, .gameNormalFormGame.disabled:hover polygon, .gameNormalFormGame.disabled:focus polygon,
 .gameNormalFormGame.disabled tr, .gameNormalFormGame.disabled:hover tr, .gameNormalFormGame.disabled:focus tr {
     pointer-events : none; //http://stackoverflow.com/questions/7833854/jquery-detect-click-on-disabled-submit-button;
+}
+
+//changing game size, for choice between games
+.gameNormalFormGame.chooseOutcome {
+    border: 3px solid hsl(202, 98%, 0%);
+    border-radius: 3px;
+}
+.gameNormalFormGame.chooseOutcome tr.gameNormalFormChoice {
+    border-top: 3px solid hsl(202, 98%, 0%);
+}
+.gameNormalFormGame.chooseOutcome th{
+    font-size: 14pt;
+}
+.gameNormalFormGame.chooseOutcome .gameNormalFormOutcome {
+    height: 100px;
+    width: 100px;
+}
+.gameNormalFormGame.chooseOutcome .gameNormalFormOutcome svg{
+    height: 80px;
+    width: 80px;
+}
+// game compare 
+.gameNormalFormGameCompare {
+    border: 0px;
+}
+.gameNormalFormGameCompare th{
+    font-size: 16pt;
+    padding-bottom: 0px;
+}
+.expQuestion.chooseGame .gameNormalForm {
+    width: auto;
+}
+.gameNormalFormGame.chooseGame {
+    border: 4px solid hsl(202, 98%, 0%);
+    border-radius: 4px;
+}
+.gameNormalFormGame.chooseGame tr.gameNormalFormChoice {
+    border-top: 4px solid hsl(202, 98%, 0%);
+}
+.gameNormalFormGame.chooseGame th{
+    font-size: 12pt;
+}
+.gameNormalFormGame.chooseGame .gameNormalFormOutcome {
+    height: 80px;
+    width: 80px;
+}
+.gameNormalFormGame.chooseGame .gameNormalFormOutcome svg{
+    height: 60px;
+    width: 60px;
+}
+.gameNormalFormGame.chooseGame tr.gameNormalFormChoice {
+    border: 0;
 }
 
 //text

@@ -79,14 +79,18 @@
 <template name="gameNormalForm">
     <div class="expPaneNoMargin gameNormalForm ">
                 <span style="{{#if equals choiceType 'chooseStrategy'}}float:left;{{/if}}">
-        <table id="{{gameId}}" class="gameNormalFormGame {{choiceType}} btn-group {{disabled id}} {{#if equals gameId 'XXXtutorial'}}noactive{{/if}}" role="group">
+                    <table id="{{gameId}}" class="gameNormalFormGame {{choiceType}} btn-group {{disabled id}} {{#if equals gameId 'XXXtutorial'}}noactive{{/if}} {{#if equals choiceType 'chooseGame'}}expChoice{{/if}}" role="group" data-value="{{gameId}}">
                     <colgroup></colgroup> 
                     <colgroup id="{{gameId}}" class="gameNormalFormChoice {{#if equals choiceType 'chooseStrategyTop'}}expChoice{{/if}}" data-value="Left" ></colgroup> 
                     <colgroup id="{{gameId}}" class="gameNormalFormChoice {{#if equals choiceType 'chooseStrategyTop'}}expChoice{{/if}}" data-value="Right" ></colgroup>
-                    <thead> <tr> <td></td> <th scope="col" class="gameTableCol"> Left </th> <th scope="col" class="gameTableCol"> Right </th> </tr> </thead>
+                    {{#unless equals choiceType 'chooseGame'}}
+                    <thead> <tr> <td></td> <th scope="col"> Left </th> <th scope="col"> Right </th> </tr> </thead>
+                    {{/unless}}
                     <tbody>
                         <tr id={{gameId}} class="gameTableRow gameNormalFormChoice {{#if equals choiceType 'chooseStrategy'}}expChoice{{/if}}" data-value="Top" >
+                            {{#unless equals choiceType 'chooseGame'}}
                             <th> Top</th>
+                            {{/unless}}
                             <td scope="row">
                                 <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" data-value="Top,Left" data-toggle="button" >
                                     {{> visualGame payoffIdPrefix="outcomeTL" payoffPlayerTop=otl payoffPlayerSide=ytl}}
@@ -99,7 +103,9 @@
                             </td>
                         </tr>
                         <tr id={{gameId}} class="gameTableRow gameNormalFormChoice {{#if equals choiceType 'chooseStrategy'}}expChoice{{/if}}" data-value="Bottom" >
+                            {{#unless equals choiceType 'chooseGame'}}
                             <th class="" > Bottom </th>
+                            {{/unless}}
                             <td scope="row" class="" >
                                 <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" data-value="Bottom,Left" data-toggle="button" >
                                     {{> visualGame payoffIdPrefix="outcomeBL" payoffPlayerTop=obl payoffPlayerSide=ybl}}
@@ -161,6 +167,37 @@
             <h3 class="questionTitle" >{{title}}</h3>
             <label for="{{_id}}" class = "control-label {{disabled _id}}">{{text}}</label>
             {{> gameNormalForm id=_id gameId=_id choiceType=type question=this context=..}}
+        </div>
+    </section> 
+</template>
+<template name = "questionGameCompare">
+    <section class="expPaneNoMargin experiment"> 
+
+        <div class = "expQuestion {{type}} form-group {{getHasError _id}}" id="{{_id}}">
+            <h3 class="questionTitle" >{{title}}</h3>
+            <label for="{{_id}}" class = "control-label {{disabled _id}}">{{text}}</label>
+            <table class="gameNormalFormGame gameNormalFormGameCompare">
+                <thead>
+                    <tr>
+                        <th scope="col">
+                            First Game
+                        </th>
+                        <th scope="col">
+                            Second Game
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            {{> gameNormalForm id=_id gameId=_id choiceType="chooseGame" question=this context=..}}
+                        </td>
+                        <td>
+                            {{> gameNormalForm id=_id gameId=_id choiceType="chooseGame" question=this context=..}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </section> 
 </template>

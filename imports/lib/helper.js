@@ -198,25 +198,17 @@ export const Helper = {
             }
         }
     },
+    gameDisabled : function( id ){
+        if (_.isNil(Template.currentData())) return;
+        let question = Template.currentData().question;
+        //console.log("questionGame", Template.currentData());
+        if (question.disabled) return("disabled");
+    },
     questionDisabled : function( id ){
-        let sub, questions;
-        //console.log("questionDisabled ", Template.currentData());
-        // all the sanity checks are because I have an inconsistent interface across uses of this helper
-        //if ( !_.isNil( Template.currentData().disabled ) ) {
-            //return(Template.currentData().disabled);
-        //}
-        if (_.isNil(Template.currentData().context)) {
-            return;
-        }
-        sub = Template.currentData().context.subStat;
-        questions = Template.currentData().context.questionsColl;
-        if ( _.isNil(id) ) {
-            id = Template.currentData().id;
-        }
-        if( !_(questions.fetch()).filter({_id : id, disabled : true}).isEmpty() ) {
-        //if( (sub && sub.readyToProceed ) || (Questions && Questions.findOne( { _id : id } ) && Questions.findOne( { _id : id } ).disabled) ) {
-            return("disabled");
-        }
+        let question = Template.currentData();
+        if (_.isNil(question)) return;
+        //console.log("questionDisabled", Template.currentData());
+        if (question.disabled) return("disabled");
 	},
 };
 

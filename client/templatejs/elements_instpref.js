@@ -76,7 +76,7 @@ Template.gameNormalForm.helpers({
         let payoffs = this.question.payoffs;
         return( getPayoff(payoffs, rVal));
     },
-	disabled: Helper.questionDisabled,
+	disabled: Helper.gameDisabled,
     'ytl' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'ytl'),
     'ytr' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'ytr'),
     'ybl' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'ybl'),
@@ -102,8 +102,11 @@ Template.gameNormalForm.events({
             choiceStrategy = parentCol.attr("data-value");
         }
         let choiceStrategyEl = c.find('.expChoice[data-value="'+choiceStrategy+'"]');
+        if (c.hasClass("chooseGame")) {
+            choiceStrategyEl = c;
+        }
         let parentTr = choiceStrategyEl.closest('tr.gameNormalFormChoice' );
-        //console.log("choosestrategy", gameId, choiceStrategy, c.hasClass( "chooseOutcome" ), choiceStrategyEl[0], colIndex);
+        console.log("choosestrategy", gameId, choiceStrategy, c.hasClass( "chooseOutcome" ), choiceStrategyEl[0], colIndex);
         //UserElements.choiceConsidered.set( "game", c.attr('id');
         //https://css-tricks.com/row-and-column-highlighting/
         if (e.type == 'mouseover') {
@@ -115,7 +118,7 @@ Template.gameNormalForm.events({
                 parentCol.addClass("hover");
             } else if (c.hasClass("chooseStrategyTop")) {
                 // this is because cells aren't children of their colgroup
-                c.find('tr').children().removeClass("colhover");
+                //c.find('tr').children().removeClass("colhover");
                 c.find('tr').children(':nth-child('+(colIndex+1)+')' ).addClass("colhover");
             }
             // this is a hack to get the helper updating
@@ -136,7 +139,11 @@ Template.gameNormalForm.events({
         }
         else if (e.type == 'click' && !c.hasClass('noactive') ) {
             if ( UserElements.choiceChecked.get( gameId+"_strategy" ) != choiceStrategy ) {
-                c.find(".expChoice.active").removeClass("active").removeAttr("choice").attr("aria-pressed", false);
+                let otherActives = c.find(".expChoice.active");
+                if (c.hasClass("chooseGame")) {
+                    otherActives = choiceStrategyEl.parents('table').find(".expChoice.active");
+                }
+                otherActives.removeClass("active").removeAttr("choice").attr("aria-pressed", false);
                 choiceStrategyEl.addClass("active"); //self is tr
                 choiceStrategyEl.attr("choice", choiceStrategy); // for data handling within form
                 UserElements.choiceChecked.set( gameId, true );
@@ -174,6 +181,7 @@ Template.questionGame.events({
 });
 Template.questionGame.helpers({
 	getHasError: Helper.getHasError,
-	disabled: Helper.questionDisabled,
+	disabled: Helper.questionDisabled ,
 });
-            
+Template.questionGameCompare.inheritsHelpersFrom('questionGame');
+Template.questionGameCompare.inheritsEventsFrom('questionGame');
