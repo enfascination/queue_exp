@@ -13,7 +13,7 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
 
             // if this is here, then I've seen anyone at all make it to this part of the experiment before.
             probeDesign = CohortSettings.findOne( { sec_type : "experiment", sec: { $ne : 'survey'} }, 
-                { sort : { cohortId : -1, sec_rnd : -1 } });
+                { sort : { cohortId : -1} });
 
             if ( _.isNil( probeDesign ) ) { // server has been reset and there are no design in database
                 console.log("First round of install", sub, lastDesign);
@@ -23,40 +23,30 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
             } else if (matching.noMatching) { // everyone should be a sinigle person cohort, no matching
                 let cohortId;
                 if ( sub.sec_rnd_now === 0 ) {
+                    console.assert( (sub.cohort_now === 0 ) || (sub.sec_now === 'experiment2') , "problem in self matching 3" );
                     cohortId = probeDesign.cohortId + 1;
-                } else {
-                    cohortId = probeDesign.cohortId;
-                }
-                console.log("no matching");
-                try {
                     design = Meteor.call("initializeCohort", cohortId=cohortId, sub.sec_now, sub.sec_type_now, sub.sec_rnd_now, sub.meteorUserId);
-                } catch (err) {
-                    console.log("BADNESS: Recovering from earlier corruption due to error between initializing cohort and initiliazeing corespongding data object");
+                } else {
+                    cohortId = sub.cohort_now;
                     design = CohortSettings.findOne( { 
                         cohortId : cohortId, 
-                        sec : sub.sec_now, 
-                        sec_rnd : sub.sec_rnd_now,
                     } );
                 }
                 familiarCohort = false;
+                console.log("no matching");
             } else if ( matching.selfMatching ) {
                 console.log("self matching");
                 let cohortId;
                 if (sub.cohort_now === 0 ) {
                     console.assert( sub.sec_rnd_now === 0, "problem in self matching" );
+                    console.assert( sub.sec_now === 'experiment1', "problem in self matching 2" );
                     cohortId = probeDesign.cohortId + 1;
+                    design = Meteor.call("initializeCohort", cohortId=cohortId, sub.sec_now, sub.sec_type_now, sub.sec_rnd_now, sub.meteorUserId, sub.meteorUserId);
+                    familiarCohort = false;
                 } else {
                     cohortId = sub.cohort_now;
-                }
-                if (sub.sec_now === 'experiment1') {
-                    design = Meteor.call("initializeCohort", cohortId=cohortId, sub.sec_now, sub.sec_type_now, sub.sec_rnd_now, sub.meteorUserId, sub.meteorUserId);
-                    console.log("self matching exp 1", cohortId, sub, design);
-                    familiarCohort = false;
-                } else if (sub.sec_now === 'experiment2') {
                     design = CohortSettings.findOne( { 
                         cohortId : cohortId, 
-                        sec : sub.sec_now, 
-                        sec_rnd : sub.sec_rnd_now,
                     } );
                     console.log("self matching exp 2", cohortId, sub, design);
                     familiarCohort = true;
@@ -106,9 +96,8 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                     // now try to get a design for the right conditions, still not knowing my cohortId
                     design = CohortSettings.findOne( { 
                         $where: "this.filledCohort < this.maxPlayersInCohort", 
-                        sec : sub.sec_now, 
-                        sec_rnd : sub.sec_rnd_now }, 
-                        { sort : { cohortId : 1, sec : -1, sec_rnd : -1 } }
+                    },
+                        { sort : { cohortId : 1} }
                     );
 
                     if ( _.isNil(design) ) { // need to create a new cohort objects
@@ -127,8 +116,6 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                             console.log("BADNESS: Recovering from earlier corruption due to error between initializing cohort and initiliazeing corespongding data object 2nd time");
                             design = CohortSettings.findOne( { 
                                 cohortId : cohortId, 
-                                sec : sub.sec_now, 
-                                sec_rnd : sub.sec_rnd_now,
                             } );
                             return( { design, familiarCohort : true });
                         }
@@ -148,14 +135,14 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                     //    this depends on the frst experimental section being the third (3-1 = 2) in the DesignSequence after instructions and quiz
                     console.assert( _.isNil( lastDesign ) || sub.sec_rnd_now > 0 || _.indexOf( Object.keys( DesignSequence ), sub.sec_now ) > 2, "sanity1");
                     // there is a missing test here because i'm letting you be in different cohorts in different roudns
-                    console.assert( sub.sec_now === design.sec, "sanity7");
-                    console.assert( sub.sec_rnd_now === design.sec_rnd, "sanity8");
+                    //console.assert( sub.sec_now === design.sec, "sanity7");
+                    //console.assert( sub.sec_rnd_now === design.sec_rnd, "sanity8");
                     console.assert( !_.isNil( design ) , "design is null?");
                     //sanity for existing subjects
                     if ( !_.isNil( lastDesign ) && familiarCohort ) { 
                         try {
-                            //console.assert( sub.sec_now === lastDesign.sec || sub.sec_now === lastDesign.sec + 1 , "sanity3");
-                            console.assert( sub.sec_rnd_now === lastDesign.sec_rnd + 1 || sub.sec_rnd_now === 0 , "sanity4");
+                            ////console.assert( sub.sec_now === lastDesign.sec || sub.sec_now === lastDesign.sec + 1 , "sanity3");
+                            //console.assert( sub.sec_rnd_now === lastDesign.sec_rnd + 1 || sub.sec_rnd_now === 0 , "sanity4");
                         } catch(err) {
                             //console.log(err, sub, lastDesign, design);
                             //console.log(err);
@@ -181,9 +168,9 @@ Experiment.findSubsData = function( sub, lastDesign, dat, matching ) {
                     /// previous subject  who isn't the main player
                     previousSubject = SubjectsData.findOne( {
                         meteorUserId : { $ne : sub.meteorUserId }, 
-                        "theData.cohortId" : design.cohortId, 
-                        sec : design.sec, 
-                        sec_rnd : design.sec_rnd 
+                        "theData.cohortId" : sub.cohort_now, 
+                        sec : sub.sec_now, 
+                        sec_rnd : sub.sec_rnd_now, 
                     }, { sort : {  "theData.cohortId" : -1, "theData.queuePosition" : -1 } });
                     //console.log("familiarCohort", dat.design, previousSubject, SubjectsData.findOne( {
                         //"theData.cohortId" : design.cohortId, 
@@ -203,12 +190,12 @@ Experiment.findSubsData = function( sub, lastDesign, dat, matching ) {
                     //console.log("debugself-matchinfinddata", design.cohortId, SubjectsData.findOne( { meteorUserId : sub.meteorUserId, "theData.cohortId" : design.cohortId,}), SubjectsData.findOne( { meteorUserId : sub.meteorUserId,})  );
                 }
                 subjectPos = previousSubject.theData.queuePosition + 1;
-                countInA = SubjectsData.find({ "theData.cohortId": design.cohortId, 
-                    sec : design.sec, sec_rnd : design.sec_rnd, "theData.choice": "A" }).fetch().length;
-                countInB = SubjectsData.find({ "theData.cohortId": design.cohortId, 
-                    sec : design.sec, sec_rnd : design.sec_rnd, "theData.choice": "B" }).fetch().length;
-                countInNoChoice = SubjectsData.find({ "theData.cohortId": design.cohortId, 
-                    sec : design.sec, sec_rnd : design.sec_rnd, "theData.choice": "X" }).fetch().length;
+                countInA = SubjectsData.find({ "theData.cohortId": sub.cohort_now, 
+                    sec : sub.sec_now, sec_rnd : sub.sec_rnd_now, "theData.choice": "A" }).fetch().length;
+                countInB = SubjectsData.find({ "theData.cohortId": sub.cohort_now, 
+                    sec : sub.sec_now, sec_rnd : sub.sec_rnd_now, "theData.choice": "B" }).fetch().length;
+                countInNoChoice = SubjectsData.find({ "theData.cohortId": sub.cohort_now, 
+                    sec : sub.sec_now, sec_rnd : sub.sec_rnd_now, "theData.choice": "X" }).fetch().length;
             } else {
                 subjectPos = 1;
                 countInA = 0;
@@ -245,14 +232,14 @@ Experiment.initializeCohort = function(newCohortId, newSection, newSectionType, 
     newDesign.filledCohort = 0;
     newDesign.completedCohort = false;
     newDesign.cohortId = newCohortId; // uid for designs, a unique one for each cohort
-    newDesign.sec = newSection;
+    //newDesign.sec = newSection;
     newDesign.sec_type = newSectionType;
-    newDesign.sec_rnd = newRound;
+    //newDesign.sec_rnd = newRound;
     newDesign.playerOne = playerOne;
     newDesign.playerTwo = playerTwo;
     CohortSettings.insert( newDesign );
     try {
-        CohortSettings._ensureIndex({cohortId : 1, sec : 1, sec_rnd : 1 }, { unique : true } );
+        CohortSettings._ensureIndex({cohortId : 1}, { unique : true } );
     } catch (err) {
         console.log("Data failed uniqueness: CohortSettings");
         throw(err);

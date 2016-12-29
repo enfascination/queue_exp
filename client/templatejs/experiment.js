@@ -163,7 +163,9 @@ Template.answersForm.events({
                     // a little inefficient to put this call back after every submit, but it beats missing the asynchrony, as long as its safe to over call this function.
                     if (err) { throw( err ); }
                     // determine if end of cohort
-                    if(false) Meteor.call('tryToCompleteCohort', design);
+                    if ( false ) {
+                        Meteor.call('tryToCompleteCohort', design);
+                    }
                 } );
             });
 

@@ -169,18 +169,19 @@ Schemas.CohortSettings = new SimpleSchema({
         type: Object,
         label: "sequence of the experiment",
     },
-    sec: {
-        type: String,
-        label: "gross section of the experiment",
-    },
     sec_type: {
         type: String,
         label: "section type",
     },
-    sec_rnd: {
-        type: SimpleSchema.Integer,
-        label: "round in the section",
+    playerOne : {
+        type: String,
+        label: "player one",
     },
+    playerTwo : {
+        type: String,
+        label: "player two",
+        optional : true,
+    }
 });
 
 

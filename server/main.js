@@ -60,7 +60,7 @@ Meteor.users.deny({
         }
     });
     Meteor.publish('designs', function() {
-        return CohortSettings.find( {}, { sort : { cohortId : -1, sec : -1, sec_rnd : -1 } } );
+        return CohortSettings.find( {}, { sort : { cohortId : -1 } } );
     });
     Meteor.publish('questions', function() {
         return Questions.find({ meteorUserId: this.userId });
@@ -198,7 +198,8 @@ Meteor.users.deny({
             dat = Experiment.findSubsCohort( sub, lastDesign, Design.matching );
             design = dat.design;
 
-            if( design.sec_rnd === 0 ) {
+            if( sub.sec_rnd_now === 0 ) {
+                console.log("izero, assigning cohort", design.cohortId);
                 SubjectsStatus.update(
                     {meteorUserId : sub.meteorUserId}, 
                     {$set : { 
@@ -206,24 +207,23 @@ Meteor.users.deny({
                     }}
                 );
 
-                Meteor.call("addSubjectQuestions", sub, design.sec, matching=design.matching );
+                Meteor.call("addSubjectQuestions", sub, sub.sec_now, matching=design.matching );
+
+                //ensure uniqueness
+                //SubjectsData._ensureIndex({userId : 1, meteorUserId : 1, sec : 1, sec_rnd : 1}, { unique : true } );
+                CohortSettings.update({
+                    cohortId : design.cohortId, 
+                }, {
+                    $set: {
+                        filledCohort : design.filledCohort + 1,
+                    },
+                });
             }
 
-            //ensure uniqueness
-            //SubjectsData._ensureIndex({userId : 1, meteorUserId : 1, sec : 1, sec_rnd : 1}, { unique : true } );
-            CohortSettings.update({
-                cohortId : design.cohortId, 
-                sec : sub.sec_now, 
-                sec_rnd : sub.sec_rnd_now,
-            }, {
-                $set: {
-                    filledCohort : design.filledCohort + 1,
-                },
-            });
 
             let ss, sd, ct;
             ss = SubjectsStatus.findOne({ meteorUserId: sub.meteorUserId });
-            ct = CohortSettings.findOne({ cohortId: design.cohortId, sec: design.sec, sec_rnd : design.sec_rnd });
+            ct = CohortSettings.findOne({ cohortId: design.cohortId});
             return( { "s_status" : ss, "s_data" : sd, "design" : ct } );
         },
         //findSubsCohort: function(sub, lastDesign) {
@@ -315,7 +315,7 @@ Meteor.users.deny({
             // make it safe to over-call this function
             //    abort if cohort is already complete
             if ( CohortSettings.findOne(
-                { cohortId: cohortId, sec: design.sec, sec_rnd: design.sec_rnd }
+                { cohortId: cohortId}
             ).completedCohort ) {
                 return;
             }
@@ -323,14 +323,14 @@ Meteor.users.deny({
             // experiment-specific logic
             let cohortFin = SubjectsData.find({
                 "theData.cohortId" : cohortId, 
-                sec: design.sec,
-                sec_rnd: design.sec_rnd,
+                //sec: design.sec,  //these entries are deprecated
+                //sec_rnd: design.sec_rnd,  //these entries are deprecated
                 completedChoice: true,
             });
             let cohortUnfin = SubjectsData.find({
                 "theData.cohortId" : cohortId, 
-                sec: design.sec,
-                sec_rnd: design.sec_rnd,
+                //sec: design.sec,  //these entries are deprecated
+                //sec_rnd: design.sec_rnd,  //these entries are deprecated
                 completedChoice: false,
             });
 
@@ -338,7 +338,7 @@ Meteor.users.deny({
             if (cohortFin.count() >= design.maxPlayersInCohort ) {
                 // get rid of old cohort (make it outdated/complete)
                 completedCohort = true;
-                CohortSettings.update({ cohortId: cohortId, sec: design.sec, sec_rnd: design.sec_rnd }, {
+                CohortSettings.update({ cohortId: cohortId}, {
                     $set: { 
                         completedCohort: true,
                     },
@@ -373,10 +373,10 @@ Meteor.users.deny({
 
             // experiment-specific logic
             queueASubjects = SubjectsData.find( {
-                "theData.cohortId" : cohortId, "theData.choice" : "A", sec : aDesign.sec, sec_rnd : aDesign.sec_rnd 
+                "theData.cohortId" : cohortId, "theData.choice" : "A", //sec : aDesign.sec, sec_rnd : aDesign.sec_rnd //eddepcrecaed
                 }, {sort : { "theData.queuePosition" : 1 } } ).fetch() ;
             queueBSubjects = SubjectsData.find( {
-                "theData.cohortId" : cohortId, "theData.choice" : "B", sec : aDesign.sec, sec_rnd : aDesign.sec_rnd 
+                "theData.cohortId" : cohortId, "theData.choice" : "B", //sec : aDesign.sec, sec_rnd : aDesign.sec_rnd               //eddepcrecaed
                 }, {sort : { "theData.queuePosition" : 1 } } ).fetch() ;
             positionFinal = 1;
 

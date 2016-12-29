@@ -43,8 +43,8 @@ export const Sess = {
             }
             if ( !_.isNil( sb ) ) {
                 cs = CohortSettings.findOne(
-                    { cohortId: sb.cohort_now, sec : sb.sec_now, sec_rnd : sb.sec_rnd_now }, 
-                    { sort : { sec : -1, sec_rnd : -1 } } );
+                    { cohortId: sb.cohort_now}, 
+                    { } );
             }
             if ( !_.isNil( cs ) ) {
                 console.log("Sess.design here");

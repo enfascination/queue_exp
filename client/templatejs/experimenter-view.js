@@ -71,7 +71,7 @@ Template.experimenterViewPayout.helpers({
         return( substat ? substat.completedExperiment : '' );
     },
     completedCohort: function (subject) {
-        let cohort = CohortSettings.findOne({ cohortId : subject.theData.cohortId, sec : subject.sec , sec_rnd : subject.sec_rnd });
+        let cohort = CohortSettings.findOne({ cohortId : subject.theData.cohortId});
         if (cohort) {
             return(cohort.completedCohort);
         }
@@ -128,7 +128,7 @@ Template.cohortSelection.events({
         let cohortToCalculate = +$(e.currentTarget).val();
         Session.set('selectedChoice', cohortToCalculate);
         // (re)calculate earnings
-        let designs = CohortSettings.find( {cohortId: cohortToCalculate }, { sort : { sec : -1, sec_rnd : -1 } } ).fetch();
+        let designs = CohortSettings.find( {cohortId: cohortToCalculate } ).fetch();
         //for ( let design of designs) {
             //Meteor.call('tryToCompleteCohort', design );
         //}
