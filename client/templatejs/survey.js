@@ -27,7 +27,7 @@ Template.answersForm.events({
         // AHHHHHHHH
         let answeredCount = 0;
         let questionsCount = 0;
-        let qs = Template.currentData().questionsColl.fetch();
+        let qs = Template.currentData().questionsColl ? Template.currentData().questionsColl.fetch() : [];
         //let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: 'survey'}).fetch();
         qs.forEach( function( q ) {
             let element_raw = $(e.target).find(".expQuestion#"+q._id)[0];
@@ -76,7 +76,7 @@ Template.answersForm.events({
         //// IF INPUTS OK, SUBMIT ANSWERS AND ....
         /////////////////////
         console.log(answeredCount ,questionsCount, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
-        if ( answeredCount === questionsCount ) {
+        if ( true || answeredCount === questionsCount ) {
             qs.forEach( function( q ) {
                 Meteor.call("insertQuestionToSubData", Meteor.userId(), q );
             });

@@ -110,7 +110,7 @@ Meteor.users.deny({
             //ensure uniqueness
             SubjectsStatus._ensureIndex({userId : 1, meteorUserId : 1}, { unique : true } );
         },
-        addSubjectQuestions : function( sub, sec ) {
+        addSubjectQuestions : function( sub, sec, matching=false ) {
             //import { QuestionData } from '../../imports/startup/experiment_prep_instpref.js';
             //let idxs = _.shuffle( _.range( questions.length ) );
             console.log("addQuestions", sec);
@@ -119,6 +119,7 @@ Meteor.users.deny({
             let payoffOrderPlayers = ['You', 'Other'];
             let playerPosition = "Side";
             if (sec === "experiment1" || sec === "experiment2") {
+                if ( !matching || matching.noMatching || (matching.selfMatching && sec === "experiment1" ) ) {
                 /// game 1
                 // strictly ordinal games (without replacement)
                 let rIndices = _.concat(_.shuffle(_.range(4)), _.shuffle(_.range(4,8)));
@@ -134,6 +135,12 @@ Meteor.users.deny({
                 }
                 payoffsDiff = _.map( _.zip(payoffsGame1, payoffsGame2), (e)=> _.subtract(e[1], e[0]) );
                 console.log("generated games", payoffsGame1, payoffsGame2);
+                } else if (matching.selfMatching && sec === "experiment2" ) {
+                    let matchingQ = Questions.findOne({meteorUserId : sub.meteorUserId, sec : 'experiment1', sec_rnd : sub.sec_rnd_now, type : 'chooseStrategy'});
+                    payoffsGame1 = matchingQ.payoffsGame1;
+                    payoffsGame2 = matchingQ.payoffsGame2;
+                    console.log("returning to games", payoffsGame1, payoffsGame2);
+                }
             }
             let idGame1, idGame2, idTmp;
             QuestionData.questions.forEach( function(q) {
@@ -194,10 +201,12 @@ Meteor.users.deny({
             if( design.sec_rnd === 0 ) {
                 SubjectsStatus.update(
                     {meteorUserId : sub.meteorUserId}, 
-                    {$set : { cohort_now : design.cohortId }}
+                    {$set : { 
+                        cohort_now : design.cohortId,
+                    }}
                 );
 
-                Meteor.call("addSubjectQuestions", sub, design.sec );
+                Meteor.call("addSubjectQuestions", sub, design.sec, matching=design.matching );
             }
 
             //ensure uniqueness
@@ -336,7 +345,7 @@ Meteor.users.deny({
                 }//, {multi: true}  //d ont' want to need this.
                 );
                 try {
-                    console.assert(design.maxPlayersInCohort == design.filledCohort, "sanity6" );
+                    console.assert(design.maxPlayersInCohort === design.filledCohort, "sanity6" );
                 } catch(err) {
                     console.log(err);
                 }
@@ -409,29 +418,7 @@ Meteor.users.deny({
         },
         // this takes previous deisgn and increments on it, or takes nothign and makes firs deisgn on global
         // Creates a new CohortSettings object
-        'initializeCohort': function(newCohortId, newSection, newSectionType, newRound ) {
-            //  http://stackoverflow.com/questions/18887652/are-there-private-server-methods-in-meteor
-            //if (this.connection === null) { /// to make method private to server
-            //console.log("initializeCohort", newCohortId, newSection, newSectionType, newRound );
-                let newDesign = _.clone(Design);
-                newDesign.filledCohort = 0;
-                newDesign.completedCohort = false;
-                newDesign.cohortId = newCohortId; // uid for designs, a unique one for each cohort
-                newDesign.sec = newSection;
-                newDesign.sec_type = newSectionType;
-                newDesign.sec_rnd = newRound;
-                CohortSettings.insert( newDesign );
-                try {
-                    CohortSettings._ensureIndex({cohortId : 1, sec : 1, sec_rnd : 1 }, { unique : true } );
-                } catch (err) {
-                    console.log("Data failed uniqueness: CohortSettings");
-                    throw(err);
-                }
-                return( newDesign );
-            //} else {
-                //throw(new Meteor.Error(500, 'Permission denied!'));
-            //}
-        },
+        'initializeCohort': Experiment.initializeCohort,
         insertQuestionToSubData: function(muid, theData ) {
             let sub = SubjectsStatus.findOne({ meteorUserId : muid });
             //console.log("insertSurveyQuestion", sub);

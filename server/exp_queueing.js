@@ -229,3 +229,28 @@ Experiment.submitExperimentChoice = function(muid, sec, sec_rnd, theData) {
             //let sd = SubjectsData.findOne({ meteorUserId: muid , theData.cohortId : cohortId, sec : section, sec_rnd : round });
             //return({ "s_status" : ss, "s_data" : sd });
         };
+Experiment.initializeCohort = function(newCohortId, newSection, newSectionType, newRound) {
+    console.log("ASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGASDFASFDVSDFGAWRSFSBDCGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASDFASFDVSDFGAWRSFSBDCGA");
+    dat = Experiment.findSubsCohort( sub, lastDesign, Design.matching );
+    //  http://stackoverflow.com/questions/18887652/are-there-private-server-methods-in-meteor
+    //if (this.connection === null) { /// to make method private to server
+    //console.log("initializeCohort", newCohortId, newSection, newSectionType, newRound );
+    let newDesign = _.clone(Design);
+    newDesign.filledCohort = 0;
+    newDesign.completedCohort = false;
+    newDesign.cohortId = newCohortId; // uid for designs, a unique one for each cohort
+    newDesign.sec = newSection;
+    newDesign.sec_type = newSectionType;
+    newDesign.sec_rnd = newRound;
+    CohortSettings.insert( newDesign );
+    try {
+        CohortSettings._ensureIndex({cohortId : 1, sec : 1, sec_rnd : 1 }, { unique : true } );
+    } catch (err) {
+        console.log("Data failed uniqueness: CohortSettings");
+        throw(err);
+    }
+    return( newDesign );
+    //} else {
+    //throw(new Meteor.Error(500, 'Permission denied!'));
+    //}
+};

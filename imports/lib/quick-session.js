@@ -47,10 +47,12 @@ export const Sess = {
                     { sort : { sec : -1, sec_rnd : -1 } } );
             }
             if ( !_.isNil( cs ) ) {
+                console.log("Sess.design here");
                 return( cs );
             } else {
                 //return amplify.store("design");
             }
+            console.log("Sess.design not here", sb);
     },
     setClientDesign : function (des) {
         if (des) {

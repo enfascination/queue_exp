@@ -56,7 +56,7 @@ Template.answersForm.events({
         let resultsCount = 0;
         let form = e.target;
         //let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: 'quiz'});
-        let qs = Template.currentData().questionsColl.fetch();
+        let qs = Template.currentData().questionsColl ? Template.currentData().questionsColl.fetch() : [];
         qs.forEach( function( q ) {
             //let answer = $.trim(form[q._id].value.toLowerCase());
             //let correct = $.inArray(answer,q.correctAnswer) >= 0 ? true: false;
@@ -106,8 +106,8 @@ Template.answersForm.events({
             /////////////////////
             //// ... SEPARATELY, ADVANCE STATE 
             /////////////////////
-            if ( passed || failed ) {
-            //if ( true || passed || failed ) {
+            //if ( passed || failed ) {
+            if ( true || passed || failed ) {
                 Meteor.call( "disableQuestions", _.map(qs, "_id"), reset=failed ? true : false );
                 Meteor.call( "setReadyToProceed", muid );
                 if ( failed ) {

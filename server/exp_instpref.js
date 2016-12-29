@@ -12,12 +12,13 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
             let familiarCohort = false;
 
             // if this is here, then I've seen anyone at all make it to this part of the experiment before.
-            probeDesign = CohortSettings.findOne( { sec_type : "experiment" }, 
+            probeDesign = CohortSettings.findOne( { sec_type : "experiment", sec: { $ne : 'survey'} }, 
                 { sort : { cohortId : -1, sec_rnd : -1 } });
 
             if ( _.isNil( probeDesign ) ) { // server has been reset and there are no design in database
                 console.log("First round of install", sub, lastDesign);
-                design = Meteor.call("initializeCohort", cohortId=0, sub.sec_now, sub.sec_type_now, sub.sec_rnd_now);
+                design = Meteor.call("initializeCohort", cohortId=0, sub.sec_now, sub.sec_type_now, sub.sec_rnd_now, sub.meteorUserId);
+                familiarCohort = false;
                 //console.log("First round of install", design);
             } else if (matching.noMatching) { // everyone should be a sinigle person cohort, no matching
                 let cohortId;
@@ -28,7 +29,7 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                 }
                 console.log("no matching");
                 try {
-                    design = Meteor.call("initializeCohort", cohortId=cohortId, sub.sec_now, sub.sec_type_now, sub.sec_rnd_now);
+                    design = Meteor.call("initializeCohort", cohortId=cohortId, sub.sec_now, sub.sec_type_now, sub.sec_rnd_now, sub.meteorUserId);
                 } catch (err) {
                     console.log("BADNESS: Recovering from earlier corruption due to error between initializing cohort and initiliazeing corespongding data object");
                     design = CohortSettings.findOne( { 
@@ -36,10 +37,31 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                         sec : sub.sec_now, 
                         sec_rnd : sub.sec_rnd_now,
                     } );
-                    return( { design, familiarCohort : false });
                 }
-            } else if (false || matching.selfMatching) {
-                //console.log("self matching");
+                familiarCohort = false;
+            } else if ( matching.selfMatching ) {
+                console.log("self matching");
+                let cohortId;
+                if (sub.cohort_now === 0 ) {
+                    console.assert( sub.sec_rnd_now === 0, "problem in self matching" );
+                    cohortId = probeDesign.cohortId + 1;
+                } else {
+                    cohortId = sub.cohort_now;
+                }
+                if (sub.sec_now === 'experiment1') {
+                    design = Meteor.call("initializeCohort", cohortId=cohortId, sub.sec_now, sub.sec_type_now, sub.sec_rnd_now, sub.meteorUserId, sub.meteorUserId);
+                    console.log("self matching exp 1", cohortId, sub, design);
+                    familiarCohort = false;
+                } else if (sub.sec_now === 'experiment2') {
+                    design = CohortSettings.findOne( { 
+                        cohortId : cohortId, 
+                        sec : sub.sec_now, 
+                        sec_rnd : sub.sec_rnd_now,
+                    } );
+                    console.log("self matching exp 2", cohortId, sub, design);
+                    familiarCohort = true;
+                }
+                console.log("self matching", design);
                 //// reffing subjectsdata in this function is unusual, but necessary for spotting past cohorts including this partiicpants
                 //let previousByThisSubject = SubjectsData.find( {
                     //meteorUserId : sub.meteorUserId, 
@@ -215,6 +237,31 @@ Experiment.findSubsData = function( sub, lastDesign, dat, matching ) {
 
             return( theData);
         };
+Experiment.initializeCohort = function(newCohortId, newSection, newSectionType, newRound, playerOne, playerTwo='' ) {
+    //  http://stackoverflow.com/questions/18887652/are-there-private-server-methods-in-meteor
+    //if (this.connection === null) { /// to make method private to server
+    //console.log("initializeCohort", newCohortId, newSection, newSectionType, newRound );
+    let newDesign = _.clone(Design);
+    newDesign.filledCohort = 0;
+    newDesign.completedCohort = false;
+    newDesign.cohortId = newCohortId; // uid for designs, a unique one for each cohort
+    newDesign.sec = newSection;
+    newDesign.sec_type = newSectionType;
+    newDesign.sec_rnd = newRound;
+    newDesign.playerOne = playerOne;
+    newDesign.playerTwo = playerTwo;
+    CohortSettings.insert( newDesign );
+    try {
+        CohortSettings._ensureIndex({cohortId : 1, sec : 1, sec_rnd : 1 }, { unique : true } );
+    } catch (err) {
+        console.log("Data failed uniqueness: CohortSettings");
+        throw(err);
+    }
+    return( newDesign );
+    //} else {
+    //throw(new Meteor.Error(500, 'Permission denied!'));
+    //}
+};
 Experiment.submitExperimentChoice = function(muid, sec, sec_rnd, theData) {
 
             SubjectsData.update({ meteorUserId: muid , "theData.cohortId" : theData.cohortId, sec : sec, sec_rnd : sec_rnd }, {

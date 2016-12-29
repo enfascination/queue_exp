@@ -129,9 +129,9 @@ Template.cohortSelection.events({
         Session.set('selectedChoice', cohortToCalculate);
         // (re)calculate earnings
         let designs = CohortSettings.find( {cohortId: cohortToCalculate }, { sort : { sec : -1, sec_rnd : -1 } } ).fetch();
-        for ( let design of designs) {
-            Meteor.call('tryToCompleteCohort', design );
-        }
+        //for ( let design of designs) {
+            //Meteor.call('tryToCompleteCohort', design );
+        //}
         Session.set('showExperimentCalc', true);
     }
 });
