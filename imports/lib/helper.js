@@ -207,6 +207,9 @@ export const Helper = {
         //console.log("questionDisabled", Template.currentData());
         if (question.disabled) return("disabled");
 	},
+    des : function(design) {
+        return( _.pick(design, ["id", "cohortId", "sec_type", "playerOne", "playerTwo", "filledCohort", "completedCohort"]) );
+    },
 };
 
 
