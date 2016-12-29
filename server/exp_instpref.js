@@ -314,3 +314,7 @@ Experiment.tweakGame = function(payoffs, switchOnly=false) {
                         //return( { payoffYou, payoffOther, payoffsDiff } );
                         return( payoffsAfter );
                     };
+// change player's view (which one is "top")
+Experiment.pivotGame = function(payoffs) {
+    return( _.concat( _.slice(payoffs, 4, 8), _.slice(payoffs, 0, 4) ) );
+                    };

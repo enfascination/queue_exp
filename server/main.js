@@ -137,12 +137,12 @@ Meteor.users.deny({
                 console.log("generated games", payoffsGame1, payoffsGame2);
                 } else if (matching.selfMatching && sec === "experiment2" ) {
                     let matchingQ = Questions.findOne({meteorUserId : sub.meteorUserId, sec : 'experiment1', sec_rnd : sub.sec_rnd_now, type : 'chooseStrategy'});
-                    payoffsGame1 = matchingQ.payoffsGame1;
-                    payoffsGame2 = matchingQ.payoffsGame2;
                     console.log("returning to games", payoffsGame1, payoffsGame2);
+                    payoffsGame1 = Experiment.pivotGame( matchingQ.payoffsGame1 );
+                    payoffsGame2 = Experiment.pivotGame( matchingQ.payoffsGame2 );
                 }
             }
-            let idGame1, idGame2, idTmp;
+            let idGameQ1, idGameQ2, idTmp;
             QuestionData.questions.forEach( function(q) {
                 if ( q.sec === sec ) {
                     console.log("addQuestions q", sec, q.sec, (q.sec != sec && q.sec != 'experiment'));
@@ -157,11 +157,13 @@ Meteor.users.deny({
                         q.payoffsDiff = payoffsDiff;
                         if (q.sec_rnd === 0) {
                             q.payoffs = payoffsGame1;
+                            //q.gameId = payoffsGame1.join();
                         } else if (q.sec_rnd === 1) {
                             q.payoffs = payoffsGame2;
+                            //q.gameId = payoffsGame2.join();
                         } else if (q.sec_rnd === 2) {
-                            q.idGame1 = idGame1;
-                            q.idGame2 = idGame2;
+                            q.idGameQ1 = idGameQ1;
+                            q.idGameQ2 = idGameQ2;
                         } else if (q.sec_rnd === 3) {
                         }
                     } 
@@ -173,9 +175,9 @@ Meteor.users.deny({
                         throw(err);
                     }
                     if (q.type === "chooseStrategy" && q.sec_rnd === 0) {
-                        idGame1 = idTmp;
+                        idGameQ1 = idTmp;
                     } else if (q.type === "chooseStrategy" && q.sec_rnd === 1) {
-                        idGame2 = idTmp;
+                        idGameQ2 = idTmp;
                     }
                 }
             });
