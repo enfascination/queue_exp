@@ -161,10 +161,9 @@ export const Helper = {
         //
         //console.log( "main.onRendered", secObj,  " and page is ", this.data );
     },
-	getHasError: function( id ){
-        //console.log(this);
-        let q = this;
-        if (q._id === id && q.hasError ) {
+	getHasError: function( question ){
+        //console.log("hasError", question, this);
+        if (question.hasError ) {
         //if (Questions.findOne( id ).hasError ) {
             return("has-error");
         }
@@ -188,8 +187,8 @@ export const Helper = {
             //questions = questions.find({sec: section, sec_rnd : sub.sec_rnd_now }, {$sort : { order : 1 }}).fetch();
             questions = questions.fetch();
             _.forEach( questions, function( q ) {
-                q.context = dataContext;
-                //console.log("experiment.helpers qusetions per q", q);
+                //q.context = dataContext;// this was a bad idea, better to make sure that the items passed have the right info from thebeginning
+                console.log("experiment.helpers qusetions per q", q);
             });
             if (shuffled) {
                 return( _.shuffle( questions ) );
@@ -198,14 +197,12 @@ export const Helper = {
             }
         }
     },
-    gameDisabled : function( id ){
-        if (_.isNil(Template.currentData())) return;
-        let question = Template.currentData().question;
+    gameDisabled : function( question ){
         //console.log("questionGame", Template.currentData());
+        if (_.isNil(question)) return;
         if (question.disabled) return("disabled");
     },
-    questionDisabled : function( id ){
-        let question = Template.currentData();
+    questionDisabled : function( question ){
         if (_.isNil(question)) return;
         //console.log("questionDisabled", Template.currentData());
         if (question.disabled) return("disabled");

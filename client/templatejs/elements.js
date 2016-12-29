@@ -100,8 +100,8 @@ Template.questionBinary.helpers({
 });
 Template.questionQuad.helpers({
 	options: function() {
-        let dataContext = this;
-        return( _.map( dataContext.options ,  (e)=> {return({"name" : e, "id" : dataContext._id , "disabled" : dataContext.disabled });} ));
+        let question = this.question;
+        return( _.map( question.options ,  (e)=> {return({"name" : e, "id" : question._id , "disabled" : question.disabled });} ));
     },
 });
 Template.questionQuad.inheritsHelpersFrom('questionBinary');

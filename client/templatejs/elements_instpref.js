@@ -21,6 +21,7 @@ let getPayoff = function(payoffs, loc) {
     } else if (loc === 'obl') { ret = payoffs[6];
     } else if (loc === 'obr') { ret = payoffs[7];
     }
+    //console.log("getPayoff", payoffs, loc, ret);
     return(ret);
 };
 
@@ -50,6 +51,7 @@ Template.gameNormalForm.helpers({
         return( rVal );
     },
     textGameFeedbackStrategy : function() {
+        //console.log("textGameFeedbackStrategy", Template.currentData(), this);
         let gameId = Template.currentData().gameId;
         let feedbackId = gameId + "_" + "strategy";
         let rVal = "___";
@@ -60,8 +62,7 @@ Template.gameNormalForm.helpers({
         }
         return( rVal );
     },
-    textGamePayoffs : function( lOrR, tOrB, yOrO) {
-        if (_.isNil(this.question)) return;
+    textGamePayoffs : function( payoffs, lOrR, tOrB, yOrO) {
         //console.log( lOrR, tOrB, yOrO, this);
         let rVal = "__";
                if (lOrR === "Right" && tOrB === "Top"    && yOrO === "You"   ) { rVal = 'ytr';
@@ -73,18 +74,9 @@ Template.gameNormalForm.helpers({
         } else if (lOrR === "Left"  && tOrB === "Bottom" && yOrO === "You"   ) { rVal = 'ybl';
         } else if (lOrR === "Left"  && tOrB === "Bottom" && yOrO === "Other" ) { rVal = 'obl';
         }
-        let payoffs = this.question.payoffs;
-        return( getPayoff(payoffs, rVal));
+        return( getPayoff( payoffs, rVal));
     },
 	disabled: Helper.gameDisabled,
-    'ytl' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'ytl'),
-    'ytr' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'ytr'),
-    'ybl' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'ybl'),
-    'ybr' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'ybr'),
-    'otl' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'otl'),
-    'otr' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'otr'),
-    'obl' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'obl'),
-    'obr' : ()=>Template.currentData().question && getPayoff(Template.currentData().question.payoffs, 'obr'),
 });
 
 Template.gameNormalForm.events({
@@ -106,7 +98,7 @@ Template.gameNormalForm.events({
             choiceStrategyEl = c;
         }
         let parentTr = choiceStrategyEl.closest('tr.gameNormalFormChoice' );
-        console.log("choosestrategy", gameId, choiceStrategy, c.hasClass( "chooseOutcome" ), choiceStrategyEl[0], colIndex);
+        //console.log("choosestrategy", gameId, choiceStrategy, c.hasClass( "chooseOutcome" ), choiceStrategyEl[0], colIndex);
         //UserElements.choiceConsidered.set( "game", c.attr('id');
         //https://css-tricks.com/row-and-column-highlighting/
         if (e.type == 'mouseover') {
@@ -185,3 +177,6 @@ Template.questionGame.helpers({
 });
 Template.questionGameCompare.inheritsHelpersFrom('questionGame');
 Template.questionGameCompare.inheritsEventsFrom('questionGame');
+Template.visualGame.helpers({
+    getPayoff : getPayoff,
+});

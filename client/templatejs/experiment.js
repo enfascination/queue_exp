@@ -157,13 +157,27 @@ Template.answersForm.events({
             //} else if (choice === "B") {
                 //theData.earnings1 = design.endowment - design.queueCosts.B;
             //}
+            if (sub.sec_rnd_now === 2) {  // experiment specific: they chose a game of two and I have to give it to them
+                // pick out the right question from this round
+                qs.forEach( function( q ) {
+                    if (q.type != 'chooseGame') return;
+                    // find chosen game
+                    //    async shouldn't be a problem because I won't need the updated question 
+                    //    until initilizeRoundi nt he callback further down.
+                    Meteor.call('setChosenGameForRound', sub, sub.sec_rnd_now+1, q.choice);
+                });
+            }
+
             
 
-            // submit choice and do clean up on previousness
-            Meteor.call('submitExperimentChoice', Meteor.userId(), sub.sec_now, sub.sec_rnd_now, theData, asyncCallback=function(err, data) {
-                if (err) { throw( err ); }
-                // determine if end of cohort
-                if(false) Meteor.call('tryToCompleteCohort', design);
+            // submit choices and do clean up on previousness
+            qs.forEach( function( q ) {
+                Meteor.call("insertQuestionToSubData", Meteor.userId(), q, asyncCallback=function(err, data) {
+                    // a little inefficient to put this call back after every submit, but it beats missing the asynchrony, as long as its safe to over call this function.
+                    if (err) { throw( err ); }
+                    // determine if end of cohort
+                    if(false) Meteor.call('tryToCompleteCohort', design);
+                } );
             });
 
             /////////////////////

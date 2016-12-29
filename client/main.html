@@ -99,7 +99,7 @@
             {{#unless isSection "survey"}}
             <h2 class="sectionHeader" >
                 {{currentSection.label}} <br/>
-                <small>Round {{subStat.sec_rnd_now}}</small>
+                <small>Round {{inc subStat.sec_rnd_now}}/{{currentSection.roundCount}}</small>
             </h2>
             <br/>
                 {{> experiment ..}}

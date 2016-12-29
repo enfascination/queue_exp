@@ -33,7 +33,7 @@
         </section>
         <hr class="expPaneMargin"/>
                     <p><strong><strong>EXAMPLE GAME INTERFACE:</strong></strong></p>
-                    {{> gameNormalForm id="tutorial" gameId="tutorial" choiceType="chooseStrategy" context=context question=question}}
+                    {{> gameNormalForm id="tutorial" gameId="tutorial" choiceType="chooseStrategy" payoffs=question.payoffs context=context question=question}}
                     <p class="expPaneMargin" style="display:center;"><em>This is a sample of the game interface that will be used through the experiment. Clicking an option will select it. Your points are in <span class="you blue">blue</span>.</em></p>
         <hr class="expPaneMargin"/>
         <section class="expPaneMargin">
@@ -68,18 +68,22 @@
         <section class="expPaneMargin">
             <p><strong><strong>You will now be tested on your comprehension of the instructions on the previous page.</strong></strong> Participation in this experiment is based on your answering these questions correctly. If you fail the quiz you will pass the HIT and earn <strong>10&cent;</strong>, but you will be ineligible to participate in the main experiment, which offers a theoretical maximum of <strong>$6.50</strong> in bonus earnings.</p>
             <p><strong><strong>You will have three tries to get all of the questions correct.</strong></strong> If you want to review these instructions at any point in the experiment, just click the <strong><strong>Instructions</strong></strong> tab in the upper left.</p> 
-            <h3>Quiz instructions</h3>
+            <h3>Quiz</h3>
             <p>
-                Below you will answer questions about the game introduced in the instructions. During the experiment itself you will face different games (games with different numbers in the payoffs), but practice thinking through this game will prepare you for the others. 
+            Below you will answer questions about the game introduced in the instructions. During the experiment itself you will face different games (games with different numbers in the payoffs), but <strong>practice thinking through the questions about this game will prepare you for the other game you play in this experiment.</strong> 
             </p>
             <p>When you have answered all of the questions as carefully as you can, click <strong>SUBMIT</strong>.</p>
     </section>
 </template>
+<template name="instPrefGame">
+    Hello, {{currentSection.id}}
+</template>
+
 
 <template name="gameNormalForm">
     <div class="expPaneNoMargin gameNormalForm ">
                 <span style="{{#if equals choiceType 'chooseStrategy'}}float:left;{{/if}}">
-                    <table id="{{gameId}}" class="gameNormalFormGame {{choiceType}} btn-group {{disabled id}} {{#if equals gameId 'XXXtutorial'}}noactive{{/if}} {{#if equals choiceType 'chooseGame'}}expChoice{{/if}}" role="group" data-value="{{gameId}}">
+                    <table id="{{gameId}}" class="gameNormalFormGame {{choiceType}} btn-group {{disabled question}} {{#if equals gameId 'XXXtutorial'}}noactive{{/if}} {{#if equals choiceType 'chooseGame'}}expChoice{{/if}}" role="group" data-value="{{gameChoice}}">
                     <colgroup></colgroup> 
                     <colgroup id="{{gameId}}" class="gameNormalFormChoice {{#if equals choiceType 'chooseStrategyTop'}}expChoice{{/if}}" data-value="Left" ></colgroup> 
                     <colgroup id="{{gameId}}" class="gameNormalFormChoice {{#if equals choiceType 'chooseStrategyTop'}}expChoice{{/if}}" data-value="Right" ></colgroup>
@@ -93,12 +97,12 @@
                             {{/unless}}
                             <td scope="row">
                                 <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" data-value="Top,Left" data-toggle="button" >
-                                    {{> visualGame payoffIdPrefix="outcomeTL" payoffPlayerTop=otl payoffPlayerSide=ytl}}
+                                    {{> visualGame payoffIdPrefix="outcomeTL" payoffs=payoffs payoffPlayerTop="otl" payoffPlayerSide="ytl"}}
                                 </button>
                             </td>
                             <td scope="row" class="" >
                                 <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" data-value="Top,Right" data-toggle="button" >
-                                    {{> visualGame payoffIdPrefix="outcomeTR" payoffPlayerTop=otr payoffPlayerSide=ytr}}
+                                    {{> visualGame payoffIdPrefix="outcomeTR" payoffs=payoffs payoffPlayerTop="otr" payoffPlayerSide="ytr"}}
                                 </button>
                             </td>
                         </tr>
@@ -108,12 +112,12 @@
                             {{/unless}}
                             <td scope="row" class="" >
                                 <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" data-value="Bottom,Left" data-toggle="button" >
-                                    {{> visualGame payoffIdPrefix="outcomeBL" payoffPlayerTop=obl payoffPlayerSide=ybl}}
+                                    {{> visualGame payoffIdPrefix="outcomeBL" payoffs=payoffs payoffPlayerTop="obl" payoffPlayerSide="ybl"}}
                                 </button>
                             </td>
                             <td scope="row" class="" >
                                 <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" data-value="Bottom,Right" data-toggle="button" >
-                                    {{> visualGame payoffIdPrefix="outcomeBR" payoffPlayerTop=obr payoffPlayerSide=ybr}}
+                                    {{> visualGame payoffIdPrefix="outcomeBR" payoffs=payoffs payoffPlayerTop="obr" payoffPlayerSide="ybr"}}
                                 </button>
                             </td>
                         </tr>
@@ -124,18 +128,18 @@
                 <span class="gameVisualText">
                     When <span class="player you">you</span> choose <span class="strategy you">{{textGameFeedbackStrategy}}</span><br/>
                     the <span class="player other">Other Player</span> will either<br/>
-                    &emsp;earn <span class="payoff other">{{textGamePayoffs "Left" textGameFeedbackStrategy "Other"}}</span> <br/>
-                    &emsp;&emsp;&thinsp;or <span class="payoff other">{{textGamePayoffs "Right" textGameFeedbackStrategy "Other"}}</span> quarters .<br/>
+                    &emsp;earn <span class="payoff other">{{textGamePayoffs question.payoffs "Left" textGameFeedbackStrategy "Other"}}</span> <br/>
+                    &emsp;&emsp;&thinsp;or <span class="payoff other">{{textGamePayoffs question.payoffs "Right" textGameFeedbackStrategy "Other"}}</span> quarters .<br/>
                     Specifically, if they choose <span class="strategy other">Left</span><br/>
                     &emsp;&emsp;they will earn 
-                        <span class="payoff other">{{textGamePayoffs "Left" textGameFeedbackStrategy "Other"}}</span><br/>
+                        <span class="payoff other">{{textGamePayoffs question.payoffs "Left" textGameFeedbackStrategy "Other"}}</span><br/>
                         &emsp;&emsp;and <span class="player you">You</span> will earn 
-                        <span class="payoff you">{{textGamePayoffs "Left" textGameFeedbackStrategy "You"}}</span>,<br/>
+                        <span class="payoff you">{{textGamePayoffs question.payoffs "Left" textGameFeedbackStrategy "You"}}</span>,<br/>
                     &emsp;if <span class="player other">Other Player</span> chooses <span class="strategy other">Right</span><br/>
                     &emsp;&emsp;they will earn 
-                        <span class="payoff other">{{textGamePayoffs "Right" textGameFeedbackStrategy "Other"}}</span><br/>
+                        <span class="payoff other">{{textGamePayoffs question.payoffs "Right" textGameFeedbackStrategy "Other"}}</span><br/>
                         &emsp;&emsp;and <span class="player you">You</span> will earn 
-                        <span class="payoff you">{{textGamePayoffs "Right" textGameFeedbackStrategy "You"}}</span>.<br/>
+                        <span class="payoff you">{{textGamePayoffs question.payoffs "Right" textGameFeedbackStrategy "You"}}</span>.<br/>
                         <br/>
                         <br/>
                 </span>
@@ -149,13 +153,13 @@
                         <g class="gameNormalFormPayoff gamePlayerTop gamePlayerOther" id="{{payoffIdPrefix}}T" data-value={{payoffPlayerTop}}>
                             <polygon fill="none" pointer-events="all" stroke="#80D8FF" stroke-width="0px" points="0,0 100,0 100,100 0,0" />
                             <text x="75" y="30" text-anchor="middle" alignment-baseline="middle">
-                                {{payoffPlayerTop}}
+                                {{getPayoff payoffs payoffPlayerTop}}
                             </text>
                         </g>
                         <g class="gameNormalFormPayoff gamePlayerSide gamePlayerYou" id="{{payoffIdPrefix}}S" data-value={{payoffPlayerSide}} >
                             <polygon fill="none" pointer-events="all" stroke="#80D8FF" stroke-width="0px" points="0,0 0,100 100,100 0,0" />
                             <text x="25" y="75" text-anchor="middle" alignment-baseline="middle" >
-                                {{payoffPlayerSide}}
+                                {{getPayoff payoffs payoffPlayerSide}}
                             </text>
                         </g>
                     </svg>
@@ -163,19 +167,19 @@
 <template name = "questionGame">
     <section class="expPaneNoMargin experiment"> 
 
-        <div class = "expQuestion {{type}} form-group {{getHasError _id}}" id="{{_id}}">
-            <h3 class="questionTitle" >{{title}}</h3>
-            <label for="{{_id}}" class = "control-label {{disabled _id}}">{{text}}</label>
-            {{> gameNormalForm id=_id gameId=_id choiceType=type question=this context=..}}
+        <div class = "expQuestion {{question.type}} form-group {{getHasError question}}" id="{{question._id}}">
+            <h3 class="questionTitle" >{{question.title}}</h3>
+            {{question.text}}
+            <label for="{{question._id}}" class = "control-label {{disabled question}}">{{question.label}}</label>
+            {{> gameNormalForm id=question._id gameId=question._id choiceType=question.type payoffs=question.payoffs question=question context=.. }}
         </div>
     </section> 
 </template>
 <template name = "questionGameCompare">
     <section class="expPaneNoMargin experiment"> 
-
-        <div class = "expQuestion {{type}} form-group {{getHasError _id}}" id="{{_id}}">
-            <h3 class="questionTitle" >{{title}}</h3>
-            <label for="{{_id}}" class = "control-label {{disabled _id}}">{{text}}</label>
+        <div class = "expQuestion {{question.type}} form-group {{getHasError question}}" id="{{question._id}}">
+            <h3 class="questionTitle" >{{question.title}}</h3>
+            <label for="{{question._id}}" class = "control-label {{disabled question}}">{{question.text}}</label>
             <table class="gameNormalFormGame gameNormalFormGameCompare">
                 <thead>
                     <tr>
@@ -190,10 +194,10 @@
                 <tbody>
                     <tr>
                         <td>
-                            {{> gameNormalForm id=_id gameId=_id choiceType="chooseGame" question=this context=..}}
+                            {{> gameNormalForm id=question._id gameId=question._id choiceType="chooseGame" payoffs=question.payoffsGame1 gameChoice=question.idGame1 question=question context=..}}
                         </td>
                         <td>
-                            {{> gameNormalForm id=_id gameId=_id choiceType="chooseGame" question=this context=..}}
+                            {{> gameNormalForm id=question._id gameId=question._id choiceType="chooseGame" payoffs=question.payoffsGame2 gameChoice=question.idGame2 question=question context=..}}
                         </td>
                     </tr>
                 </tbody>

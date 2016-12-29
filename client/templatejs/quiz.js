@@ -106,7 +106,7 @@ Template.answersForm.events({
             /////////////////////
             //// ... SEPARATELY, ADVANCE STATE 
             /////////////////////
-            if ( passed || failed ) {
+            if ( true || passed || failed ) {
                 Meteor.call( "disableQuestions", _.map(qs, "_id"), reset=failed ? true : false );
                 Meteor.call( "setReadyToProceed", muid );
                 if ( failed ) {

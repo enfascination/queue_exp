@@ -47,19 +47,21 @@ Template.answersForm.events({
             // custom restricted text test
             if (q.type==='text' && q.pattern && !(new RegExp(q.pattern)).test( choice )) { 
                 answered=false;
-                console.log(q.text, q.pattern, (new RegExp(q.pattern)), (new RegExp(q.pattern)).test( choice ));
+                console.log(q.label, q.pattern, (new RegExp(q.pattern)), (new RegExp(q.pattern)).test( choice ));
             }
 
             // require all answers
             // data validation for better check of answered
             let theData = {
                 questionType: q.type,
-                question: q.text,
+                text: q.text,
+                label: q.label,
                 choice: choice,
                 answered: answered,
                 hasError : hasError,
             };
             if (!answered || !Match.test(theData, Schemas.SurveyAnswers) ) {
+                console.log("survey fail", theData, Schemas.SurveyAnswers);
                 theData.hasError = true;
                 UserElements.questionsIncomplete.set(true);
             } else {
@@ -68,14 +70,15 @@ Template.answersForm.events({
             questionsCount += 1;
             _.assign(q, theData); // client side update: assign is a mutator of q
             Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData ); //optional?
+            console.log("grading survey", q);
         });
         /////////////////////
         //// IF INPUTS OK, SUBMIT ANSWERS AND ....
         /////////////////////
-        //console.log(choices,answeredCount ,questionsCount, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
+        console.log(answeredCount ,questionsCount, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
         if ( answeredCount === questionsCount ) {
             qs.forEach( function( q ) {
-                Meteor.call("insertSurveyQuestion", Meteor.userId(), q );
+                Meteor.call("insertQuestionToSubData", Meteor.userId(), q );
             });
             /////////////////////
             //// ... SEPARATELY, ADVANCE STATE 

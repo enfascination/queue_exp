@@ -210,6 +210,9 @@ h2.sectionHeader {
     background-color: white;
     border: 1px solid black;
 }
+.dropdown__menu[disabled] {
+    color : #757575;
+} 
 
 
 /////////////////////

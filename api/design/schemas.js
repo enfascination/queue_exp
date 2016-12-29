@@ -226,7 +226,12 @@ Schemas.SurveyAnswers = new SimpleSchema({
         type: String,
         label: "Type of survey question",
     },
-    question: {
+    text: {
+        type: String,
+        label: "long question",
+        optional: true,
+    },
+    label: {
         type: String,
         label: "question",
     },

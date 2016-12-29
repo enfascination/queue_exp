@@ -229,3 +229,53 @@ Experiment.submitExperimentChoice = function(muid, sec, sec_rnd, theData) {
             //let sd = SubjectsData.findOne({ meteorUserId: muid , theData.cohortId : cohortId, sec : section, sec_rnd : round });
             //return({ "s_status" : ss, "s_data" : sd });
         };
+Experiment.tweakGame = function(payoffs, switchOnly=false) {
+                        let payoffsBefore = _.clone( payoffs );
+                        let payoffsAfter = _.clone( payoffs );
+                        // pick two payoffs to flip or otherwise manipulate
+                        let rIndices = _.shuffle(_.range(8));
+                        let v1i = rIndices[0]; 
+                        let v2i = rIndices[1]; 
+                        let v1 = payoffsAfter[v1i]; 
+                        let v2 = payoffsAfter[v2i]; 
+                        // pick a change to make
+                        let operator, operators;
+                        let changeNature = _.sample([-1,0,1]);
+                        if (switchOnly) {
+                            // of only (mostly) mean payoff conserving manipulations (like flips) are OK.
+                            changeNature = 0;
+                        }
+                        
+                        // many contingencies is many edge cases
+                        if (v1 === 1 && v2 === 1) {
+                            operators = [[1,0],[0,1]];
+                            changeNature = _.sample([1,]);
+                        } else if (v1 === 4 && v2 === 4) {
+                            operators = [[-1,0], [0,-1],];
+                            changeNature = _.sample([-1,]);
+                        } else if (v1 === 1 && v2 === 4) {
+                            operators = [[1,-1], [1,0], [0,-1]];
+                        } else if (v1 === 4 && v2 === 1) {
+                            operators = [[-1,1], [-1,0], [0,1]];
+                        } else if (v1 === 1) {
+                            operators = [[1,-1], [1,0], [0,1], [0,-1]];
+                        } else if (v1 === 4) {
+                            operators = [[-1,1], [-1,0], [0,1], [0,-1]];
+                        } else if (v2 === 1) {
+                            operators = [[-1,1], [0,1], [1,0], [-1,0]];
+                        } else if (v2 === 4) {
+                            operators = [[1,-1], [0,-1], [1,0], [-1,0]];
+                        } else {
+                            operators = [[1,-1], [-1,1], [1,0], [-1,0], [0,1], [0,-1]];
+                        }
+                        // pick the transformation to apply
+                        operator = _(operators).filter( (a)=>_(a).sum() === changeNature).sample();
+                        payoffsAfter[v1i] = payoffsAfter[v1i] + operator[0];
+                        payoffsAfter[v2i] = payoffsAfter[v2i] + operator[1];
+                        // prep detailed outputs.
+                        //let payoffYou = _.slice(payoffsAfter, 0,4);
+                        //let payoffOther = _.slice(payoffsAfter,4,8);
+                        payoffsDiff = _.map( _.zip(payoffsBefore, payoffsAfter), (e)=> _.subtract(e[1], e[0]) );
+                        //return( { payoffYou, payoffOther, payoffsDiff } );
+                        return( payoffsAfter );
+                    };

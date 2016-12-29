@@ -107,7 +107,7 @@ Template.main.helpers({
         let d = _( design.sequence ).omit( [ "instructions", "quiz", "submitHIT" ] ).toArray().value();
         //console.log(d);
         _.forEach( d, function( q ) {
-            q.context = dataContext;
+            //q.context = dataContext;// this was a bad idea, better to make sure that the items passed have the right info from thebeginning
         });
         return(d);
     },
@@ -168,5 +168,10 @@ Template.expSectionTabPane.helpers({
 Template.registerHelper('equals',
     function(v1, v2) {
         return (v1 === v2);
+    }
+);
+Template.registerHelper('inc',
+    function(v1) {
+        return (v1+1);
     }
 );

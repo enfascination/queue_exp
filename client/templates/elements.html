@@ -2,25 +2,29 @@
     <form class="answersForm" id="{{currentSection.id}}" >
 		{{#each questions questionsColl}}
                         {{#if equals type "binary"}}
-                            {{> questionBinary}}
+                            {{> questionBinary question=this}}
                         {{else}} 
                             {{#if equals type "quad"}}
-                                {{> questionQuad this context=..}}
+                                {{> questionQuad question=this }}
                             {{else}}
                                 {{#if equals type "chooseStrategy"}}
-                                {{> questionGame}}
+                                {{> questionGame question=this}}
                                 {{else}} 
                                     {{#if equals type "chooseStrategyTop"}}
-                                        {{> questionGame}}
+                                        {{> questionGame question=this}}
                                     {{else}} 
                                         {{#if equals type "chooseOutcome"}}
-                                            {{> questionGame}}
+                                            {{> questionGame question=this}}
                                         {{else}} 
                                             {{#if equals type "dropdown"}}
-                                                {{> questionDropdown this}}
+                                                {{> questionDropdown question=this }}
                                             {{else}} 
                                                 {{#if equals type "text"}}
-                                                    {{> questionText this}}
+                                                    {{> questionText question=this }}
+                                                {{else}} 
+                                                    {{#if equals type "chooseGame"}}
+                                                        {{> questionGameCompare question=this }}
+                                                    {{/if}}
                                                 {{/if}}
                                             {{/if}}
                                         {{/if}}
@@ -57,13 +61,13 @@
 </template>
 <template name = "questionBinary">
     <section class="expPaneNoMargin experiment"> 
-    <div class = "expQuestion {{questionClass}} form-group {{getHasError _id}}" id="{{_id}}">
-        <label for="{{_id}}" class = "control-label {{disabled _id}}">{{text}}</label>
-        <div id={{_id}} name={{_id}} class="expChoices" role="group">
-            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice {{disabled _id}}" choice="A" >
+        <div class = "expQuestion {{question.type}} form-group {{getHasError question }}" id="{{question._id}}">
+            <label for="{{question._id}}" class = "control-label {{disabled question}}">{{question.text}}</label>
+            <div id={{question._id}} name={{question._id}} class="expChoices" role="group">
+            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice {{disabled question}}" choice="A" >
                 Queue A
             </button>
-            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice {{disabled _id}}" choice="B" >
+            <button type=button class="btn btn-primary btn-lg experimentChoices expChoice {{disabled question}}" choice="B" >
                 Queue B
             </button>
         </div>
@@ -73,14 +77,14 @@
 
 <template name = "questionQuad">
     <section class="expPaneNoMargin experiment"> 
-    <div class = "expQuestion {{questionClass}} form-group {{getHasError _id}}" id="{{_id}}">
-        <label for="{{_id}}" class = "control-label {{disabled _id}}">{{text}}</label>
-        <div id={{id}} name={{id}} class="expChoices" role="group">
-            {{#each options dataContext=.. }}
+        <div class = "expQuestion {{question.type}} form-group {{getHasError question }}" id="{{question._id}}">
+            <label for="{{question._id}}" class = "control-label {{disabled question}}">{{question.text}}</label>
+            <div id={{question.id}} name={{question.id}} class="expChoices" role="group">
+            {{#each option in options question=question}}
                 <button type=button
-                    class="btn btn-primary btn-lg experimentChoices expChoice {{#if disabled}}disabled{{/if}}" 
-                    choice="{{name}}" >
-                    {{name}}
+                    class="btn btn-primary btn-lg experimentChoices expChoice {{#if question.disabled}}disabled{{/if}}" 
+                    choice="{{option.name}}" >
+                    {{option.name}}
             </button>
             {{/each}}
         </div>
@@ -89,13 +93,13 @@
 </template>
 <template name = "questionDropdown">
     <section class="expPaneNoMargin experiment"> 
-    <div class = "expQuestion {{questionClass}} form-group {{getHasError _id}}" id="{{_id}}">
-        <label for="{{_id}}" class = "control-label {{disabled _id}}">{{text}}</label>
-        <div id={{_id}} name={{_id}} class="expChoices" role="group">
-            <select class="dropdown__menu" id="category-select" {{disabled _id}}>
-                <option hidden="hidden" value='' {{disabled _id}} >Please Select</option>
-                {{#each options dataContext=.. }}
-                    <option class='expChoice' choice="{{name}}" value="{{name}}" {{disabled _id}} >{{name}}</option>
+        <div class = "expQuestion {{question.type}} form-group {{getHasError question }}" id="{{question._id}}">
+            <label for="{{question._id}}" class = "control-label {{disabled question }}">{{question.label}}</label>
+            <div id={{question._id}} name={{question._id}} class="expChoices" role="group">
+            <select class="dropdown__menu" id="category-select" {{disabled question }}>
+                <option hidden="hidden" value='' {{disabled question }} >Please Select</option>
+                {{#each option in options question=question}}
+                    <option class='expChoice' choice="{{option.name}}" value="{{option.name}}" {{disabled question }} >{{option.name}}</option>
                 {{/each}}
             </select>
         </div>
@@ -105,11 +109,11 @@
 
 <template name = "questionText">
     <section class="expPaneNoMargin experiment"> 
-    <div class = "expQuestion {{questionClass}} form-group {{getHasError _id}}" id="{{_id}}">
-        <label for="{{_id}}" class = "control-label {{disabled _id}}">{{text}}</label>
-        <div id={{_id}} name={{_id}} class="expChoices" role="group">
+        <div class = "expQuestion {{question.type}} form-group {{getHasError question }}" id="{{question._id}}">
+            <label for="{{question._id}}" class = "control-label {{disabled question }}">{{question.label}}</label>
+            <div id={{question._id}} name={{question._id}} class="expChoices" role="group">
             <!-- <input id="{{_id}}" name="{{_id}}" value="text" class = "sm-width form-control expChoice"> -->
-            <input id="{{_id}}" name="{{_id}}" type="text" class="sm-width form-control expChoice" title="{{fieldname}}" pattern="{{pattern}}" {{disabled _id}} />
+            <input id="{{question._id}}" name="{{question._id}}" type="text" class="sm-width form-control expChoice" title="{{question.fieldname}}" pattern="{{question.pattern}}" {{disabled question }} />
         </div>
     </div>
     </section> 
