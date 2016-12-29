@@ -30,7 +30,7 @@ Template.experiment.onCreated( function(){
             let newData, newCohort;//, updateSession;
             let sub = state.status;
             let data = state.data;
-            if ( !sub.readyToProceed && _.isEmpty( data ) ) { // player is new to me if they are int he experiment, they have no incomplete data, and they aren't ready to proceeed to a next stage
+            if ( !sub.readyToProceed && !state.playerHasConnectedBefore ) { // player is new to me if they are int he experiment, they have no incomplete data, and they aren't ready to proceeed to a next stage
                 // record groupid, in case I need it one day
                 console.log("new sub");
                 Meteor.call("addGroupId", muid, group );
@@ -38,7 +38,7 @@ Template.experiment.onCreated( function(){
                     if (err) { throw( err ); }
                     //console.log("initializeRound", data.s_data.theData.cohortId, data.design.cohortId);
                     //updateSession = true;
-                    newData = { "status" : data.s_status, "data" : data.s_data };
+                    newData = { "status" : data.s_status};
                     newCohort = data.design;
                 } );
             } else if ( sub.sec_type_now === "experiment" && _.some( data, (x) => x.completedChoice === false ) ) { // player is refreshing or reconnecting mid choice in experiment
@@ -92,7 +92,7 @@ Template.answersForm.events({
         //Only allow clients to attempt quiz twice before preventing them from doing so
         let answeredCount = 0;
         let questionsCount = 0;
-        let qs = Template.currentData().questionsColl.fetch();
+        let qs = Template.currentData().questionsColl ? Template.currentData().questionsColl.fetch() : [];
         //let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now });
         qs.forEach( function( q ) {
             let form = e.target;
@@ -133,21 +133,8 @@ Template.answersForm.events({
             let lastGameRound = ( sub.sec_rnd_now >= ( design.sequence[ sub.sec_now ].roundCount - 1 ) );
 
             //console.log( lastGameRound );
-            let subData = SubjectsData.findOne({ meteorUserId: Meteor.userId() , "theData.cohortId" : cohortId, sec : sub.sec_now, sec_rnd : sub.sec_rnd_now });
             //let choice = Questions.findOne({sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now }).choice;
             //theData.choice = choice; // user input might be dirty;
-            let theData = subData.theData;
-            theData.choice = qs;
-            console.log( "submitting answers, advancing state", subData, design, lastGameRound, qs );
-
-            if (_.isNil(subData)) {
-                console.log( "BADNESS: initialize round failed during load");
-                Meteor.call('initializeRound', sub=sub, lastDesign=null, asyncCallback=function(err, data) {
-                    if (err) { throw( err ); }
-                    //try again
-                    subData = SubjectsData.findOne({ meteorUserId: Meteor.userId() , "theData.cohortId" : cohortId, sec : sub.sec_now, sec_rnd : sub.sec_rnd_now });
-                });
-            }
 
             //// continue if clean
             //// experiment-specific logic
@@ -197,7 +184,7 @@ Template.answersForm.events({
                         // create the next cohort object (which might have no members actually);
                         Meteor.call('initializeRound', sub=updatedSub, lastDesign=design, asyncCallback=function(err, data) {
                             if (err) { return(err); }
-                            //Sess.setClientSub( { "status" : data.s_status, "data" : data.s_data } );
+                            //Sess.setClientSub( { "status" : data.s_status} );
                             //Sess.setClientDesign( data.design );
                         });
                         // routing?

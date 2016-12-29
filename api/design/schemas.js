@@ -76,6 +76,14 @@ Schemas.SubjectsStatus = new SimpleSchema({
         type: SimpleSchema.Integer,
         label: "experiment earnings",
     },
+    cohort_now: {
+        type: SimpleSchema.Integer,
+        label: "current cohorts",
+    },
+    cohortIds: {
+        type: [SimpleSchema.Integer],
+        label: "cohorts this subject is a member of, in order",
+    },
 });
 
 Schemas.SubjectsData = new SimpleSchema({

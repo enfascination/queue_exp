@@ -41,9 +41,10 @@ export const Sess = {
                 /// cohort isn't a meaningful idea outside of the main experiment
                 return(Design);
             }
-            let sd = SubjectsData.findOne({meteorUserId: Meteor.userId()}, { sort : { sec : -1, sec_rnd : -1 } } );
-            if ( !_.isNil( sd ) ) {
-                cs = CohortSettings.findOne({ cohortId: sd.theData.cohortId, sec : sd.sec, sec_rnd : sd.sec_rnd }, { sort : { sec : -1, sec_rnd : -1 } } );
+            if ( !_.isNil( sb ) ) {
+                cs = CohortSettings.findOne(
+                    { cohortId: sb.cohort_now, sec : sb.sec_now, sec_rnd : sb.sec_rnd_now }, 
+                    { sort : { sec : -1, sec_rnd : -1 } } );
             }
             if ( !_.isNil( cs ) ) {
                 return( cs );

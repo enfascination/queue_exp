@@ -67,17 +67,18 @@ Meteor.users.deny({
     });
 
     Meteor.methods({
-        // this is a reload detector.  if the player has connected before, they will have a data object in progress.
+        // this is a reload detector.  if the player has connected before, they will have a non-zero current cohort.
+        // FORMERLY: this is a reload detector.  if the player has connected before, they will have a data object in progress.
         playerHasConnectedBefore: function( muid ) {
             //console.log("check prior (data) connections",SubjectsStatus.findOne({meteorUserId : muid}),  SubjectsData.find({meteorUserId : muid}, { $sort: {sec : -1, sec_rnd : -1 }}).fetch() );
-            let subjectDatas = SubjectsData.find({meteorUserId : muid, completedChoice : false }).fetch();
-            try {
-                console.assert( subjectDatas.length <= 1, "in playerHasConnectedBefore" );
-            } catch(err) {
-                console.log( err, subjectDatas );
-            }
+            let subStat = SubjectsStatus.findOne( { meteorUserId : muid } );
+            let subjectDatas = SubjectsData.find( { meteorUserId : muid, sec : subStat.sec_now } ).fetch();
             //console.log("testrelogon", muid, SubjectsData.find({meteorUserId : muid, completedChoice : false}).fetch(), subjectDatas );
-            return( { "status" : SubjectsStatus.findOne( {meteorUserId : muid }), "data" : subjectDatas } );
+            return( { 
+                "status" : SubjectsStatus.findOne( {meteorUserId : muid }), 
+                "data" : subjectDatas,
+                "playerHasConnectedBefore" : (subStat.cohort_now !== 0) ? true : false, 
+            } );
         },
         // this will createa a new SubjectStatus object
         initializeSubject: function( idObj ) {
@@ -96,6 +97,8 @@ Meteor.users.deny({
                 mtHitId: idObj.hitId,
                 mtAssignmentId: idObj.assignmentId,
                 mtWorkerId: idObj.workerId,
+                cohort_now : 0,
+                cohortIds : [],
                 sec_now: 'instructions',
                 sec_type_now: 'quiz',
                 sec_rnd_now: 0,
@@ -124,9 +127,9 @@ Meteor.users.deny({
                 //let payoffs = _.concat( _.times(4, ()=>_.sample([1, 2, 3, 4]) ), _.times(4, ()=>_.sample([1, 2, 3, 4]) ) );
                 /// game 2
                 payoffsGame2 = Experiment.tweakGame( payoffsGame1, switchOnly=true );
-                if( _.random() ) { // another shuffle that is important to make sure doubles happen in both blocks
-                    let tmp = payoffsGame1;
-                    payoffsGame1 = payoffsGame2;
+                if( _.random() === 0 ) { // another shuffle that is important to make sure doubles happen in both blocks
+                    let tmp = _.clone( payoffsGame1 );
+                    payoffsGame1 = _.clone( payoffsGame2 );
                     payoffsGame2 = tmp;
                 }
                 payoffsDiff = _.map( _.zip(payoffsGame1, payoffsGame2), (e)=> _.subtract(e[1], e[0]) );
@@ -138,6 +141,7 @@ Meteor.users.deny({
                     console.log("addQuestions q", sec, q.sec, (q.sec != sec && q.sec != 'experiment'));
                     if (q.sec === 'experiment1' || q.sec === 'experiment2' ) {
                         q.sec = sec; // overwrite the input section (from experiment to experiment1)
+                        q.cohortId = sub.cohort_now;
                         q.payoffOrder = payoffOrder;
                         q.payoffOrderPlayers = payoffOrderPlayers;
                         q.playerPosition = playerPosition;
@@ -174,7 +178,7 @@ Meteor.users.deny({
         // it will update and may create a new CohortSettings object
         initializeRound: function( sub, lastDesign ) {
             console.log("initRound");
-            let design, theData;
+            let design;
 
             if (_.isString(sub)) { 
                 // sub can be passed as a collection or a meteor.userId()
@@ -188,25 +192,14 @@ Meteor.users.deny({
             design = dat.design;
 
             if( design.sec_rnd === 0 ) {
+                SubjectsStatus.update(
+                    {meteorUserId : sub.meteorUserId}, 
+                    {$set : { cohort_now : design.cohortId }}
+                );
+
                 Meteor.call("addSubjectQuestions", sub, design.sec );
             }
 
-            //  experiment specific
-            // retrieve the appropriiate data for the subject in this state
-            theData = Experiment.findSubsData( sub, lastDesign, dat, Design.matching );
-            //console.log("outerinit", theData);
-
-            //console.log("new subject data", theData);
-            SubjectsData.insert( {
-                userId: sub.userId,
-                meteorUserId: sub.meteorUserId,
-                sec: sub.sec_now,
-                sec_type: sub.sec_type_now,
-                sec_rnd: sub.sec_rnd_now,
-                completedChoice: false,
-                theTimestamp: Date.now(),
-                theData : theData,
-            } );
             //ensure uniqueness
             //SubjectsData._ensureIndex({userId : 1, meteorUserId : 1, sec : 1, sec_rnd : 1}, { unique : true } );
             CohortSettings.update({
@@ -221,9 +214,6 @@ Meteor.users.deny({
 
             let ss, sd, ct;
             ss = SubjectsStatus.findOne({ meteorUserId: sub.meteorUserId });
-            sd = SubjectsData.findOne({ 
-                meteorUserId: sub.meteorUserId, "theData.cohortId": design.cohortId, sec: design.sec, sec_rnd : design.sec_rnd 
-            });
             ct = CohortSettings.findOne({ cohortId: design.cohortId, sec: design.sec, sec_rnd : design.sec_rnd });
             return( { "s_status" : ss, "s_data" : sd, "design" : ct } );
         },
@@ -445,6 +435,22 @@ Meteor.users.deny({
         insertQuestionToSubData: function(muid, theData ) {
             let sub = SubjectsStatus.findOne({ meteorUserId : muid });
             //console.log("insertSurveyQuestion", sub);
+            // fortify theData with vestiges
+            if (sub.sec_now === 'experiment1' || sub.sec_now === 'experiment2') {
+                theData.cohortId = sub.cohort_now;
+            } else {
+                theData.cohortId = 0;
+            }
+            theData.queuePosition = 0;
+            theData.queuePositionFinal = 0;
+            theData.earnings1 = 1;
+            theData.earnings2 = 1;
+            theData.totalPayment = 1;
+            theData.queueCountA = 0;
+            theData.queueCountB = 0;
+            theData.queueCountNoChoice = 0;
+
+            // insert
             let id = SubjectsData.insert( {
                 userId: sub.userId,
                 meteorUserId: sub.meteorUserId,
@@ -476,15 +482,15 @@ Meteor.users.deny({
             });
         },
         setChosenGameForRound : function(sub, sec_rnd, chosenGameId ) {
-            console.log("setChosenGameForRound", sub, sec_rnd, chosenGameId );
+            //console.log("setChosenGameForRound", sub, sec_rnd, chosenGameId );
             let cGQ = Questions.findOne({ _id : chosenGameId });
-            console.log("setChosenGameForRound 6");
+            //console.log("setChosenGameForRound 6");
             let nextQuestionQuery = {
                 meteorUserId:sub.meteorUserId, 
                 sec : sub.sec_now, 
                 sec_rnd : sec_rnd, 
                 type : 'chooseStrategy'};
-            console.log("setChosenGameForRound 7");
+            //console.log("setChosenGameForRound 7");
             let tmp = Questions.update(nextQuestionQuery, {$set : { 
                 payoffs : cGQ.payoffs,
             }}, {multi: true});
@@ -493,6 +499,6 @@ Meteor.users.deny({
             } catch (err) {
                 console.log(err, tmp, nextQuestionQuery, chosenGameId);
             }
-            console.log("setChosenGameForRound again", cGQ, nextQuestionQuery, tmp);
+            //console.log("setChosenGameForRound again", cGQ, nextQuestionQuery, tmp);
         }
     });
