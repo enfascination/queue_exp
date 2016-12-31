@@ -84,6 +84,18 @@ Schemas.SubjectsStatus = new SimpleSchema({
         type: [SimpleSchema.Integer],
         label: "cohorts this subject is a member of, in order",
     },
+    treatments: {
+        type: [String],
+        label: "subject's ordered section treatments",
+    },
+    treatment_now: {
+        type: String,
+        label: "subject's treatment",
+    },
+    block_now: {
+        type: SimpleSchema.Integer,
+        label: "current block(section int)",
+    },
 });
 
 Schemas.SubjectsData = new SimpleSchema({

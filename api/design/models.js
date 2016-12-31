@@ -30,8 +30,8 @@ DesignSequence = {
             "type" : "experiment" , 
             "id" : "experiment1" , 
             "label" : "Section 1" , 
-            "roundCount" : 4, 
-            "rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Round 3"},  "3" : {id:"round3", label:"Round 4"}, },
+            "roundCount" : 5, 
+            "rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Feedback"},  "3" : {id:"round3", label:"Round 3"},  "4" : {id:"round4", label:"Round 4"}, },
             "stages" : 1 ,
         }, 
         "experiment2" : {
@@ -39,8 +39,8 @@ DesignSequence = {
             "type" : "experiment" , 
             "id" : "experiment2" , 
             "label" : "Section 2" , 
-            "roundCount" : 4, 
-            "rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Round 3"},  "3" : {id:"round3", label:"Round 4"}, },
+            "roundCount" : 5, 
+            "rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Feedback"},  "3" : {id:"round3", label:"Round 3"},  "4" : {id:"round4", label:"Round 4"}, },
             "stages" : 1 ,
         }, 
         "survey" : { 
@@ -78,6 +78,7 @@ Design = {
         selfMatching : true,//DANGER lots of bad broken useless code in the relevant if statements
         noMatching : false,
     },
+    subjectTreatments : ["nofeedback", "feedback"], // think of these as subject level, not cohort level. in a cohort, you get both within a cohort
 };
 UserElements = {
     experimenterView : true,

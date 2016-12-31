@@ -13,10 +13,10 @@ export let QueueAssigner = class extends TurkServer.Assigners.SimpleAssigner {
             // this will be for the instructions in the lobby before the experiment
             if(!currentUser){
                 console.log("created new user", asst.userId, asst.assignmentId );
-                Meteor.call("initializeSubject", asst, function(err) {
+                Meteor.call("initializeSubject", asst, Design, function(err) {
                     if (err) { throw( err ); }
                     currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
-                    Meteor.call("addSubjectQuestions", currentUser, "quiz");
+                    Meteor.call("addSectionQuestions", currentUser, "quiz");
                 });
             }
 

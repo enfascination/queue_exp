@@ -1,7 +1,7 @@
 <template name="instPrefInstructions">
     <br/>
         <section class="expPaneMargin">
-            <p><strong>Please review these instructions carefully.</strong>  Participation in this experiment is based on your passing a comprehension test. If you fail the test you will pass the HIT and earn <strong>10&cent;</strong>, but you will be ineligible to participate in the main experiment, which offers a theoretical maximum of <strong>$6.50</strong> in bonus earnings, and a minimum of <strong>$1.75</strong>. This experiment takes about 15 minutes to complete. </p>
+            <p><strong>Please review these instructions carefully.</strong>  Participation in this experiment is based on your passing a comprehension test. If you fail the test you will pass the HIT and earn <strong>10&cent;</strong>, but you will be ineligible to participate in the main experiment, which offers a theoretical maximum of <strong>$6.50</strong> in bonus earnings, and a minimum of <strong>$1.75</strong>. This experiment takes about 15 minutes to complete. After completion, it will take us minutes to hours to calculate and distribute your earnings. It will not take longer than 12 hours. You will be provided with a link from which you can check on the status of your earnings. </p>
         </section>
         <section class="expPaneMargin">
             <h3>Game description</h3>
@@ -76,7 +76,34 @@
     </section>
 </template>
 <template name="instPrefGame">
-    Hello, {{currentSection.id}}
+    Hello, {{currentSection.id}}, round {{currentSection.sec_rnd}}, round {{subStat.sec_rnd_now}}
+    {{#if equals subStat.sec_rnd_now 0}}
+        <p>You will begin by playing the game below.</p>
+    {{else}} {{#if equals subStat.sec_rnd_now 1}}
+        <p>You will now play a similar game.</p>
+    {{else}} {{#if equals subStat.sec_rnd_now 2}}
+        <p>This is an informational round that allows you to see the outcomes of this section's two games.  However, we will only present you with this feedback in one of the two sections.  In one section you are being provided with feedback on payoffs, and in the other you will not. Regardless, you will be paid in full for your earnings in both sections.</p>
+        {{#if equals subStat.treatment_now "nofeedback"}}
+            <p><strong>In this section you will not be receiving feedback. Please submit and proceed.</strong></p>
+        {{else}} {{#if equals subStat.treatment_now "feedback"}}
+                <p><strong>In this section you will be receiving feedback.  Your choices are now being matched with those of the other player in order to calculate your payoffs. Press submit to see them.  When you have reviewed your earnings, you may proceed to the next round.</strong></p>
+        {{/if}}
+        {{/if}}
+    {{else}} {{#if equals subStat.sec_rnd_now 3}}
+        <p>In the round after this one you will play one of the previous two games a second time, for additional earnings.  In this round you will select which game you replay.</p>
+    {{else}} {{#if equals subStat.sec_rnd_now 4}}
+        <p>This is the last round of this section; the game you selected is below.</p>
+    {{else}}
+        <p>Something is wrong. Code YRAKASDFASDFSHGK.</p>
+    {{/if}}
+    {{/if}}
+    {{/if}}
+    {{/if}}
+    {{/if}}
+</template>
+<template name="instGameFeedback">
+Show this after (each?) game is submitted.
+Nest it in an if statement testing round completion.
 </template>
 
 

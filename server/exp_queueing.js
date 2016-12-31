@@ -254,3 +254,94 @@ Experiment.initializeCohort = function(newCohortId, newSection, newSectionType, 
     //throw(new Meteor.Error(500, 'Permission denied!'));
     //}
 };
+Experiment.tryToCompleteCohort = function(design) {
+            let completedCohort = false;
+            let cohortId = design.cohortId;
+
+            // make it safe to over-call this function
+            //    abort if cohort is already complete
+            if ( CohortSettings.findOne(
+                { cohortId: cohortId}
+            ).completedCohort ) {
+                return;
+            }
+            
+            // experiment-specific logic
+            let cohortFin = SubjectsData.find({
+                "theData.cohortId" : cohortId, 
+                //sec: design.sec,  //these entries are deprecated
+                //sec_rnd: design.sec_rnd,  //these entries are deprecated
+                completedChoice: true,
+            });
+            let cohortUnfin = SubjectsData.find({
+                "theData.cohortId" : cohortId, 
+                //sec: design.sec,  //these entries are deprecated
+                //sec_rnd: design.sec_rnd,  //these entries are deprecated
+                completedChoice: false,
+            });
+
+            //console.log( "cohort completion", cohortFin.count(), cohortUnfin.count(), design.maxPlayersInCohort );
+            if (cohortFin.count() >= design.maxPlayersInCohort ) {
+                // get rid of old cohort (make it outdated/complete)
+                completedCohort = true;
+                CohortSettings.update({ cohortId: cohortId}, {
+                    $set: { 
+                        completedCohort: true,
+                    },
+                }//, {multi: true}  //d ont' want to need this.
+                );
+                try {
+                    console.assert(design.maxPlayersInCohort === design.filledCohort, "sanity6" );
+                } catch(err) {
+                    console.log(err);
+                }
+
+                //if end of queue, calculate all earnings
+                Meteor.call( 'calculateExperimentEarnings', design );
+
+            } else if ( cohortFin.count() + cohortUnfin.count() === design.maxPlayersInCohort) {
+                //let sub = SubjectsData.findOne({ cohortId : cohortId, sec: design.sec, sec_rnd: design.sec_rnd }, 
+                    //{ sort : { cohortId : -1, sec : -1, sec_rnd : -1 } });
+                for ( let sub of cohortUnfin.fetch() ) {
+                    // print out subjects that, later, I'll want (need) to address manually.
+                    //console.log( sub.userId );
+                }
+            } else {
+                // cohort still in progress
+            }
+
+            //return( design  );
+};
+Experiment.calculateExperimentEarnings = function(aDesign) {
+            let queueasubjects, queuebsubjects, positionfinal, earnings2, totalpayment, asst, cohortId;
+            cohortId = aDesign.cohortId;
+
+            // experiment-specific logic
+            queueASubjects = SubjectsData.find( {
+                "theData.cohortId" : cohortId, "theData.choice" : "A", //sec : aDesign.sec, sec_rnd : aDesign.sec_rnd //eddepcrecaed
+                }, {sort : { "theData.queuePosition" : 1 } } ).fetch() ;
+            queueBSubjects = SubjectsData.find( {
+                "theData.cohortId" : cohortId, "theData.choice" : "B", //sec : aDesign.sec, sec_rnd : aDesign.sec_rnd               //eddepcrecaed
+                }, {sort : { "theData.queuePosition" : 1 } } ).fetch() ;
+            positionFinal = 1;
+
+            for ( let sub of _.concat(queueASubjects, queueBSubjects ) ) {
+
+                // experiment-specific logic
+                // maybe figure out here how to recover assignment from an old passed subject;
+                earnings2 = aDesign.pot - ( (positionFinal-1) * aDesign.positionCosts );
+                totalPayment = sub.theData.earnings1 + earnings2;
+
+                SubjectsData.update({"theData.cohortId": cohortId, userId : sub.userId, sec : aDesign.sec, sec_rnd : aDesign.sec_rnd }, {
+                    $set: { 
+                        "theData.earnings2": earnings2, 
+                        "theData.totalPayment": totalPayment, 
+                        "theData.queuePositionFinal" : positionFinal,
+                    },
+                });
+                subbk = SubjectsStatus.findOne({ meteorUserId: sub.meteorUserId });
+                asst = TurkServer.Assignment.getAssignment( subbk.tsAsstId );
+                asst.setPayment( totalPayment );
+                positionFinal += 1;
+            }
+        };

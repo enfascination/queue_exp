@@ -81,9 +81,15 @@ Meteor.users.deny({
             } );
         },
         // this will createa a new SubjectStatus object
-        initializeSubject: function( idObj ) {
+        initializeSubject: function( idObj, design ) {
 
             // experiment-specific logic
+            let treatments;
+            if (design.matching.selfMatching) {
+                treatments = design.subjectTreatments;
+            } else if (design.matching.ensureSubjectMismatchAcrossSections ) {
+                treatments = _.shuffle( design.subjectTreatments );
+            }
            
 
             SubjectsStatus.insert( {
@@ -105,12 +111,15 @@ Meteor.users.deny({
                 sec_rnd_stg_now: 0,
                 readyToProceed: false,
                 totalEarnings: 0,
+                treatments : treatments,
+                treatment_now : treatments[0],
+                block_now : 0,  // this is an int version of sec_now
             } );
 
             //ensure uniqueness
             SubjectsStatus._ensureIndex({userId : 1, meteorUserId : 1}, { unique : true } );
         },
-        addSubjectQuestions : function( sub, sec, matching=false ) {
+        addSectionQuestions : function( sub, sec, matching=false ) {
             //import { QuestionData } from '../../imports/startup/experiment_prep_instpref.js';
             //let idxs = _.shuffle( _.range( questions.length ) );
             console.log("addQuestions", sec);
@@ -137,9 +146,9 @@ Meteor.users.deny({
                 console.log("generated games", payoffsGame1, payoffsGame2);
                 } else if (matching.selfMatching && sec === "experiment2" ) {
                     let matchingQ = Questions.findOne({meteorUserId : sub.meteorUserId, sec : 'experiment1', sec_rnd : sub.sec_rnd_now, type : 'chooseStrategy'});
-                    console.log("returning to games", payoffsGame1, payoffsGame2);
                     payoffsGame1 = Experiment.pivotGame( matchingQ.payoffsGame1 );
                     payoffsGame2 = Experiment.pivotGame( matchingQ.payoffsGame2 );
+                    console.log("returning to games", payoffsGame1, payoffsGame2);
                 }
             }
             let idGameQ1, idGameQ2, idTmp;
@@ -162,9 +171,11 @@ Meteor.users.deny({
                             q.payoffs = payoffsGame2;
                             //q.gameId = payoffsGame2.join();
                         } else if (q.sec_rnd === 2) {
+                            // info round
+                        } else if (q.sec_rnd === 3) {
                             q.idGameQ1 = idGameQ1;
                             q.idGameQ2 = idGameQ2;
-                        } else if (q.sec_rnd === 3) {
+                        } else if (q.sec_rnd === 4) {
                         }
                     } 
                     q.meteorUserId = sub.meteorUserId;
@@ -185,7 +196,7 @@ Meteor.users.deny({
         // initialize cohort should always have been called before this function initializeRound
         // this will create a new SubjectsData object
         // it will update and may create a new CohortSettings object
-        initializeRound: function( sub, lastDesign ) {
+        initializeSection: function( sub, lastDesign ) {
             console.log("initRound");
             let design;
 
@@ -200,6 +211,7 @@ Meteor.users.deny({
             dat = Experiment.findSubsCohort( sub, lastDesign, Design.matching );
             design = dat.design;
 
+            // this if shouldn't even be necessary. it's here by definition.
             if( sub.sec_rnd_now === 0 ) {
                 console.log("izero, assigning cohort", design.cohortId);
                 SubjectsStatus.update(
@@ -209,7 +221,7 @@ Meteor.users.deny({
                     }}
                 );
 
-                Meteor.call("addSubjectQuestions", sub, sub.sec_now, matching=design.matching );
+                Meteor.call("addSectionQuestions", sub, sub.sec_now, matching=design.matching );
 
                 //ensure uniqueness
                 //SubjectsData._ensureIndex({userId : 1, meteorUserId : 1, sec : 1, sec_rnd : 1}, { unique : true } );
@@ -271,6 +283,8 @@ Meteor.users.deny({
                     sec_type_now: nextSectionType,
                     sec_rnd_now: 0,
                     readyToProceed: false, // reset this for the next section
+                    block_now: sub_old.block + 1,
+                    treatment_now: sub_old.treatments[ sub_old.block + 1 ],
                 },
             });
 
@@ -310,98 +324,9 @@ Meteor.users.deny({
             return( sub );
         },
         // updates a CohortSettings object
-        tryToCompleteCohort: function(design) {
-            let completedCohort = false;
-            let cohortId = design.cohortId;
-
-            // make it safe to over-call this function
-            //    abort if cohort is already complete
-            if ( CohortSettings.findOne(
-                { cohortId: cohortId}
-            ).completedCohort ) {
-                return;
-            }
-            
-            // experiment-specific logic
-            let cohortFin = SubjectsData.find({
-                "theData.cohortId" : cohortId, 
-                //sec: design.sec,  //these entries are deprecated
-                //sec_rnd: design.sec_rnd,  //these entries are deprecated
-                completedChoice: true,
-            });
-            let cohortUnfin = SubjectsData.find({
-                "theData.cohortId" : cohortId, 
-                //sec: design.sec,  //these entries are deprecated
-                //sec_rnd: design.sec_rnd,  //these entries are deprecated
-                completedChoice: false,
-            });
-
-            //console.log( "cohort completion", cohortFin.count(), cohortUnfin.count(), design.maxPlayersInCohort );
-            if (cohortFin.count() >= design.maxPlayersInCohort ) {
-                // get rid of old cohort (make it outdated/complete)
-                completedCohort = true;
-                CohortSettings.update({ cohortId: cohortId}, {
-                    $set: { 
-                        completedCohort: true,
-                    },
-                }//, {multi: true}  //d ont' want to need this.
-                );
-                try {
-                    console.assert(design.maxPlayersInCohort === design.filledCohort, "sanity6" );
-                } catch(err) {
-                    console.log(err);
-                }
-
-                //if end of queue, calculate all earnings
-                Meteor.call( 'calculateExperimentEarnings', design );
-
-            } else if ( cohortFin.count() + cohortUnfin.count() === design.maxPlayersInCohort) {
-                //let sub = SubjectsData.findOne({ cohortId : cohortId, sec: design.sec, sec_rnd: design.sec_rnd }, 
-                    //{ sort : { cohortId : -1, sec : -1, sec_rnd : -1 } });
-                for ( let sub of cohortUnfin.fetch() ) {
-                    // print out subjects that, later, I'll want (need) to address manually.
-                    //console.log( sub.userId );
-                }
-            } else {
-                // cohort still in progress
-            }
-
-            //return( design  );
-        },
+        tryToCompleteCohort: Experiment.tryToCompleteCohort,
         // updates a bunch of SubjectsData objects
-        calculateExperimentEarnings: function(aDesign) {
-            let queueasubjects, queuebsubjects, positionfinal, earnings2, totalpayment, asst, cohortId;
-            cohortId = aDesign.cohortId;
-
-            // experiment-specific logic
-            queueASubjects = SubjectsData.find( {
-                "theData.cohortId" : cohortId, "theData.choice" : "A", //sec : aDesign.sec, sec_rnd : aDesign.sec_rnd //eddepcrecaed
-                }, {sort : { "theData.queuePosition" : 1 } } ).fetch() ;
-            queueBSubjects = SubjectsData.find( {
-                "theData.cohortId" : cohortId, "theData.choice" : "B", //sec : aDesign.sec, sec_rnd : aDesign.sec_rnd               //eddepcrecaed
-                }, {sort : { "theData.queuePosition" : 1 } } ).fetch() ;
-            positionFinal = 1;
-
-            for ( let sub of _.concat(queueASubjects, queueBSubjects ) ) {
-
-                // experiment-specific logic
-                // maybe figure out here how to recover assignment from an old passed subject;
-                earnings2 = aDesign.pot - ( (positionFinal-1) * aDesign.positionCosts );
-                totalPayment = sub.theData.earnings1 + earnings2;
-
-                SubjectsData.update({"theData.cohortId": cohortId, userId : sub.userId, sec : aDesign.sec, sec_rnd : aDesign.sec_rnd }, {
-                    $set: { 
-                        "theData.earnings2": earnings2, 
-                        "theData.totalPayment": totalPayment, 
-                        "theData.queuePositionFinal" : positionFinal,
-                    },
-                });
-                subbk = SubjectsStatus.findOne({ meteorUserId: sub.meteorUserId });
-                asst = TurkServer.Assignment.getAssignment( subbk.tsAsstId );
-                asst.setPayment( totalPayment );
-                positionFinal += 1;
-            }
-        },
+        calculateExperimentEarnings : Experiment.calculateExperimentEarnings,
         goToExitSurvey: function( muid ) {
             if (TurkServer.Instance.currentInstance()) {
                 TurkServer.Instance.currentInstance().teardown(returnToLobby = true);

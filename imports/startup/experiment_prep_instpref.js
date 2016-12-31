@@ -117,7 +117,7 @@ QuestionData.questions = [
 },
 {
     sec: 'experiment',
-    sec_rnd: 2,
+    sec_rnd: 3,
     type: 'chooseGame',
 	title: 'Question Five',
 	text: 'You will now select one of the games to play a second time.  Which game would you prefer to play again?',
@@ -125,7 +125,7 @@ QuestionData.questions = [
 },
 {
     sec: 'experiment',
-    sec_rnd: 3,
+    sec_rnd: 4,
     type: 'chooseStrategy',
 	title: 'Question Six',
 	text: 'This is the last game of the section.  Make your choice.',

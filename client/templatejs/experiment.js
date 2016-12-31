@@ -34,9 +34,9 @@ Template.experiment.onCreated( function(){
                 // record groupid, in case I need it one day
                 console.log("new sub");
                 Meteor.call("addGroupId", muid, group );
-                Meteor.call('initializeRound', sub=muid, lastDesign=null, asyncCallback=function(err, data) {
+                Meteor.call('initializeSection', sub=muid, lastDesign=null, asyncCallback=function(err, data) {
                     if (err) { throw( err ); }
-                    //console.log("initializeRound", data.s_data.theData.cohortId, data.design.cohortId);
+                    //console.log("initializeSection", data.s_data.theData.cohortId, data.design.cohortId);
                     //updateSession = true;
                     newData = { "status" : data.s_status};
                     newCohort = data.design;
@@ -144,7 +144,7 @@ Template.answersForm.events({
             //} else if (choice === "B") {
                 //theData.earnings1 = design.endowment - design.queueCosts.B;
             //}
-            if (sub.sec_rnd_now === 2) {  // experiment specific: they chose a game of two and I have to give it to them
+            if (sub.sec_rnd_now === 3) {  // experiment specific: they chose a game of two and I have to give it to them
                 // pick out the right question from this round
                 qs.forEach( function( q ) {
                     if (q.type != 'chooseGame') return;
@@ -163,8 +163,9 @@ Template.answersForm.events({
                     // a little inefficient to put this call back after every submit, but it beats missing the asynchrony, as long as its safe to over call this function.
                     if (err) { throw( err ); }
                     // determine if end of cohort
-                    if ( false ) {
-                        Meteor.call('tryToCompleteCohort', design);
+                    if ( true ) {
+                        //Meteor.call('tryToCompleteCohort', design);
+                        Meteor.call('tryToCompleteQuestion', q, design);
                     }
                 } );
             });
@@ -184,11 +185,6 @@ Template.answersForm.events({
                         UserElements.questionsIncomplete.set(false);
                         window.scrollTo(0, 0);
                         // create the next cohort object (which might have no members actually);
-                        Meteor.call('initializeRound', sub=updatedSub, lastDesign=design, asyncCallback=function(err, data) {
-                            if (err) { return(err); }
-                            //Sess.setClientSub( { "status" : data.s_status} );
-                            //Sess.setClientDesign( data.design );
-                        });
                         // routing?
                         //Router.go('/experiment');
                     } else {
@@ -275,11 +271,11 @@ Template.main.events({
             if (sub.sec_now === "experiment1" ) {
                 Meteor.call('advanceSubjectSection', Meteor.userId(), "experiment2", "experiment", asyncCallback=function(err, updatedSub) {
                     if (err) { throw( err ); }
-                    Meteor.call('initializeRound', sub=updatedSub, lastDesign=Sess.design());
+                    Meteor.call('initializeSection', sub=updatedSub, lastDesign=Sess.design());
                 });
             } else if (sub.sec_now === "experiment2" ) {
                 Meteor.call('advanceSubjectSection', Meteor.userId(), "survey", "experiment");
-                Meteor.call("addSubjectQuestions", sub, "survey" );
+                Meteor.call("addSectionQuestions", sub, "survey" );
             } else {
             }
         } else {
