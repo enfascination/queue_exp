@@ -26,7 +26,7 @@ let getPayoff = function(payoffs, loc) {
 };
 
 Template.instPrefInstructions.helpers({
-    question : function() {
+    aQuestion : function() {
         let q = {};
         q.payoffs = [3,1,4,2,3,4,1,2];
         return(q);
@@ -77,6 +77,15 @@ Template.gameNormalForm.helpers({
         return( getPayoff( payoffs, rVal));
     },
 	disabled: Helper.gameDisabled,
+    insertChoice : function( outputType, choiceType, choice ) {
+        /// WARNING.  this pretends it works for choice but it only works for active because there's a bug if i make it work for choice that i don't need to figure out to get what I want, which is feeding of db choice through to disabled game if it exists
+        let q = this.question;
+        let output = outputType === 'active' ? ' active' : ' choice="'+q.choice+'"';
+        //console.log("insertChoice", ( q.type === choiceType && !_.isNil(q.choice) && q.choice === choice ), outputType, choiceType, choice, output, q);
+        if (q.disabled && outputType === 'active' && q.type === choiceType && !_.isNil(q.choice) && q.choice === choice ) {
+            return(output);
+        }
+    }
 });
 
 Template.gameNormalForm.events({

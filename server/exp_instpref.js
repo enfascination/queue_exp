@@ -448,6 +448,6 @@ Experiment.pivotGame = function(payoffs) {
     //   making top <=> left and right <=> bottom
     let fn = (l) =>  _.map([1,0,5,4,3,2,7,6], (i)=>l[i]);
     let rval = fn(payoffs);
-    assert( _.isEqual( fn(rval), payoffs ) );
+    console.assert( _.isEqual( fn(rval), payoffs ) );
     return( rval );
                     };

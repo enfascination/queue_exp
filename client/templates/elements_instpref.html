@@ -33,7 +33,7 @@
         </section>
         <hr class="expPaneMargin"/>
                     <p><strong><strong>EXAMPLE GAME INTERFACE:</strong></strong></p>
-                    {{> gameNormalForm id="tutorial" gameId="tutorial" choiceType="chooseStrategy" payoffs=question.payoffs context=context question=question}}
+                    {{> gameNormalForm id="tutorial" gameId="tutorial" choiceType="chooseStrategy" payoffs=aQuestion.payoffs context=context question=aQuestion}}
                     <p class="expPaneMargin" style="display:center;"><em>This is a sample of the game interface that will be used through the experiment. Clicking an option will select it. Your points are in <span class="you blue">blue</span>.</em></p>
         <hr class="expPaneMargin"/>
         <section class="expPaneMargin">
@@ -76,7 +76,7 @@
     </section>
 </template>
 <template name="instPrefGame">
-    Hello, {{currentSection.id}}, round {{currentSection.sec_rnd}}, round {{subStat.sec_rnd_now}}
+    Hello, {{currentSection.id}}, round {{subStat.sec_rnd_now}}
     {{#if equals subStat.sec_rnd_now 0}}
         <p>You will begin by playing the game below.</p>
     {{else}} {{#if equals subStat.sec_rnd_now 1}}
@@ -110,40 +110,40 @@ Nest it in an if statement testing round completion.
 <template name="gameNormalForm">
     <div class="expPaneNoMargin gameNormalForm ">
                 <span style="{{#if equals choiceType 'chooseStrategy'}}float:left;{{/if}}">
-                    <table id="{{gameId}}" class="gameNormalFormGame {{choiceType}} btn-group {{disabled question}} {{#if equals gameId 'XXXtutorial'}}noactive{{/if}} {{#if equals choiceType 'chooseGame'}}expChoice{{/if}}" role="group" data-value="{{gameChoice}}">
+                    <table id="{{gameId}}" class="gameNormalFormGame {{choiceType}} btn-group {{disabled question}} {{#if equals gameId 'XXXtutorial'}}noactive{{/if}} {{#if equals choiceType 'chooseGame'}}expChoice{{/if}} {{insertChoice 'active' 'chooseGame' gameChoice }} " role="group" data-value="{{gameChoice}}" {{insertChoice "choice" "chooseGame" gameChoice }} >
                     <colgroup></colgroup> 
-                    <colgroup id="{{gameId}}" class="gameNormalFormChoice {{#if equals choiceType 'chooseStrategyTop'}}expChoice{{/if}}" data-value="Left" ></colgroup> 
-                    <colgroup id="{{gameId}}" class="gameNormalFormChoice {{#if equals choiceType 'chooseStrategyTop'}}expChoice{{/if}}" data-value="Right" ></colgroup>
+                    <colgroup id="{{gameId}}" class="gameNormalFormChoice {{#if equals choiceType 'chooseStrategyTop'}}expChoice{{/if}} {{ insertChoice 'active' 'chooseStrategyTop' 'Left' }}" data-value="Left" {{insertChoice "choice" "chooseStrategyTop" "Left" }} ></colgroup> 
+                    <colgroup id="{{gameId}}" class="gameNormalFormChoice {{#if equals choiceType 'chooseStrategyTop'}}expChoice{{/if}} {{ insertChoice 'active' 'chooseStrategyTop' 'Right' }}" data-value="Right" {{insertChoice "choice" "chooseStrategyTop" "Right" }} ></colgroup>
                     {{#unless equals choiceType 'chooseGame'}}
                     <thead> <tr> <td></td> <th scope="col"> Left </th> <th scope="col"> Right </th> </tr> </thead>
                     {{/unless}}
                     <tbody>
-                        <tr id={{gameId}} class="gameTableRow gameNormalFormChoice {{#if equals choiceType 'chooseStrategy'}}expChoice{{/if}}" data-value="Top" >
+                        <tr id={{gameId}} class="gameTableRow gameNormalFormChoice {{#if equals choiceType 'chooseStrategy'}}expChoice{{/if}} {{ insertChoice 'active' 'chooseStrategy' 'Top' }}" data-value="Top" {{insertChoice "choice" "chooseStrategy" "Top" }} >
                             {{#unless equals choiceType 'chooseGame'}}
                             <th> Top</th>
                             {{/unless}}
                             <td scope="row">
-                                <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" data-value="Top,Left" data-toggle="button" >
+                                <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}} {{insertChoice 'active' 'chooseOutcome' 'Top,Left' }}" data-value="Top,Left" data-toggle="button" {{insertChoice "choice" "chooseOutcome" "Top,Left" }} >
                                     {{> visualGame payoffIdPrefix="outcomeTL" payoffs=payoffs payoffPlayerTop="otl" payoffPlayerSide="ytl"}}
                                 </button>
                             </td>
                             <td scope="row" class="" >
-                                <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" data-value="Top,Right" data-toggle="button" >
+                                <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}} {{insertChoice 'active' 'chooseOutcome' 'Top,Right' }}" data-value="Top,Right" data-toggle="button" {{insertChoice "choice" "chooseOutcome" "Top,Right"}} >
                                     {{> visualGame payoffIdPrefix="outcomeTR" payoffs=payoffs payoffPlayerTop="otr" payoffPlayerSide="ytr"}}
                                 </button>
                             </td>
                         </tr>
-                        <tr id={{gameId}} class="gameTableRow gameNormalFormChoice {{#if equals choiceType 'chooseStrategy'}}expChoice{{/if}}" data-value="Bottom" >
+                        <tr id={{gameId}} class="gameTableRow gameNormalFormChoice {{#if equals choiceType 'chooseStrategy'}}expChoice{{/if}} {{insertChoice 'active' 'chooseStrategy' 'Bottom' }}" data-value="Bottom" {{insertChoice "choice" "chooseStrategy" "Bottom"}} >
                             {{#unless equals choiceType 'chooseGame'}}
                             <th class="" > Bottom </th>
                             {{/unless}}
                             <td scope="row" class="" >
-                                <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" data-value="Bottom,Left" data-toggle="button" >
+                                <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}} {{insertChoice 'active' 'chooseOutcome' 'Bottom,Left' }}" data-value="Bottom,Left" data-toggle="button" {{insertChoice "choice" "chooseOutcome" "Bottom,Left" }} >
                                     {{> visualGame payoffIdPrefix="outcomeBL" payoffs=payoffs payoffPlayerTop="obl" payoffPlayerSide="ybl"}}
                                 </button>
                             </td>
                             <td scope="row" class="" >
-                                <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}}" data-value="Bottom,Right" data-toggle="button" >
+                                <button type="button" id={{gameId}} class="gameNormalFormOutcome {{#if equals choiceType 'chooseOutcome'}}expChoice{{/if}} {{insertChoice 'active' 'chooseOutcome' 'Bottom,Right' }}" data-value="Bottom,Right" data-toggle="button" {{insertChoice "choice" "chooseOutcome" "Bottom,Right" }} >
                                     {{> visualGame payoffIdPrefix="outcomeBR" payoffs=payoffs payoffPlayerTop="obr" payoffPlayerSide="ybr"}}
                                 </button>
                             </td>

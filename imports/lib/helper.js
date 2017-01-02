@@ -188,7 +188,7 @@ export const Helper = {
             questions = questions.fetch();
             _.forEach( questions, function( q ) {
                 //q.context = dataContext;// this was a bad idea, better to make sure that the items passed have the right info from thebeginning
-                console.log("experiment.helpers qusetions per q", q);
+                //console.log("experiment.helpers qusetions per q", q);
             });
             if (shuffled) {
                 return( _.shuffle( questions ) );
