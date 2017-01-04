@@ -177,6 +177,7 @@ Template.answersForm.events({
                 function(err, updatedSub) {
 
                     // experiment navigation
+                    Meteor.call( "disableQuestions", _.map(qs, "_id"), false );
                     if ( !lastGameRound ) {  // calculate the logic for this out of the callbacks because things get confusing
                         //console.log("continuing");
                         // go to the next round
@@ -189,7 +190,6 @@ Template.answersForm.events({
                         //Router.go('/experiment');
                     } else {
                         //console.log("ready?");
-                        Meteor.call( "disableQuestions", _.map(qs, "_id"), false );
                         Meteor.call( "setReadyToProceed", muid );
                     }
 

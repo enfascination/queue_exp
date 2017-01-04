@@ -3,10 +3,9 @@
             <!--{{! {{> experimentInstructions currentSection=currentSection}}
             <div> <p>These are the instructions.  {{> navButton}}</p>  </div>
             <br />-->
-            {{> instPrefGame ..}}
+            {{> yield "instPrefGame" }}
         </section>
         {{> answersForm ..}}
-            {{> instGameFeedback ..}}
     <br/>
 </template>
 

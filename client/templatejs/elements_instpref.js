@@ -189,3 +189,16 @@ Template.questionGameCompare.inheritsEventsFrom('questionGame');
 Template.visualGame.helpers({
     getPayoff : getPayoff,
 });
+Template.instPrefGame2.helpers({
+	questionsFeedback : function(){
+        let sub = Sess.subStat();
+        let dataContext = this;
+        if (sub && dataContext.currentSection && this.questionsColl) {
+            let questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, type : "chooseStrategy", sec_rnd : {$lt : 2}, sec : sub.sec_now}).fetch();
+            _.forEach( questionsFeedback, function( q ) {
+                console.log("feedback qusetions per q", q);
+            });
+            return(  questionsFeedback );
+        }
+    },
+});

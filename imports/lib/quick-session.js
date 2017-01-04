@@ -47,12 +47,12 @@ export const Sess = {
                     { } );
             }
             if ( !_.isNil( cs ) ) {
-                console.log("Sess.design here");
+                //console.log("Sess.design here");
                 return( cs );
             } else {
                 //return amplify.store("design");
             }
-            console.log("Sess.design not here", sb);
+            //console.log("Sess.design not here", sb);
     },
     setClientDesign : function (des) {
         if (des) {

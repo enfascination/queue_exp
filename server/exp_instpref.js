@@ -268,29 +268,37 @@ Experiment.tryToCompleteQuestion = function(q, design) {
     console.log("Experiment.tryToCompleteQuestion", q, Helper.des(design));
     // determine if this is the first or second (ideally without knowing about matching protocol
     let question1 = q;
-    SubjectStatus.find({cohort_now});
     let question2 = Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Experiment.pivotGame(q.payoffs) });
     //assert that mpayoffs match
     console.assert(question2.count() <= 1, "Experiment.tryToCompleteQuestion problem 1");
     // exit if not completed
+    console.log("Experiment.tryToCompleteQuestion", Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Experiment.pivotGame(q.payoffs) }).count(), Questions.find({  cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Experiment.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", sec_rnd : q.sec_rnd, payoffs : Experiment.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, payoffs : Experiment.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd }).count(), "and", design.cohortId, q.sec_rnd, Experiment.pivotGame(q.payoffs) );
     if (question2.count() === 0) { return(false); }
+    question2 = Questions.findOne({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Experiment.pivotGame(q.payoffs) });
     // get eachsubjects choices
     console.log("try to complete", question1, question2);
+    let c1 = question1.choice;
+    let c2 = question2.choice === "Top" ? "Left" : "Right";
+    let outcomePerspectiveP1 = ""+c1+","+c2;
+    c1 = question1.choice === "Top" ? "Left" : "Right";
+    c2 = question2.choice;
+    let outcomePerspectiveP2 = ""+c2+","+c1;
     let c1Poss = question1.choice === "Top" ? [0,1,2,3] : [4,5,6,7];  //see pivot game for the meanings of indices
     let c2Poss = question2.choice === "Top" ? [1,0,5,4] : [3,2,7,6];
     let outcomePayoffs = _.sortBy ( _.intersection( c1Poss, c2Poss) );
-    {
-        let c1 = question1.choice;
-        let c2 = question2.choice === "Top" ? "Left" : "Right";
-        let outcomePerspectiveP1 = ""+c1+","+c2;
-        c1 = question1.choice === "Top" ? "Left" : "Right";
-        c2 = question2.choice;
-        let outcomePerspectiveP2 = ""+c2+","+c1;
-    }
     let payoffP1 = outcomePayoffs[0];
     let payoffP2 = outcomePayoffs[1];
+    console.log("tried to complete", question1, question2);
     console.assert( payoffsP1 % 2 === 0, "payoff calc 1" );
     console.assert( payoffsP2 % 2 === 1, "payoff calc 2" );
+    question1.outcome = outcomePerspectiveP1;
+    question1.payoffEarnedFocal = payoffP1;
+    question1.payoffEarnedOther = payoffP2;
+    question2.outcome = outcomePerspectiveP2;
+    question2.payoffEarnedFocal = payoffP2;
+    question2.payoffEarnedOther = payoffP1;
+    Questions.update( question1._id, {$set : question1});
+    Questions.update( question2._id, {$set : question2});
     // use this to calculate outcome
     //    (making outcome showable to player 2, since p1 will never see it?)
     // return false or outcome (or don't return anything and just change state

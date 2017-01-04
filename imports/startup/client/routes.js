@@ -70,6 +70,18 @@ Router.route('/experiment', function() {
     } else {
         this.render( 'expGeneralInfoBox', { to : 'infoBox' } );
     }
+
+    if (data && data.subStat.sec_rnd_now === 0 ) {
+        this.render( 'instPrefGame0', { to : 'instPrefGame' } );
+    } else if (data && data.subStat.sec_rnd_now === 1 ) {
+        this.render( 'instPrefGame1', { to : 'instPrefGame' } );
+    } else if (data && data.subStat.sec_rnd_now === 2 ) {
+        this.render( 'instPrefGame2', { to : 'instPrefGame' } );
+    } else if (data && data.subStat.sec_rnd_now === 3 ) {
+        this.render( 'instPrefGame3', { to : 'instPrefGame' } );
+    } else if (data && data.subStat.sec_rnd_now === 4 ) {
+        this.render( 'instPrefGame4', { to : 'instPrefGame' } );
+    }
 },{
     data : function() { // enrich the global data object in this section
         let data = Router.options.data();

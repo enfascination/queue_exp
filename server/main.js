@@ -176,6 +176,7 @@ Meteor.users.deny({
                             q.idGameQ1 = idGameQ1;
                             q.idGameQ2 = idGameQ2;
                         } else if (q.sec_rnd === 4) {
+                            q.payoffs = [];  // maybe i need to inititlize this key?
                         }
                     } 
                     q.meteorUserId = sub.meteorUserId;
@@ -283,8 +284,8 @@ Meteor.users.deny({
                     sec_type_now: nextSectionType,
                     sec_rnd_now: 0,
                     readyToProceed: false, // reset this for the next section
-                    block_now: sub_old.block + 1,
-                    treatment_now: sub_old.treatments[ sub_old.block + 1 ],
+                    block_now: sub_old.block_now + 1,
+                    treatment_now: sub_old.treatments[ sub_old.block_now + 1 ],
                 },
             });
 
@@ -324,6 +325,7 @@ Meteor.users.deny({
             return( sub );
         },
         // updates a CohortSettings object
+        tryToCompleteQuestion: Experiment.tryToCompleteQuestion,
         tryToCompleteCohort: Experiment.tryToCompleteCohort,
         // updates a bunch of SubjectsData objects
         calculateExperimentEarnings : Experiment.calculateExperimentEarnings,
@@ -413,6 +415,6 @@ Meteor.users.deny({
             } catch (err) {
                 console.log(err, tmp, nextQuestionQuery, chosenGameId);
             }
-            //console.log("setChosenGameForRound again", cGQ, nextQuestionQuery, tmp);
+            console.log("setChosenGameForRound again", cGQ.payoffs, nextQuestionQuery, tmp);
         }
     });

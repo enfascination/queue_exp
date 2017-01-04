@@ -75,35 +75,41 @@
             <p>When you have answered all of the questions as carefully as you can, click <strong>SUBMIT</strong>.</p>
     </section>
 </template>
-<template name="instPrefGame">
+<template name="instPrefGame0">
     Hello, {{currentSection.id}}, round {{subStat.sec_rnd_now}}
-    {{#if equals subStat.sec_rnd_now 0}}
         <p>You will begin by playing the game below.</p>
-    {{else}} {{#if equals subStat.sec_rnd_now 1}}
+</template>
+<template name="instPrefGame1">
+    hi, {{currentSection.id}}, round {{subStat.sec_rnd_now}}
         <p>You will now play a similar game.</p>
-    {{else}} {{#if equals subStat.sec_rnd_now 2}}
-        <p>This is an informational round that allows you to see the outcomes of this section's two games.  However, we will only present you with this feedback in one of the two sections.  In one section you are being provided with feedback on payoffs, and in the other you will not. Regardless, you will be paid in full for your earnings in both sections.</p>
+</template>
+<template name="instPrefGame2">
+    howdy, {{currentSection.id}}, round {{subStat.sec_rnd_now}}
+        <p>This is an informational round that allows you to see the outcomes of this section's two games.  However, we will only present you with this feedback in one of the two sections.  In one section you are being provided with feedback on payoffs, and in the other you will not. Regardless, you will be paid in full for your earnings in both sections.</p>{{test}}
+            {{#each question in questionsFeedback}}
+                {{> questionGame question=question}}
+            {{/each}}
         {{#if equals subStat.treatment_now "nofeedback"}}
             <p><strong>In this section you will not be receiving feedback. Please submit and proceed.</strong></p>
         {{else}} {{#if equals subStat.treatment_now "feedback"}}
-                <p><strong>In this section you will be receiving feedback.  Your choices are now being matched with those of the other player in order to calculate your payoffs. Press submit to see them.  When you have reviewed your earnings, you may proceed to the next round.</strong></p>
+        <p><strong>In this section you will be receiving feedback.  Your choices have now been matched with those of the other player in order to calculate your payoffs. When you have reviewed your earnings, you may press <strong>Submit</strong> to proceed to the next round.</strong></p>
+            Show this after (each?) game is submitted.{{test}}
+        Nest it in an if statement testing round completion.
+            {{#each questions questionsColl=questionsFeedback}}
+                {{> questionGame question=this}}
+            {{/each}}
+        {{else}}
+            <p>Something is wrong. Code YRAKASDFASDFSHGK.</p>
         {{/if}}
         {{/if}}
-    {{else}} {{#if equals subStat.sec_rnd_now 3}}
-        <p>In the round after this one you will play one of the previous two games a second time, for additional earnings.  In this round you will select which game you replay.</p>
-    {{else}} {{#if equals subStat.sec_rnd_now 4}}
-        <p>This is the last round of this section; the game you selected is below.</p>
-    {{else}}
-        <p>Something is wrong. Code YRAKASDFASDFSHGK.</p>
-    {{/if}}
-    {{/if}}
-    {{/if}}
-    {{/if}}
-    {{/if}}
 </template>
-<template name="instGameFeedback">
-Show this after (each?) game is submitted.
-Nest it in an if statement testing round completion.
+<template name="instPrefGame3">
+    herro, {{currentSection.id}}, round {{subStat.sec_rnd_now}}
+        <p>In the round after this one you will play one of the previous two games a second time, for additional earnings.  In this round you will select which game you replay.</p>
+</template>
+<template name="instPrefGame4">
+    herrer, {{currentSection.id}}, round {{subStat.sec_rnd_now}}
+        <p>This is the last round of this section; the game you selected is below.</p>
 </template>
 
 
