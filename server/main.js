@@ -119,7 +119,7 @@ Meteor.users.deny({
             //ensure uniqueness
             SubjectsStatus._ensureIndex({userId : 1, meteorUserId : 1}, { unique : true } );
         },
-        addSectionQuestions : function( sub, sec, matching=false ) {
+        addSectionQuestions : function( sub, sec, matching=false) {
             //import { QuestionData } from '../../imports/startup/experiment_prep_instpref.js';
             //let idxs = _.shuffle( _.range( questions.length ) );
             console.log("addQuestions", sec);
@@ -129,32 +129,31 @@ Meteor.users.deny({
             let playerPosition = "Side";
             if (sec === "experiment1" || sec === "experiment2") {
                 if ( !matching || matching.noMatching || (matching.selfMatching && sec === "experiment1" ) ) {
-                /// game 1
-                // strictly ordinal games (without replacement)
-                let rIndices = _.concat(_.shuffle(_.range(4)), _.shuffle(_.range(4,8)));
-                payoffsGame1 = rIndices.map( (i)=> _.concat(_.range(0,4), _.range(0,4))[i]+1);
-                // loosely ordinal games (with replacement)
-                //let payoffs = _.concat( _.times(4, ()=>_.sample([1, 2, 3, 4]) ), _.times(4, ()=>_.sample([1, 2, 3, 4]) ) );
-                /// game 2
-                payoffsGame2 = Experiment.tweakGame( payoffsGame1, switchOnly=true );
-                if( _.random() === 0 ) { // another shuffle that is important to make sure doubles happen in both blocks
-                    let tmp = _.clone( payoffsGame1 );
-                    payoffsGame1 = _.clone( payoffsGame2 );
-                    payoffsGame2 = tmp;
-                }
-                payoffsDiff = _.map( _.zip(payoffsGame1, payoffsGame2), (e)=> _.subtract(e[1], e[0]) );
-                console.log("generated games", payoffsGame1, payoffsGame2);
+                    /// game 1
+                    // strictly ordinal games (without replacement)
+                    payoffsGame1 = Helper.generateGame();
+                    // loosely ordinal games (with replacement)
+                    //let payoffs = _.concat( _.times(4, ()=>_.sample([1, 2, 3, 4]) ), _.times(4, ()=>_.sample([1, 2, 3, 4]) ) );
+                    /// game 2
+                    payoffsGame2 = Helper.tweakGame( payoffsGame1, switchOnly=true );
+                    if( _.random() === 0 ) { // another shuffle that is important to make sure doubles happen in both blocks
+                        let tmp = _.clone( payoffsGame1 );
+                        payoffsGame1 = _.clone( payoffsGame2 );
+                        payoffsGame2 = tmp;
+                    }
+                    console.log("generated games", payoffsGame1, payoffsGame2);
                 } else if (matching.selfMatching && sec === "experiment2" ) {
                     let matchingQ = Questions.findOne({meteorUserId : sub.meteorUserId, sec : 'experiment1', sec_rnd : sub.sec_rnd_now, type : 'chooseStrategy'});
                     payoffsGame1 = Experiment.pivotGame( matchingQ.payoffsGame1 );
                     payoffsGame2 = Experiment.pivotGame( matchingQ.payoffsGame2 );
                     console.log("returning to games", payoffsGame1, payoffsGame2);
                 }
+                payoffsDiff = _.map( _.zip(payoffsGame1, payoffsGame2), (e)=> _.subtract(e[1], e[0]) );
             }
             let idGameQ1, idGameQ2, idTmp;
             QuestionData.questions.forEach( function(q) {
                 if ( q.sec === sec ) {
-                    console.log("addQuestions q", sec, q.sec, (q.sec != sec && q.sec != 'experiment'));
+                    console.log("addQuestions q", sec, q.sec, (q.sec != sec && q.sec != 'experiment'), sub.cohort_now);
                     if (q.sec === 'experiment1' || q.sec === 'experiment2' ) {
                         q.sec = sec; // overwrite the input section (from experiment to experiment1)
                         q.cohortId = sub.cohort_now;
@@ -214,14 +213,15 @@ Meteor.users.deny({
 
             // this if shouldn't even be necessary. it's here by definition.
             if( sub.sec_rnd_now === 0 ) {
-                console.log("izero, assigning cohort", design.cohortId);
-                SubjectsStatus.update(
+                let tmp = SubjectsStatus.update(
                     {meteorUserId : sub.meteorUserId}, 
                     {$set : { 
                         cohort_now : design.cohortId,
                     }}
                 );
+                console.log("izero, assigning cohort",sub.meteorUserId, design.cohortId, tmp);
 
+                sub = SubjectsStatus.findOne( {meteorUserId : sub.meteorUserId} );
                 Meteor.call("addSectionQuestions", sub, sub.sec_now, matching=design.matching );
 
                 //ensure uniqueness
@@ -284,8 +284,6 @@ Meteor.users.deny({
                     sec_type_now: nextSectionType,
                     sec_rnd_now: 0,
                     readyToProceed: false, // reset this for the next section
-                    block_now: sub_old.block_now + 1,
-                    treatment_now: sub_old.treatments[ sub_old.block_now + 1 ],
                 },
             });
 
@@ -309,6 +307,14 @@ Meteor.users.deny({
                 //let batch = TurkServer.Batch.getBatchByName( Design.batchName );
                 //TurkServer.setLobbyState( asst, batch );
                 entered = 2;
+                if ( sub_old.sec_now === "experiment1" ) {
+                    SubjectsStatus.update({meteorUserId: muid }, {
+                        $set: {
+                            block_now: sub_old.block_now + 1,
+                            treatment_now: sub_old.treatments[ sub_old.block_now + 1 ],
+                        },
+                    });
+                }
             } else if ( sub_old.sec_now === "survey" ) {
                 SubjectsStatus.update({ meteorUserId: muid }, {
                     $set: {
@@ -407,14 +413,17 @@ Meteor.users.deny({
                 sec_rnd : sec_rnd, 
                 type : 'chooseStrategy'};
             //console.log("setChosenGameForRound 7");
+            let b4 =   Questions.find(nextQuestionQuery).fetch();
             let tmp = Questions.update(nextQuestionQuery, {$set : { 
                 payoffs : cGQ.payoffs,
             }}, {multi: true});
+            let aftar =   Questions.find(nextQuestionQuery).fetch();
+            console.log("setChosenGameForRound before update ", b4, " and after", aftar);
             try {
                 console.assert( tmp === 1, 'too many matches in setchosengameforround');
             } catch (err) {
                 console.log(err, tmp, nextQuestionQuery, chosenGameId);
             }
             console.log("setChosenGameForRound again", cGQ.payoffs, nextQuestionQuery, tmp);
-        }
+        },
     });

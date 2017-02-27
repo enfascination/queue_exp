@@ -27,7 +27,8 @@
     //background-color: hsla(199, 98%, 60%, 0.20); //light blue 800
     border: 7px solid hsl(202, 98%, 0%);
     border-radius: 7px;
-    margin-right: 5px;
+    //margin-right: 5px;
+    margin: 5px;
 }
 .gameVisualText {
     display: inline;
@@ -221,12 +222,12 @@ tr.hover {
     font-size: 14pt;
 }
 .gameNormalFormGame.chooseOutcome .gameNormalFormOutcome {
-    height: 100px;
-    width: 100px;
+    //height: 100px;
+    //width: 100px;
 }
 .gameNormalFormGame.chooseOutcome .gameNormalFormOutcome svg{
-    height: 80px;
-    width: 80px;
+    //height: 80px;
+    //width: 80px;
 }
 // game compare 
 .gameNormalFormGameCompare {
@@ -251,12 +252,12 @@ tr.hover {
     font-size: 12pt;
 }
 .gameNormalFormGame.chooseGame .gameNormalFormOutcome {
-    height: 80px;
-    width: 80px;
+    //height: 80px;
+    //width: 80px;
 }
 .gameNormalFormGame.chooseGame .gameNormalFormOutcome svg{
-    height: 60px;
-    width: 60px;
+    //height: 60px;
+    //width: 60px;
 }
 .gameNormalFormGame.chooseGame tr.gameNormalFormChoice {
     border: 0;

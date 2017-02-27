@@ -43,16 +43,16 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                     cohortId = probeDesign.cohortId + 1;
                     design = Meteor.call("initializeCohort", cohortId=cohortId, sub.sec_type_now, sub.meteorUserId, sub.meteorUserId);
                     familiarCohort = false;
-                    console.log("self matching exp 1", cohortId, sub, Helper.des(design) );
+                    console.log("self matching exp 1", cohortId, sub, Helper.des(design).sec_type );
                 } else {
                     cohortId = sub.cohort_now;
                     design = CohortSettings.findOne( { 
                         cohortId : cohortId, 
                     } );
-                    console.log("self matching exp 2", cohortId, sub, Helper.des(design) );
+                    console.log("self matching exp 2", cohortId, sub, Helper.des(design).sec_type );
                     familiarCohort = true;
                 }
-                console.log("self matching", Helper.des(design) );
+                console.log("self matching", Helper.des(design).sec_type );
                 //// reffing subjectsdata in this function is unusual, but necessary for spotting past cohorts including this partiicpants
                 //let previousByThisSubject = SubjectsData.find( {
                     //meteorUserId : sub.meteorUserId, 
@@ -268,10 +268,15 @@ Experiment.tryToCompleteQuestion = function(q, design) {
     console.log("Experiment.tryToCompleteQuestion", q, Helper.des(design));
     // determine if this is the first or second (ideally without knowing about matching protocol
     let question1 = q;
-    let question2 = Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Experiment.pivotGame(q.payoffs) });
+    //let question2 = Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Experiment.pivotGame(q.payoffs) });
+    let question2 = Questions.find({ _id : { $ne : q._id }, type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd });
     //assert that mpayoffs match
     console.assert(question2.count() <= 1, "Experiment.tryToCompleteQuestion problem 1");
     // exit if not completed
+    if (_.isNil( q.payoffs )) { console.log("NO PAYFOFS IN trytocomplete")};
+    console.log("payoffs comparison", q, question2.fetch()[0]);
+    console.log("payoffs comparison", q.payoffs, question2.fetch()[0].payoffs);
+    console.log("payoffs comparison2", Experiment.pivotGame(question2.fetch()[0].payoffs), Experiment.pivotGame(q.payoffs));
     console.log("Experiment.tryToCompleteQuestion", Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Experiment.pivotGame(q.payoffs) }).count(), Questions.find({  cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Experiment.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", sec_rnd : q.sec_rnd, payoffs : Experiment.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, payoffs : Experiment.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd }).count(), "and", design.cohortId, q.sec_rnd, Experiment.pivotGame(q.payoffs) );
     if (question2.count() === 0) { return(false); }
     question2 = Questions.findOne({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Experiment.pivotGame(q.payoffs) });
@@ -289,8 +294,8 @@ Experiment.tryToCompleteQuestion = function(q, design) {
     let payoffP1 = outcomePayoffs[0];
     let payoffP2 = outcomePayoffs[1];
     console.log("tried to complete", question1, question2);
-    console.assert( payoffsP1 % 2 === 0, "payoff calc 1" );
-    console.assert( payoffsP2 % 2 === 1, "payoff calc 2" );
+    console.assert( payoffP1 % 2 === 0, "payoff calc 1" );
+    console.assert( payoffP2 % 2 === 1, "payoff calc 2" );
     question1.outcome = outcomePerspectiveP1;
     question1.payoffEarnedFocal = payoffP1;
     question1.payoffEarnedOther = payoffP2;
@@ -299,6 +304,7 @@ Experiment.tryToCompleteQuestion = function(q, design) {
     question2.payoffEarnedOther = payoffP1;
     Questions.update( question1._id, {$set : question1});
     Questions.update( question2._id, {$set : question2});
+            console.log("setCompleteion before ", question1, " and after", Questions.findOne( question1._id));
     // use this to calculate outcome
     //    (making outcome showable to player 2, since p1 will never see it?)
     // return false or outcome (or don't return anything and just change state

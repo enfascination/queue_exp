@@ -87,8 +87,9 @@ Template.gameNormalForm.helpers({
         }
     }
 });
-
-Template.gameNormalForm.events({
+Template.gameVisualText.inheritsHelpersFrom('gameNormalForm');
+Template.gameNormalFormGame.inheritsHelpersFrom('gameNormalForm');
+Template.gameNormalFormGame.events({
 	'click .gameNormalFormGame, mouseover .gameNormalFormGame, mouseout .gameNormalFormGame': function (e) { /// GUI and UX elements for the "choose element" versionof the question
         let c = $( e.currentTarget ); //c is the table
         let gameId = c.attr('id'); 
@@ -186,6 +187,7 @@ Template.questionGame.helpers({
 });
 Template.questionGameCompare.inheritsHelpersFrom('questionGame');
 Template.questionGameCompare.inheritsEventsFrom('questionGame');
+
 Template.visualGame.helpers({
     getPayoff : getPayoff,
 });
@@ -200,5 +202,20 @@ Template.instPrefGame2.helpers({
             });
             return(  questionsFeedback );
         }
+    },
+});
+
+// for demoing
+Template.questionGameCompareReshuffle.inheritsHelpersFrom('questionGame');
+Template.questionGameCompareReshuffle.inheritsEventsFrom('questionGame');
+
+let aGame = Helper.generateGame();
+Template.questionGameCompareReshuffle.helpers({
+    payoffsGame1Regenerator : function() {
+        console.log("new game is", aGame);
+        return( aGame );
+    },
+    payoffsGame2Regenerator : function() {
+        return( Helper.tweakGame( aGame, switchOnly=true ) );
     },
 });

@@ -163,8 +163,9 @@ Template.answersForm.events({
                     // a little inefficient to put this call back after every submit, but it beats missing the asynchrony, as long as its safe to over call this function.
                     if (err) { throw( err ); }
                     // determine if end of cohort
-                    if ( true ) {
+                    if ( q.type === "chooseStrategy" && sub.treatment_now === "feedback" ) {
                         //Meteor.call('tryToCompleteCohort', design);
+                        console.log("got in here somewherehow");
                         Meteor.call('tryToCompleteQuestion', q, design);
                     }
                 } );
@@ -177,6 +178,7 @@ Template.answersForm.events({
                 function(err, updatedSub) {
 
                     // experiment navigation
+                    console.log("made it here to disable");
                     Meteor.call( "disableQuestions", _.map(qs, "_id"), false );
                     if ( !lastGameRound ) {  // calculate the logic for this out of the callbacks because things get confusing
                         //console.log("continuing");

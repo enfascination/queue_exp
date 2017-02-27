@@ -76,15 +76,15 @@
     </section>
 </template>
 <template name="instPrefGame0">
-    Hello, {{currentSection.id}}, round {{subStat.sec_rnd_now}}
+    Debugging 1, {{currentSection.id}}, Round {{subStat.sec_rnd_now}}
         <p>You will begin by playing the game below.</p>
 </template>
 <template name="instPrefGame1">
-    hi, {{currentSection.id}}, round {{subStat.sec_rnd_now}}
+    Debugging 2, {{currentSection.id}}, Round {{subStat.sec_rnd_now}}
         <p>You will now play a similar game.</p>
 </template>
 <template name="instPrefGame2">
-    howdy, {{currentSection.id}}, round {{subStat.sec_rnd_now}}
+    Debugging 3, {{currentSection.id}}, Round {{subStat.sec_rnd_now}}
         <p>This is an informational round that allows you to see the outcomes of this section's two games.  However, we will only present you with this feedback in one of the two sections.  In one section you are being provided with feedback on payoffs, and in the other you will not. Regardless, you will be paid in full for your earnings in both sections.</p>{{test}}
             {{#each question in questionsFeedback}}
                 {{> questionGame question=question}}
@@ -95,8 +95,8 @@
         <p><strong>In this section you will be receiving feedback.  Your choices have now been matched with those of the other player in order to calculate your payoffs. When you have reviewed your earnings, you may press <strong>Submit</strong> to proceed to the next round.</strong></p>
             Show this after (each?) game is submitted.{{test}}
         Nest it in an if statement testing round completion.
-            {{#each questions questionsColl=questionsFeedback}}
-                {{> questionGame question=this}}
+            {{#each question in questionsFeedback}}
+                {{> questionGame question=question}}
             {{/each}}
         {{else}}
             <p>Something is wrong. Code YRAKASDFASDFSHGK.</p>
@@ -104,18 +104,16 @@
         {{/if}}
 </template>
 <template name="instPrefGame3">
-    herro, {{currentSection.id}}, round {{subStat.sec_rnd_now}}
+    Debugging 4, {{currentSection.id}}, Round {{subStat.sec_rnd_now}}
         <p>In the round after this one you will play one of the previous two games a second time, for additional earnings.  In this round you will select which game you replay.</p>
 </template>
 <template name="instPrefGame4">
-    herrer, {{currentSection.id}}, round {{subStat.sec_rnd_now}}
+    Debugging 5, {{currentSection.id}}, Round {{subStat.sec_rnd_now}}
         <p>This is the last round of this section; the game you selected is below.</p>
 </template>
 
 
-<template name="gameNormalForm">
-    <div class="expPaneNoMargin gameNormalForm ">
-                <span style="{{#if equals choiceType 'chooseStrategy'}}float:left;{{/if}}">
+<template name="gameNormalFormGame">
                     <table id="{{gameId}}" class="gameNormalFormGame {{choiceType}} btn-group {{disabled question}} {{#if equals gameId 'XXXtutorial'}}noactive{{/if}} {{#if equals choiceType 'chooseGame'}}expChoice{{/if}} {{insertChoice 'active' 'chooseGame' gameChoice }} " role="group" data-value="{{gameChoice}}" {{insertChoice "choice" "chooseGame" gameChoice }} >
                     <colgroup></colgroup> 
                     <colgroup id="{{gameId}}" class="gameNormalFormChoice {{#if equals choiceType 'chooseStrategyTop'}}expChoice{{/if}} {{ insertChoice 'active' 'chooseStrategyTop' 'Left' }}" data-value="Left" {{insertChoice "choice" "chooseStrategyTop" "Left" }} ></colgroup> 
@@ -156,9 +154,8 @@
                         </tr>
                     </tbody>
                 </table>
-                </span>
-                {{#if equals choiceType 'chooseStrategy'}}
-                <span class="gameVisualText">
+</template>
+<template name="gameVisualText">
                     When <span class="player you">you</span> choose <span class="strategy you">{{textGameFeedbackStrategy}}</span><br/>
                     the <span class="player other">Other Player</span> will either<br/>
                     &emsp;earn <span class="payoff other">{{textGamePayoffs question.payoffs "Left" textGameFeedbackStrategy "Other"}}</span> <br/>
@@ -175,8 +172,17 @@
                         <span class="payoff you">{{textGamePayoffs question.payoffs "Right" textGameFeedbackStrategy "You"}}</span>.<br/>
                         <br/>
                         <br/>
-                </span>
-                {{/if}}
+</template>
+<template name="gameNormalForm">
+    <div class="expPaneNoMargin gameNormalForm ">
+        <span style="{{#if equals choiceType 'chooseStrategy'}}float:left;{{/if}}">
+            {{> gameNormalFormGame id=question._id gameId=question._id choiceType=choiceType payoffs=question.payoffs question=question context=..}}
+        </span>
+        {{#if equals choiceType 'chooseStrategy'}}
+            <span class="gameVisualText">
+                {{> gameVisualText id=question._id gameId=question._id choiceType=choiceType payoffs=question.payoffs question=question context=..}}
+            </span>
+        {{/if}}
     </div>
 </template>
 <template name="visualGame">
@@ -196,6 +202,13 @@
                             </text>
                         </g>
                     </svg>
+</template>
+<template name="gameNormalFormFeedback">
+    <div class="expPaneNoMargin gameNormalForm ">
+        <span style="{{#if equals choiceType 'chooseStrategy'}}float:left;{{/if}}">
+            {{> gameNormalFormGame id=question._id gameId=question._id choiceType=choiceType payoffs=question.payoffs question=question context=..}}
+        </span>
+    </div>
 </template>
 <template name = "questionGame">
     <section class="expPaneNoMargin experiment"> 
@@ -227,14 +240,46 @@
                 <tbody>
                     <tr>
                         <td>
-                            {{> gameNormalForm id=question._id gameId=question._id choiceType="chooseGame" payoffs=question.payoffsGame1 gameChoice=question.idGameQ1 question=question context=..}}
+                            {{> gameNormalFormGame id=question._id gameId=question._id choiceType="chooseGame" payoffs=question.payoffsGame1 gameChoice=question.idGameQ1 question=question context=..}}
                         </td>
                         <td>
-                            {{> gameNormalForm id=question._id gameId=question._id choiceType="chooseGame" payoffs=question.payoffsGame2 gameChoice=question.idGameQ2 question=question context=..}}
+                            {{> gameNormalFormGame id=question._id gameId=question._id choiceType="chooseGame" payoffs=question.payoffsGame2 gameChoice=question.idGameQ2 question=question context=..}}
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </section> 
+</template>
+
+<template name = "questionGameCompareReshuffle">
+    <section class="expPaneNoMargin experiment"> 
+        <div class = "expQuestion {{question.type}} form-group {{getHasError question}}" id="{{question._id}}">
+            <h3 class="questionTitle" >{{question.title}}</h3>
+            <label for="{{question._id}}" class = "control-label {{disabled question}}">{{question.text}}</label>
+            <table class="gameNormalFormGame gameNormalFormGameCompare">
+                <thead>
+                    <tr>
+                        <th scope="col">
+                            First Game
+                        </th>
+                        <th scope="col">
+                            Second Game
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            {{> gameNormalForm id=question._id gameId=question._id choiceType="chooseGame" payoffs=payoffsGame1Regenerator gameChoice=question.idGameQ1 question=question context=..}}
+                        </td>
+                        <td>
+                            {{> gameNormalForm id=question._id gameId=question._id choiceType="chooseGame" payoffs=payoffsGame2Regenerator gameChoice=question.idGameQ2 question=question context=..}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section> 
+    <h1>DEMOING</h1>
 </template>
