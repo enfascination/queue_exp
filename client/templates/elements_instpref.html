@@ -86,17 +86,17 @@
 <template name="instPrefGame2">
     Debugging 3, {{currentSection.id}}, Round {{subStat.sec_rnd_now}}
         <p>This is an informational round that allows you to see the outcomes of this section's two games.  However, we will only present you with this feedback in one of the two sections.  In one section you are being provided with feedback on payoffs, and in the other you will not. Regardless, you will be paid in full for your earnings in both sections.</p>{{test}}
-            {{#each question in questionsFeedback}}
-                {{> questionGame question=question}}
-            {{/each}}
         {{#if equals subStat.treatment_now "nofeedback"}}
             <p><strong>In this section you will not be receiving feedback. Please submit and proceed.</strong></p>
+            {{#each question in questionsFeedback}}
+                {{> gameNormalFormChoiceFeedback question=question}}
+            {{/each}}
         {{else}} {{#if equals subStat.treatment_now "feedback"}}
         <p><strong>In this section you will be receiving feedback.  Your choices have now been matched with those of the other player in order to calculate your payoffs. When you have reviewed your earnings, you may press <strong>Submit</strong> to proceed to the next round.</strong></p>
             Show this after (each?) game is submitted.{{test}}
         Nest it in an if statement testing round completion.
             {{#each question in questionsFeedback}}
-                {{> questionGame question=question}}
+                {{> gameNormalFormOutcomeFeedback question=question}}
             {{/each}}
         {{else}}
             <p>Something is wrong. Code YRAKASDFASDFSHGK.</p>
@@ -156,7 +156,8 @@
                 </table>
 </template>
 <template name="gameVisualText">
-                    When <span class="player you">you</span> choose <span class="strategy you">{{textGameFeedbackStrategy}}</span><br/>
+    <br/>
+                    When <span class="player you">You</span> choose <span class="strategy you">{{textGameFeedbackStrategy}}</span><br/>
                     the <span class="player other">Other Player</span> will either<br/>
                     &emsp;earn <span class="payoff other">{{textGamePayoffs question.payoffs "Left" textGameFeedbackStrategy "Other"}}</span> <br/>
                     &emsp;&emsp;&thinsp;or <span class="payoff other">{{textGamePayoffs question.payoffs "Right" textGameFeedbackStrategy "Other"}}</span> quarters .<br/>
@@ -170,7 +171,6 @@
                         <span class="payoff other">{{textGamePayoffs question.payoffs "Right" textGameFeedbackStrategy "Other"}}</span><br/>
                         &emsp;&emsp;and <span class="player you">You</span> will earn 
                         <span class="payoff you">{{textGamePayoffs question.payoffs "Right" textGameFeedbackStrategy "You"}}</span>.<br/>
-                        <br/>
                         <br/>
 </template>
 <template name="gameNormalForm">
@@ -186,7 +186,7 @@
     </div>
 </template>
 <template name="visualGame">
-                    <svg width="110px" height="110px" viewBox="0 0 100 100" 
+                    <svg width="130px" height="130px" viewBox="0 0 100 100" 
                             xmlns="http://www.w3.org/2000/svg" version="1.1">
                         <!--<line x1="0" y1="0" x2="100" y2="100" stroke="#000000" stroke-width="0px" /> width is 5 (half 10) because viewbox is zoomed in to give me a uniform coordinate system in boxes -->
                         <g class="gameNormalFormPayoff gamePlayerTop gamePlayerOther" id="{{payoffIdPrefix}}T" data-value={{payoffPlayerTop}}>
@@ -203,11 +203,47 @@
                         </g>
                     </svg>
 </template>
-<template name="gameNormalFormFeedback">
-    <div class="expPaneNoMargin gameNormalForm ">
-        <span style="{{#if equals choiceType 'chooseStrategy'}}float:left;{{/if}}">
-            {{> gameNormalFormGame id=question._id gameId=question._id choiceType=choiceType payoffs=question.payoffs question=question context=..}}
+<template name="gameNormalFormChoiceFeedback">
+    <div class="expPaneNoMargin gameNormalFormFeedback ">
+        <span style="float:right;">
+            {{> gameNormalFormGame id=question._id gameId=question._id choiceType="chooseStrategy" payoffs=question.payoffs question=question context=..}}
         </span>
+            <span class="gameVisualText big">
+                <br/>
+                <br/>
+                In this game,
+                <br/>
+                <span class="player you">you</span> chose <span class="strategy you">{{question.choice}}</span>.
+                <br/> 
+        </span>
+    <span class="clearfix"></span>
+    </div>
+</template>
+<template name="gameNormalFormOutcomeFeedback">
+    <div class="expPaneNoMargin gameNormalFormFeedback">
+        <span style="float:right;">
+            {{> gameNormalFormGame id=question._id gameId=question._id choiceType="chooseOutcome" payoffs=question.payoffs question=question context=..}}
+        </span>
+        <span class="gameVisualText">
+            <br/>
+            In this game,
+            <br/>
+            <span class="player you">You</span> chose <span class="strategy you">{{question.outcomeFocal}}</span> and
+            <br/>
+            the <span class="player other">Other Player</span> chose <span class="strategy other">{{question.outcomeOther}}</span>,
+            <br/>
+            So <span class="player you">You</span> 
+            <br/>
+            earned <span class="payoff you">{{question.payoffEarnedFocal}}</span> and
+            <br/>
+            the <span class="player other">Other Player</span> 
+            <br/>
+            earned <span class="payoff other">{{question.payoffEarnedOther}}</span>.
+            <br/>
+            <br/>
+            <br/>
+        </span>
+        <span class="clearfix"></span>
     </div>
 </template>
 <template name = "questionGame">
@@ -271,10 +307,10 @@
                 <tbody>
                     <tr>
                         <td>
-                            {{> gameNormalForm id=question._id gameId=question._id choiceType="chooseGame" payoffs=payoffsGame1Regenerator gameChoice=question.idGameQ1 question=question context=..}}
+                            {{> gameNormalFormGame id=question._id gameId=question._id choiceType="chooseGame" payoffs=payoffsGame1Regenerator gameChoice=question.idGameQ1 question=question context=..}}
                         </td>
                         <td>
-                            {{> gameNormalForm id=question._id gameId=question._id choiceType="chooseGame" payoffs=payoffsGame2Regenerator gameChoice=question.idGameQ2 question=question context=..}}
+                            {{> gameNormalFormGame id=question._id gameId=question._id choiceType="chooseGame" payoffs=payoffsGame2Regenerator gameChoice=question.idGameQ2 question=question context=..}}
                         </td>
                     </tr>
                 </tbody>

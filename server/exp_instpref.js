@@ -268,38 +268,46 @@ Experiment.tryToCompleteQuestion = function(q, design) {
     console.log("Experiment.tryToCompleteQuestion", q, Helper.des(design));
     // determine if this is the first or second (ideally without knowing about matching protocol
     let question1 = q;
-    //let question2 = Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Experiment.pivotGame(q.payoffs) });
+    //let question2 = Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) });
     let question2 = Questions.find({ _id : { $ne : q._id }, type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd });
     //assert that mpayoffs match
     console.assert(question2.count() <= 1, "Experiment.tryToCompleteQuestion problem 1");
     // exit if not completed
-    if (_.isNil( q.payoffs )) { console.log("NO PAYFOFS IN trytocomplete")};
+    if (_.isNil( q.payoffs )) { console.log("NO PAYFOFS IN trytocomplete"); }
     console.log("payoffs comparison", q, question2.fetch()[0]);
     console.log("payoffs comparison", q.payoffs, question2.fetch()[0].payoffs);
-    console.log("payoffs comparison2", Experiment.pivotGame(question2.fetch()[0].payoffs), Experiment.pivotGame(q.payoffs));
-    console.log("Experiment.tryToCompleteQuestion", Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Experiment.pivotGame(q.payoffs) }).count(), Questions.find({  cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Experiment.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", sec_rnd : q.sec_rnd, payoffs : Experiment.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, payoffs : Experiment.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd }).count(), "and", design.cohortId, q.sec_rnd, Experiment.pivotGame(q.payoffs) );
+    console.log("payoffs comparison2", Helper.pivotGame(question2.fetch()[0].payoffs), Helper.pivotGame(q.payoffs));
+    console.log("Experiment.tryToCompleteQuestion", Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) }).count(), Questions.find({  cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, payoffs : Helper.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd }).count(), "and", design.cohortId, q.sec_rnd, Helper.pivotGame(q.payoffs) );
     if (question2.count() === 0) { return(false); }
-    question2 = Questions.findOne({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Experiment.pivotGame(q.payoffs) });
+    question2 = Questions.findOne({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) });
     // get eachsubjects choices
     console.log("try to complete", question1, question2);
     let c1 = question1.choice;
     let c2 = question2.choice === "Top" ? "Left" : "Right";
     let outcomePerspectiveP1 = ""+c1+","+c2;
-    c1 = question1.choice === "Top" ? "Left" : "Right";
-    c2 = question2.choice;
-    let outcomePerspectiveP2 = ""+c2+","+c1;
-    let c1Poss = question1.choice === "Top" ? [0,1,2,3] : [4,5,6,7];  //see pivot game for the meanings of indices
-    let c2Poss = question2.choice === "Top" ? [1,0,5,4] : [3,2,7,6];
+    let c1p2 = question1.choice === "Top" ? "Left" : "Right";
+    let c2p2 = question2.choice;
+    let outcomePerspectiveP2 = ""+c2p2+","+c1p2;
+    let c1Poss = question1.choice === "Top" ? [0,4,1,6] : [2,5,3,7];   //see pivotGame for the meanings of indices
+    let c2Poss = question2.choice === "Top" ? [0,4,2,5] : [1,6,3,7];   // Top === Left && Bottom === Right
     let outcomePayoffs = _.sortBy ( _.intersection( c1Poss, c2Poss) );
-    let payoffP1 = outcomePayoffs[0];
-    let payoffP2 = outcomePayoffs[1];
-    console.log("tried to complete", question1, question2);
-    console.assert( payoffP1 % 2 === 0, "payoff calc 1" );
-    console.assert( payoffP2 % 2 === 1, "payoff calc 2" );
+    let payoffP1 = question1.payoffs[ outcomePayoffs[0] ];
+    let payoffP2 = question1.payoffs[ outcomePayoffs[1] ];
+    console.log("tried to complete", outcomePerspectiveP1, outcomePerspectiveP2, outcomePayoffs, question1, question2);
+    console.assert( outcomePayoffs.length === 2, "payoff calc 0: got payoffs successfully" );
+    console.log("CRM1");
+    console.assert( outcomePayoffs[0] < 4, "payoff calc 1: payoffs ordered right and assigned right" );
+    console.log("CRM2");
+    console.assert( outcomePayoffs[1] > 3, "payoff calc 2: payoffs ordered right and assigned right" );
+    console.log("CRM3");
     question1.outcome = outcomePerspectiveP1;
+    question1.outcomeFocal = c1;
+    question1.outcomeOther = c2;
     question1.payoffEarnedFocal = payoffP1;
     question1.payoffEarnedOther = payoffP2;
     question2.outcome = outcomePerspectiveP2;
+    question2.outcomeFocal = c1p2;
+    question2.outcomeOther = c2p2;
     question2.payoffEarnedFocal = payoffP2;
     question2.payoffEarnedOther = payoffP1;
     Questions.update( question1._id, {$set : question1});
@@ -405,63 +413,3 @@ Experiment.calculateExperimentEarnings = function(aDesign) {
                 positionFinal += 1;
             }
         };
-Experiment.tweakGame = function(payoffs, switchOnly=false) {
-                        let payoffsBefore = _.clone( payoffs );
-                        let payoffsAfter = _.clone( payoffs );
-                        // pick two payoffs to flip or otherwise manipulate
-                        let rIndices = _.shuffle(_.range(8));
-                        let v1i = rIndices[0]; 
-                        let v2i = rIndices[1]; 
-                        let v1 = payoffsAfter[v1i]; 
-                        let v2 = payoffsAfter[v2i]; 
-                        // pick a change to make
-                        let operator, operators;
-                        let changeNature = _.sample([-1,0,1]);
-                        if (switchOnly) {
-                            // of only (mostly) mean payoff conserving manipulations (like flips) are OK.
-                            changeNature = 0;
-                        }
-                        
-                        // many contingencies is many edge cases
-                        if (v1 === 1 && v2 === 1) {
-                            operators = [[1,0],[0,1]];
-                            changeNature = _.sample([1,]);
-                        } else if (v1 === 4 && v2 === 4) {
-                            operators = [[-1,0], [0,-1],];
-                            changeNature = _.sample([-1,]);
-                        } else if (v1 === 1 && v2 === 4) {
-                            operators = [[1,-1], [1,0], [0,-1]];
-                        } else if (v1 === 4 && v2 === 1) {
-                            operators = [[-1,1], [-1,0], [0,1]];
-                        } else if (v1 === 1) {
-                            operators = [[1,-1], [1,0], [0,1], [0,-1]];
-                        } else if (v1 === 4) {
-                            operators = [[-1,1], [-1,0], [0,1], [0,-1]];
-                        } else if (v2 === 1) {
-                            operators = [[-1,1], [0,1], [1,0], [-1,0]];
-                        } else if (v2 === 4) {
-                            operators = [[1,-1], [0,-1], [1,0], [-1,0]];
-                        } else {
-                            operators = [[1,-1], [-1,1], [1,0], [-1,0], [0,1], [0,-1]];
-                        }
-                        // pick the transformation to apply
-                        operator = _(operators).filter( (a)=>_(a).sum() === changeNature).sample();
-                        payoffsAfter[v1i] = payoffsAfter[v1i] + operator[0];
-                        payoffsAfter[v2i] = payoffsAfter[v2i] + operator[1];
-                        // prep detailed outputs.
-                        //let payoffYou = _.slice(payoffsAfter, 0,4);
-                        //let payoffOther = _.slice(payoffsAfter,4,8);
-                        payoffsDiff = _.map( _.zip(payoffsBefore, payoffsAfter), (e)=> _.subtract(e[1], e[0]) );
-                        //return( { payoffYou, payoffOther, payoffsDiff } );
-                        return( payoffsAfter );
-                    };
-// change player's view (which one is "top")
-Experiment.pivotGame = function(payoffs) {
-    // WRONG PIVOT: return( _.concat( _.slice(payoffs, 4, 8), _.slice(payoffs, 0, 4) ) );
-    // this mapping flips both player's payoffs along the diagonal, 
-    //   making top <=> left and right <=> bottom
-    let fn = (l) =>  _.map([1,0,5,4,3,2,7,6], (i)=>l[i]);
-    let rval = fn(payoffs);
-    console.assert( _.isEqual( fn(rval), payoffs ) );
-    return( rval );
-                    };

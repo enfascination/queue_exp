@@ -17,7 +17,8 @@
 // GAME design
 ///////////////////////////////////
 .gameNormalForm {
-    margin: 10px;
+    //margin: 10px;
+    margin: 10px 0px;
     //background-color: White;
     background-color: hsla(199, 100%, 100%, 0.10); 
     width: 715px;
@@ -35,18 +36,22 @@
     cursor: not-allowed;
     text-align:left;
     font-family: "Matterhorn";
-    font-size: 16pt;
+    font-size: 15pt;
     color: #616161;
 }
-.gameNormalFormGame td{
-    background-color: transparent;
+.gameVisualText.big {
+    font-size: 22pt;
 }
 .gameNormalFormGame th{
-    padding: 10px 5px;
+    //padding: 10px 5px;
+    padding: 0px 5px;
     font-family: "Matterhorn Serif";
     font-size: 20pt;
     font-weight: 600;
     color: #424242;
+}
+.gameNormalFormGame td{
+    background-color: transparent;
 }
 .gameNormalFormGame .gameTableRow th {
     color: hsla(199, 98%, 38%, 1.0);
@@ -59,10 +64,9 @@ tr.gameNormalFormChoice {
     background-color: transparent;
     border: 5px #80D8FF;
     margin: 0;
-    padding: 10px;
+    //padding: 10px;
+    padding: 0px;
     outline: 0 none;
-    height: 130px;
-    width: 130px;
     position: relative; // this is for the positioning of the below welements to work
 }
 .gameNormalFormPayoff {
@@ -208,6 +212,9 @@ tr.hover {
 .gameNormalFormGame.disabled polygon, .gameNormalFormGame.disabled:hover polygon, .gameNormalFormGame.disabled:focus polygon,
 .gameNormalFormGame.disabled tr, .gameNormalFormGame.disabled:hover tr, .gameNormalFormGame.disabled:focus tr {
     pointer-events : none; //http://stackoverflow.com/questions/7833854/jquery-detect-click-on-disabled-submit-button;
+}
+.gameNormalFormFeedback .gameNormalFormGame.disabled {
+    opacity: 0.70;
 }
 
 //changing game size, for choice between games

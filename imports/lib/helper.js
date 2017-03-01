@@ -215,6 +215,17 @@ export const Helper = {
         let payoffsGame = rIndices.map( (i)=> _.concat(_.range(0,4), _.range(0,4))[i]+1);
         return( payoffsGame );
     },
+    // change player's view (which one is "top")
+    pivotGame : function(payoffs) {
+        // WRONG PIVOT: return( _.concat( _.slice(payoffs, 4, 8), _.slice(payoffs, 0, 4) ) );
+        // this mapping flips both player's payoffs along the diagonal, 
+        //   making top <=> left and right <=> bottom
+        let fn = (l) =>  _.map([4,5,6,7,0,1,2,3], (i)=>l[i]);
+        //let fn = (l) =>  _.map([1,0,5,4,3,2,7,6], (i)=>l[i]);  <-- what was I thinking?
+        let rval = fn(payoffs);
+        console.assert( _.isEqual( fn(rval), payoffs ) );
+        return( rval );
+    },
     tweakGame : function(payoffs, switchOnly=false) {
                         let payoffsBefore = _.clone( payoffs );
                         let payoffsAfter = _.clone( payoffs );

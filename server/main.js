@@ -144,8 +144,8 @@ Meteor.users.deny({
                     console.log("generated games", payoffsGame1, payoffsGame2);
                 } else if (matching.selfMatching && sec === "experiment2" ) {
                     let matchingQ = Questions.findOne({meteorUserId : sub.meteorUserId, sec : 'experiment1', sec_rnd : sub.sec_rnd_now, type : 'chooseStrategy'});
-                    payoffsGame1 = Experiment.pivotGame( matchingQ.payoffsGame1 );
-                    payoffsGame2 = Experiment.pivotGame( matchingQ.payoffsGame2 );
+                    payoffsGame1 = Helper.pivotGame( matchingQ.payoffsGame1 );
+                    payoffsGame2 = Helper.pivotGame( matchingQ.payoffsGame2 );
                     console.log("returning to games", payoffsGame1, payoffsGame2);
                 }
                 payoffsDiff = _.map( _.zip(payoffsGame1, payoffsGame2), (e)=> _.subtract(e[1], e[0]) );

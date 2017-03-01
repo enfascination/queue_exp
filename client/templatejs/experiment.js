@@ -178,7 +178,7 @@ Template.answersForm.events({
                 function(err, updatedSub) {
 
                     // experiment navigation
-                    console.log("made it here to disable");
+                    console.log("disabling q's", _.map(qs, "_id") );
                     Meteor.call( "disableQuestions", _.map(qs, "_id"), false );
                     if ( !lastGameRound ) {  // calculate the logic for this out of the callbacks because things get confusing
                         //console.log("continuing");

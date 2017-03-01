@@ -218,7 +218,7 @@ QuestionData.questions.forEach ( function(q) {
     });
     if( q.sec === 'quiz' ) {
         q.correct = false;
-        q.payoffs = [3,1,4,2,3,4,1,2];
+        q.payoffs = [3,1,4,2,3,1,4,2];
     } else if( q.sec === 'experiment' ) {
         q.sec = 'experiment2';
         questionsAddendum = _.concat(questionsAddendum, _.clone(q) );

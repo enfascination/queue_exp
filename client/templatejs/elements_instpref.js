@@ -17,8 +17,8 @@ let getPayoff = function(payoffs, loc) {
     } else if (loc === 'ybl') { ret = payoffs[2];
     } else if (loc === 'ybr') { ret = payoffs[3];
     } else if (loc === 'otl') { ret = payoffs[4];
-    } else if (loc === 'otr') { ret = payoffs[5];
-    } else if (loc === 'obl') { ret = payoffs[6];
+    } else if (loc === 'obl') { ret = payoffs[5];
+    } else if (loc === 'otr') { ret = payoffs[6];
     } else if (loc === 'obr') { ret = payoffs[7];
     }
     //console.log("getPayoff", payoffs, loc, ret);
@@ -88,7 +88,10 @@ Template.gameNormalForm.helpers({
     }
 });
 Template.gameVisualText.inheritsHelpersFrom('gameNormalForm');
+Template.gameNormalFormChoiceFeedback.inheritsHelpersFrom('gameNormalForm');
+Template.gameNormalFormOutcomeFeedback.inheritsHelpersFrom('gameNormalForm');
 Template.gameNormalFormGame.inheritsHelpersFrom('gameNormalForm');
+ 
 Template.gameNormalFormGame.events({
 	'click .gameNormalFormGame, mouseover .gameNormalFormGame, mouseout .gameNormalFormGame': function (e) { /// GUI and UX elements for the "choose element" versionof the question
         let c = $( e.currentTarget ); //c is the table
@@ -198,6 +201,10 @@ Template.instPrefGame2.helpers({
         if (sub && dataContext.currentSection && this.questionsColl) {
             let questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, type : "chooseStrategy", sec_rnd : {$lt : 2}, sec : sub.sec_now}).fetch();
             _.forEach( questionsFeedback, function( q ) {
+                if (sub.treatment_now === "feedback") {
+                    q.choice = q.outcome;
+                    q.type = "chooseOutcome";
+                }
                 console.log("feedback qusetions per q", q);
             });
             return(  questionsFeedback );
@@ -216,6 +223,9 @@ Template.questionGameCompareReshuffle.helpers({
         return( aGame );
     },
     payoffsGame2Regenerator : function() {
-        return( Helper.tweakGame( aGame, switchOnly=true ) );
+        let rGame = Helper.pivotGame( aGame);
+        console.log("nwr game is", rGame);
+        console.log("nwp game is", Helper.pivotGame( rGame));
+        return( rGame );
     },
 });
