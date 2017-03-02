@@ -159,17 +159,23 @@ Template.answersForm.events({
 
             // submit choices and do clean up on previousness
             qs.forEach( function( q ) {
-                Meteor.call("insertQuestionToSubData", Meteor.userId(), q, asyncCallback=function(err, data) {
-                    // a little inefficient to put this call back after every submit, but it beats missing the asynchrony, as long as its safe to over call this function.
-                    if (err) { throw( err ); }
-                    // determine if end of cohort
-                    if ( q.type === "chooseStrategy" && sub.treatment_now === "feedback" ) {
-                        //Meteor.call('tryToCompleteCohort', design);
-                        console.log("got in here somewherehow");
-                        Meteor.call('tryToCompleteQuestion', q, design);
-                    }
-                } );
+                Meteor.call("insertQuestionToSubData", Meteor.userId(), q );
             });
+
+            // also not affected by async
+            console.log("before cohort completion", sub);
+            if ( true || sub.sec_rnd_now === 1 || sub.sec_rnd_now === 4 ) {
+                console.log("into completion 1");
+                qs.forEach( function( q ) {
+                    console.log("got in here somewherehow, tryingt ocomplete question", q );
+                    if (q.paid && q.matchingGameId !== false ) {
+                        console.log("stil trying ocomplete question");
+                        Meteor.call('tryToCompleteQuestionPair', q, design);
+                    }
+                });
+                console.log("into completion 6");
+            }
+            console.log("into completion 7");
 
             /////////////////////
             //// ... SEPARATELY, ADVANCE STATE 
@@ -192,6 +198,8 @@ Template.answersForm.events({
                         //Router.go('/experiment');
                     } else {
                         //console.log("ready?");
+                        // http://stackoverflow.com/questions/11715646/scroll-automatically-to-the-bottom-of-the-page
+                        window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
                         Meteor.call( "setReadyToProceed", muid );
                     }
 
@@ -215,7 +223,7 @@ Template.experimentInfo.helpers({
     },
     counterNet: function () {
         let data = Sess.subData();
-        if( data && !_.isNil( data ) && !_.isNil( data[0] ) ) {
+        if( data && !_.isNil( data ) && !_.isNil( data[0] ) && !_.isNil( data[0].theData ) ) {
             return data[0].theData.queuePosition;
         }
     },
@@ -270,6 +278,17 @@ Template.main.events({
         let sub = Sess.subStat();
         //console.log("proceedButton#experiment", muid, sub, e.target );
         if ( sub.readyToProceed ) {
+            // complete cohort
+            Meteor.call('tryToCompleteCohort', Sess.design(), function(err, cohortCompleted) {
+                if (err) { throw( err ); }
+                if (cohortCompleted) {
+                    console.log("COHORTcOMPLETED");
+                    //confirm that all questions are finished and matched with payfofs
+                    //calculate subject payoffs
+                    //consummate data on this and matched subject in subjectsdata
+                }
+            });
+            /// advance section
             if (sub.sec_now === "experiment1" ) {
                 Meteor.call('advanceSubjectSection', Meteor.userId(), "experiment2", "experiment", asyncCallback=function(err, updatedSub) {
                     if (err) { throw( err ); }
@@ -280,6 +299,8 @@ Template.main.events({
                 Meteor.call("addSectionQuestions", sub, "survey" );
             } else {
             }
+            // adjust screen 
+            window.scrollTo(0, 0);
         } else {
         }
     },

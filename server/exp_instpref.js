@@ -156,6 +156,7 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
             }
             return( { design, familiarCohort } );
         };
+//DEPRECATED?
 Experiment.findSubsData = function( sub, lastDesign, dat, matching ) {
             let subjectPos, countInA, countInB, countInNoChoice;
             let design = dat.design;
@@ -264,24 +265,27 @@ Experiment.submitExperimentChoice = function(muid, sec, sec_rnd, theData) {
             //let sd = SubjectsData.findOne({ meteorUserId: muid , theData.cohortId : cohortId, sec : section, sec_rnd : round });
             //return({ "s_status" : ss, "s_data" : sd });
         };
-Experiment.tryToCompleteQuestion = function(q, design) {
-    console.log("Experiment.tryToCompleteQuestion", q, Helper.des(design));
+Experiment.tryToCompleteQuestionPair = function(q, design) {
+    //console.log("Experiment.tryToCompleteQuestion", q, Helper.des(design));
+    console.log("Experiment.tryToCompleteQuestion");
     // determine if this is the first or second (ideally without knowing about matching protocol
     let question1 = q;
     //let question2 = Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) });
-    let question2 = Questions.find({ _id : { $ne : q._id }, type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd });
+    let question2 = Questions.findOne({ _id : q.matchingGameId});
     //assert that mpayoffs match
-    console.assert(question2.count() <= 1, "Experiment.tryToCompleteQuestion problem 1");
+    if (_.isNil(question2)) {
+        console.log( "Experiment.tryToCompleteQuestion problem 1: called with no match", q._id, q.matchingGameId, question2, q );
+        return(false);
+    }
     // exit if not completed
     if (_.isNil( q.payoffs )) { console.log("NO PAYFOFS IN trytocomplete"); }
-    console.log("payoffs comparison", q, question2.fetch()[0]);
-    console.log("payoffs comparison", q.payoffs, question2.fetch()[0].payoffs);
-    console.log("payoffs comparison2", Helper.pivotGame(question2.fetch()[0].payoffs), Helper.pivotGame(q.payoffs));
-    console.log("Experiment.tryToCompleteQuestion", Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) }).count(), Questions.find({  cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, payoffs : Helper.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd }).count(), "and", design.cohortId, q.sec_rnd, Helper.pivotGame(q.payoffs) );
-    if (question2.count() === 0) { return(false); }
-    question2 = Questions.findOne({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) });
+    //console.log("payoffs comparison", q, question2.fetch()[0]);
+    //console.log("payoffs comparison", q.payoffs, question2.fetch()[0].payoffs);
+    //console.log("payoffs comparison2", Helper.pivotGame(question2.fetch()[0].payoffs), Helper.pivotGame(q.payoffs));
+    //console.log("Experiment.tryToCompleteQuestion", Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) }).count(), Questions.find({  cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, payoffs : Helper.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd }).count(), "and", design.cohortId, q.sec_rnd, Helper.pivotGame(q.payoffs) );
+    //question2 = Questions.findOne({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) });
     // get eachsubjects choices
-    console.log("try to complete", question1, question2);
+    console.log("try to complete", question1, question2 );
     let c1 = question1.choice;
     let c2 = question2.choice === "Top" ? "Left" : "Right";
     let outcomePerspectiveP1 = ""+c1+","+c2;
@@ -293,7 +297,7 @@ Experiment.tryToCompleteQuestion = function(q, design) {
     let outcomePayoffs = _.sortBy ( _.intersection( c1Poss, c2Poss) );
     let payoffP1 = question1.payoffs[ outcomePayoffs[0] ];
     let payoffP2 = question1.payoffs[ outcomePayoffs[1] ];
-    console.log("tried to complete", outcomePerspectiveP1, outcomePerspectiveP2, outcomePayoffs, question1, question2);
+    console.log("tried to complete", outcomePerspectiveP1, outcomePerspectiveP2, outcomePayoffs);
     console.assert( outcomePayoffs.length === 2, "payoff calc 0: got payoffs successfully" );
     console.log("CRM1");
     console.assert( outcomePayoffs[0] < 4, "payoff calc 1: payoffs ordered right and assigned right" );
@@ -305,22 +309,17 @@ Experiment.tryToCompleteQuestion = function(q, design) {
     question1.outcomeOther = c2;
     question1.payoffEarnedFocal = payoffP1;
     question1.payoffEarnedOther = payoffP2;
+    question1.completedGame = true;
     question2.outcome = outcomePerspectiveP2;
     question2.outcomeFocal = c1p2;
     question2.outcomeOther = c2p2;
     question2.payoffEarnedFocal = payoffP2;
     question2.payoffEarnedOther = payoffP1;
+    question2.completedGame = true;
     Questions.update( question1._id, {$set : question1});
     Questions.update( question2._id, {$set : question2});
-            console.log("setCompleteion before ", question1, " and after", Questions.findOne( question1._id));
-    // use this to calculate outcome
-    //    (making outcome showable to player 2, since p1 will never see it?)
-    // return false or outcome (or don't return anything and just change state
-    //      places I could store the fact of the outcome:
-    //           in the cohort object (would need a list, since many games (three) are now in each cohort
-    //           in each player (this makes sense because payoffs will have to get updated there, but ...
-    //           in the questions (this makes sense except each game is dividied over two question objects, one for each player int eh game (even when both players are the same person)
-    //           in the subdata object (which I don't even knwo why I still ave that)
+    console.log("setCompleteion");
+    //console.log("setCompleteion before ", question1, " and after", Questions.findOne( question1._id));
 };
 Experiment.tryToCompleteCohort = function(design) {
             let completedCohort = false;
@@ -333,52 +332,34 @@ Experiment.tryToCompleteCohort = function(design) {
             ).completedCohort ) {
                 return;
             }
+    console.log("complete cohort 2" );
             
-            // experiment-specific logic
-            let cohortFin = SubjectsData.find({
-                "theData.cohortId" : cohortId, 
-                //sec: design.sec,  //these entries are deprecated
-                //sec_rnd: design.sec_rnd,  //these entries are deprecated
-                completedChoice: true,
-            });
-            let cohortUnfin = SubjectsData.find({
-                "theData.cohortId" : cohortId, 
-                //sec: design.sec,  //these entries are deprecated
-                //sec_rnd: design.sec_rnd,  //these entries are deprecated
-                completedChoice: false,
-            });
+            let unansweredQs = Questions.find({ cohortId : cohortId, paid : true, answered : false });
+            let answeredQs = Questions.find( { cohortId : cohortId, paid : true, answered : true });
+            let playerCount = _.uniq( answeredQs.map( function(q) {
+                return( q.meteorUserId );
+            }) ).length;
+    console.log("complete cohort 3", playerCount, unansweredQs.count(), answeredQs.count() );
 
             //console.log( "cohort completion", cohortFin.count(), cohortUnfin.count(), design.maxPlayersInCohort );
-            if (cohortFin.count() >= design.maxPlayersInCohort ) {
+            if (unansweredQs.count() === 0 && (
+                    playerCount === design.maxPlayersInCohort || 
+                    ( playerCount === 1 && design.matching.selfMatching && design.filledCohort === 2) 
+                ) ) {
                 // get rid of old cohort (make it outdated/complete)
                 completedCohort = true;
                 CohortSettings.update({ cohortId: cohortId}, {
-                    $set: { 
-                        completedCohort: true,
-                    },
+                    $set: { completedCohort: true, },
                 }//, {multi: true}  //d ont' want to need this.
                 );
                 try {
-                    console.assert(design.maxPlayersInCohort === design.filledCohort, "sanity6" );
-                } catch(err) {
-                    console.log(err);
-                }
-
-                //if end of queue, calculate all earnings
-                Meteor.call( 'calculateExperimentEarnings', design );
-
-            } else if ( cohortFin.count() + cohortUnfin.count() === design.maxPlayersInCohort) {
-                //let sub = SubjectsData.findOne({ cohortId : cohortId, sec: design.sec, sec_rnd: design.sec_rnd }, 
-                    //{ sort : { cohortId : -1, sec : -1, sec_rnd : -1 } });
-                for ( let sub of cohortUnfin.fetch() ) {
-                    // print out subjects that, later, I'll want (need) to address manually.
-                    //console.log( sub.userId );
-                }
+                    console.assert(design.maxPlayersInCohort === design.filledCohort, "sanity6: do i really only have two subjects?", design );
+                } catch(err) { console.log(err); }
+                return(true);
             } else {
                 // cohort still in progress
+                return(false);
             }
-
-            //return( design  );
 };
 Experiment.calculateExperimentEarnings = function(aDesign) {
             let queueasubjects, queuebsubjects, positionfinal, earnings2, totalpayment, asst, cohortId;

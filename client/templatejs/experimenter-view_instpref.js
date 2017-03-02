@@ -17,16 +17,20 @@ Template.experimenterViewState.helpers({
         return this.design.cohortId;
     },
     queuePosition: function () {
-        return( this.subData ? this.subData[0].theData.queuePosition : "" );
+        return( "" );
+        //return( this.subData ? this.subData[0].theData.queuePosition : "" );
     },
     queueCountA: function () {
-        return( this.subData ? this.subData[0].theData.queueCountA : "" );
+        return( "" );
+        //return( this.subData ? this.subData[0].theData.queueCountA : "" );
     },
     queueCountB: function () {
-        return( this.subData ? this.subData[0].theData.queueCountB : "" );
+        return( "" );
+        //return( this.subData ? this.subData[0].theData.queueCountB : "" );
     },
     queueCountNoChoice: function () {
-        return( this.subData ? this.subData[0].theData.queueCountNoChoice : "" );
+        return( "" );
+        //return( this.subData ? this.subData[0].theData.queueCountNoChoice : "" );
     },
 });
 

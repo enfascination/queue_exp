@@ -90,6 +90,7 @@ QuestionData.questions = [
 	title: 'Question One',
 	text: 'You are playing the game below with another person.  They are choosing Left or Right.  You will choose either Top or Bottom.',
 	label: 'Make your choice for this game, either Top or Bottom.',
+    paid: true,
 },
 {
     sec: 'experiment',
@@ -106,6 +107,7 @@ QuestionData.questions = [
 	title: 'Question Three',
 	text: 'You are now playing a slight different game with the same person.  They are choosing Left or Right.  You will choose either Top or Bottom.',
 	label: 'Make your choice for this game, either Top or Bottom.',
+    paid: true,
 },
 {
     sec: 'experiment',
@@ -130,6 +132,7 @@ QuestionData.questions = [
 	title: 'Question Six',
 	text: 'This is the last game of the section.  Make your choice.',
 	label: 'Make your choice for this game, either Top or Bottom.',
+    paid: true,
 },
 {
     sec: 'survey',
@@ -216,6 +219,7 @@ QuestionData.questions.forEach ( function(q) {
         hasError: false,
         order : _.indexOf(QuestionData.questions, q),
     });
+    if( _.isNil(q.paid) || !q.paid ) { q.paid = false; }
     if( q.sec === 'quiz' ) {
         q.correct = false;
         q.payoffs = [3,1,4,2,3,1,4,2];
