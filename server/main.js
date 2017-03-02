@@ -144,7 +144,7 @@ Meteor.users.deny({
                     console.log("generated games", payoffsGame1, payoffsGame2);
                 } else if (matching.selfMatching && sec === "experiment2" ) {
                     matchable = true;
-                    let matchingQuestion = Questions.findOne({ cohortId : sub.cohort_now, sec_rnd : sub.sec_rnd_now, type : 'chooseStrategy', paid : true});
+                    let matchingQuestion = Questions.findOne({ cohortId : sub.cohort_now, sec_rnd : sub.sec_rnd_now, type : 'chooseStrategy', strategic : true});
                     payoffsGame1 = Helper.pivotGame( matchingQuestion.payoffsGame1 );
                     payoffsGame2 = Helper.pivotGame( matchingQuestion.payoffsGame2 );
                     console.log("returning to games", payoffsGame1, payoffsGame2);
@@ -167,17 +167,17 @@ Meteor.users.deny({
                         q.matchingGameId = false;
                         if (q.sec_rnd === 0) {
                             q.payoffs = payoffsGame1;
-                            if (matchable && q.type === 'chooseStrategy' && q.paid) {
+                            if (matchable && q.type === 'chooseStrategy' && q.strategic) {
                                 q.matchingGameId = Questions.findOne(
-                                    { cohortId : sub.cohort_now, sec_rnd : 0, type : 'chooseStrategy', paid : true}
+                                    { cohortId : sub.cohort_now, sec_rnd : 0, type : 'chooseStrategy', strategic : true}
                                 )._id;
                             }
                             //q.gameId = payoffsGame1.join();
                         } else if (q.sec_rnd === 1) {
                             q.payoffs = payoffsGame2;
-                            if (matchable && q.type === 'chooseStrategy' && q.paid) {
+                            if (matchable && q.type === 'chooseStrategy' && q.strategic) {
                                 q.matchingGameId = Questions.findOne(
-                                    { cohortId : sub.cohort_now, sec_rnd : 1, type : 'chooseStrategy', paid : true}
+                                    { cohortId : sub.cohort_now, sec_rnd : 1, type : 'chooseStrategy', strategic : true}
                                 )._id;
                             }
                             //q.gameId = payoffsGame2.join();
@@ -193,7 +193,7 @@ Meteor.users.deny({
                     q.meteorUserId = sub.meteorUserId;
                     try {
                         idTmp = Questions.insert(q);
-                        if (matchable && q.type === 'chooseStrategy' && q.paid) {
+                        if (matchable && q.type === 'chooseStrategy' && q.strategic) {
                             Questions.update( q.matchingGameId, {$set : {matchingGameId : q._id }});
                         }
                     } catch (err) {
@@ -420,9 +420,9 @@ Meteor.users.deny({
                 sec : sub.sec_now, 
                 sec_rnd : sec_rnd, 
                 type : 'chooseStrategy',
-                paid : true});
+                strategic : true});
             console.log("setChosenGameForRound 6");
-            let matchingQuestion = Questions.findOne({ _id : {$ne : nextQuestion._id}, cohortId : sub.cohort_now, sec_rnd : sub.sec_rnd_now, type : 'chooseStrategy', paid : true});
+            let matchingQuestion = Questions.findOne({ _id : {$ne : nextQuestion._id}, cohortId : sub.cohort_now, sec_rnd : sub.sec_rnd_now, type : 'chooseStrategy', strategic : true});
             let tmp, tmp2;
             if ( !_.isNil( matchingQuestion ) ) { 
                 console.log("setChosenGameForRound 7");

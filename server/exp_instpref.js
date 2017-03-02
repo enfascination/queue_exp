@@ -334,8 +334,8 @@ Experiment.tryToCompleteCohort = function(design) {
             }
     console.log("complete cohort 2" );
             
-            let unansweredQs = Questions.find({ cohortId : cohortId, paid : true, answered : false });
-            let answeredQs = Questions.find( { cohortId : cohortId, paid : true, answered : true });
+            let unansweredQs = Questions.find({ cohortId : cohortId, strategic : true, answered : false });
+            let answeredQs = Questions.find( { cohortId : cohortId, strategic : true, answered : true });
             let playerCount = _.uniq( answeredQs.map( function(q) {
                 return( q.meteorUserId );
             }) ).length;

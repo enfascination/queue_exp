@@ -168,7 +168,7 @@ Template.answersForm.events({
                 console.log("into completion 1");
                 qs.forEach( function( q ) {
                     console.log("got in here somewherehow, tryingt ocomplete question", q );
-                    if (q.paid && q.matchingGameId !== false ) {
+                    if (q.strategic && q.matchingGameId !== false ) {
                         console.log("stil trying ocomplete question");
                         Meteor.call('tryToCompleteQuestionPair', q, design);
                     }
