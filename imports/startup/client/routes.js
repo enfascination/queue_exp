@@ -65,10 +65,12 @@ Router.route('/experiment', function() {
 
     // infobox template contingent on section
     let data = Router.options.data();
-    if (data && data.currentSection.id != 'survey') {
-        this.render( 'experimentInfo', { to : 'infoBox' } );
-    } else {
+    if (data && (data.currentSection.id === 'survey')) {
         this.render( 'expGeneralInfoBox', { to : 'infoBox' } );
+    } else if (data && (data.currentSection.id === 'earningsReport')) {
+        this.render( 'expGeneralInfoBox', { to : 'infoBox' } );
+    } else {
+        this.render( 'experimentInfo', { to : 'infoBox' } );
     }
 
     if (data && data.subStat.sec_rnd_now === 0 ) {

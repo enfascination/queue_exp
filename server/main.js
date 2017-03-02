@@ -336,13 +336,17 @@ Meteor.users.deny({
                         completedExperiment: true,
                     },
                 });
+                // the earningsReport section doesn't have a submit button, and should go straight to next
+                Meteor.call("setReadyToProceed", muid);
+                entered = 3;
+            } else if ( sub_old.sec_now === "earningsReport" ) {
                 // to exit survey/submitHIT
                 Meteor.call('goToExitSurvey', Meteor.userId());
-                entered = 3;
+                entered = 4;
             }
 
             sub = SubjectsStatus.findOne({ meteorUserId: muid });
-            //console.log("end of advancesection", entered, sub.sec_now );
+            console.log("end of advancesection", entered, sub.sec_now );
             return( sub );
         },
         // updates a CohortSettings object

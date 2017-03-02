@@ -96,17 +96,21 @@
 </template>
 <template name="expSectionTabPane">
     {{#if currentSectionExperiment currentSection}}
-            {{#unless isSection "survey"}}
-            <h2 class="sectionHeader" >
-                {{currentSection.label}} <br/>
-                <small>Round {{inc subStat.sec_rnd_now}}/{{currentSection.roundCount}}</small>
-            </h2>
-            <br/>
-                {{> experiment ..}}
-            {{else}}
+            {{#if isSection "survey"}}
                 <h2 class="sectionHeader" >Survey</h2>
                 {{> survey ..}}
-            {{/unless}}
+            {{else}} {{#if isSection "earningsReport"}}
+                <h2 class="sectionHeader" >Earnings report</h2>
+                    {{> earningsReport ..}}
+                {{else}}
+                    <h2 class="sectionHeader" >
+                        {{currentSection.label}} <br/>
+                        <small>Round {{inc subStat.sec_rnd_now}}/{{currentSection.roundCount}}</small>
+                    </h2>
+                    <br/>
+                {{> experiment ..}}
+                {{/if}}
+            {{/if}}
     {{/if}}
 </template>
 <template name="submitHITSectionTabPane">

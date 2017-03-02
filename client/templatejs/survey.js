@@ -101,6 +101,17 @@ Template.main.events({
         let sub = Sess.subStat();
         //console.log("button#proceedButton#experiment survey", sub);
         if ( sub.readyToProceed ) {
+            Meteor.call("advanceSubjectSection", muid, "earningsReport", "experiment");
+        }
+    },
+});
+Template.main.events({
+    'click button.proceedButton#earningsReport': function ( e ) {
+        e.stopPropagation();
+        let muid = Meteor.userId();
+        let sub = Sess.subStat();
+        console.log("button.proceedButton#earningsReport", sub);
+        if ( sub.readyToProceed ) {
             Meteor.call("advanceSubjectSection", muid, "submitHIT", "submitHIT");
         }
     },

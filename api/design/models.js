@@ -51,6 +51,15 @@ DesignSequence = {
             "roundCount" : 1, 
             "rounds" : { "0" : {id:"round0", label:"Questions"}, },
             "stages" : 1 },
+        "earningsReport" : { 
+            "name" : "earningsReport", 
+            "type" : "experiment" , 
+            "id" : "earningsReport" , 
+            "label" : "Earnings" , 
+            "roundCount" : 0, 
+            "rounds" : { "0" : {id:"round0", label:"Earnings report"}, },
+            "stages" : 0 
+        },
         "submitHIT" : { 
             "name" : "submitHIT", 
             "type" : "submitHIT" , 

@@ -123,6 +123,8 @@ export const Helper = {
             toInclude = [ 'instructions', 'experiment2' ];
         } else if (sec === "survey") {
             toInclude = [ 'survey']; ///XXX
+        } else if (sec === "earningsReport") {
+            toInclude = [ 'earningsReport']; 
         } else if (sec === "submitHIT") {
             toInclude = [ 'submitHIT' ]; ///XXX
         } else {

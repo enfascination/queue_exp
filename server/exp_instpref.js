@@ -12,7 +12,7 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
             let familiarCohort = false;
 
             // if this is here, then I've seen anyone at all make it to this part of the experiment before.
-            probeDesign = CohortSettings.findOne( { sec_type : "experiment", sec: { $ne : 'survey'} }, 
+            probeDesign = CohortSettings.findOne( { sec_type : "experiment", sec: { $nin : ['survey', 'earningsReport']} }, 
                 { sort : { cohortId : -1} });
 
             if ( _.isNil( probeDesign ) ) { // server has been reset and there are no design in database
