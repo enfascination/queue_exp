@@ -109,10 +109,13 @@ Template.answersForm.events({
             //if ( passed || failed ) {
             if ( true || passed || failed ) {
                 Meteor.call( "disableQuestions", _.map(qs, "_id"), reset=failed ? true : false );
-                Meteor.call( "setReadyToProceed", muid );
                 if ( failed ) {
                     Helper.buttonsReset( e.currentTarget );
                 }
+
+                Meteor.call( "setReadyToProceed", muid, function(err) {
+                    Helper.windowAdjust(sub, bottom=true );
+                } );
             }
         } else {
         }
@@ -133,6 +136,7 @@ Template.main.events({
             Meteor.call("advanceSubjectSection", muid, nextSection, nextSectionType);
             // Meteor.call('goToExitSurvey', Meteor.userId()); redundant
 
+            Helper.windowAdjust(sub );
         }
     },
 });

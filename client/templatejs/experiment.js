@@ -192,18 +192,20 @@ Template.answersForm.events({
                         // uncheck buttons in UI
                         Helper.buttonsReset( e.currentTarget );
                         UserElements.questionsIncomplete.set(false);
-                        window.scrollTo(0, 0);
                         // create the next cohort object (which might have no members actually);
                         // routing?
                         //Router.go('/experiment');
+                        Helper.windowAdjust(updatedSub );
                     } else {
                         //console.log("ready?");
                         // http://stackoverflow.com/questions/11715646/scroll-automatically-to-the-bottom-of-the-page
-                        window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
-                        Meteor.call( "setReadyToProceed", muid );
+                        Meteor.call( "setReadyToProceed", muid, function(err) {
+                            Helper.windowAdjust(updatedSub, bottom=true );
+                        } );
                     }
 
                 });
+
 
         }
     },
@@ -300,7 +302,7 @@ Template.main.events({
             } else {
             }
             // adjust screen 
-            window.scrollTo(0, 0);
+            Helper.windowAdjust(sub );
         } else {
         }
     },

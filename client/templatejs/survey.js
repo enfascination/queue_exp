@@ -89,7 +89,9 @@ Template.answersForm.events({
             Meteor.call( "disableQuestions", _.map(qs, "_id"), reset=false );
 
             //console.log("form#submitSurvey");
-            Meteor.call( "setReadyToProceed", Meteor.userId() );
+            Meteor.call( "setReadyToProceed", Meteor.userId(), function(err) {
+                    Helper.windowAdjust(sub, bottom=true );
+                } );
         }
     },
 });
@@ -102,6 +104,7 @@ Template.main.events({
         //console.log("button#proceedButton#experiment survey", sub);
         if ( sub.readyToProceed ) {
             Meteor.call("advanceSubjectSection", muid, "earningsReport", "experiment");
+            Helper.windowAdjust(sub );
         }
     },
 });
@@ -113,6 +116,7 @@ Template.main.events({
         console.log("button.proceedButton#earningsReport", sub);
         if ( sub.readyToProceed ) {
             Meteor.call("advanceSubjectSection", muid, "submitHIT", "submitHIT");
+            Helper.windowAdjust(sub );
         }
     },
 });

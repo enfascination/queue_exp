@@ -12,6 +12,7 @@ Template.navButton.events({
     "click button.navButton" : function( e ) {
         let val = e.target.value;
         Helper.activateTab( val );
+        Helper.windowAdjust(Sess.subStat() );
     },
 });
 Template.navButton.helpers({

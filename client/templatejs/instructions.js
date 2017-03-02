@@ -82,5 +82,6 @@ Template.main.events({
         } else {
             Helper.activateTab( Template.currentData().currentSection.id );
         }
+        Helper.windowAdjust(sub );
     }
 });
