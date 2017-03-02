@@ -158,5 +158,30 @@
 <template name="earningsReport">
     <div class="center-block"> 
         This is a sample section.
+        You played XXX games for money
+        !!! IF NOT DONE !!!
+            So far only XXX of them have been played by the other player. Incomplete choices will be marked as such below.
+            Your current earnings are XXX, including your XXX endowment and XXX for completeing the survey.
+            It will take time for the rest of your choices to be matched. 
+            You will can return to this page here for progress: XXX
+            It should take less tahn 24 hours.  If it takes more, contact the <a>experimenters</a>
+        !!! ELSE  !!!
+            Your session is now complete
+            You earnings are XXX, including your XXX endowment and XXX for ocmpleting the survey.
+        !!! FI ||| 
+        Click NEXT to reach the HIT submission page. we welcome your comments and feedback.
+
+        <h2> All questions </h2>
+            {{#each question in questionsFeedback allQs=true}}
+            section: {{question.sec}}
+            round: {{question.sec_rnd}}
+            title: {{question.title}}
+            complete?: {{question.completedGame}}
+                {{#if question.completedGame}}
+                    {{> gameNormalFormOutcomeFeedback question=question}}
+                {{else}}
+                    {{> gameNormalFormChoiceFeedback question=question}}
+                {{/if}}
+            {{/each}}
     </div>
 </template>

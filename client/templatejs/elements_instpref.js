@@ -195,11 +195,15 @@ Template.visualGame.helpers({
     getPayoff : getPayoff,
 });
 Template.instPrefGame2.helpers({
-	questionsFeedback : function(){
-        let sub = Sess.subStat();
+	questionsFeedback : function( allQs = false ){
+        let questionsFeedback, sub = Sess.subStat();
         let dataContext = this;
         if (sub && dataContext.currentSection && this.questionsColl) {
-            let questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, type : "chooseStrategy", sec_rnd : {$lt : 2}, sec : sub.sec_now}).fetch();
+            if (allQs) {
+                questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, type : "chooseStrategy", paid : true }).fetch();
+            } else {
+                questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, type : "chooseStrategy", paid : true, sec_rnd : {$lt : 2}, sec : sub.sec_now}).fetch();
+            }
             _.forEach( questionsFeedback, function( q ) {
                 if (sub.treatment_now === "feedback") {
                     q.choice = q.outcome;
@@ -211,6 +215,7 @@ Template.instPrefGame2.helpers({
         }
     },
 });
+Template.earningsReport.inheritsHelpersFrom('instPrefGame2');
 
 // for demoing
 Template.questionGameCompareReshuffle.inheritsHelpersFrom('questionGame');
