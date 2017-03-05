@@ -265,7 +265,7 @@ Experiment.submitExperimentChoice = function(muid, sec, sec_rnd, theData) {
             //return({ "s_status" : ss, "s_data" : sd });
         };
 Experiment.tryToCompleteUncompletedQuestions = function(sub, design) {
-    let qs = Questions.find({ meteorUserId : sub.meteorUserId, cohortId : sub.cohort_now });
+    let qs = Questions.find({ meteorUserId : sub.meteorUserId, cohortId : sub.cohort_now, sec : sub.sec_now });
     let matches = 0;
     qs.forEach( function(q) {
         console.log("to match?", (q.strategic && _.isString( q.matchingGameId ) && !q.completedGame), q);
@@ -285,18 +285,17 @@ Experiment.completeQuestionPair = function(q1, q2, design) {
     //let question2 = Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : question1.sec_rnd, payoffs : Helper.pivotGame(question1.payoffs) });
     let question2 = Questions.findOne({ _id : q2 });
     //assert that mpayoffs match
-    console.log("CRM -4", _.isNil(question1) , _.isNil(question2) ,( _.isNil(question1) || _.isNil(question2) ), question1, question2);
-    console.assert( ( _.isNil(question1) || _.isNil(question2) ),  "Experiment.tryToCompleteQuestion problem 1: called with no match", question1, question2);
-    console.log("CRM -3");
-    console.assert( (_.isNil(question1.choice) || _.isNil(question2.choice)),  "Experiment.tryToCompleteQuestion problem 2: called before all choices made", question1, question2);
-    console.log("CRM -2");
-    console.assert( (_.isNil(question1.payoffs) || _.isNil(question2.payoffs)),  "Experiment.tryToCompleteQuestion problem 2: payoffs bugged out", question1, question2);
-    // get eachsubjects choices
-    console.log("try to complete", question1._id, question2._id, question1.payoffs, Helper.pivotGame(question2.payoffs ), question2.payoffs );
-    console.assert( question1.payoffs.join('') === Helper.pivotGame(question2.payoffs ).join(''), "payoff calc -1: got payoffs successfully" );
-    console.log("CRM -1");
-    console.assert( question1.cohortId === question2.cohortId , "payoff calc -2: got payoffs successfully" );
-    console.log("CRM 0");
+    try {
+        console.assert( !( _.isNil(question1) || _.isNil(question2) ),  "Experiment.tryToCompleteQuestion problem 1: called with no match", question1, question2);
+        console.assert( !(_.isNil(question1.choice) || _.isNil(question2.choice)),  "Experiment.tryToCompleteQuestion problem 2: called before all choices made", question1, question2);
+        console.assert( !(_.isNil(question1.payoffs) || _.isNil(question2.payoffs)),  "Experiment.tryToCompleteQuestion problem 2: payoffs bugged out", question1, question2);
+        // get eachsubjects choices
+        console.assert( question1.payoffs.join('') === Helper.pivotGame(question2.payoffs ).join(''), "payoff calc -1: got payoffs successfully" );
+        console.assert( question1.cohortId === question2.cohortId , "payoff calc -2: got payoffs successfully" );
+    } catch(err) { 
+        console.log(err, question1, question2); 
+        console.log("try to complete", question1._id, question2._id, question1.payoffs, Helper.pivotGame(question2.payoffs ), question2.payoffs );
+    }
     let c1 = question1.choice;
     let c2 = question2.choice === "Top" ? "Left" : "Right";
     let outcomePerspectiveP1 = ""+c1+","+c2;
@@ -309,12 +308,13 @@ Experiment.completeQuestionPair = function(q1, q2, design) {
     let payoffP1 = question1.payoffs[ outcomePayoffs[0] ];
     let payoffP2 = question1.payoffs[ outcomePayoffs[1] ];
     console.log("tried to complete", outcomePerspectiveP1, outcomePerspectiveP2, outcomePayoffs);
-    console.assert( outcomePayoffs.length === 2, "payoff calc 0: got payoffs successfully" );
-    console.log("CRM 1");
-    console.assert( outcomePayoffs[0] < 4, "payoff calc 1: payoffs ordered right and assigned right" );
-    console.log("CRM 2");
-    console.assert( outcomePayoffs[1] > 3, "payoff calc 2: payoffs ordered right and assigned right" );
-    console.log("CRM 3");
+    try {
+        console.assert( outcomePayoffs.length === 2, "payoff calc 0: got payoffs successfully" );
+        console.assert( outcomePayoffs[0] < 4, "payoff calc 1: payoffs ordered right and assigned right" );
+        console.assert( outcomePayoffs[1] > 3, "payoff calc 2: payoffs ordered right and assigned right" );
+    } catch(err) { 
+        console.log(err, question1, question2, outcomePayoffs); 
+    }
     question1.outcome = outcomePerspectiveP1;
     question1.outcomeFocal = c1;
     question1.outcomeOther = c2;
