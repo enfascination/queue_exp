@@ -52,7 +52,6 @@ Template.answersForm.events({
         //return;
         // AHHHHHHHH
         let answeredCount = 0;
-        let questionsCount = 0;
         let resultsCount = 0;
         let form = e.target;
         //let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: 'quiz'});
@@ -77,15 +76,14 @@ Template.answersForm.events({
                 answeredCount += 1;
                 resultsCount += correct ? 1 : 0;
             }
-            questionsCount += 1;
             Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData );
         });
-        //console.log("counts", questionsCount, answeredCount, resultsCount, _.map(qs, "_id"));
-        //if ( answeredCount === questionsCount ) {
+        console.log("counts", qs.length, answeredCount, resultsCount, qs.map( (q) => q._id ));
+        //if ( answeredCount === qs.length ) {
         if ( true ) {
             UserElements.quizSubmitted.set( true );
             let passed = false;
-            if ( resultsCount === questionsCount ) {
+            if ( resultsCount === qs.length ) {
                 passed = true;
             }
             let sub = Sess.subStat();
@@ -103,12 +101,17 @@ Template.answersForm.events({
             /////////////////////
             let quizObj = {"passed" : passed, "failed" : failed, "triesLeft" : triesLeft};
             Meteor.call('updateQuiz', muid, quizObj );
+
+            // caluclate earnings (in case there is an earnings change after quiz, like recieivng the endowment
+            Meteor.call("updateExperimentEarnings", muid, Sess.design());
+
+
             /////////////////////
             //// ... SEPARATELY, ADVANCE STATE 
             /////////////////////
             //if ( passed || failed ) {
             if ( true || passed || failed ) {
-                Meteor.call( "disableQuestions", _.map(qs, "_id"), reset=failed ? true : false );
+                Meteor.call( "disableQuestions", qs.map( (q) => q._id ), reset=failed ? true : false );
                 if ( failed ) {
                     Helper.buttonsReset( e.currentTarget );
                 }

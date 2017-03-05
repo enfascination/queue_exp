@@ -26,7 +26,6 @@ Template.answersForm.events({
         //return;
         // AHHHHHHHH
         let answeredCount = 0;
-        let questionsCount = 0;
         let qs = Template.currentData().questionsColl ? Template.currentData().questionsColl.fetch() : [];
         //let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: 'survey'}).fetch();
         qs.forEach( function( q ) {
@@ -67,7 +66,6 @@ Template.answersForm.events({
             } else {
                 answeredCount += 1;
             }
-            questionsCount += 1;
             _.assign(q, theData); // client side update: assign is a mutator of q
             Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData ); //optional?
             console.log("grading survey", q);
@@ -75,10 +73,18 @@ Template.answersForm.events({
         /////////////////////
         //// IF INPUTS OK, SUBMIT ANSWERS AND ....
         /////////////////////
-        console.log(answeredCount ,questionsCount, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
-        if ( true || answeredCount === questionsCount ) {
+        console.log(answeredCount ,qs.length, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
+        if ( true || answeredCount === qs.length ) {
+            let qInc = 0 ;
             qs.forEach( function( q ) {
-                Meteor.call("insertQuestionToSubData", Meteor.userId(), q );
+                qInc += 1;
+                Meteor.call("insertQuestionToSubData", Meteor.userId(), q, function(){
+                    if ( qInc === qs.length ) {
+                        /// calculate payoffs
+                        Meteor.call("updateExperimentEarnings", Meteor.userId(), Sess.design() );
+                    }
+                } );
+
             });
             /////////////////////
             //// ... SEPARATELY, ADVANCE STATE 
@@ -86,7 +92,7 @@ Template.answersForm.events({
             // uncheck buttons in UI
             //Helper.buttonsReset( e.currentTarget );
             UserElements.questionsIncomplete.set(false);
-            Meteor.call( "disableQuestions", _.map(qs, "_id"), reset=false );
+            Meteor.call( "disableQuestions", qs.map( (q) => q._id ), reset=false );
 
             //console.log("form#submitSurvey");
             Meteor.call( "setReadyToProceed", Meteor.userId(), function(err) {

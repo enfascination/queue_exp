@@ -43,16 +43,15 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                     cohortId = probeDesign.cohortId + 1;
                     design = Meteor.call("initializeCohort", cohortId=cohortId, sub.sec_type_now, sub.meteorUserId, sub.meteorUserId);
                     familiarCohort = false;
-                    console.log("self matching exp 1", cohortId, sub, Helper.des(design).sec_type );
+                    console.log("self matching exp 1", cohortId, sub.meteorUserId, Helper.des(design).sec_type );
                 } else {
                     cohortId = sub.cohort_now;
                     design = CohortSettings.findOne( { 
                         cohortId : cohortId, 
                     } );
-                    console.log("self matching exp 2", cohortId, sub, Helper.des(design).sec_type );
+                    console.log("self matching exp 2", cohortId, sub.meteorUserId, Helper.des(design).sec_type );
                     familiarCohort = true;
                 }
-                console.log("self matching", Helper.des(design).sec_type );
                 //// reffing subjectsdata in this function is unusual, but necessary for spotting past cohorts including this partiicpants
                 //let previousByThisSubject = SubjectsData.find( {
                     //meteorUserId : sub.meteorUserId, 
@@ -265,27 +264,39 @@ Experiment.submitExperimentChoice = function(muid, sec, sec_rnd, theData) {
             //let sd = SubjectsData.findOne({ meteorUserId: muid , theData.cohortId : cohortId, sec : section, sec_rnd : round });
             //return({ "s_status" : ss, "s_data" : sd });
         };
-Experiment.tryToCompleteQuestionPair = function(q, design) {
-    //console.log("Experiment.tryToCompleteQuestion", q, Helper.des(design));
-    console.log("Experiment.tryToCompleteQuestion");
+Experiment.tryToCompleteUncompletedQuestions = function(sub, design) {
+    let qs = Questions.find({ meteorUserId : sub.meteorUserId, cohortId : sub.cohort_now });
+    let matches = 0;
+    qs.forEach( function(q) {
+        console.log("to match?", (q.strategic && _.isString( q.matchingGameId ) && !q.completedGame), q);
+        // if question involves another matchable question, and that question is know, and if this question has been answered, but hasn't yet been consummated with the other question, then consummate by calculating outcomes and corersponding payoffs.
+        if (q.strategic && _.isString( q.matchingGameId ) && !_.isNil(q.choice) && !q.completedGame) {
+            Experiment.completeQuestionPair( q._id, q.matchingGameId, design );
+            matches += 2;
+        }
+    });
+    console.log("completeUncompleted.  matches:", matches, qs.count());
+};
+Experiment.completeQuestionPair = function(q1, q2, design) {
+    //console.log("Experiment.tryToCompleteQuestion", q1, Helper.des(design));
+    console.log("Experiment.tryToCompleteQuestion", q1, q2);
     // determine if this is the first or second (ideally without knowing about matching protocol
-    let question1 = q;
-    //let question2 = Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) });
-    let question2 = Questions.findOne({ _id : q.matchingGameId});
+    let question1 = Questions.findOne({ _id : q1 });
+    //let question2 = Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : question1.sec_rnd, payoffs : Helper.pivotGame(question1.payoffs) });
+    let question2 = Questions.findOne({ _id : q2 });
     //assert that mpayoffs match
-    if (_.isNil(question2)) {
-        console.log( "Experiment.tryToCompleteQuestion problem 1: called with no match", q._id, q.matchingGameId, question2, q );
-        return(false);
-    }
-    // exit if not completed
-    if (_.isNil( q.payoffs )) { console.log("NO PAYFOFS IN trytocomplete"); }
-    //console.log("payoffs comparison", q, question2.fetch()[0]);
-    //console.log("payoffs comparison", q.payoffs, question2.fetch()[0].payoffs);
-    //console.log("payoffs comparison2", Helper.pivotGame(question2.fetch()[0].payoffs), Helper.pivotGame(q.payoffs));
-    //console.log("Experiment.tryToCompleteQuestion", Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) }).count(), Questions.find({  cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, payoffs : Helper.pivotGame(q.payoffs) }).count(), Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd }).count(), "and", design.cohortId, q.sec_rnd, Helper.pivotGame(q.payoffs) );
-    //question2 = Questions.findOne({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : q.sec_rnd, payoffs : Helper.pivotGame(q.payoffs) });
+    console.log("CRM -4", _.isNil(question1) , _.isNil(question2) ,( _.isNil(question1) || _.isNil(question2) ), question1, question2);
+    console.assert( ( _.isNil(question1) || _.isNil(question2) ),  "Experiment.tryToCompleteQuestion problem 1: called with no match", question1, question2);
+    console.log("CRM -3");
+    console.assert( (_.isNil(question1.choice) || _.isNil(question2.choice)),  "Experiment.tryToCompleteQuestion problem 2: called before all choices made", question1, question2);
+    console.log("CRM -2");
+    console.assert( (_.isNil(question1.payoffs) || _.isNil(question2.payoffs)),  "Experiment.tryToCompleteQuestion problem 2: payoffs bugged out", question1, question2);
     // get eachsubjects choices
-    console.log("try to complete", question1, question2 );
+    console.log("try to complete", question1._id, question2._id, question1.payoffs, Helper.pivotGame(question2.payoffs ), question2.payoffs );
+    console.assert( question1.payoffs.join('') === Helper.pivotGame(question2.payoffs ).join(''), "payoff calc -1: got payoffs successfully" );
+    console.log("CRM -1");
+    console.assert( question1.cohortId === question2.cohortId , "payoff calc -2: got payoffs successfully" );
+    console.log("CRM 0");
     let c1 = question1.choice;
     let c2 = question2.choice === "Top" ? "Left" : "Right";
     let outcomePerspectiveP1 = ""+c1+","+c2;
@@ -299,11 +310,11 @@ Experiment.tryToCompleteQuestionPair = function(q, design) {
     let payoffP2 = question1.payoffs[ outcomePayoffs[1] ];
     console.log("tried to complete", outcomePerspectiveP1, outcomePerspectiveP2, outcomePayoffs);
     console.assert( outcomePayoffs.length === 2, "payoff calc 0: got payoffs successfully" );
-    console.log("CRM1");
+    console.log("CRM 1");
     console.assert( outcomePayoffs[0] < 4, "payoff calc 1: payoffs ordered right and assigned right" );
-    console.log("CRM2");
+    console.log("CRM 2");
     console.assert( outcomePayoffs[1] > 3, "payoff calc 2: payoffs ordered right and assigned right" );
-    console.log("CRM3");
+    console.log("CRM 3");
     question1.outcome = outcomePerspectiveP1;
     question1.outcomeFocal = c1;
     question1.outcomeOther = c2;
@@ -318,8 +329,8 @@ Experiment.tryToCompleteQuestionPair = function(q, design) {
     question2.completedGame = true;
     Questions.update( question1._id, {$set : question1});
     Questions.update( question2._id, {$set : question2});
-    console.log("setCompleteion");
-    //console.log("setCompleteion before ", question1, " and after", Questions.findOne( question1._id));
+    //console.log("setCompleteion");
+    console.log("setCompleteion", "after", Questions.findOne( question1._id), "\n", Questions.findOne( question2._id));
 };
 Experiment.tryToCompleteCohort = function(design) {
             let completedCohort = false;
@@ -361,36 +372,42 @@ Experiment.tryToCompleteCohort = function(design) {
                 return(false);
             }
 };
-Experiment.calculateExperimentEarnings = function(aDesign) {
-            let queueasubjects, queuebsubjects, positionfinal, earnings2, totalpayment, asst, cohortId;
-            cohortId = aDesign.cohortId;
+Experiment.calculateExperimentEarnings = function(muid, design) {
+    // start with subject
+    // get all paid complete questions from subject
+            let paidQuestions = Questions.find({
+                meteorUserId : muid, 
+                sec : { $in : ['experiment1', 'experiment2'] },
+                paid : true,
+            });
+            let surveyQuestions = Questions.find({
+                meteorUserId : muid, 
+                sec : 'survey',
+                paid : true,
+            });
+    // determine that all (any?) survey questions were answered
+    let surveyComplete = ( surveyQuestions.count() > 0 ) && surveyQuestions.count() === surveyQuestions.map(function(q){ if (q.answered)  {return(q);} }).length;
+    let gameEarnings = 0;
+    paidQuestions.forEach( function( q ) {
+        if ( q.completedGame ) {
+            gameEarnings += q.payoffEarnedFocal * design.pointEarnings;
+        }
+    });
+    let HITearnings = { total : design.endowment + gameEarnings + ( surveyComplete ? design.surveyReward : 0 ), breakdown : { endowment: design.endowment, games : gameEarnings, survey : surveyComplete ? design.surveyReward : 0 }};
+    console.log("calculateExperimentEarnings", HITearnings, paidQuestions.count(), surveyQuestions.count(), paidQuestions.map( (q) => q.payoffEarnedFocal ) );
 
-            // experiment-specific logic
-            queueASubjects = SubjectsData.find( {
-                "theData.cohortId" : cohortId, "theData.choice" : "A", //sec : aDesign.sec, sec_rnd : aDesign.sec_rnd //eddepcrecaed
-                }, {sort : { "theData.queuePosition" : 1 } } ).fetch() ;
-            queueBSubjects = SubjectsData.find( {
-                "theData.cohortId" : cohortId, "theData.choice" : "B", //sec : aDesign.sec, sec_rnd : aDesign.sec_rnd               //eddepcrecaed
-                }, {sort : { "theData.queuePosition" : 1 } } ).fetch() ;
-            positionFinal = 1;
-
-            for ( let sub of _.concat(queueASubjects, queueBSubjects ) ) {
-
-                // experiment-specific logic
-                // maybe figure out here how to recover assignment from an old passed subject;
-                earnings2 = aDesign.pot - ( (positionFinal-1) * aDesign.positionCosts );
-                totalPayment = sub.theData.earnings1 + earnings2;
-
-                SubjectsData.update({"theData.cohortId": cohortId, userId : sub.userId, sec : aDesign.sec, sec_rnd : aDesign.sec_rnd }, {
-                    $set: { 
-                        "theData.earnings2": earnings2, 
-                        "theData.totalPayment": totalPayment, 
-                        "theData.queuePositionFinal" : positionFinal,
-                    },
-                });
-                subbk = SubjectsStatus.findOne({ meteorUserId: sub.meteorUserId });
-                asst = TurkServer.Assignment.getAssignment( subbk.tsAsstId );
-                asst.setPayment( totalPayment );
-                positionFinal += 1;
-            }
-        };
+    return( HITearnings );
+};
+// set the subject to have earnings X in the game
+//  and set the subject to have earnings X in MTurk
+Experiment.updateExperimentEarnings = function(muid, design) {
+    let totalEarnings = Meteor.call("calculateExperimentEarnings", muid, design).total;
+    SubjectsStatus.update({meteorUserId: muid }, {
+        $set: {
+            totalEarnings : totalEarnings,
+        },
+    });
+    let subbk = SubjectsStatus.findOne({ meteorUserId: muid });
+    let asst = TurkServer.Assignment.getAssignment( subbk.tsAsstId );
+    asst.setPayment( totalEarnings );
+};

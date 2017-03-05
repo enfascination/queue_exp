@@ -95,7 +95,7 @@ Meteor.users.deny({
             SubjectsStatus.insert( {
                 userId: idObj.assignmentId,
                 meteorUserId: idObj.userId,
-                quiz: {"passed" : false, "failed" : false, "triesLeft" : Design.maxQuizFails },
+                quiz: {"passed" : false, "failed" : false, "triesLeft" : design.maxQuizFails },
                 completedExperiment: false,
                 tsAsstId: idObj.asstId,
                 tsBatchId: idObj.batchId,
@@ -144,9 +144,9 @@ Meteor.users.deny({
                     console.log("generated games", payoffsGame1, payoffsGame2);
                 } else if (matching.selfMatching && sec === "experiment2" ) {
                     matchable = true;
-                    let matchingQuestion = Questions.findOne({ cohortId : sub.cohort_now, sec_rnd : sub.sec_rnd_now, type : 'chooseStrategy', strategic : true});
-                    payoffsGame1 = Helper.pivotGame( matchingQuestion.payoffsGame1 );
-                    payoffsGame2 = Helper.pivotGame( matchingQuestion.payoffsGame2 );
+                    let previousQuestion = Questions.findOne({ cohortId : sub.cohort_now, sec : 'experiment1', sec_rnd : sub.sec_rnd_now, strategic : true});
+                    payoffsGame1 = Helper.pivotGame( previousQuestion.payoffsGame1 );
+                    payoffsGame2 = Helper.pivotGame( previousQuestion.payoffsGame2 );
                     console.log("returning to games", payoffsGame1, payoffsGame2);
                 }
                 payoffsDiff = _.map( _.zip(payoffsGame1, payoffsGame2), (e)=> _.subtract(e[1], e[0]) );
@@ -154,8 +154,9 @@ Meteor.users.deny({
             let idGameQ1, idGameQ2, idTmp;
             QuestionData.questions.forEach( function(q) {
                 if ( q.sec === sec ) {
-                    console.log("addQuestions q", sec, q.sec, q.sec_rnd_now, q.cohort_now, (q.sec != sec && q.sec != 'experiment'));
+                    console.log("addQuestions q", sec, q.sec, sub.sec_rnd_now, sub.cohort_now, (q.sec != sec && q.sec != 'experiment'));
                     if (q.sec === 'experiment1' || q.sec === 'experiment2' ) {
+                        //q._id doesn't exist yet here.  insert happens below
                         q.sec = sec; // overwrite the input section (from experiment to experiment1)
                         q.cohortId = sub.cohort_now;
                         q.payoffOrder = payoffOrder;
@@ -164,22 +165,21 @@ Meteor.users.deny({
                         q.payoffsGame1 = payoffsGame1;
                         q.payoffsGame2 = payoffsGame2;
                         q.payoffsDiff = payoffsDiff;
-                        q.matchingGameId = false;
+                        /// matching of matchable games
+                        if (matchable && q.type === 'chooseStrategy' && q.strategic && _.includes([0,1,4], q.sec_rnd ) ) {
+                            let matchingQuestion = Questions.findOne(
+                                { cohortId : q.cohortId, sec_rnd : q.sec_rnd, type : q.type, strategic : true}
+                            );
+                            q.matchingGameId = matchingQuestion._id;
+                            console.log( "create matched game", matchingQuestion );
+                        } else {
+                            q.matchingGameId = false;
+                        }
                         if (q.sec_rnd === 0) {
                             q.payoffs = payoffsGame1;
-                            if (matchable && q.type === 'chooseStrategy' && q.strategic) {
-                                q.matchingGameId = Questions.findOne(
-                                    { cohortId : sub.cohort_now, sec_rnd : 0, type : 'chooseStrategy', strategic : true}
-                                )._id;
-                            }
                             //q.gameId = payoffsGame1.join();
                         } else if (q.sec_rnd === 1) {
                             q.payoffs = payoffsGame2;
-                            if (matchable && q.type === 'chooseStrategy' && q.strategic) {
-                                q.matchingGameId = Questions.findOne(
-                                    { cohortId : sub.cohort_now, sec_rnd : 1, type : 'chooseStrategy', strategic : true}
-                                )._id;
-                            }
                             //q.gameId = payoffsGame2.join();
                         } else if (q.sec_rnd === 2) {
                             // info round
@@ -193,8 +193,9 @@ Meteor.users.deny({
                     q.meteorUserId = sub.meteorUserId;
                     try {
                         idTmp = Questions.insert(q);
-                        if (matchable && q.type === 'chooseStrategy' && q.strategic) {
-                            Questions.update( q.matchingGameId, {$set : {matchingGameId : q._id }});
+                        console.log( "updating matches", idTmp, q.matchingGameId );
+                        if (q.matchingGameId) {
+                            Questions.update( q.matchingGameId, {$set : {matchingGameId : idTmp }});
                         }
                     } catch (err) {
                         console.log("Problem adding Questions", q);
@@ -350,10 +351,12 @@ Meteor.users.deny({
             return( sub );
         },
         // updates a CohortSettings object
-        tryToCompleteQuestionPair: Experiment.tryToCompleteQuestionPair,
+        tryToCompleteUncompletedQuestions: Experiment.tryToCompleteUncompletedQuestions,
+        completeQuestionPair: Experiment.completeQuestionPair,
         tryToCompleteCohort: Experiment.tryToCompleteCohort,
         // updates a bunch of SubjectsData objects
         calculateExperimentEarnings : Experiment.calculateExperimentEarnings,
+        updateExperimentEarnings : Experiment.updateExperimentEarnings,
         goToExitSurvey: function( muid ) {
             if (TurkServer.Instance.currentInstance()) {
                 TurkServer.Instance.currentInstance().teardown(returnToLobby = true);
@@ -416,21 +419,18 @@ Meteor.users.deny({
         },
         // this is the function I use to set a game on the fly after it is chosen for the final round of play
         setChosenGameForRound : function(sub, sec_rnd, chosenGameId ) {
-            console.log("setChosenGameForRound", sub, sec_rnd, chosenGameId );
+            console.log("setChosenGameForRound", sec_rnd, chosenGameId );
             let chosenQuestion = Questions.findOne({ _id : chosenGameId });
-            console.log("setChosenGameForRound 5");
             let nextQuestion = Questions.findOne({
                 meteorUserId : sub.meteorUserId, 
                 sec : sub.sec_now, 
                 sec_rnd : sec_rnd, 
-                type : 'chooseStrategy',
+                type : chosenQuestion.type,
                 strategic : true});
-            console.log("setChosenGameForRound 6");
-            let matchingQuestion = Questions.findOne({ _id : {$ne : nextQuestion._id}, cohortId : sub.cohort_now, sec_rnd : sub.sec_rnd_now, type : 'chooseStrategy', strategic : true});
+            let matchingQuestion = Questions.findOne({ _id : {$ne : nextQuestion._id}, cohortId : nextQuestion.cohortId, sec_rnd : nextQuestion.sec_rnd, type : nextQuestion.type, strategic : true});
             let tmp, tmp2;
             if ( !_.isNil( matchingQuestion ) ) { 
-                console.log("setChosenGameForRound 7");
-                let b4 =   Questions.find(nextQuestion._id).fetch();
+                //let b4 =   Questions.find(nextQuestion._id).fetch();
                 tmp = Questions.update(nextQuestion._id, {$set : { 
                     payoffs : chosenQuestion.payoffs,
                     matchingGameId : matchingQuestion._id,
@@ -438,10 +438,10 @@ Meteor.users.deny({
                 tmp2 = Questions.update(matchingQuestion._id, {$set : { 
                     matchingGameId : nextQuestion._id,
                 }});
-                let aftar =   Questions.find(nextQuestion._id).fetch();
-                console.log("setChosenGameForRound before update ", b4, " and after", aftar, tmp, tmp2);
+                //let aftar =   Questions.find(nextQuestion._id).fetch();
+                //console.log("setChosenGameForRound before update ", b4, " and after", aftar, tmp, tmp2);
             } else {
-                console.log("setChosenGameForRound 9");
+                //console.log("setChosenGameForRound 9");
                 tmp = Questions.update(nextQuestion._id, {$set : { 
                     payoffs : chosenQuestion.payoffs,
                     matchingGameId : false,
@@ -452,6 +452,6 @@ Meteor.users.deny({
             } catch (err) {
                 console.log(err, tmp, nextQuestion, chosenGameId);
             }
-            console.log("setChosenGameForRound again", chosenQuestion.payoffs, nextQuestion, tmp);
+            //console.log("setChosenGameForRound again", chosenQuestion.payoffs, nextQuestion, tmp);
         },
     });

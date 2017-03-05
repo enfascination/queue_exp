@@ -91,7 +91,6 @@ Template.answersForm.events({
         /////////////////////
         //Only allow clients to attempt quiz twice before preventing them from doing so
         let answeredCount = 0;
-        let questionsCount = 0;
         let qs = Template.currentData().questionsColl ? Template.currentData().questionsColl.fetch() : [];
         //let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now });
         qs.forEach( function( q ) {
@@ -109,12 +108,11 @@ Template.answersForm.events({
             } else {
                 answeredCount += 1;
             }
-            questionsCount += 1;
             _.assign(q, theData); // client side update: assign is a mutator of q 
             Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData); //server side update (async) //optional?
         });
-        console.log(qs.length,answeredCount ,questionsCount, sub.sec_rnd_now, qs);
-        if ( answeredCount === questionsCount ) {
+        console.log("experimentSubmit", qs.length, answeredCount, sub.sec_rnd_now, qs );
+        if ( answeredCount === qs.length ) {
             UserElements.questionsIncomplete.set(false);
             let design = Sess.design();
             let cohortId = design.cohortId;
@@ -163,19 +161,15 @@ Template.answersForm.events({
             });
 
             // also not affected by async
-            console.log("before cohort completion", sub);
-            if ( true || sub.sec_rnd_now === 1 || sub.sec_rnd_now === 4 ) {
-                console.log("into completion 1");
-                qs.forEach( function( q ) {
-                    console.log("got in here somewherehow, tryingt ocomplete question", q );
-                    if (q.strategic && q.matchingGameId !== false ) {
-                        console.log("stil trying ocomplete question");
-                        Meteor.call('tryToCompleteQuestionPair', q, design);
-                    }
+            console.log("before q completion", sub);
+            if ( sub.sec_rnd_now >= 1 ) { // don't match first two games or calculate their payoffs until feedback round 2
+                console.log("trying ocomplete questions");
+                Meteor.call('tryToCompleteUncompletedQuestions', sub, design, function(err) {
+                    /// calculate payoffs
+                    Meteor.call("updateExperimentEarnings", muid, design);
                 });
-                console.log("into completion 6");
             }
-            console.log("into completion 7");
+            console.log("after q completion 7");
 
             /////////////////////
             //// ... SEPARATELY, ADVANCE STATE 
@@ -184,8 +178,8 @@ Template.answersForm.events({
                 function(err, updatedSub) {
 
                     // experiment navigation
-                    console.log("disabling q's", _.map(qs, "_id") );
-                    Meteor.call( "disableQuestions", _.map(qs, "_id"), false );
+                    console.log("disabling q's", qs.map( (q) => q._id ) );
+                    Meteor.call( "disableQuestions", qs.map( (q) => q._id ), false );
                     if ( !lastGameRound ) {  // calculate the logic for this out of the callbacks because things get confusing
                         //console.log("continuing");
                         // go to the next round
@@ -229,15 +223,6 @@ Template.experimentInfo.helpers({
             return data[0].theData.queuePosition;
         }
     },
-    userAccount: function () {
-        let des = Sess.design();
-        if (UserElements.userAccount && des) {
-            if (!UserElements.userAccount.get()) {
-                UserElements.userAccount.set(des.endowment);
-            }
-            return( Helper.toCash( UserElements.userAccount.get() ) );
-        }
-    },
     groupSize: function () {
         let aDesign = Sess.design();
         if (aDesign) {
@@ -260,12 +245,10 @@ Template.questionBinary.events({
             if ( !_.isNil( choice ) && e.currentTarget.getAttribute("choice") != choice ) {
                 //console.log("div.experimentQuestion check", this, des, SubjectsData.find().fetch() );
                 e.currentTarget.setAttribute( "choice", choice );
-                UserElements.userAccount.set(des.endowment - des.queueCosts[ e.target.getAttribute("choice") ]);
                 UserElements.choiceChecked.set(buttonId, choice);
             } else { // uncheck
                 //console.log("div.experimentQuestion uncheck");
                 e.currentTarget.removeAttribute( "choice" );
-                UserElements.userAccount.set(des.endowment);
                 UserElements.choiceChecked.set(buttonId, "");
             }
         }

@@ -143,6 +143,7 @@ QuestionData.questions = [
     type: 'dropdown',
 	label: 'What country are you from?',
     options: countryCodes,
+    paid: true,
 },
 {
     sec: 'survey',
@@ -151,6 +152,7 @@ QuestionData.questions = [
 	label: 'Enter your postal code. If you are in the USA, enter your 5-digit zip code.',
     pattern: "([0-9]+)|(xxxxxx)",
     fieldName: "Postal code",
+    paid: true,
 },// regex: ^(?:\d{5})?$
 {
     sec: 'survey',
@@ -158,6 +160,7 @@ QuestionData.questions = [
     type: 'dropdown',
 	label: 'What is your sex?',
     options: ['Female','Male','Other','Decline to state'],
+    paid: true,
 },
 {
     sec: 'survey',
@@ -166,6 +169,7 @@ QuestionData.questions = [
 	label: 'What is your age?',
     pattern: "([1]?[0-9]{1,2})|(xxxxxx)",
     fieldName: "Your age",
+    paid: true,
 },
 {
     sec: 'survey',
@@ -180,6 +184,7 @@ QuestionData.questions = [
         "Postgraduate degree (Masters or Ph.D.)",
         "Decline to state",
     ],
+    paid: true,
 },
 {
     sec: 'survey',
@@ -187,6 +192,7 @@ QuestionData.questions = [
     type: 'dropdown',
 	label: 'What is the number of people in your household?',
     options: _(1).range(7).map(_.toString).concat( '7+', 'Decline to state').value(),
+    paid: true,
 },
 ];
 /*

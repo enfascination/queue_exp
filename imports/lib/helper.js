@@ -279,16 +279,11 @@ export const Helper = {
                         return( payoffsAfter );
                     },
     windowAdjust : function(sub, bottom=false) {
-        console.log("windowAdjust");
         if (bottom) {
             window.scrollTo(0, -50 + document.body.scrollHeight || document.documentElement.scrollHeight);
         } else {
             window.scrollTo(0, 0);
         }
-    },
-    windowAdjustToBottom : function(sub) {
-    },
-    windowAdjustToTop : function(sub) {
     },
 };
 

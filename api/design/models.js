@@ -73,11 +73,11 @@ DesignSequence = {
 Design = {
     maxPlayersInCohort : 2,
     endowment : 1.00,
-    pot : 1.00,
+    surveyReward : 0.50,
+    pointEarnings : 0.25,
     queueNames : [ 'A', 'B' ],
     queueCosts : { "A": 0.50, 'B': 0.00 },
     maxQuizFails : 3,
-    pointEarnings : 0.25,
     sequence : DesignSequence,
     positionCosts : 0.25,
     batchName : "main",

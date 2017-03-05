@@ -84,10 +84,10 @@ Template.experimenterViewPayout.helpers({
         return Helper.toCash( subject.theData.earnings2 );
     },
     earningsTotal: function (subject) {
-        if ( !_.isNumber( subject.theData.earnings1 ) || !_.isNumber( subject.theData.earnings2 ) ) {
+        if ( !_.isNumber( subject.totalEarnings ) ) {
             return("error");
         } else {
-            return Helper.toCash( subject.theData.earnings1 + subject.theData.earnings2 );
+            return Helper.toCash( subject.totalEarnings );
         }
     },
 });
