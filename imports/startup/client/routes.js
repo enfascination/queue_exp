@@ -114,4 +114,3 @@ Router.route('/submitHIT', function() {
     this.render('submitHITSectionTabPane');
     this.render( 'expGeneralInfoBox', { to : 'infoBox' } );
 });
-

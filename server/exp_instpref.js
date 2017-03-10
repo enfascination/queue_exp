@@ -334,44 +334,51 @@ Experiment.completeQuestionPair = function(q1, q2, design) {
     console.log("setCompleteion", "after", Questions.findOne( question1._id), "\n", Questions.findOne( question2._id));
 };
 Experiment.tryToCompleteCohort = function(design) {
-            let completedCohort = false;
-            let cohortId = design.cohortId;
+    let completedCohort = false;
+    let cohortId = design.cohortId;
 
-            // make it safe to over-call this function
-            //    abort if cohort is already complete
-            if ( CohortSettings.findOne(
-                { cohortId: cohortId}
-            ).completedCohort ) {
-                return;
-            }
-    console.log("complete cohort 2" );
-            
-            let unansweredQs = Questions.find({ cohortId : cohortId, strategic : true, answered : false });
-            let answeredQs = Questions.find( { cohortId : cohortId, strategic : true, answered : true });
-            let playerCount = _.uniq( answeredQs.map( function(q) {
-                return( q.meteorUserId );
-            }) ).length;
+    // make it safe to over-call this function
+    //    abort if cohort is already complete
+    if ( CohortSettings.findOne(
+        { cohortId: cohortId}
+    ).completedCohort ) {
+        return;
+    }
+
+    let unansweredQs = Questions.find({ cohortId : cohortId, strategic : true, answered : false });
+    let answeredQs = Questions.find( { cohortId : cohortId, strategic : true, answered : true });
+    let playerCount = _.uniq( answeredQs.map( function(q) {
+        return( q.meteorUserId );
+    }) ).length;
     console.log("complete cohort 3", playerCount, unansweredQs.count(), answeredQs.count() );
 
-            //console.log( "cohort completion", cohortFin.count(), cohortUnfin.count(), design.maxPlayersInCohort );
-            if (unansweredQs.count() === 0 && (
-                    playerCount === design.maxPlayersInCohort || 
-                    ( playerCount === 1 && design.matching.selfMatching && design.filledCohort === 2) 
-                ) ) {
-                // get rid of old cohort (make it outdated/complete)
-                completedCohort = true;
-                CohortSettings.update({ cohortId: cohortId}, {
-                    $set: { completedCohort: true, },
-                }//, {multi: true}  //d ont' want to need this.
-                );
-                try {
-                    console.assert(design.maxPlayersInCohort === design.filledCohort, "sanity6: do i really only have two subjects?", design );
-                } catch(err) { console.log(err); }
-                return(true);
-            } else {
-                // cohort still in progress
-                return(false);
-            }
+    //console.log( "cohort completion", cohortFin.count(), cohortUnfin.count(), design.maxPlayersInCohort );
+    if (unansweredQs.count() === 0 && (
+        ( playerCount === design.maxPlayersInCohort ) || 
+        ( 
+            playerCount === 1 && 
+            design.matching.selfMatching && 
+            design.filledCohort === 2) 
+    ) ) {
+        // get rid of old cohort (make it outdated/complete)
+        completedCohort = true;
+        CohortSettings.update({ cohortId: cohortId}, {
+            $set: { completedCohort: true, },
+        }//, {multi: true}  //d ont' want to need this.
+        );
+        try {
+            console.assert(design.maxPlayersInCohort === design.filledCohort, "sanity6: do i really only have two subjects?", design );
+            console.assert( answeredQs.count() === answeredQs.map( function(q) { if( q.payoffs ) { return( q ); } }).length );
+            console.assert( answeredQs.count() === answeredQs.map( function(q) { if( q.matchingGameId ) { return( q ); } }).length );
+        } catch(err) { 
+            console.log(err, completedCohort, unansweredQs, answeredQs);
+            throw(err);
+        }
+        return(true);
+    } else {
+        // cohort still in progress
+        return(false);
+    }
 };
 Experiment.completeGameCompare = function(compareGamesId, chosenGameId, nextGameId) {
     let updateToCompare;
