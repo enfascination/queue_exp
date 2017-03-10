@@ -177,10 +177,8 @@ Meteor.users.deny({
                         }
                         if (q.sec_rnd === 0) {
                             q.payoffs = payoffsGame1;
-                            //q.gameId = payoffsGame1.join();
                         } else if (q.sec_rnd === 1) {
                             q.payoffs = payoffsGame2;
-                            //q.gameId = payoffsGame2.join();
                         } else if (q.sec_rnd === 2) {
                             // info round
                         } else if (q.sec_rnd === 3) {
@@ -353,6 +351,7 @@ Meteor.users.deny({
         // updates a CohortSettings object
         tryToCompleteUncompletedQuestions: Experiment.tryToCompleteUncompletedQuestions,
         completeQuestionPair: Experiment.completeQuestionPair,
+        completeGameCompare: Experiment.completeGameCompare,
         tryToCompleteCohort: Experiment.tryToCompleteCohort,
         // updates a bunch of SubjectsData objects
         calculateExperimentEarnings : Experiment.calculateExperimentEarnings,
@@ -418,21 +417,85 @@ Meteor.users.deny({
             });
         },
         // this is the function I use to set a game on the fly after it is chosen for the final round of play
-        setChosenGameForRound : function(sub, sec_rnd, chosenGameId ) {
+        setChosenGameForRound : function(muid, treatment, sec, sec_rnd, chosenGameId ) {
             console.log("setChosenGameForRound", sec_rnd, chosenGameId );
-            let chosenQuestion = Questions.findOne({ _id : chosenGameId });
-            let nextQuestion = Questions.findOne({
-                meteorUserId : sub.meteorUserId, 
-                sec : sub.sec_now, 
+            let chosenQuestion, nextQuestion, focalPlayersChoice = false, firstPlayersChoice = true;
+            let tmp, tmp2;
+            // first, what is the game object with the id of the choice of the choice between two games?
+            chosenQuestion = Questions.findOne({ _id : chosenGameId });
+            // then, what is the following pre-created question object to fill with entries from the game that was chosen above?
+            nextQuestion = Questions.findOne({
+                meteorUserId : muid, 
+                sec : sec, 
                 sec_rnd : sec_rnd, 
                 type : chosenQuestion.type,
                 strategic : true});
-            let matchingQuestion = Questions.findOne({ _id : {$ne : nextQuestion._id}, cohortId : nextQuestion.cohortId, sec_rnd : nextQuestion.sec_rnd, type : nextQuestion.type, strategic : true});
-            let tmp, tmp2;
-            if ( !_.isNil( matchingQuestion ) ) { 
-                //let b4 =   Questions.find(nextQuestion._id).fetch();
+            try {
+                console.assert( (
+                    treatment === 'nofeedback' && 
+                    !_.isString( chosenQuestion.matchingGameId ) && 
+                    !_.isString( nextQuestion.matchingGameId )
+                ) || (
+                    treatment === 'feedback' && 
+                    _.isString( chosenQuestion.matchingGameId ) && 
+                    _.isString( nextQuestion.matchingGameId )
+                ), "Error PSDFGKSDFG: No match?" );
+            } catch(err) {
+                console.log(err, muid, treatment, chosenQuestion, nextQuestion, sec, sec_rnd);
+            }
+            if (treatment === 'nofeedback') {
+                //console.log("setChosenGameForRound 9");
                 tmp = Questions.update(nextQuestion._id, {$set : { 
                     payoffs : chosenQuestion.payoffs,
+                    matchingGameId : false,
+                }});
+            } else {
+                let matchingQuestion;
+                if (focalPlayersChoice) {
+                    // NOT first try the post-forced-choice question from section 1.  
+                    // NOT   if that's the other player of the same game, go
+                    // NOT   otherwise, match to the match of the chosen game 
+                    // I actually can't do this kind of matching at all, without adding dizzying complexity elsewhere, because if the player in ithe feedback condition is guaranteed their pick of game after the forced choice, I can't match within section because that is P1 vs P1 instead of P1 vs P2, and I can't guarantee a match with the previous section because they might have chosen and played the other game, in which case I could just pick the round 0 or round 1 game they played beofre that, and match to that, but that's the dizzying ocmplexity, because I'd have to track that I'd matched to an already matched game (since nofeedback round 0 game is matched to feedback round 0 game already) and that I shouldn't recalculate the payoffs of that side of the game when i calculate them for this side of the game.
+                    //matchingQuestion = Questions.findOne({
+                        //_id : {$ne : nextQuestion._id}, 
+                        //cohortId : nextQuestion.cohortId, 
+                        //sec_rnd : nextQuestion.sec_rnd, 
+                        //type : nextQuestion.type, 
+                        //strategic : true
+                    //});
+                    //if ( !_.isNil(matchingQuestion) && !Helper.comparePayoffs(nextQuestion, matchingQuestion, pivot=true) ) {
+                        //matchingQuestion = Questions.findOne({ _id : chosenQuestion.matchingGameId, });
+                    //}
+                    //try {
+                        //console.assert( !_.isNil( matchingQuestion ), "Error IOUFDKJLLLLLL: No match" );
+                        //console.assert( Helper.comparePayoffs(nextQuestion, matchingQuestion, pivot=true), "Error UARYJJDFGASDF: Bad match" );
+                    //} catch(err) {
+                        //console.log(err, muid, chosenQuestion, nextQuestion, matchingQuestion);
+                    //}
+                } else if (firstPlayersChoice) {
+                // REMEMBER: this is a pivoted version of the chosen question above
+                    matchingQuestion = Questions.findOne({_id : nextQuestion.matchingGameId}); 
+                    let tmpMatchingQuestion = Questions.findOne({
+                        _id : {$ne : nextQuestion._id}, 
+                        cohortId : nextQuestion.cohortId, 
+                        sec_rnd : nextQuestion.sec_rnd, 
+                        type : nextQuestion.type, 
+                        strategic : true
+                    });
+                    try {
+                        console.assert( nextQuestion.matchingGameId === tmpMatchingQuestion._id , "Error (OFDUIS99: games aren't connecting" );
+                    } catch(err) {
+                        console.log(err, muid, chosenQuestion, nextQuestion, matchingQuestion);
+                    }
+                }
+                try {
+                    console.assert( !_.isNil( matchingQuestion ), "Error IOUFDKJLLLL: No match" );
+                } catch(err) {
+                    console.log(err, muid, chosenQuestion, nextQuestion, matchingQuestion);
+                }
+                //let b4 =   Questions.find(nextQuestion._id).fetch();
+                tmp = Questions.update(nextQuestion._id, {$set : { 
+                    payoffs : Helper.pivotGame( matchingQuestion.payoffs ),
                     matchingGameId : matchingQuestion._id,
                 }});
                 tmp2 = Questions.update(matchingQuestion._id, {$set : { 
@@ -440,18 +503,13 @@ Meteor.users.deny({
                 }});
                 //let aftar =   Questions.find(nextQuestion._id).fetch();
                 //console.log("setChosenGameForRound before update ", b4, " and after", aftar, tmp, tmp2);
-            } else {
-                //console.log("setChosenGameForRound 9");
-                tmp = Questions.update(nextQuestion._id, {$set : { 
-                    payoffs : chosenQuestion.payoffs,
-                    matchingGameId : false,
-                }});
             }
             try {
                 console.assert( tmp === 1, 'too many matches in setchosengameforround');
             } catch (err) {
                 console.log(err, tmp, nextQuestion, chosenGameId);
             }
-            //console.log("setChosenGameForRound again", chosenQuestion.payoffs, nextQuestion, tmp);
+            //console.log("setChosenGameForRound again", chosenQuestionFocalPlayer.payoffs, nextQuestion, tmp);
+            return(nextQuestion._id);
         },
     });

@@ -290,7 +290,7 @@ Experiment.completeQuestionPair = function(q1, q2, design) {
         console.assert( !(_.isNil(question1.choice) || _.isNil(question2.choice)),  "Experiment.tryToCompleteQuestion problem 2: called before all choices made", question1, question2);
         console.assert( !(_.isNil(question1.payoffs) || _.isNil(question2.payoffs)),  "Experiment.tryToCompleteQuestion problem 2: payoffs bugged out", question1, question2);
         // get eachsubjects choices
-        console.assert( question1.payoffs.join('') === Helper.pivotGame(question2.payoffs ).join(''), "payoff calc -1: got payoffs successfully" );
+        console.assert( Helper.comparePayoffs(question1, question2, pivot=true), "payoff calc -1: got payoffs successfully" );
         console.assert( question1.cohortId === question2.cohortId , "payoff calc -2: got payoffs successfully" );
     } catch(err) { 
         console.log(err, question1, question2); 
@@ -372,6 +372,17 @@ Experiment.tryToCompleteCohort = function(design) {
                 return(false);
             }
 };
+Experiment.completeGameCompare = function(compareGamesId, chosenGameId, nextGameId) {
+    let updateToCompare;
+    chosenGame = Questions.findOne(chosenGameId);
+    nextGame = Questions.findOne(nextGameId);
+    if ( Helper.comparePayoffs( chosenGame, nextGame ) ) {
+        updateToCompare = { outcomeMatchesChoice : true };
+    } else {
+        updateToCompare = { outcomeMatchesChoice : false };
+    }
+    Questions.update( compareGamesId, { $set : updateToCompare } );
+};
 Experiment.calculateExperimentEarnings = function(muid, design) {
     // start with subject
     // get all paid complete questions from subject
@@ -402,12 +413,12 @@ Experiment.calculateExperimentEarnings = function(muid, design) {
 //  and set the subject to have earnings X in MTurk
 Experiment.updateExperimentEarnings = function(muid, design) {
     let totalEarnings = Meteor.call("calculateExperimentEarnings", muid, design).total;
-    SubjectsStatus.update({meteorUserId: muid }, {
+    let subbk = SubjectsStatus.findOne({ meteorUserId: muid });
+    let tmpId = SubjectsStatus.update({meteorUserId: muid }, {
         $set: {
             totalEarnings : totalEarnings,
         },
     });
-    let subbk = SubjectsStatus.findOne({ meteorUserId: muid });
     let asst = TurkServer.Assignment.getAssignment( subbk.tsAsstId );
     asst.setPayment( totalEarnings );
 };

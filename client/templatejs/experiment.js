@@ -145,11 +145,14 @@ Template.answersForm.events({
             if (sub.sec_rnd_now === 3) {  // experiment specific: they chose a game of two and I have to give it to them
                 // pick out the right question from this round
                 qs.forEach( function( q ) {
-                    if (q.type != 'chooseGame') return;
+                    if (q.type !== 'chooseGame') return;
                     // find chosen game
                     //    async shouldn't be a problem because I won't need the updated question 
                     //    until initilizeRoundi nt he callback further down.
-                    Meteor.call('setChosenGameForRound', sub, sub.sec_rnd_now+1, q.choice);
+                    Meteor.call('setChosenGameForRound', sub.meteorUserId, sub.treatment_now, sub.sec_now, sub.sec_rnd_now+1, q.choice, function(err, nextGameId) {
+                        if (err) { throw( err ); }
+                        Meteor.call('completeGameCompare', q._id, q.choice, nextGameId);
+                    });
                 });
             }
 

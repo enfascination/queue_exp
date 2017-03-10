@@ -77,12 +77,12 @@ Template.gameNormalForm.helpers({
         return( getPayoff( payoffs, rVal));
     },
 	disabled: Helper.gameDisabled,
-    insertChoice : function( outputType, choiceType, choice ) {
+    insertChoice : function( outputType, choiceTypeElement, choiceTypeQuestion, choiceElement, choiceQuestion ) {
         /// WARNING.  this pretends it works for choice but it only works for active because there's a bug if i make it work for choice that i don't need to figure out to get what I want, which is feeding of db choice through to disabled game if it exists
         let q = this.question;
         let output = outputType === 'active' ? ' active' : ' choice="'+q.choice+'"';
-        //console.log("insertChoice", ( q.type === choiceType && !_.isNil(q.choice) && q.choice === choice ), outputType, choiceType, choice, output, q);
-        if (q.disabled && outputType === 'active' && q.type === choiceType && !_.isNil(q.choice) && q.choice === choice ) {
+        //console.log("insertChoice", ( choiceTypeQuestion === choiceTypeElement && !_.isNil(q.choice) && q.choice === choiceElement ), outputType, choiceTypeElement, choiceTypeQuestion, q.choice, choiceElement, output, q);
+        if (q.disabled && outputType === 'active' && choiceTypeQuestion === choiceTypeElement && !_.isNil(q.choice) && q.choice === choiceElement ) {
             return(output);
         }
     }
@@ -200,16 +200,23 @@ Template.instPrefGame2.helpers({
         let dataContext = this;
         if (sub && dataContext.currentSection && this.questionsColl) {
             if (allQs) {
-                questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, type : "chooseStrategy", paid : true }).fetch();
+                questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, sec : { $in : ['experiment1', 'experiment2']} });
             } else {
-                questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, type : "chooseStrategy", paid : true, sec_rnd : {$lt : 2}, sec : sub.sec_now}).fetch();
+                questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, sec : sub.sec_now , sec_rnd : {$lt : 2}});
             }
-            _.forEach( questionsFeedback, function( q ) {
-                if (sub.treatment_now === "feedback") {
-                    q.choice = q.outcome;
-                    q.type = "chooseOutcome";
+            questionsFeedback = questionsFeedback.map( function( q ) {
+                let r = false;
+                if (q.type === "chooseStrategy" && q.paid ) {
+                    r = true;
+                    if (sub.treatment_now === "feedback") {
+                        q.choice = q.outcome;
+                        //q.type = "chooseOutcome";
+                    }
+                } else if ( q.type === "chooseGame" ){
+                    r = true;
                 }
-                console.log("feedback qusetions per q", q);
+                console.log("feedback questions per q", r, q.type, q);
+                if (r) { return( q ); }
             });
             return(  questionsFeedback );
         }

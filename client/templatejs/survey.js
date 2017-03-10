@@ -75,17 +75,13 @@ Template.answersForm.events({
         /////////////////////
         console.log(answeredCount ,qs.length, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
         if ( true || answeredCount === qs.length ) {
-            let qInc = 0 ;
             qs.forEach( function( q ) {
-                qInc += 1;
-                Meteor.call("insertQuestionToSubData", Meteor.userId(), q, function(){
-                    if ( qInc === qs.length ) {
-                        /// calculate payoffs
-                        Meteor.call("updateExperimentEarnings", Meteor.userId(), Sess.design() );
-                    }
-                } );
-
+                Meteor.call("insertQuestionToSubData", Meteor.userId(), q );
             });
+
+            /// calculate payoffs
+            Meteor.call("updateExperimentEarnings", Meteor.userId(), Sess.design() );
+
             /////////////////////
             //// ... SEPARATELY, ADVANCE STATE 
             /////////////////////

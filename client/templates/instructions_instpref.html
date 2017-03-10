@@ -87,29 +87,45 @@
     Debugging 3, {{currentSection.id}}, Round {{subStat.sec_rnd_now}}
         <p>This is an informational round that allows you to see the outcomes of this section's two games.  However, we will only present you with this feedback in one of the two sections.  In one section you are being provided with feedback on payoffs, and in the other you will not. Regardless, you will be paid in full for your earnings in both sections.</p>{{test}}
         {{#if equals subStat.treatment_now "nofeedback"}}
-            <p><strong>In this section you will not be receiving feedback. Please submit and proceed.</strong></p>
-            {{#each question in questionsFeedback}}
-                {{> gameNormalFormChoiceFeedback question=question}}
-            {{/each}}
+            <p><strong>In this section you will not be receiving immediate feedback. However, you will game information about your earnings, and the other player's choices, in the Earnings section. Please submit and proceed.</strong></p>
         {{else}} {{#if equals subStat.treatment_now "feedback"}}
         <p><strong>In this section you will be receiving feedback.  Your choices have now been matched with those of the other player in order to calculate your payoffs. When you have reviewed your earnings, you may press <strong>Submit</strong> to proceed to the next round.</strong></p>
             Show this after (each?) game is submitted.{{test}}
         Nest it in an if statement testing round completion.
-            {{#each question in questionsFeedback}}
-                {{> gameNormalFormOutcomeFeedback question=question}}
-            {{/each}}
         {{else}}
             <p>Something is wrong. Code YRAKASDFASDFSHGK.</p>
         {{/if}}
         {{/if}}
+            {{#each question in questionsFeedback}}
+                {{#if equals question.type "chooseStrategy" }}
+                    {{> gameNormalFormOutcomeFeedback question=question}}
+                {{else}} {{#if equals question.type "chooseGame" }}
+                    {{> gameCompareFeedback question=question}}
+                {{/if}}
+                {{/if}}
+            {{/each}}
 </template>
 <template name="instPrefGame3">
     Debugging 4, {{currentSection.id}}, Round {{subStat.sec_rnd_now}}
-        <p>In the round after this one you will play one of the previous two games a second time, for additional earnings.  In this round you will select which game you replay.</p>
+        <p>The round after this one is the final round. In it you will play 
+        one of the previous two games a second time, for additional earnings.  
+        You may select below which of the games you would like to play a 
+        second time with the same person. Next round's game is most likely to 
+        be the one you chose, but it is not guaranteed to be.</p>
 </template>
 <template name="instPrefGame4">
     Debugging 5, {{currentSection.id}}, Round {{subStat.sec_rnd_now}}
-        <p>This is the last round of this section; the game you selected is below.</p>
+        <p>This is the last round of this section, and the last game is below.</p>
+        {{#if equals subStat.treatment_now "nofeedback"}}
+        You will learn the outcome of this game, and the others' choices, later,
+        along with the outcomes of all previous games you have played.
+        {{else}} {{#if equals subStat.treatment_now "feedback"}}
+        You will learn the outcome of this game, and the others' choices, in 
+        the Earnings section, after the final survey.
+        {{else}}
+            <p>Something is wrong. Code ()DSJLKJLKJ(((.</p>
+        {{/if}}
+        {{/if}}
 </template>
 
 <template name="gameNormalFormChoiceFeedback">
@@ -155,6 +171,19 @@
         <span class="clearfix"></span>
     </div>
 </template>
+<template name="gameCompareFeedback">
+    <div class="expPaneNoMargin gameNormalFormFeedback">
+        HIIIHIII:
+        <span style="float:right;">
+            {{> questionGameCompare question=question }}
+        </span>
+        {{#if question.outcomeMatchesChoice}}
+        <p class="success"><strong>The game you preferred is not the game that was selected for you to play in the final round of the section.</strong></p>
+        {{else}}
+        <p class="success"><strong>The game you preferred is the game that was selected for you to play in the final round of {{question.label}}the section.</strong></p>
+        {{/if}}
+    </div>
+</template>
 <template name="earningsReport">
     <div class="center-block"> 
         This is a sample section.
@@ -173,15 +202,22 @@
 
         <h2> All questions </h2>
             {{#each question in questionsFeedback allQs=true}}
+            <div>
             section: {{question.sec}}
             round: {{question.sec_rnd}}
             title: {{question.title}}
             complete?: {{question.completedGame}}
-                {{#if question.completedGame}}
-                    {{> gameNormalFormOutcomeFeedback question=question}}
-                {{else}}
-                    {{> gameNormalFormChoiceFeedback question=question}}
+                {{#if equals question.type "chooseStrategy" }}
+                    {{#if question.completedGame}}
+                        {{> gameNormalFormOutcomeFeedback question=question}}
+                    {{else}}
+                        {{> gameNormalFormChoiceFeedback question=question}}
+                    {{/if}}
+                {{else}} {{#if equals question.type "chooseGame" }}
+                    {{> gameCompareFeedback question=question}}
                 {{/if}}
+                {{/if}}
+            </div>
             {{/each}}
     </div>
 </template>
