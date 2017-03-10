@@ -268,7 +268,7 @@ Experiment.tryToCompleteUncompletedQuestions = function(sub, design) {
     let qs = Questions.find({ meteorUserId : sub.meteorUserId, cohortId : sub.cohort_now, sec : sub.sec_now });
     let matches = 0;
     qs.forEach( function(q) {
-        console.log("to match?", (q.strategic && _.isString( q.matchingGameId ) && !q.completedGame), q);
+        //console.log("to match?", (q.strategic && _.isString( q.matchingGameId ) && !q.completedGame), q);
         // if question involves another matchable question, and that question is know, and if this question has been answered, but hasn't yet been consummated with the other question, then consummate by calculating outcomes and corersponding payoffs.
         if (q.strategic && _.isString( q.matchingGameId ) && !_.isNil(q.choice) && !q.completedGame) {
             Experiment.completeQuestionPair( q._id, q.matchingGameId, design );
@@ -295,6 +295,7 @@ Experiment.completeQuestionPair = function(q1, q2, design) {
     } catch(err) { 
         console.log(err, question1, question2); 
         console.log("try to complete", question1._id, question2._id, question1.payoffs, Helper.pivotGame(question2.payoffs ), question2.payoffs );
+        throw(err);
     }
     let c1 = question1.choice;
     let c2 = question2.choice === "Top" ? "Left" : "Right";
@@ -376,6 +377,8 @@ Experiment.completeGameCompare = function(compareGamesId, chosenGameId, nextGame
     let updateToCompare;
     chosenGame = Questions.findOne(chosenGameId);
     nextGame = Questions.findOne(nextGameId);
+    console.log("completeGameCompare, after setChosenGameForRound1", compareGamesId, chosenGameId, nextGameId, chosenGame, nextGame );
+    console.log("completeGameCompare, after setChosenGameForRound2", chosenGame.payoffs, nextGame.payoffs, Helper.comparePayoffs( chosenGame, nextGame ));
     if ( Helper.comparePayoffs( chosenGame, nextGame ) ) {
         updateToCompare = { outcomeMatchesChoice : true };
     } else {
@@ -421,4 +424,18 @@ Experiment.updateExperimentEarnings = function(muid, design) {
     });
     let asst = TurkServer.Assignment.getAssignment( subbk.tsAsstId );
     asst.setPayment( totalEarnings );
+};
+Experiment.updateStatusInHIT = function(muid, design) {
+    let sub = SubjectsStatus.findOne({ meteorUserId: muid });
+    /// remember that there is not a single other player: i may in each section paly a different player within a different cohortId
+    let ownQs = Questions.find({meteorUserId : muid, strategic : true, paid : true }); // could be across multiple cohorts
+    let nOwnQsAnswered = ownQs.map( (q)=>q.answered ).length;
+    let nOwnQsConsummated = ownQs.map( (q)=>q.completedGame ).length;
+    let HITStatus = {
+            gamesPlayed : nOwnQsAnswered,
+            gamesConsummated : nOwnQsConsummated,
+    };
+    let tmpId = SubjectsStatus.update({meteorUserId: muid }, {
+        $set: { HITStatus: HITStatus, },
+    });
 };

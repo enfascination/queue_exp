@@ -219,7 +219,17 @@ questions[4] = {
 
 
 //let idxs = _.shuffle( _.range( questions.length ) );
+//  Create multiple sections
 let questionsAddendum = [];
+QuestionData.questions.forEach ( function(q) {
+    if( q.sec === 'experiment' ) {
+        q.sec = 'experiment2';
+        questionsAddendum = _.concat(questionsAddendum, _.clone(q) );
+        q.sec = 'experiment1';
+    }
+});
+QuestionData.questions = _.concat(QuestionData.questions, questionsAddendum);
+//  initialize all question objects
 QuestionData.questions.forEach ( function(q) {
     _.assign( q, {
         choice: null,
@@ -233,14 +243,18 @@ QuestionData.questions.forEach ( function(q) {
     if( q.sec === 'quiz' ) {
         q.correct = false;
         q.payoffs = [3,1,4,2,3,1,4,2];
+        q.sec_label = "Quiz";
     } else if( q.sec === 'experiment' ) {
-        q.sec = 'experiment2';
-        questionsAddendum = _.concat(questionsAddendum, _.clone(q) );
-        q.sec = 'experiment1';
+        console.log("ERROR NMV<KUIOKJHLDF: async mess on q init?");
+    } else if( q.sec === 'experiment1' ) {
+        q.sec_label = "Section 1";
+    } else if( q.sec === 'experiment2' ) {
+        q.sec_label = "Section 2";
+    } else if( q.sec === 'survey' ) {
+        q.sec_label = "Survey";
     }
     //console.log(q);
     //Meteor.call("addQuestion", questions[q]);
 });
-QuestionData.questions = _.concat(QuestionData.questions, questionsAddendum);
 
 

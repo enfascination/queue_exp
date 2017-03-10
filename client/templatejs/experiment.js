@@ -151,7 +151,9 @@ Template.answersForm.events({
                     //    until initilizeRoundi nt he callback further down.
                     Meteor.call('setChosenGameForRound', sub.meteorUserId, sub.treatment_now, sub.sec_now, sub.sec_rnd_now+1, q.choice, function(err, nextGameId) {
                         if (err) { throw( err ); }
-                        Meteor.call('completeGameCompare', q._id, q.choice, nextGameId);
+                        if (nextGameId) {
+                            Meteor.call('completeGameCompare', q._id, q.choice, nextGameId);
+                        }
                     });
                 });
             }
@@ -170,6 +172,7 @@ Template.answersForm.events({
                 Meteor.call('tryToCompleteUncompletedQuestions', sub, design, function(err) {
                     /// calculate payoffs
                     Meteor.call("updateExperimentEarnings", muid, design);
+                    Meteor.call("updateStatusInHIT", muid, design);
                 });
             }
             console.log("after q completion 7");

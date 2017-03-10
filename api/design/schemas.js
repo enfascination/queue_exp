@@ -96,6 +96,16 @@ Schemas.SubjectsStatus = new SimpleSchema({
         type: SimpleSchema.Integer,
         label: "current block(section int)",
     },
+    "HITStatus.gamesPlayed": {
+        type: SimpleSchema.Integer,
+        label: "Total number of payable games with answers by player",
+        optional: true,
+    },
+    "HITStatus.gamesConsummated": {
+        type: SimpleSchema.Integer,
+        label: "Total number of payable games consummated",
+        optional: true,
+    },
 });
 
 Schemas.SubjectsData = new SimpleSchema({

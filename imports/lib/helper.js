@@ -54,15 +54,19 @@ let disableTab = function( tab ) {
     //tabPaneEl.removeClass('active');
 };
 let pivotGame = function(payoffs) {
-        // WRONG PIVOT: return( _.concat( _.slice(payoffs, 4, 8), _.slice(payoffs, 0, 4) ) );
-        // this mapping flips both player's payoffs along the diagonal, 
-        //   making top <=> left and right <=> bottom
-        let fn = (l) =>  _.map([4,5,6,7,0,1,2,3], (i)=>l[i]);
-        //let fn = (l) =>  _.map([1,0,5,4,3,2,7,6], (i)=>l[i]);  <-- what was I thinking?
-        let rval = fn(payoffs);
+    // WRONG PIVOT: return( _.concat( _.slice(payoffs, 4, 8), _.slice(payoffs, 0, 4) ) );
+    // this mapping flips both player's payoffs along the diagonal, 
+    //   making top <=> left and right <=> bottom
+    let fn = (l) =>  _.map([4,5,6,7,0,1,2,3], (i)=>l[i]);
+    //let fn = (l) =>  _.map([1,0,5,4,3,2,7,6], (i)=>l[i]);  <-- what was I thinking?
+    let rval = fn(payoffs);
+    try{
         console.assert( _.isEqual( fn(rval), payoffs ) );
-        return( rval );
-    };
+    } catch(err) {
+        throw(err);
+    }
+    return( rval );
+};
 /* boilerplate blank error return function for validated inputs */
 export const Helper = {
     err_func : function err_func(error, result) { console.log( error ); }, 
@@ -287,7 +291,7 @@ export const Helper = {
         }
     },
     comparePayoffs : function(q1, q2, pivot=false) {
-        let p1 = q1.payoffs, p2 = p2.payoffs;
+        let p1 = q1.payoffs, p2 = q2.payoffs;
         let same = false;
         if (
             (!pivot && p1.join('') === p2.join('') ) ||

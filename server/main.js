@@ -356,6 +356,7 @@ Meteor.users.deny({
         // updates a bunch of SubjectsData objects
         calculateExperimentEarnings : Experiment.calculateExperimentEarnings,
         updateExperimentEarnings : Experiment.updateExperimentEarnings,
+        updateStatusInHIT : Experiment.updateStatusInHIT,
         goToExitSurvey: function( muid ) {
             if (TurkServer.Instance.currentInstance()) {
                 TurkServer.Instance.currentInstance().teardown(returnToLobby = true);

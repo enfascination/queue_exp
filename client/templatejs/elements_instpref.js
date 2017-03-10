@@ -190,6 +190,7 @@ Template.questionGame.helpers({
 });
 Template.questionGameCompare.inheritsHelpersFrom('questionGame');
 Template.questionGameCompare.inheritsEventsFrom('questionGame');
+Template.gameComparison.inheritsHelpersFrom('questionGame');
 
 Template.visualGame.helpers({
     getPayoff : getPayoff,
@@ -199,11 +200,13 @@ Template.instPrefGame2.helpers({
         let questionsFeedback, sub = Sess.subStat();
         let dataContext = this;
         if (sub && dataContext.currentSection && this.questionsColl) {
+            /// in which context am I giving feedback (within section or within HIT)?
             if (allQs) {
                 questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, sec : { $in : ['experiment1', 'experiment2']} });
             } else {
                 questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, sec : sub.sec_now , sec_rnd : {$lt : 2}});
             }
+            // pick which questions ot display, and enrich them a bit for the HIT feedback context
             questionsFeedback = questionsFeedback.map( function( q ) {
                 let r = false;
                 if (q.type === "chooseStrategy" && q.paid ) {
@@ -216,9 +219,20 @@ Template.instPrefGame2.helpers({
                     r = true;
                 }
                 console.log("feedback questions per q", r, q.type, q);
-                if (r) { return( q ); }
+                q.display = r;
+                return(q);
             });
-            return(  questionsFeedback );
+            return(  _.filter( questionsFeedback, (q)=>q.display ) );
+        }
+    },
+    earnings: function (earnings, translateFromPoints) {
+        //console.log("earnings helper", earnings, translateFromPoints, this);
+        if (earnings) {
+            if (_.isString(translateFromPoints) && translateFromPoints !== 'translateFromPoints') {  // I need string test because of weirdness about helpers, spacerbars.kw, and template arguments being named or not.
+                return( Helper.toCash( earnings * this.design.pointEarnings ) );
+            } else {
+                return( Helper.toCash( earnings ) );
+            }
         }
     },
 });

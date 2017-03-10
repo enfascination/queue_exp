@@ -98,10 +98,11 @@
         {{/if}}
             {{#each question in questionsFeedback}}
                 {{#if equals question.type "chooseStrategy" }}
-                    {{> gameNormalFormOutcomeFeedback question=question}}
-                {{else}} {{#if equals question.type "chooseGame" }}
-                    {{> gameCompareFeedback question=question}}
-                {{/if}}
+                    {{#if question.completedGame}}
+                        {{> gameNormalFormOutcomeFeedback question=question}}
+                    {{else}}
+                        {{> gameNormalFormChoiceFeedback question=question}}
+                    {{/if}}
                 {{/if}}
             {{/each}}
 </template>
@@ -173,48 +174,82 @@
 </template>
 <template name="gameCompareFeedback">
     <div class="expPaneNoMargin gameNormalFormFeedback">
-        HIIIHIII:
-        <span style="float:right;">
-            {{> questionGameCompare question=question }}
-        </span>
-        {{#if question.outcomeMatchesChoice}}
-        <p class="success"><strong>The game you preferred is not the game that was selected for you to play in the final round of the section.</strong></p>
-        {{else}}
-        <p class="success"><strong>The game you preferred is the game that was selected for you to play in the final round of {{question.label}}the section.</strong></p>
-        {{/if}}
+            {{> gameComparison question=question }}
     </div>
 </template>
 <template name="earningsReport">
     <div class="center-block"> 
-        This is a sample section.
-        You played XXX games for money
-        !!! IF NOT DONE !!!
-            So far only XXX of them have been played by the other player. Incomplete choices will be marked as such below.
-            Your current earnings are XXX, including your XXX endowment and XXX for completeing the survey.
+        <p>
+        You played {{subStat.HITStatus.gamesPlayed}} games for money. Their 
+        statuses are reported below.
+        </p>
+        {{#if equals subStat.HITStatus.gamesPlayed subStat.HITStatus.gamesConsummated}}
+        <p>
+        <strong>Your session is now complete.</strong>
+            Your earnings are {{earnings subStat.totalEarnings}}, including your 
+            {{earnings design.endowment}} endowment and 
+            {{earnings design.surveyReward}} for 
+            completing the survey.
+        </p>
+        {{else}}
+        <p>
+            <strong>Your session is not yet complete.</strong>
+            So far only {{subStat.HITStatus.gamesConsummated}} of the games 
+            you played have 
+            been played by the other player. Incomplete choices will be 
+            marked as such below.
+            Your current earnings are {{earnings subStat.totalEarnings}}, including 
+            your {{earnings design.endowment}} endowment and 
+            {{earnings design.surveyReward}} 
+            for completing the survey.
+        </p>
+        <p>
             It will take time for the rest of your choices to be matched. 
             You will can return to this page here for progress: XXX
-            It should take less tahn 24 hours.  If it takes more, contact the <a>experimenters</a>
-        !!! ELSE  !!!
-            Your session is now complete
-            You earnings are XXX, including your XXX endowment and XXX for ocmpleting the survey.
-        !!! FI ||| 
+            It should take less than 24 hours.  If it takes more, contact the 
+            <a>experimenters</a>
+        </p>
+        {{/if}}
+        <p>
         Click NEXT to reach the HIT submission page. we welcome your comments and feedback.
+        </p>
 
         <h2> All questions </h2>
             {{#each question in questionsFeedback allQs=true}}
-            <div>
-            section: {{question.sec}}
-            round: {{question.sec_rnd}}
-            title: {{question.title}}
-            complete?: {{question.completedGame}}
+            <div class="experiment">
+                <h3>
+                    <strong><strong>{{question.sec_label}}</strong>, {{question.title}}</strong>
+                </h3>
                 {{#if equals question.type "chooseStrategy" }}
                     {{#if question.completedGame}}
                         {{> gameNormalFormOutcomeFeedback question=question}}
                     {{else}}
                         {{> gameNormalFormChoiceFeedback question=question}}
                     {{/if}}
+                    {{#if question.completedGame}}
+                        <div class="alert alert-success gameOutcomeFeedback">
+                            <strong>Your final payoff in this game was {{earnings question.payoffEarnedFocal 'translateFromPoints'}}.</strong> The other player earned {{earnings question.payoffEarnedOther 'translateFromPoints'}}.
+                        </div>
+                    {{else}}
+                        <div class="alert alert-warning gameOutcomeFeedback">
+                            Your payoff in this game cannot be calculated until the other player has made their choice.
+                        </div>
+                    {{/if}}
                 {{else}} {{#if equals question.type "chooseGame" }}
                     {{> gameCompareFeedback question=question}}
+                    {{#if question.outcomeMatchesChoice}}
+                        <div class="alert alert-success gameOutcomeFeedback">
+                            <strong>You preferred this game, and it was 
+                                selected for you to play at the end of 
+                                {{question.sec_label}}.</strong>
+                        </div>
+                    {{else}}
+                        <div class="alert alert-info gameOutcomeFeedback">
+                            <strong>You preferred this game, but the other 
+                                was selected for you to play at the end of 
+                                {{question.sec_label}}.</strong>
+                        </div>
+                    {{/if}}
                 {{/if}}
                 {{/if}}
             </div>

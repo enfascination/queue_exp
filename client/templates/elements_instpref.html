@@ -107,6 +107,12 @@
         <div class = "expQuestion {{question.type}} form-group {{getHasError question}}" id="{{question._id}}">
             <h3 class="questionTitle" >{{question.title}}</h3>
             <label for="{{question._id}}" class = "control-label {{disabled question}}">{{question.text}}</label>
+            {{> gameComparison question=question}}
+        </div>
+    </section> 
+</template>
+
+<template name = "gameComparison">
             <table class="gameNormalFormGame gameNormalFormGameCompare">
                 <thead>
                     <tr>
@@ -129,8 +135,6 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
-    </section> 
 </template>
 
 <template name = "questionGameCompareReshuffle">
