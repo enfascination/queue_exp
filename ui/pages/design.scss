@@ -312,6 +312,8 @@ button {
     pointer-events : none; /* from http://stackoverflow.com/questions/5069110/remove-hover-css-behavior-from-element */
     font-size: 90%;
     padding-left: 30px;
+    line-height: 1.1;
+    transform: scaleX(0.95);
 }
 .expSubTabs a.expSubTab {
     padding: 5px 0px 0px 0px;

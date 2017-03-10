@@ -150,10 +150,12 @@
     <div class="expInfoTable">
         <ul class="list-group">
             <li class="list-group-item">
-                Assignment Id:<br/>{{subStat.userId}}&nbsp;<!--space is here for robustness to dynamic contents-->
+                Assignment Id:<!--space is here for robustness to dynamic contents-->
+                <p class="extra-condensed">{{subStat.userId}}</p>
             </li>
             <li class="list-group-item">
-                Meteor Id:<br/>{{subStat.meteorUserId}}&nbsp;
+                Meteor Id:
+                <p class="extra-condensed">{{subStat.meteorUserId}} </p>
             </li>
             <li class="list-group-item">
                 <p>
