@@ -33,7 +33,9 @@
         </section>
         <hr class="expPaneMargin"/>
                     <p><strong><strong>EXAMPLE GAME INTERFACE:</strong></strong></p>
-                    {{> gameNormalForm id="tutorial" gameId="tutorial" choiceType="chooseStrategy" payoffs=aQuestion.payoffs context=context question=aQuestion}}
+                    <div class="expQuestion chooseStrategy">
+                        {{> gameNormalForm choiceType="chooseStrategy" payoffs=aQuestion.payoffs context=context question=aQuestion}}
+                    </div>
                     <p class="expPaneMargin" style="display:center;"><em>This is a sample of the game interface that will be used through the experiment. Clicking an option will select it. Your points are in <span class="you blue">blue</span>.</em></p>
         <hr class="expPaneMargin"/>
         <section class="expPaneMargin">
@@ -241,13 +243,13 @@
                         <div class="alert alert-success gameOutcomeFeedback">
                             <strong>You preferred this game, and it was 
                                 selected for you to play at the end of 
-                                {{question.sec_label}}.</strong>
+                                {{{nbsp question.sec_label }}}.</strong>
                         </div>
                     {{else}}
                         <div class="alert alert-info gameOutcomeFeedback">
                             <strong>You preferred this game, but the other 
                                 was selected for you to play at the end of 
-                                {{question.sec_label}}.</strong>
+                                {{{nbsp question.sec_label }}}.</strong>
                         </div>
                     {{/if}}
                 {{/if}}

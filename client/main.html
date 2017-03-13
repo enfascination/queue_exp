@@ -19,7 +19,7 @@
 <template name="main">
         <div class="expMTWindow bg">
         <div class="row">
-            <div class="col-md-2 pull-left">
+            <div class="col-md-2 pull-left hidden-xs hidden-sm">
                 <div class="col-md-12 expTabs expWindow">
                     <div class="expHeader">
                         <h1>Social Lab</h1>
@@ -32,7 +32,7 @@
                         {{/each}}
                         <li><a data-target="#submitHIT" href="#submitHIT" aria-controls="submitHIT" data-toggle="tab">Submit</a></li>
                         {{#if showExperimenterView}}
-                        <li role="presentation"><a data-target="#experimenterView" href="#experimenterView" aria-controls="experimenterView" role="tab" data-toggle="tab">Data view</a></li>
+                        <li role="presentation"><a data-target="#experimenterView" href="#experimenterView" aria-controls="experimenterView" role="tab" data-toggle="tab">Data&nbsp;view</a></li>
                         {{/if}}
                     </ul>
                 </div>
@@ -46,7 +46,7 @@
             <div class="col-md-8 col-md-offset-1 expMainWindow">
                 <div class="col-md-12 row expWindow expMainPanel">
                     <div class="tab-content" id="tabs" data-tabs="tabs">
-                        <div role="tabpanel" class="tab-pane container expPane" id="instructions">
+                        <div role="tabpanel" class="tab-pane expPane" id="instructions">
                             <h2 class="sectionHeader" >Instructions</h2>
                             {{> mainInstructions}}
                         </div>
@@ -54,7 +54,7 @@
                         {{> yield }}
                         </div>
                         {{#if showExperimenterView}}
-                        <div role="tabpanel" class="tab-pane container expPane" id="experimenterView">
+                        <div role="tabpanel" class="tab-pane expPane" id="experimenterView">
                             <h2 class="sectionHeader" > Experimenter View </h2> 
                             {{> experimenterView ..}}
                         </div>
@@ -72,7 +72,7 @@
 <template name="expSectionTab">
     <li role="presentation">
         <a data-target="#{{currentSection.id}}" href="#{{currentSection.id}}" aria-controls="{{currentSection.id}}" role="tab" data-toggle="tab">
-            {{currentSection.label}}
+            {{{ nbsp currentSection.label }}}
             {{#if currentSectionExperiment currentSection}}
             <ul class="nav nav-pills nav-stacked expSubTabs" role="tab-list">
                 {{#each round in expSectionRoundTabs}}
@@ -84,7 +84,7 @@
     </li>
 </template>
 <template name="expSectionRoundTab">
-    <li role="presentation" class="{{round.HTMLDisabled}}"><a class="expSubTab {{round.HTMLClasses}}" id={{round.id}} data-state="{{round.state}}" value="{{round.number}}">{{round.name}}</a></li>
+    <li role="presentation" class="{{round.HTMLDisabled}}"><a class="expSubTab {{round.HTMLClasses}}" id={{round.id}} data-state="{{round.state}}" value="{{round.number}}">{{{ nbsp round.name }}}</a></li>
 </template>
 
 

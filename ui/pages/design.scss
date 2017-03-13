@@ -13,11 +13,6 @@
     color: #757575;
     font-weight: normal;
 }
-.expQuestion .questionTitle {
-    text-align: left;
-    font-weight: 600;
-    padding: 10px 15px;
-}
 
 ///////////////////////
 // gross HTML
@@ -51,19 +46,19 @@ th {
     //background: url('data:image/svg+xml;utf8,<svg id="circle" height="200" xmlns="http://www.w3.org/2000/svg"><circle id="greencircle" cx="30" cy="30" r="30" fill="green" /></svg>') no-repeat;
     background: url('data:image/svg+xml;utf8,
     <svg width="144px" height="166.28px" viewBox="0 0 288 332.56" xmlns="http://www.w3.org/2000/svg" version="1.1">
-        <polygon style="fill:#ECEFF1;stroke:#FFFFFF;stroke-width:0px" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" />
+        <polygon style="fill:%23ECEFF1;stroke:%23FFFFFF;stroke-width:0px" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" />
         <svg x="0px" y="166.28px">
-            <polygon style="fill:#FAFAFA" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" />
+            <polygon style="fill:%23FAFAFA" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" />
         </svg>
     </svg>
     ') 0 0 repeat, url('data:image/svg+xml;utf8,
     <svg width="144px" height="166.28px" viewBox="0 0 288 332.56" xmlns="http://www.w3.org/2000/svg" version="1.1">
-        <polygon style="fill:#FFFFFF" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28"  />
+        <polygon style="fill:%23FFFFFF" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28"  />
         <svg x="0px" y="166.28px">
-            <polygon style="fill:#F5F5F5" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" />
+            <polygon style="fill:%23F5F5F5" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" />
         </svg>
     </svg>
-    ') 72px 41.57px repeat;
+    ') 72px 41.57px repeat; // the %23 is code for #.  Firefox will fail on svg rendering if color codes are in URIs. 
     min-height: 100%;
     background-color:White;
     opacity:0.85;
@@ -78,7 +73,7 @@ strong {
 strong strong {
     font-weight: 700;
 }
-
+label {display: block;}
 
 //////////////////////// ////////////////////////
 // experiment specific elements
@@ -104,14 +99,14 @@ strong strong {
     //border-right: 2px solid LightGrey;
 }
 .expMainPanel p {
-    width: 560px; // http://baymard.com/blog/line-length-readability
+    max-width: 560px; // http://baymard.com/blog/line-length-readability
 }
 .expPane {
     //display: float;
     color: black;
 }
 .expPaneMargin {
-    width: 560px; 
+    max-width: 560px; 
     margin-left: 100px;
 }
 .expPaneNoMargin {
@@ -122,9 +117,9 @@ strong strong {
 .expWindow.expTabs {
     background: url('data:image/svg+xml;utf8,
     <svg width="144px" height="166.28px" viewBox="0 0 288 332.56" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid slice">
-    <polygon style="fill:white;stroke:#80D8FF;stroke-width:15px" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" transform="rotate(90) translate(15 -130) scale(0.7)" />
+    <polygon style="fill:white;stroke:%2380D8FF;stroke-width:15px" points="144,166.28 48,166.28 0,83.14 48,0 144,0 192,83.14 144,166.28" transform="rotate(90) translate(15 -130) scale(0.7)" />
     </svg>
-    ') 0px 0px no-repeat;
+    ') 0px 0px no-repeat; // the %23 is code for #.  Firefox will fail on svg rendering if color codes are in URIs.
     background-color: White;
     background-position: left top;
 }
@@ -175,12 +170,31 @@ strong strong {
 }
 
 .expQuestion {
-    padding: 10px 0px;
+    text-align: center;
 }
-.expQuestion label, .expQuestion .expChoices {
+.expQuestionText {
     text-align: left;
-    padding: 0px 30px;
+    padding: 0px 15px;
+    max-width: 560px; 
+}
+.expQuestionText .questionTitle {
+    padding: 10px 0px;
+    font-weight: 600;
+}
+.expQuestionText label {
     font-size: 14pt;
+    padding: 5px 15px;
+}
+.expQuestionText p {
+    padding: 0px 15px;
+}
+.expQuestionText .expChoices {
+    padding: 10px 15px 15px 15px;
+}
+.expQuestion .expChoices {
+    text-align: left;
+    font-size: 14pt;
+    padding: 0px 15px 15px 30px;
 }
 
 
@@ -195,7 +209,7 @@ h2.sectionHeader {
     padding-bottom: 20px;
     padding-left: 40px;
     // from expPaneMargin
-    width: 560px; 
+    max-width: 560px; 
     margin-left: 100px;
 }
 

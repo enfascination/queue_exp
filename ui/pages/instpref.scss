@@ -17,11 +17,19 @@
 // GAME design
 ///////////////////////////////////
 .gameNormalForm {
-    //margin: 10px;
-    margin: 10px 0px;
+    padding: 0px 10px;
     //background-color: White;
     background-color: hsla(199, 100%, 100%, 0.10); 
+}
+.expQuestion.chooseStrategy .gameNormalForm,
+.gameNormalForm#tutorial {
     width: 715px;
+}
+.expQuestion.chooseStrategyTop .gameNormalForm,
+.expQuestion.chooseGame .gameNormalForm ,
+.expQuestion.chooseOutcome .gameNormalForm {
+    max-width: 560px;
+    text-align: center;
 }
 .gameNormalFormGame {
     //border: 7px solid hsl(202, 98%, 57%); bright blue
@@ -90,6 +98,7 @@ tr.gameNormalFormChoice {
     //font-family: "Matterhorn Serif";
     //font-family: "Verdana"; 
     font-size: 36pt;
+    line-height: 1;
 }
 .gameNormalFormPayoff.gamePlayerOther polygon {
     fill: hsl(199, 5%, 84%);//#BDBDBD;//hsla(60, 100%, 83%, 0.50); //lightyellow
@@ -121,10 +130,6 @@ tr.hover {
 /// outcome selection
 .expChoice {
     cursor: pointer;
-}
-.expQuestion.chooseOutcome,
-.expQuestion.chooseStrategyTop {
-    text-align: center;
 }
 .chooseOutcome .gameNormalFormOutcome.active, .gameNormalFormOutcome.hover.active{
     background-color: #0277BD; 
@@ -245,9 +250,13 @@ tr.hover {
     font-size: 16pt;
     padding-bottom: 0px;
 }
-//.expQuestion.chooseGame .gameNormalForm {
+.expQuestion .gameNormalForm {
     //width: auto;
-//}
+    padding: 10px 0px;
+}
+.expQuestion.chooseGame  .gameNormalForm {
+    margin: 0 10px;
+}
 .gameNormalFormGame.chooseGame {
     border: 4px solid hsl(202, 98%, 0%);
     border-radius: 4px;
@@ -298,7 +307,7 @@ tr.hover {
 .gameVisualText .payoff.you {
     background: url('data:image/svg+xml;utf8,
     <svg width="30px" height="30px" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid slice">
-        <polygon fill="hsla(199, 98%, 38%, 0.4)" pointer-events="all" stroke="#80D8FF" stroke-width="0px" points="0,0 0,100 100,100 0,0" />
+        <polygon fill="hsla(199, 98%, 38%, 0.4)" pointer-events="all" stroke="%2380D8FF" stroke-width="0px" points="0,0 0,100 100,100 0,0" />
     </svg>
     ') 0px 0px no-repeat;
     background-position: center center;
@@ -309,7 +318,7 @@ tr.hover {
 .gameVisualText .payoff.other {
     background: url('data:image/svg+xml;utf8,
     <svg width="30px" height="30px" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid slice">
-        <polygon fill="hsla(199, 5%, 84%, 0.5)" pointer-events="all" stroke="#80D8FF" stroke-width="0px" points="0,0 100,0 100,100 0,0" />
+        <polygon fill="hsla(199, 5%, 84%, 0.5)" pointer-events="all" stroke="%2380D8FF" stroke-width="0px" points="0,0 100,0 100,100 0,0" />
     </svg>
     ') 0px 0px no-repeat;
     background-position: center top;

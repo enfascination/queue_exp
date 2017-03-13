@@ -174,3 +174,8 @@ Template.registerHelper('inc',
         return (v1+1);
     }
 );
+Template.registerHelper('nbsp',
+    function(v1) {
+        return (v1.replace(/ /, "&nbsp;" ));
+    }
+);

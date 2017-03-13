@@ -62,7 +62,9 @@
 <template name = "questionBinary">
     <section class="expPaneNoMargin experiment"> 
         <div class = "expQuestion {{question.type}} form-group {{getHasError question }}" id="{{question._id}}">
-            <label for="{{question._id}}" class = "control-label {{disabled question}}">{{question.text}}</label>
+            <div class = "expQuestionText">
+            <label for="{{question._id}}" class = "control-label {{disabled question}}">{{question.label}}</label>
+            </div>
             <div id={{question._id}} name={{question._id}} class="expChoices" role="group">
             <button type=button class="btn btn-primary btn-lg experimentChoices expChoice {{disabled question}}" choice="A" >
                 Queue A
@@ -78,7 +80,9 @@
 <template name = "questionQuad">
     <section class="expPaneNoMargin experiment"> 
         <div class = "expQuestion {{question.type}} form-group {{getHasError question }}" id="{{question._id}}">
-            <label for="{{question._id}}" class = "control-label {{disabled question}}">{{question.text}}</label>
+            <div class = "expQuestionText">
+                <label for="{{question._id}}" class = "control-label {{disabled question}}">{{question.label}}</label>
+            </div>
             <div id={{question.id}} name={{question.id}} class="expChoices" role="group">
             {{#each option in options question=question}}
                 <button type=button
@@ -94,23 +98,27 @@
 <template name = "questionDropdown">
     <section class="expPaneNoMargin experiment"> 
         <div class = "expQuestion {{question.type}} form-group {{getHasError question }}" id="{{question._id}}">
-            <label for="{{question._id}}" class = "control-label {{disabled question }}">{{question.label}}</label>
+            <div class = "expQuestionText">
+                <label for="{{question._id}}" class = "control-label {{disabled question }}">{{question.label}}</label>
+            </div>
             <div id={{question._id}} name={{question._id}} class="expChoices" role="group">
-            <select class="dropdown__menu" id="category-select" {{disabled question }}>
-                <option hidden="hidden" value='' {{disabled question }} >Please Select</option>
-                {{#each option in options question=question}}
+                <select class="dropdown__menu" id="category-select" {{disabled question }}>
+                    <option hidden="hidden" value='' {{disabled question }} >Please Select</option>
+                    {{#each option in options question=question}}
                     <option class='expChoice' choice="{{option.name}}" value="{{option.name}}" {{disabled question }} >{{option.name}}</option>
-                {{/each}}
-            </select>
+                    {{/each}}
+                </select>
+            </div>
         </div>
-    </div>
     </section> 
 </template>
 
 <template name = "questionText">
     <section class="expPaneNoMargin experiment"> 
         <div class = "expQuestion {{question.type}} form-group {{getHasError question }}" id="{{question._id}}">
-            <label for="{{question._id}}" class = "control-label {{disabled question }}">{{question.label}}</label>
+            <div class = "expQuestionText">
+                <label for="{{question._id}}" class = "control-label {{disabled question }}">{{question.label}}</label>
+            </div>
             <div id={{question._id}} name={{question._id}} class="expChoices" role="group">
             <!-- <input id="{{_id}}" name="{{_id}}" value="text" class = "sm-width form-control expChoice"> -->
             <input id="{{question._id}}" name="{{question._id}}" type="text" class="sm-width form-control expChoice" title="{{question.fieldname}}" pattern="{{question.pattern}}" {{disabled question }} />
@@ -152,6 +160,10 @@
             <li class="list-group-item">
                 Assignment Id:<!--space is here for robustness to dynamic contents-->
                 <p class="extra-condensed">{{subStat.userId}}</p>
+            </li>
+            <li class="list-group-item">
+                Worker Id:
+                <p class="extra-condensed">{{subStat.mtWorkerId}} </p>
             </li>
             <li class="list-group-item">
                 Meteor Id:

@@ -21,16 +21,16 @@ export let QueueAssigner = class extends TurkServer.Assigners.SimpleAssigner {
             }
 
             if ( currentUser.sec_type_now === 'quiz' ) {
-                //console.log("in quiz");
+                console.log("in quiz");
                 this.lobby.pluckUsers([asst.userId]);
                 TurkServer.setQuizState(asst);
             } else if ( currentUser.sec_type_now === 'experiment' ) { // no mention of survey state intentional
-                //console.log("in2", asst );// asst.userId is the meteor userid
                 // if user hasn't yet been sent to experiment, create them an id based on the ids of preceding subjects
-                //console.log("in experiment");
+                console.log("in experiment");
                 const treatments = this.batch.getTreatments() || [];
                 this.assignToNewInstance([asst], treatments);
                 TurkServer.setExperimentState(asst, this);
+                console.log("in2", asst );// asst.userId is the meteor userid
             } else if ( currentUser.sec_type_now === 'submitHIT' ) { //failed quiz too many times
                 //console.log("in exit survey");
                 //console.log("in3");

@@ -12,5 +12,11 @@
     "meteor-node-stubs": "~0.2.0",
     "mrt": "^0.4.7",
     "session-store": "0.0.6"
+  },
+  "devDependencies": {
+  },
+  "postcss": {
+    "plugins": {
+    }
   }
 }

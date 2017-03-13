@@ -71,13 +71,19 @@ Meteor.users.deny({
         // FORMERLY: this is a reload detector.  if the player has connected before, they will have a data object in progress.
         playerHasConnectedBefore: function( muid ) {
             //console.log("check prior (data) connections",SubjectsStatus.findOne({meteorUserId : muid}),  SubjectsData.find({meteorUserId : muid}, { $sort: {sec : -1, sec_rnd : -1 }}).fetch() );
+            let playerHasConnectedBefore = false;//, playerReconnectingMidSection = false, playerReconnectingEndSection = false;
             let subStat = SubjectsStatus.findOne( { meteorUserId : muid } );
-            let subjectDatas = SubjectsData.find( { meteorUserId : muid, sec : subStat.sec_now } ).fetch();
+            playerHasConnectedBefore     = (subStat.cohort_now !== 0) ? true : false;
+            //let subjectDatas = SubjectsData.find( { meteorUserId : muid, sec : subStat.sec_now } );
+            //playerReconnectingMidSection = playerHasConnectedBefore && _.some( subjectDatas.map( (x)=>!x.completedChoice) );
+            //playerReconnectingEndSection = playerHasConnectedBefore && _.every( subjectDatas.map( (x)=>x.completedChoice) );
             //console.log("testrelogon", muid, SubjectsData.find({meteorUserId : muid, completedChoice : false}).fetch(), subjectDatas );
             return( { 
-                "status" : SubjectsStatus.findOne( {meteorUserId : muid }), 
-                "data" : subjectDatas,
-                "playerHasConnectedBefore" : (subStat.cohort_now !== 0) ? true : false, 
+                //"subStat" : subStat, 
+                //"data" : subjectDatas,  // this was unused and may have been impeding performance on section initializing
+                "playerHasConnectedBefore" : playerHasConnectedBefore, 
+                //"playerReconnectingMidSection" : playerReconnectingMidSection,
+                //"playerReconnectingEndSection" : playerReconnectingEndSection,
             } );
         },
         // this will createa a new SubjectStatus object
@@ -189,20 +195,24 @@ Meteor.users.deny({
                         }
                     } 
                     q.meteorUserId = sub.meteorUserId;
-                    try {
-                        idTmp = Questions.insert(q);
-                        console.log( "updating matches", idTmp, q.matchingGameId );
-                        if (q.matchingGameId) {
-                            Questions.update( q.matchingGameId, {$set : {matchingGameId : idTmp }});
-                        }
-                    } catch (err) {
-                        console.log("Problem adding Questions", q);
-                        throw(err);
+                    /// add the q tot he questions collection
+                    idTmp = Questions.insert(q);
+                    console.log( "updating matches", idTmp, q.matchingGameId );
+                    if (!_.isNil( idTmp ) && q.matchingGameId) {
+                        Questions.update( q.matchingGameId, {$set : {matchingGameId : idTmp }});
                     }
+                    // pass id to the neighboring 2afc game so I can choose between them
                     if (q.type === "chooseStrategy" && q.sec_rnd === 0) {
                         idGameQ1 = idTmp;
                     } else if (q.type === "chooseStrategy" && q.sec_rnd === 1) {
                         idGameQ2 = idTmp;
+                    }
+                    // some sanity checking (did the insert work)?
+                    try {
+                        console.assert(!_.isNil( idTmp ), "prob add'g q's");
+                    } catch (err) {
+                        console.log("Problem adding Questions", q);
+                        throw(err);
                     }
                 }
             });

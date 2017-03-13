@@ -61,7 +61,7 @@
                         <br/>
 </template>
 <template name="gameNormalForm">
-    <div class="expPaneNoMargin gameNormalForm ">
+    <div class="gameNormalForm ">
         <span style="{{#if equals choiceType 'chooseStrategy'}}float:left;{{/if}}">
             {{> gameNormalFormGame id=question._id gameId=question._id choiceType=choiceType payoffs=question.payoffs question=question context=..}}
         </span>
@@ -78,13 +78,13 @@
                         <!--<line x1="0" y1="0" x2="100" y2="100" stroke="#000000" stroke-width="0px" /> width is 5 (half 10) because viewbox is zoomed in to give me a uniform coordinate system in boxes -->
                         <g class="gameNormalFormPayoff gamePlayerTop gamePlayerOther" id="{{payoffIdPrefix}}T" data-value={{payoffPlayerTop}}>
                             <polygon fill="none" pointer-events="all" stroke="#80D8FF" stroke-width="0px" points="0,0 100,0 100,100 0,0" />
-                            <text x="75" y="30" text-anchor="middle" alignment-baseline="middle">
+                            <text x="75" y="30" text-anchor="middle" dominant-baseline="middle" >
                                 {{getPayoff payoffs payoffPlayerTop}}
                             </text>
                         </g>
                         <g class="gameNormalFormPayoff gamePlayerSide gamePlayerYou" id="{{payoffIdPrefix}}S" data-value={{payoffPlayerSide}} >
                             <polygon fill="none" pointer-events="all" stroke="#80D8FF" stroke-width="0px" points="0,0 0,100 100,100 0,0" />
-                            <text x="25" y="75" text-anchor="middle" alignment-baseline="middle" >
+                            <text x="25" y="75" text-anchor="middle" dominant-baseline="middle" >
                                 {{getPayoff payoffs payoffPlayerSide}}
                             </text>
                         </g>
@@ -94,9 +94,11 @@
     <section class="expPaneNoMargin experiment"> 
 
         <div class = "expQuestion {{question.type}} form-group {{getHasError question}}" id="{{question._id}}">
-            <h3 class="questionTitle" >{{question.title}}</h3>
-            {{question.text}}
-            <label for="{{question._id}}" class = "control-label {{disabled question}}">{{question.label}}</label>
+            <div class="expQuestionText">
+                <h3 class="questionTitle" >{{question.title}}</h3>
+                <p>{{question.text}}</p>
+                <label for="{{question._id}}" class = "control-label {{disabled question}}">{{question.label}}</label>
+            </div>
             {{> gameNormalForm id=question._id gameId=question._id choiceType=question.type payoffs=question.payoffs question=question context=.. }}
         </div>
     </section> 
@@ -105,14 +107,18 @@
 <template name = "questionGameCompare">
     <section class="expPaneNoMargin experiment"> 
         <div class = "expQuestion {{question.type}} form-group {{getHasError question}}" id="{{question._id}}">
+            <div class="expQuestionText">
             <h3 class="questionTitle" >{{question.title}}</h3>
-            <label for="{{question._id}}" class = "control-label {{disabled question}}">{{question.text}}</label>
+            <p>{{question.text}}</p>
+            <label for="{{question._id}}" class = "control-label {{disabled question}}">{{question.label}}</label>
+            </div>
             {{> gameComparison question=question}}
         </div>
     </section> 
 </template>
 
 <template name = "gameComparison">
+        <div class="gameNormalForm">
             <table class="gameNormalFormGame gameNormalFormGameCompare">
                 <thead>
                     <tr>
@@ -135,13 +141,18 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
 </template>
 
 <template name = "questionGameCompareReshuffle">
     <section class="expPaneNoMargin experiment"> 
         <div class = "expQuestion {{question.type}} form-group {{getHasError question}}" id="{{question._id}}">
+            <div class="expQuestionText">
             <h3 class="questionTitle" >{{question.title}}</h3>
-            <label for="{{question._id}}" class = "control-label {{disabled question}}">{{question.text}}</label>
+            <p>{{question.text}}</p>
+            <label for="{{question._id}}" class = "control-label {{disabled question}}">{{question.label}}</label>
+            </div>
+        <div class="gameNormalForm">
             <table class="gameNormalFormGame gameNormalFormGameCompare">
                 <thead>
                     <tr>
@@ -164,6 +175,7 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
         </div>
     </section> 
     <h1>DEMOING</h1>
