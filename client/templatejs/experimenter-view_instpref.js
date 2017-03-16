@@ -59,8 +59,10 @@ Template.experimenterViewPayouts.onCreated( function() {
 Template.experimenterViewPayouts.helpers({
 
     subjects() {
-        //console.log(SubjectsData.find().count(), SubjectsData.find({ sec_type : "experiment" }).count(), SubjectsData.find() );
-        return SubjectsData.find( { "theData.cohortId": Session.get('selectedChoice'), sec_type : "experiment" }, { sort: { sec: 1 , sec_rnd : 1, "theData.queuePositionFinal": 1, "theData.queuePosition": 1 } } );
+        if (Session.get('selectedChoice') > 0) {
+            console.log("expView subjects", Session.get('selectedChoice'), SubjectsData.find().count(), SubjectsData.find({ sec_type : "experiment" }).count() );
+            return SubjectsData.find( { "theData.cohortId": Session.get('selectedChoice'), sec_type : "experiment" }, { sort: { sec: 1 , sec_rnd : 1} } );
+        }
     },
 
     showExperimentCalc: function() {
@@ -75,7 +77,8 @@ Template.experimenterViewPayout.helpers({
         return( substat ? substat.completedExperiment : '' );
     },
     completedCohort: function (subject) {
-        let cohort = CohortSettings.findOne({ cohortId : subject.theData.cohortId, sec : subject.sec , sec_rnd : subject.sec_rnd });
+        let cohort = CohortSettings.findOne({ cohortId : subject.theData.cohortId});
+        //console.log("completedCohort",  cohort, subject.theData.cohortId,subject.sec,subject.sec_rnd, subject );
         if (cohort) {
             return(cohort.completedCohort);
         }
@@ -132,9 +135,15 @@ Template.cohortSelection.events({
         let cohortToCalculate = +$(e.currentTarget).val();
         Session.set('selectedChoice', cohortToCalculate);
         // (re)calculate earnings
-        let designs = CohortSettings.find( {cohortId: cohortToCalculate }, { sort : { sec : -1, sec_rnd : -1 } } ).fetch();
-        for ( let design of designs) {
+        let designs = CohortSettings.find( {cohortId: cohortToCalculate } );
+        designs.forEach( function(design) {
             Meteor.call('tryToCompleteCohort', design );
+        } );
+        try {
+            console.assert(designs.count() === 1 || cohortToCalculate === 0, "problem in cohort creation");
+        } catch (err) {
+            console.log("problem in cohort reporting", designs, cohortToCalculate, template);
+            throw(err);
         }
         Session.set('showExperimentCalc', true);
     }
