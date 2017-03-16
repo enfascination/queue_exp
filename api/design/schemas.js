@@ -132,6 +132,10 @@ Schemas.SubjectsData = new SimpleSchema({
         type: String,
         label: "section type",
     },
+    cohortId: {
+        type: SimpleSchema.Integer,
+        label: "group number",
+    },
     theData: {
         type: Object,
         label: "the data, in whichever section's format",

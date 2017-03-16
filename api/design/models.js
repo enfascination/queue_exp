@@ -30,6 +30,8 @@ DesignSequence = {
             "type" : "experiment" , 
             "id" : "experiment1" , 
             "label" : "Section 1" , 
+            //"roundCount" : 3, 
+            //"rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Feedback"}, },
             "roundCount" : 5, 
             "rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Feedback"},  "3" : {id:"round3", label:"Round 3"},  "4" : {id:"round4", label:"Round 4"}, },
             "stages" : 1 ,
@@ -39,6 +41,8 @@ DesignSequence = {
             "type" : "experiment" , 
             "id" : "experiment2" , 
             "label" : "Section 2" , 
+            //"roundCount" : 3, 
+            //"rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Feedback"}, },
             "roundCount" : 5, 
             "rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Feedback"},  "3" : {id:"round3", label:"Round 3"},  "4" : {id:"round4", label:"Round 4"}, },
             "stages" : 1 ,
@@ -84,7 +88,7 @@ Design = {
     matching : {
         ensureSubjectMismatchAcrossSections : false,
         ensureSubjectMatchAcrossSections : false,
-        selfMatching : true,//DANGER lots of bad broken useless code in the relevant if statements
+        selfMatching : true,
         noMatching : false,
     },
     subjectTreatments : ["nofeedback", "feedback"], // think of these as subject level, not cohort level. in a cohort, you get both within a cohort

@@ -21,51 +21,26 @@ Template.experiment.onCreated( function(){
     // make client side subject available
     let muid = Meteor.userId();
     let templateCurrentData = Template.currentData();
-    console.log("MUID", muid);
+    //console.log("MUID", muid);
     if ( muid ) {
         let subStat = templateCurrentData.subStat;
         // is player refreshing, reconnecting, or somehow already up to date in the system?
-        //console.log("experiment render", this, Template.currentData());
         console.log("experiment render", Template.currentData());
         if ( !subStat.readyToProceed ) {
-            Meteor.call("playerHasConnectedBefore", muid, function(err,state) { // think of this cb as an if statement
-                let newData, newCohort;//, updateSession;
-                //let sub = state.subStat;
-                //let data = state.data;
-                if ( !state.playerHasConnectedBefore ) { // player is new to me if they are int he experiment, they have no incomplete data, and they aren't ready to proceeed to a next stage
-                    // record groupid, in case I need it one day
-                    console.log("new sub");
-                    Meteor.call("addGroupId", muid, group );
-                    Meteor.call('initializeSection', sub=muid, lastDesign=null, asyncCallback=function(err, data) {
-                        if (err) { throw( err ); }
-                        //console.log("initializeSection", data.s_data.theData.cohortId, data.design.cohortId);
-                        //updateSession = true;
-                        newData = { "subStat" : data.s_status};
-                        newCohort = data.design;
-                    } );
-                //} else if ( subStat.sec_type_now === "experiment" && state.playerReconnectingMidSection ) { // player is refreshing or reconnecting mid choice in experiment
-                    //updateSession = false;
-                } 
-            });
+            let playerHasConnectedBefore     = (subStat.cohort_now !== 0) ? true : false;
+            // player is new to me if they are int he experiment, they have no incomplete data, and they aren't ready to proceeed to a next stage
+            if ( !playerHasConnectedBefore ) { 
+                // record groupid, in case I need it one day
+                console.log("new sub");
+                Meteor.call("addGroupId", muid, group );
+                Meteor.call('initializeSection', sub=muid, lastDesign=null );
+            } 
         }
 
-        //update ui
-        ////let currentSection = templateCurrentData.currentSection;
-        //let subStat = templateCurrentData.subStat;
-        // AND?
     }
 });
 
 Template.experiment.helpers({
-    section: function() {
-        //console.log( "expeirment.helper section", this );
-        let dataContext = this;
-        return( dataContext.currentSection );
-    },
-    subjectStatus: function() {
-        let dataContext = this;
-        return( dataContext.subStat );
-    },
 });
 Template.answersForm.helpers({
     testQuizIncomplete: function() {

@@ -86,7 +86,7 @@ Meteor.users.deny({
                 //"playerReconnectingEndSection" : playerReconnectingEndSection,
             } );
         },
-        // this will createa a new SubjectStatus object
+        // this will createa a new SubjectsStatus object
         initializeSubject: function( idObj, design ) {
 
             // experiment-specific logic
@@ -95,6 +95,8 @@ Meteor.users.deny({
                 treatments = design.subjectTreatments;
             } else if (design.matching.ensureSubjectMismatchAcrossSections ) {
                 treatments = _.shuffle( design.subjectTreatments );
+            } else if (design.matching.noMatching ) {
+                treatments = ['nofeedback','nofeedback'];
             }
            
 
@@ -128,13 +130,13 @@ Meteor.users.deny({
         addSectionQuestions : function( sub, sec, matching=false) {
             //import { QuestionData } from '../../imports/startup/experiment_prep_instpref.js';
             //let idxs = _.shuffle( _.range( questions.length ) );
-            console.log("addQuestions", sec);
+            console.log("addQuestions", sec, matching, sub.cohort_now, sub.sec_now, sub.sec_rnd_now, sub);
             let payoffsGame1, payoffsGame2, payoffsDiff = _.times(8,()=>0), matchable = false;
             let payoffOrder = ['Top,Left', 'Top,Right', 'Bottom,Left', 'Bottom,Right'];
             let payoffOrderPlayers = ['You', 'Other'];
             let playerPosition = "Side";
             if (sec === "experiment1" || sec === "experiment2") {
-                if ( !matching || matching.noMatching || (matching.selfMatching && sec === "experiment1" ) ) {
+                if ( sub.treatment_now === "nofeedback" ) {
                     /// game 1
                     // strictly ordinal games (without replacement)
                     payoffsGame1 = Helper.generateGame();
@@ -148,9 +150,11 @@ Meteor.users.deny({
                         payoffsGame2 = tmp;
                     }
                     console.log("generated games", payoffsGame1, payoffsGame2);
-                } else if (matching.selfMatching && sec === "experiment2" ) {
+                } else if ( sub.treatment_now === "feedback" ) {
                     matchable = true;
-                    let previousQuestion = Questions.findOne({ cohortId : sub.cohort_now, sec : 'experiment1', sec_rnd : sub.sec_rnd_now, strategic : true});
+                    let previousQuestion = Questions.findOne({ cohortId : sub.cohort_now, sec_rnd : sub.sec_rnd_now, strategic : true});
+                    console.log("returning to games1", previousQuestion);
+
                     payoffsGame1 = Helper.pivotGame( previousQuestion.payoffsGame1 );
                     payoffsGame2 = Helper.pivotGame( previousQuestion.payoffsGame2 );
                     console.log("returning to games", payoffsGame1, payoffsGame2);
@@ -158,6 +162,9 @@ Meteor.users.deny({
                 payoffsDiff = _.map( _.zip(payoffsGame1, payoffsGame2), (e)=> _.subtract(e[1], e[0]) );
             }
             let idGameQ1, idGameQ2, idTmp;
+            // questionsdata object is a client side collection whose 
+            //    questions get initialized, added to serverside, and 
+            //    integrated into experiment flow in this loop 
             QuestionData.questions.forEach( function(q) {
                 if ( q.sec === sec ) {
                     console.log("addQuestions q", sec, q.sec, sub.sec_rnd_now, sub.cohort_now, (q.sec != sec && q.sec != 'experiment'));
@@ -222,7 +229,7 @@ Meteor.users.deny({
         // it will update and may create a new CohortSettings object
         initializeSection: function( sub, lastDesign ) {
             console.log("initRound");
-            let design;
+            let design, cohortId;
 
             if (_.isString(sub)) { 
                 // sub can be passed as a collection or a meteor.userId()
@@ -232,32 +239,16 @@ Meteor.users.deny({
 
             //  experiment specific
             // retrieve the appropriiate design for the subject in this state
-            dat = Experiment.findSubsCohort( sub, lastDesign, Design.matching );
-            design = dat.design;
+            cohortId = Meteor.call("findSubsCohort", sub, lastDesign, Design.matching );
 
-            // this if shouldn't even be necessary. it's here by definition.
-            if( sub.sec_rnd_now === 0 ) {
-                let tmp = SubjectsStatus.update(
-                    {meteorUserId : sub.meteorUserId}, 
-                    {$set : { 
-                        cohort_now : design.cohortId,
-                    }}
-                );
-                console.log("izero, assigning cohort",sub.meteorUserId, design.cohortId, tmp);
+            // init or update the cohort object that we're going to match this subject to
+            //   then get updated version of the changed objects
+            let initObj = Meteor.call("initializeCohort", cohortId=cohortId, sub.meteorUserId);
+            design = initObj.design;
+            sub = initObj.sub;
 
-                sub = SubjectsStatus.findOne( {meteorUserId : sub.meteorUserId} );
-                Meteor.call("addSectionQuestions", sub, sub.sec_now, matching=design.matching );
-
-                //ensure uniqueness
-                //SubjectsData._ensureIndex({userId : 1, meteorUserId : 1, sec : 1, sec_rnd : 1}, { unique : true } );
-                CohortSettings.update({
-                    cohortId : design.cohortId, 
-                }, {
-                    $set: {
-                        filledCohort : design.filledCohort + 1,
-                    },
-                });
-            }
+            // init this section by creating and adding all of its component questions, for all rounds;
+            Meteor.call("addSectionQuestions", sub, sub.sec_now, matching=design.matching );
 
 
             let ss, sd, ct;
@@ -265,9 +256,6 @@ Meteor.users.deny({
             ct = CohortSettings.findOne({ cohortId: design.cohortId});
             return( { "s_status" : ss, "s_data" : sd, "design" : ct } );
         },
-        //findSubsCohort: function(sub, lastDesign) {
-            //return(Experiment.findSubsCohort(sub, lastDesign));
-        //},
         // this modfiies a SubjectsStatus object
         addGroupId: function( meteorUserId, groupId ) {
             if ("undefined" in SubjectsStatus.find({meteorUserId: meteorUserId}, { fields: {'tsGroupId':1} }).fetch()) {
@@ -363,6 +351,7 @@ Meteor.users.deny({
         completeQuestionPair: Experiment.completeQuestionPair,
         completeGameCompare: Experiment.completeGameCompare,
         tryToCompleteCohort: Experiment.tryToCompleteCohort,
+        findSubsCohort : Experiment.findSubsCohort,
         // updates a bunch of SubjectsData objects
         calculateExperimentEarnings : Experiment.calculateExperimentEarnings,
         updateExperimentEarnings : Experiment.updateExperimentEarnings,
@@ -402,11 +391,14 @@ Meteor.users.deny({
                 meteorUserId: sub.meteorUserId,
                 sec: sub.sec_now,
                 sec_type: sub.sec_type_now,
-                sec_rnd: 0,
+                sec_rnd: theData.sec_rnd,
+                cohortId: theData.cohortId,
                 theData: theData,
                 completedChoice : true,
                 theTimestamp: Date.now(),
             } );
+        //ensure uniqueness XXXuncomment me eventually
+                //SubjectsData._ensureIndex({userId : 1, meteorUserId : 1, sec : 1, sec_rnd : 1}, { unique : true } );
             return( SubjectsData.findOne( id ) );
         },
         // server side helper
