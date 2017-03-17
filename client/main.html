@@ -27,8 +27,8 @@
                     <ul class="nav nav-tabs nav-stacked" role="tab-list">
                         <li><a data-target="#instructions" href="#instructions" aria-controls="instructions" data-toggle="tab">Instructions</a></li>
                         <li><a data-target="#quiz" href="#quiz" aria-controls="quiz" data-toggle="tab">Start</a></li>
-                        {{#each currentSection in expSectionTabs }}
-                        {{> expSectionTab currentSection=currentSection subStat=subStat}}
+                        {{#each section in expSectionTabs }}
+                            {{> expSectionTab section=section }}
                         {{/each}}
                         <li><a data-target="#submitHIT" href="#submitHIT" aria-controls="submitHIT" data-toggle="tab">Submit</a></li>
                         {{#if showExperimenterView}}
@@ -71,12 +71,12 @@
 </template>
 <template name="expSectionTab">
     <li role="presentation">
-        <a data-target="#{{currentSection.id}}" href="#{{currentSection.id}}" aria-controls="{{currentSection.id}}" role="tab" data-toggle="tab">
-            {{{ nbsp currentSection.label }}}
-            {{#if currentSectionExperiment currentSection}}
+        <a data-target="#{{section.id}}" href="#{{section.id}}" aria-controls="{{section.id}}" role="tab" data-toggle="tab">
+            {{{ nbsp section.label }}}
+            {{#if equals section.id section.sec_now}}
             <ul class="nav nav-pills nav-stacked expSubTabs" role="tab-list">
                 {{#each round in expSectionRoundTabs}}
-                    {{> expSectionRoundTab round=round currentSection=currentSection subStat=subStat}}
+                    {{> expSectionRoundTab round=round dataContext=..}}
                 {{/each}}
             </ul>
             {{/if}}
@@ -84,7 +84,7 @@
     </li>
 </template>
 <template name="expSectionRoundTab">
-    <li role="presentation" class="{{round.HTMLDisabled}}"><a class="expSubTab {{round.HTMLClasses}}" id={{round.id}} data-state="{{round.state}}" value="{{round.number}}">{{{ nbsp round.name }}}</a></li>
+    <li role="presentation" class="{{round.HTMLDisabled}}"><a class="expSubTab {{round.HTMLClasses}}" id={{round.id}} data-state="{{round.state}}" value="{{round.number}}">{{{ nbsp round.label }}}</a></li>
 </template>
 
 
@@ -93,7 +93,7 @@
                     {{> quiz ..}}
 </template>
 <template name="expSectionTabPane">
-    {{#if currentSectionExperiment currentSection}}
+    {{#if currentSectionExperiment }}
             {{#if isSection "survey"}}
                 <h2 class="sectionHeader" >Survey</h2>
                 {{> survey ..}}

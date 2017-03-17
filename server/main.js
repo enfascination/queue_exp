@@ -127,51 +127,70 @@ Meteor.users.deny({
             //ensure uniqueness
             SubjectsStatus._ensureIndex({userId : 1, meteorUserId : 1}, { unique : true } );
         },
-        addSectionQuestions : function( sub, sec, matching=false) {
+        addSectionQuestions : function( sub, sec, design) {
             //import { QuestionData } from '../../imports/startup/experiment_prep_instpref.js';
             //let idxs = _.shuffle( _.range( questions.length ) );
-            console.log("addQuestions", sec, matching, sub.cohort_now, sub.sec_now, sub.sec_rnd_now, sub);
-            let payoffsGame1, payoffsGame2, payoffsDiff = _.times(8,()=>0), matchable = false;
-            let payoffOrder = ['Top,Left', 'Top,Right', 'Bottom,Left', 'Bottom,Right'];
-            let payoffOrderPlayers = ['You', 'Other'];
-            let playerPosition = "Side";
-            if (sec === "experiment1" || sec === "experiment2") {
-                if ( sub.treatment_now === "nofeedback" ) {
-                    /// game 1
-                    // strictly ordinal games (without replacement)
-                    payoffsGame1 = Helper.generateGame();
-                    // loosely ordinal games (with replacement)
-                    //let payoffs = _.concat( _.times(4, ()=>_.sample([1, 2, 3, 4]) ), _.times(4, ()=>_.sample([1, 2, 3, 4]) ) );
-                    /// game 2
-                    payoffsGame2 = Helper.tweakGame( payoffsGame1, switchOnly=true );
-                    if( _.random() === 0 ) { // another shuffle that is important to make sure doubles happen in both blocks
-                        let tmp = _.clone( payoffsGame1 );
-                        payoffsGame1 = _.clone( payoffsGame2 );
-                        payoffsGame2 = tmp;
-                    }
-                    console.log("generated games", payoffsGame1, payoffsGame2);
-                } else if ( sub.treatment_now === "feedback" ) {
-                    matchable = true;
-                    let previousQuestion = Questions.findOne({ cohortId : sub.cohort_now, sec_rnd : sub.sec_rnd_now, strategic : true});
-                    console.log("returning to games1", previousQuestion);
+            //console.log("addQuestions", sec, matching, sub.cohort_now, sub.sec_now, sub.sec_rnd_now, sub);
+            let initializeGame = function initializeGame(sub, sec) {
+                console.log("addQuestions", sec, sub.cohort_now, sub.sec_now, sub.sec_rnd_now);
+                let payoffsGame1, payoffsGame2, payoffsDiff = _.times(8,()=>0);
+                let payoffOrder = ['Top,Left', 'Top,Right', 'Bottom,Left', 'Bottom,Right'];
+                let payoffOrderPlayers = ['You', 'Other'];
+                let playerPosition = "Side";
+                if (sec === "experiment1" || sec === "experiment2") {
+                    if ( sub.treatment_now === "nofeedback" ) {
+                        /// game 1
+                        // strictly ordinal games (without replacement)
+                        payoffsGame1 = Helper.generateGame();
+                        // loosely ordinal games (with replacement)
+                        //let payoffs = _.concat( _.times(4, ()=>_.sample([1, 2, 3, 4]) ), _.times(4, ()=>_.sample([1, 2, 3, 4]) ) );
+                        /// game 2
+                        payoffsGame2 = Helper.tweakGame( payoffsGame1, switchOnly=true );
+                        if( _.random() === 0 ) { // another shuffle that is important to make sure doubles happen in both blocks
+                            let tmp = _.clone( payoffsGame1 );
+                            payoffsGame1 = _.clone( payoffsGame2 );
+                            payoffsGame2 = tmp;
+                        }
+                        console.log("generated games", payoffsGame1, payoffsGame2);
+                    } else if ( sub.treatment_now === "feedback" ) {
+                        let previousQuestion = Questions.findOne({ cohortId : sub.cohort_now, sec_rnd : sub.sec_rnd_now, strategic : true});
+                        //console.log("returning to games1", previousQuestion);
 
-                    payoffsGame1 = Helper.pivotGame( previousQuestion.payoffsGame1 );
-                    payoffsGame2 = Helper.pivotGame( previousQuestion.payoffsGame2 );
-                    console.log("returning to games", payoffsGame1, payoffsGame2);
+                        payoffsGame1 = Helper.pivotGame( previousQuestion.payoffsGame1 );
+                        payoffsGame2 = Helper.pivotGame( previousQuestion.payoffsGame2 );
+                        console.log("returning to games", payoffsGame1, payoffsGame2);
+                    }
+                    payoffsDiff = _.map( _.zip(payoffsGame1, payoffsGame2), (e)=> _.subtract(e[1], e[0]) );
                 }
-                payoffsDiff = _.map( _.zip(payoffsGame1, payoffsGame2), (e)=> _.subtract(e[1], e[0]) );
-            }
+                return({
+                    payoffOrder : payoffOrder, 
+                    payoffOrderPlayers : payoffOrderPlayers, 
+                    playerPosition : playerPosition, 
+                    payoffsGame1 : payoffsGame1,
+                    payoffsGame2 : payoffsGame2,
+                    payoffsDiff : payoffsDiff,
+                });
+            };
+            let gameData = initializeGame(sub, sec);
+            let payoffOrder = gameData.payoffOrder;
+            let payoffOrderPlayers = gameData.payoffOrderPlayers;
+            let playerPosition = gameData.playerPosition;
+            let payoffsGame1 = gameData.payoffsGame1;
+            let payoffsGame2 = gameData.payoffsGame2;
+            let payoffsDiff = gameData.payoffsDiff;
             let idGameQ1, idGameQ2, idTmp;
             // questionsdata object is a client side collection whose 
             //    questions get initialized, added to serverside, and 
             //    integrated into experiment flow in this loop 
             QuestionData.questions.forEach( function(q) {
-                if ( q.sec === sec ) {
-                    console.log("addQuestions q", sec, q.sec, sub.sec_rnd_now, sub.cohort_now, (q.sec != sec && q.sec != 'experiment'));
+                if ( q.sec === sec && 
+                    q.sec_rnd < design.sequence[sec].roundCount ) {
+                    console.log("addQuestions q", sec, q.sec, q.sec_rnd, sub.cohort_now);
                     if (q.sec === 'experiment1' || q.sec === 'experiment2' ) {
                         //q._id doesn't exist yet here.  insert happens below
                         q.sec = sec; // overwrite the input section (from experiment to experiment1)
                         q.cohortId = sub.cohort_now;
+                        q.treatment = sub.treatment_now;
                         q.payoffOrder = payoffOrder;
                         q.payoffOrderPlayers = payoffOrderPlayers;
                         q.playerPosition = playerPosition;
@@ -179,12 +198,17 @@ Meteor.users.deny({
                         q.payoffsGame2 = payoffsGame2;
                         q.payoffsDiff = payoffsDiff;
                         /// matching of matchable games
-                        if (matchable && q.type === 'chooseStrategy' && q.strategic && _.includes([0,1,4], q.sec_rnd ) ) {
+                        if (   
+                                sub.treatment_now === "feedback" && // def try to match
+                                q.type === 'chooseStrategy' &&      // which q's to match
+                                q.strategic && 
+                                _.includes([0,1,4], q.sec_rnd )     // which rounds to match in
+                            ) {
                             let matchingQuestion = Questions.findOne(
                                 { cohortId : q.cohortId, sec_rnd : q.sec_rnd, type : q.type, strategic : true}
                             );
                             q.matchingGameId = matchingQuestion._id;
-                            console.log( "create matched game", matchingQuestion );
+                            console.log( "create matched game: matching question", q._id, matchingQuestion._id );
                         } else {
                             q.matchingGameId = false;
                         }
@@ -228,7 +252,7 @@ Meteor.users.deny({
         // this will create a new SubjectsData object
         // it will update and may create a new CohortSettings object
         initializeSection: function( sub, lastDesign ) {
-            console.log("initRound");
+            console.log("initRound beginning");
             let design, cohortId;
 
             if (_.isString(sub)) { 
@@ -236,24 +260,29 @@ Meteor.users.deny({
                 // but it should end up as a collection result
                 sub = SubjectsStatus.findOne({meteorUserId:sub});
             }
+            console.log("initRound found sub");
 
             //  experiment specific
             // retrieve the appropriiate design for the subject in this state
             cohortId = Meteor.call("findSubsCohort", sub, lastDesign, Design.matching );
+            console.log("initRound found cohortId");
 
             // init or update the cohort object that we're going to match this subject to
             //   then get updated version of the changed objects
             let initObj = Meteor.call("initializeCohort", cohortId=cohortId, sub.meteorUserId);
+            console.log("initRound init cohort");
             design = initObj.design;
             sub = initObj.sub;
 
             // init this section by creating and adding all of its component questions, for all rounds;
-            Meteor.call("addSectionQuestions", sub, sub.sec_now, matching=design.matching );
+            Meteor.call("addSectionQuestions", sub, sub.sec_now, design );
+            console.log("initRound added questions");
 
 
             let ss, sd, ct;
             ss = SubjectsStatus.findOne({ meteorUserId: sub.meteorUserId });
             ct = CohortSettings.findOne({ cohortId: design.cohortId});
+            console.log("initRound done");
             return( { "s_status" : ss, "s_data" : sd, "design" : ct } );
         },
         // this modfiies a SubjectsStatus object
@@ -262,11 +291,6 @@ Meteor.users.deny({
                 let res = SubjectsStatus.update({meteorUserId: meteorUserId}, { $set: {tsGroupId : groupId} });
                 //console.log(res);
             }
-        },
-        // this updates a SubjectsData object
-        submitExperimentChoice: function(muid, sec, sec_rnd, theData) {
-            Experiment.submitExperimentChoice(muid, sec, sec_rnd, theData);
-            // no return value
         },
         // this updates a SubjectsStatus object
         advanceSubjectState : function(muid, lastRound) {
@@ -387,6 +411,7 @@ Meteor.users.deny({
 
             // insert
             let id = SubjectsData.insert( {
+                _id : theData._id,
                 userId: sub.userId,
                 meteorUserId: sub.meteorUserId,
                 sec: sub.sec_now,
@@ -395,7 +420,7 @@ Meteor.users.deny({
                 cohortId: theData.cohortId,
                 theData: theData,
                 completedChoice : true,
-                theTimestamp: Date.now(),
+                "timestampschoiceAdded" : Date.now(),
             } );
         //ensure uniqueness XXXuncomment me eventually
                 //SubjectsData._ensureIndex({userId : 1, meteorUserId : 1, sec : 1, sec_rnd : 1}, { unique : true } );

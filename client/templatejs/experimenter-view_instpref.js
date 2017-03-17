@@ -59,9 +59,21 @@ Template.experimenterViewPayouts.onCreated( function() {
 Template.experimenterViewPayouts.helpers({
 
     subjects() {
-        if (Session.get('selectedChoice') > 0) {
-            console.log("expView subjects", Session.get('selectedChoice'), SubjectsData.find().count(), SubjectsData.find({ sec_type : "experiment" }).count() );
-            return SubjectsData.find( { "theData.cohortId": Session.get('selectedChoice'), sec_type : "experiment" }, { sort: { sec: 1 , sec_rnd : 1} } );
+        if ( Session.get('selectedChoice') > 0 ) {
+            console.log(
+                "expView subjects", 
+                Session.get('selectedChoice'), 
+                SubjectsData.find().count(), 
+                SubjectsData.find({ sec_type : "experiment" }).count(), 
+                SubjectsData.find( { 
+                    "theData.cohortId": Session.get('selectedChoice'), 
+                    sec_type : "experiment" 
+                }, { sort: { sec: 1 , sec_rnd : 1} } ).fetch() 
+            );
+            return SubjectsData.find( { 
+                "theData.cohortId": Session.get('selectedChoice'), 
+                sec_type : "experiment",
+            }, { sort: { sec: 1 , sec_rnd : 1} } );
         }
     },
 
@@ -80,18 +92,15 @@ Template.experimenterViewPayout.helpers({
         let cohort = CohortSettings.findOne({ cohortId : subject.theData.cohortId});
         //console.log("completedCohort",  cohort, subject.theData.cohortId,subject.sec,subject.sec_rnd, subject );
         if (cohort) {
-            return(cohort.completedCohort);
+            return(cohort.completed);
         }
     },
     earningsChoice: function (subject) {
         return Helper.toCash( subject.theData.earnings2 );
     },
     earningsTotal: function (subject) {
-        if ( !_.isNumber( subject.totalEarnings ) ) {
-            return("error");
-        } else {
-            return Helper.toCash( subject.totalEarnings );
-        }
+        let substat = SubjectsStatus.findOne({ meteorUserId : subject.meteorUserId });
+        return( substat ? Helper.toCash( substat.totalEarnings ) : 'error' );
     },
 });
 
@@ -137,8 +146,9 @@ Template.cohortSelection.events({
         // (re)calculate earnings
         let designs = CohortSettings.find( {cohortId: cohortToCalculate } );
         designs.forEach( function(design) {
-            Meteor.call('tryToCompleteCohort', design );
+            //Meteor.call('tryToCompleteCohort', design );
         } );
+            console.log("PROBLEM iN cohort reporting", designs, cohortToCalculate, template);
         try {
             console.assert(designs.count() === 1 || cohortToCalculate === 0, "problem in cohort creation");
         } catch (err) {

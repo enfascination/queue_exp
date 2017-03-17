@@ -40,35 +40,41 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                 }
             } else if (matching.ensureSubjectMismatchAcrossSections) {
                 console.log("main matching");
-                // OK.
                 //      if the sub is in a feedback condition
                 //            look for an unfinished cohort
                 //            unless there is no unfinished cohort
-                //                   init them into the existing cohort, match them up with a second person
+                //                   find them a cohort number in need of matching
                 //            else
                 //                   change them to a no-feedback treamtent and fail through to next if
                 //      if the subject is in a nofeedback condition
                 //            start them a new cohort
                 //
-                let treatmentToServe = sub.treatment_now;
-                if (sub.treatment_now === "feedback" ) { // (try to) match this person to an existing cohort  
+                // (try to) match this person to an existing cohort  
+                if (sub.treatment_now === "feedback" ) {
                     let cohortInProgress = CohortSettings.findOne( { 
                         sec_type : "experiment", 
-                        completedCohort : false, 
+                        completed : false, 
+                        matchable : true, 
+                        cohortId : {$gt : 0},
                         playerOne : { $ne : sub.meteorUserId }, // no self matching
-                    }, { sort : { cohortId : -1} });
+                        // playerTwo test is to prevent collisions (is 
+                        // someone-in-progress currently matched to this 
+                        // and I don't know?
+                        playerTwo : false, 
+                    }, { sort : { cohortId : 1} });
 
                     // should I bail on trying to match this subject?
                     if ( _.isNil( cohortInProgress ) ) {
-                        treatmentToServe = "nofeedback";
                         console.log("main matching: no match to make");
-                        SubjectsStatus.update({meteorUserId : sub.meteorUserId}, { $set : { treatment_now : "nofeedback" }});
+                        SubjectsStatus.update({meteorUserId : sub.meteorUserId}, { 
+                            $set : { treatment_now : "nofeedback" }});
+                        sub = SubjectsStatus.findOne({meteorUserId : sub.meteorUserId});
                         
                     }
 
                     // match this subject
                     //// must double check: is this still the right thing for this subject?
-                    if (treatmentToServe === "feedback") {  
+                    if (sub.treatment_now === "feedback") {  
                         // make sure everything is sanitary
                         try {
                             console.assert( _.isString( cohortInProgress.playerOne ) &&
@@ -80,6 +86,13 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                             );
                         } catch (err) { 
                             console.log("problem in real matching" , cohortInProgress);
+                            console.log( _.isString( cohortInProgress.playerOne ) ,
+                                cohortInProgress.playerOne.length > 1 ,
+                                !cohortInProgress.playerTwo ,
+                                cohortInProgress.filledCohort === 1 ,
+                                cohortInProgress,
+                                "cohort that was foudn is well formed"
+                            );
                             throw(err); 
                         }
                         cohortId = cohortInProgress.cohortId;
@@ -106,14 +119,15 @@ Experiment.initializeCohort = function(cohortId, playerToAdd, newSectionType="ex
     if ( _.isNil( CohortSettings.findOne({ cohortId : cohortId }) ) ) { // new cohort 
         console.log("initializeCohort new", cohortId, playerToAdd);
         let newDesign = _.clone(Design);
-        newDesign.filledCohort = 0;
-        newDesign.completedCohort = false;
+        newDesign.completed = false;
+        newDesign.matchable = false;
         newDesign.cohortId = cohortId; // uid for designs, a unique one for each cohort
         //newDesign.sec = newSection;
         newDesign.sec_type = newSectionType;
         //newDesign.sec_rnd = newRound;
         newDesign.playerOne = playerToAdd;
         newDesign.playerTwo = false;
+        newDesign.filledCohort = 1;  //incl currently considered player
         CohortSettings.insert( newDesign );
         // uniqueness check
         try {
@@ -132,6 +146,7 @@ Experiment.initializeCohort = function(cohortId, playerToAdd, newSectionType="ex
         CohortSettings.update({cohortId : cohortId},{
             $set : {
                 playerTwo : playerToAdd,
+                matchable : false,  // this prevents collisions
             }, 
             $inc : {
                 filledCohort : 1,
@@ -151,16 +166,24 @@ Experiment.initializeCohort = function(cohortId, playerToAdd, newSectionType="ex
     //throw(new Meteor.Error(500, 'Permission denied!'));
     //}
 };
-Experiment.submitExperimentChoice = function(muid, sec, sec_rnd, theData) {
+Experiment.updateQuestionInSubData = function(q) {
 
-            SubjectsData.update({ meteorUserId: muid , "theData.cohortId" : theData.cohortId, sec : sec, sec_rnd : sec_rnd }, {
+            let tmp = SubjectsData.update({ 
+                _id : q._id,
+            }, {
                 $set: {
-                    "theData.choice": theData.choice,
-                    "theData.earnings1": theData.earnings1,
-                    "completedChoice" : true,
+                    "timestamps.gameConsummated": Date.now(),
+                    "theDataConsummated": q,
+                    "consummatedChoice" : true,
                 },
             });
-            //console.log("submitExperimentChoice");
+    try { 
+        console.assert(tmp === 1, "right number of objects got updated");
+    } catch(err) {
+        console.log("wrong number of objects got updated", tmp, q );
+        throw(err);
+    }
+            //console.log("updateQuestionInSubData");
             //let ss = SubjectsStatus.findOne({ meteorUserId: muid });
             //let sd = SubjectsData.findOne({ meteorUserId: muid , theData.cohortId : cohortId, sec : section, sec_rnd : round });
             //return({ "s_status" : ss, "s_data" : sd });
@@ -171,8 +194,16 @@ Experiment.tryToCompleteUncompletedQuestions = function(sub, design) {
     qs.forEach( function(q) {
         //console.log("to match?", (q.strategic && _.isString( q.matchingGameId ) && !q.completedGame), q);
         // if question involves another matchable question, and that question is know, and if this question has been answered, but hasn't yet been consummated with the other question, then consummate by calculating outcomes and corersponding payoffs.
-        if (q.strategic && _.isString( q.matchingGameId ) && !_.isNil(q.choice) && !q.completedGame) {
-            Experiment.completeQuestionPair( q._id, q.matchingGameId, design );
+        if (
+            q.strategic && 
+            _.isString( q.matchingGameId ) && 
+            !_.isNil(q.choice) && 
+            !q.completedGame
+        ) {
+            //after completing questions, returns fresh objects
+            let qPair = Experiment.completeQuestionPair( q._id, q.matchingGameId, design );
+            Experiment.updateQuestionInSubData( qPair[0] );
+            Experiment.updateQuestionInSubData( qPair[1] );
             matches += 2;
         }
     });
@@ -231,18 +262,19 @@ Experiment.completeQuestionPair = function(q1, q2, design) {
     question2.completedGame = true;
     Questions.update( question1._id, {$set : question1});
     Questions.update( question2._id, {$set : question2});
-    //console.log("setCompleteion");
-    console.log("setCompleteion", "after", Questions.findOne( question1._id), "\n", Questions.findOne( question2._id));
+    console.log("setCompleteion");
+    //console.log("setCompleteion", "after", Questions.findOne( question1._id), "\n", Questions.findOne( question2._id));
+    return([ Questions.findOne( question1._id ), Questions.findOne(  question2._id ) ]);
 };
 Experiment.tryToCompleteCohort = function(design) {
-    let completedCohort = false;
+    let completed = false;
     let cohortId = design.cohortId;
 
     // make it safe to over-call this function
     //    abort if cohort is already complete
     if ( CohortSettings.findOne(
         { cohortId: cohortId}
-    ).completedCohort ) {
+    ).completed ) {
         return;
     }
 
@@ -253,40 +285,49 @@ Experiment.tryToCompleteCohort = function(design) {
     }) ).length;
     console.log("complete cohort 3", playerCount, unansweredQs.count(), answeredQs.count() );
 
-    //console.log( "cohort completion", cohortFin.count(), cohortUnfin.count(), design.maxPlayersInCohort );
-    if (unansweredQs.count() === 0 && (
-        ( playerCount === design.maxPlayersInCohort ) || 
-        ( 
-            playerCount === 1 && 
-            design.matching.selfMatching && 
-            design.filledCohort === 2) 
-    ) ) {
-        // get rid of old cohort (make it outdated/complete)
-        completedCohort = true;
-        CohortSettings.update({ cohortId: cohortId}, {
-            $set: { completedCohort: true, },
-        }//, {multi: true}  //d ont' want to need this.
-        );
-        try {
-            console.assert(design.maxPlayersInCohort === design.filledCohort, "sanity6: do i really only have two subjects?", design );
-            console.assert( answeredQs.count() === answeredQs.map( function(q) { if( q.payoffs ) { return( q ); } }).length );
-            console.assert( answeredQs.count() === answeredQs.map( function(q) { if( q.matchingGameId ) { return( q ); } }).length );
-        } catch(err) { 
-            console.log(err, completedCohort, unansweredQs, answeredQs);
-            throw(err);
+    console.log( "cohort completion, matchabilitiy settings:", (unansweredQs.count() === 0 , answeredQs.count() > 0 ));
+    if (unansweredQs.count() === 0 && answeredQs.count() > 0  ) {
+        // this test used to be more complicated testing either 
+        //playerCount === design.maxPlayersInCohort  or 
+        //for selfmatching (in which there is only one player id for both games
+        if ( _.isString(design.playerOne) && _.isString(design.playerTwo) && design.filledCohort === 2   ) {
+
+            // get rid of old cohort (make it outdated/complete)
+            completed = true;
+            CohortSettings.update({ cohortId: cohortId}, {
+                $set: { 
+                    completed: true, 
+                    matchable: false, // this is actually redundant: I do this sooner
+                },
+            }//, {multi: true}  //d ont' want to need this.
+            );
+            try {
+                console.assert(design.maxPlayersInCohort === design.filledCohort, "sanity6: do i really only have two subjects?", design );
+                console.assert( answeredQs.count() === answeredQs.map( function(q) { if( q.payoffs ) { return( q ); } }).length );
+                console.assert( answeredQs.count() === answeredQs.map( function(q) { if( q.matchingGameId ) { return( q ); } }).length );
+            } catch(err) { 
+                console.log(err, completed, unansweredQs, answeredQs);
+                throw(err);
+            }
+            console.log("COHORT COMPLETED", cohortId);
+            return(true);
+        } else if ( !design.playerTwo && design.filledCohort < 2) {
+            // cohort still in progress
+            CohortSettings.update({ cohortId: cohortId}, {
+                $set: { matchable: true, },
+            });//, {multi: true}  //d ont' want to need this.
+            console.log("COHORT MATCHABLE", cohortId,  design.matchable , design.filledCohort , design.filledCohort === 2   , design);
+            return(false);
+        } else {
+            console.log("ERROR &Q#$TREJGAFGK: Matched cohort in progress: cohort is matched but not complete, but actually this must be a bug because in this loop there remain no unasnwered questions", design, Questions.find( { cohortId : cohortId, strategic : true}));
         }
-        console.log("COHORT COMPLETED", cohortId);
-        return(true);
-    } else {
-        // cohort still in progress
-        return(false);
     }
 };
 Experiment.completeGameCompare = function(compareGamesId, chosenGameId, nextGameId) {
     let updateToCompare;
     chosenGame = Questions.findOne(chosenGameId);
     nextGame = Questions.findOne(nextGameId);
-    console.log("completeGameCompare, after setChosenGameForRound1", compareGamesId, chosenGameId, nextGameId, chosenGame, nextGame );
+    //console.log("completeGameCompare, after setChosenGameForRound1", compareGamesId, chosenGameId, nextGameId, chosenGame, nextGame );
     console.log("completeGameCompare, after setChosenGameForRound2", chosenGame.payoffs, nextGame.payoffs, Helper.comparePayoffs( chosenGame, nextGame ));
     if ( Helper.comparePayoffs( chosenGame, nextGame ) ) {
         updateToCompare = { outcomeMatchesChoice : true };

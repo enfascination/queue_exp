@@ -202,18 +202,17 @@ Template.instPrefGame2.helpers({
         if (sub && dataContext.currentSection && this.questionsColl) {
             /// in which context am I giving feedback (within section or within HIT)?
             if (allQs) {
-                questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, sec : { $in : ['experiment1', 'experiment2']} });
+                questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, sec : { $in : ['experiment1', 'experiment2']}, choice : { $ne : null } });
             } else {
-                questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, sec : sub.sec_now , sec_rnd : {$lt : 2}});
+                questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, sec : sub.sec_now , choice : {$ne : null }});
             }
             // pick which questions ot display, and enrich them a bit for the HIT feedback context
             questionsFeedback = questionsFeedback.map( function( q ) {
                 let r = false;
                 if (q.type === "chooseStrategy" && q.paid ) {
                     r = true;
-                    if (sub.treatment_now === "feedback") {
-                        q.choice = q.outcome;
-                        //q.type = "chooseOutcome";
+                    if (q.completedGame) {
+                        q.choice = q.outcome;  // temporarily overwrite for display pursposes
                     }
                 } else if ( q.type === "chooseGame" ){
                     r = true;

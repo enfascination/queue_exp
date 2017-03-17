@@ -245,9 +245,6 @@ Template.main.events({
                 if (err) { throw( err ); }
                 if (cohortCompleted) {
                     console.log("COHORTcOMPLETED");
-                    //confirm that all questions are finished and matched with payfofs
-                    //calculate subject payoffs
-                    //consummate data on this and matched subject in subjectsdata
                 }
             });
             /// advance section
@@ -258,7 +255,7 @@ Template.main.events({
                 });
             } else if (sub.sec_now === "experiment2" ) {
                 Meteor.call('advanceSubjectSection', Meteor.userId(), "survey", "experiment");
-                Meteor.call("addSectionQuestions", sub, "survey" );
+                Meteor.call("addSectionQuestions", sub, "survey", Sess.design() );
             } else {
             }
             // adjust screen 

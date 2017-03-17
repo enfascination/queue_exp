@@ -86,9 +86,9 @@ Design = {
     positionCosts : 0.25,
     batchName : "main",
     matching : {
-        ensureSubjectMismatchAcrossSections : false,
+        ensureSubjectMismatchAcrossSections : true,
         ensureSubjectMatchAcrossSections : false,
-        selfMatching : true,
+        selfMatching : false,
         noMatching : false,
     },
     subjectTreatments : ["nofeedback", "feedback"], // think of these as subject level, not cohort level. in a cohort, you get both within a cohort

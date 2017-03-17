@@ -240,7 +240,7 @@
                 {{else}} {{#if equals question.type "chooseGame" }}
                     {{> gameCompareFeedback question=question}}
                     {{#if question.outcomeMatchesChoice}}
-                        <div class="alert alert-success gameOutcomeFeedback">
+                        <div class="alert alert-info gameOutcomeFeedback">
                             <strong>You preferred this game, and it was 
                                 selected for you to play at the end of 
                                 {{{nbsp question.sec_label }}}.</strong>

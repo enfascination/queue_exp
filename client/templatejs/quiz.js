@@ -109,8 +109,8 @@ Template.answersForm.events({
             /////////////////////
             //// ... SEPARATELY, ADVANCE STATE 
             /////////////////////
-            //if ( passed || failed ) {
-            if ( true || passed || failed ) {
+            //if ( true || passed || failed ) {
+            if ( passed || failed ) {
                 Meteor.call( "disableQuestions", qs.map( (q) => q._id ), reset=failed ? true : false );
                 if ( failed ) {
                     Helper.buttonsReset( e.currentTarget );

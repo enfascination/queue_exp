@@ -100,33 +100,39 @@ Template.main.helpers({
               ( Sess.subStat() && Sess.subStat().sec_type_now === "experiment" ) );
     },
     expSectionTabs : function() {
-        let design = Sess.design() || Design;
+        if ( _.isNil( Template.currentData()) || _.isNil( Template.currentData().design) || _.isNil( Template.currentData().design.sequence) ) { return; }
         let dataContext = Template.currentData();
-        //console.log( "expSectionTabs", design, dataContext );
-        let d = _( design.sequence ).omit( [ "instructions", "quiz", "submitHIT" ] ).toArray().value();
-        //console.log(d);
-        _.forEach( d, function( q ) {
+        let design = Template.currentData().design;
+        //let d = _( design.sequence ).omit( [ "instructions", "quiz", "submitHIT" ] ).toArray().value();
+        let d = _.map( _.omit( design.sequence, [ "instructions", "quiz", "submitHIT" ] ) , (q)=>q);
+        //console.log( "expSectionTabs", Template.currentData(), d );
+        //console.log("expSectionTabs ", d);
+        _.forEach( d, function( s ) {
             //q.context = dataContext;// this was a bad idea, better to make sure that the items passed have the right info from thebeginning
+            s.sec_now = dataContext.subStat.sec_now ; 
+            s.sec_rnd_now = dataContext.subStat.sec_rnd_now ; 
         });
         return(d);
     },
 });
 Template.expSectionTab.onCreated( function() {
 });
+let currentSectionExperiment = function( ) {
+    console.log("currentSectionExperiment ", this, Template.currentData());
+    if (this &&
+        this.subStat && 
+        this.subStat.sec_now === this.currentTab) {
+        return( true );
+    }
+};
 Template.expSectionTab.helpers({
-    currentSectionExperiment: function( currentSection ) {
-        //console.log( "expSectionTab.helper, currentSectionExperiment", this);
-        let sub = Sess.subStat();
-        if (sub && sub.sec_now === currentSection.id) {
-            return( true );
-        }
-    },
+    currentSectionExperiment: currentSectionExperiment,
     expSectionRoundTabs : function () {
-        let currentSection = Template.currentData().currentSection;
-        let subStat = Template.currentData().subStat;
+        //console.log("expSectionRoundTabs  ", Template.currentData());
+        let section = Template.currentData().section;
 
-        let roundObjs = _.map( _.range(currentSection.roundCount), function( num ) {
-            let tabState = subStat.sec_rnd_now === num ? "present" : (subStat.sec_rnd_now > num ? "past" : "future"); 
+        let roundObjs = _.map( _.range(section.roundCount), function( num ) {
+            let tabState = section.sec_rnd_now === num ? "present" : (section.sec_rnd_now > num ? "past" : "future"); 
             let tabDisabled = "";
             let tabClasses = "";
             if (tabState === "past") {
@@ -138,8 +144,8 @@ Template.expSectionTab.helpers({
             }
             return( {
                 number : num,
-                name : DesignSequence[subStat.sec_now].rounds[ num.toString() ].label,
-                id : DesignSequence[subStat.sec_now].rounds[ num.toString() ].id,
+                label : section.rounds[ num.toString() ].label,
+                id : section.rounds[ num.toString() ].id,
                 state      : tabState, 
                 HTMLDisabled : tabDisabled,
                 HTMLClasses : tabClasses,
@@ -151,13 +157,7 @@ Template.expSectionTab.helpers({
     },
 });
 Template.expSectionTabPane.helpers({
-    currentSectionExperiment: function( currentSection ) {
-        let sub = Sess.subStat();
-        //console.log("expSectionTabPane", this, sub);
-        if (sub && sub.sec_now === currentSection.id) {
-            return( true );
-        }
-    },
+    currentSectionExperiment: currentSectionExperiment,
     isSection: function( aSection ){
         return( this.currentSection.id === aSection );
     },
@@ -171,11 +171,11 @@ Template.registerHelper('equals',
 );
 Template.registerHelper('inc',
     function(v1) {
-        return (v1+1);
+        return ( !_.isNil(v1) ? v1+1 : null);
     }
 );
 Template.registerHelper('nbsp',
     function(v1) {
-        return (v1.replace(/ /, "&nbsp;" ));
+        return (v1 ? v1.replace(/ /, "&nbsp;" ) : null );
     }
 );

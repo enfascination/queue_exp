@@ -141,13 +141,29 @@ Schemas.SubjectsData = new SimpleSchema({
         label: "the data, in whichever section's format",
         blackbox: true,
     },
+    theDataConsummated: {
+        type: Object,
+        label: "the data, in whichever section's format",
+        blackbox: true,
+        optional: true
+    },
     completedChoice: {
         type: Boolean,
         label: "completed round?",
     }, 
-    theTimestamp: {
+    consummatedChoice: {
+        type: Boolean,
+        label: "game completed?",
+        optional: true
+    }, 
+    "timestamps.choiceAdded": {
         type: Date,
-        label: "Timestamp",
+        label: "Timestamps",
+    },
+    "timestamps.gameConsummated": {
+        type: Date,
+        label: "Timestamps",
+        optional: true
     },
 });
 
@@ -158,11 +174,15 @@ Schemas.CohortSettings = new SimpleSchema({
     },
     filledCohort: {
         type: Boolean,
-        label: "completed experiment?",
+        label: "count people in cohort",
     }, 
-    completedCohort: {
+    completed: {
         type: Boolean,
-        label: "completed experiment?",
+        label: "completed cohort?",
+    }, 
+    matchable: {
+        type: Boolean,
+        label: "cohort half done?",
     }, 
     maxPlayersInCohort: {
         type: SimpleSchema.Integer,

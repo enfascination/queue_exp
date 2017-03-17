@@ -97,9 +97,6 @@
                 <thead>
                     <tr>
                         <th>
-                            User ID
-                        </th>
-                        <th>
                             Cohort
                         </th>
                         <th>
@@ -107,6 +104,9 @@
                         </th>
                         <th>
                             Round
+                        </th>
+                        <th>
+                            User ID
                         </th>
                         <th>
                             Choice done
@@ -118,16 +118,10 @@
                             Cohort done
                         </th>
                         <th>
-                            Final position
-                        </th>
-                        <th>
-                            Initial position
-                        </th>
-                        <th>
                             Choice
                         </th>
                         <th>
-                            Choice Earnings
+                            Choice outcome
                         </th>
                         <th>
                             Total Payoff
@@ -150,9 +144,6 @@
 <template name="experimenterViewPayout">
                 <tr>
                     <td>
-                        {{subject.userId}}
-                    </td>
-                    <td>
                         {{subject.theData.cohortId}} 
                     </td>
                     <td>
@@ -160,6 +151,9 @@
                     </td>
                     <td>
                         {{subject.sec_rnd}}
+                    </td>
+                    <td>
+                        {{subject.userId}}
                     </td>
                     <td>
                         {{subject.completedChoice}}
@@ -171,16 +165,10 @@
                         {{completedCohort subject}}
                     </td>
                     <td>
-                        {{!-- {{subject.theData.queuePositionFinal}} --}}
+                        {{subject.theData.choice}}
                     </td>
                     <td>
-                        {{!-- {{subject.theData.queuePosition}} --}}
-                    </td>
-                    <td>
-                        {{!-- {{subject.theData.choice}} --}}
-                    </td>
-                    <td>
-                        {{earningsChoice subject}}
+                        {{subject.theDataConsummated.outcome}}
                     </td>
                     <td>
                         {{earningsTotal subject}}
