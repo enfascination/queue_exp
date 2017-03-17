@@ -35,8 +35,6 @@ Template.instPrefInstructions.helpers({
 Template.gameNormalForm.onCreated( function(){
     UserElements.choiceConsidered = new ReactiveDict();
 });
-Template.gameNormalForm.onCreated( function(){
-});
 Template.gameNormalForm.helpers({
     textGameFeedback : function( feedbackType) {
         let gameId = Template.currentData().gameId;
@@ -113,11 +111,22 @@ Template.gameNormalFormGame.events({
         let parentTr = choiceStrategyEl.closest('tr.gameNormalFormChoice' );
         //console.log("choosestrategy", gameId, choiceStrategy, c.hasClass( "chooseOutcome" ), choiceStrategyEl[0], colIndex);
         //UserElements.choiceConsidered.set( "game", c.attr('id');
+        //// get choiceSTrategy out of limbo when it's over game table border (and not over a choice)
+        if ( _.isNil( choiceStrategy ) ) { choiceStrategy = '';}
+        //if ( _.isNil( choiceStrategyEl ) ) { return;}
         //https://css-tricks.com/row-and-column-highlighting/
         if (e.type == 'mouseover') {
             choiceStrategyEl.addClass("hover"); //self is tr
-            UserElements.choiceConsidered.set( gameId, true );
-            UserElements.choiceConsidered.set( gameId+"_strategy", choiceStrategy );
+            // RE: this next if(), hover can be true even 
+            //    when choicestrategy is 
+            //    empty, if you are hovering over non-game 
+            //    parts of the table, like the border.  in 
+            //    such a case, don't imply that hover is true
+            //    (choiceStrategy is undefined when it's in this limbo and "" otherwise
+            if (  _.isNil( choiceStrategy ) || choiceStrategy.length > 0) {  
+                UserElements.choiceConsidered.set( gameId, true );
+                UserElements.choiceConsidered.set( gameId+"_strategy", choiceStrategy );
+            }
             if ( c.hasClass( "chooseOutcome" ) && choiceStrategyEl.hasClass( "gameNormalFormOutcome" )) {
                 parentTr.addClass("hover");
                 parentCol.addClass("hover");
@@ -132,15 +141,16 @@ Template.gameNormalFormGame.events({
             }
         }
         else if (e.type == 'mouseout') {
+            //console.log('mouseout', UserElements.choiceConsidered.get(gameId+"_strategy"));
             choiceStrategyEl.removeClass("hover"); //self is tr
             UserElements.choiceConsidered.set( gameId, false );
             UserElements.choiceConsidered.set( gameId+"_strategy", '' );
             if ( c.hasClass( "chooseOutcome" ) && choiceStrategyEl.hasClass( "gameNormalFormOutcome" )) {
                 parentTr.removeClass("hover");
                 parentCol.removeClass("hover");
-            } if (c.hasClass("chooseStrategyTop")) {
+            } else if (c.hasClass("chooseStrategyTop")) {
                     c.find('tr').children(':nth-child('+(colIndex+1)+')' ).removeClass("colhover");
-                }
+            }
         }
         else if (e.type == 'click' && !c.hasClass('noactive') ) {
             if ( UserElements.choiceChecked.get( gameId+"_strategy" ) != choiceStrategy ) {

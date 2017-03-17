@@ -56,7 +56,9 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                         completed : false, 
                         matchable : true, 
                         cohortId : {$gt : 0},
-                        playerOne : { $ne : sub.meteorUserId }, // no self matching
+                        // no self matching
+                        // and no self matching with same turker later
+                        playerOne : { $nin : [ sub.meteorUserId, sub.mtWorkerId ] }, 
                         // playerTwo test is to prevent collisions (is 
                         // someone-in-progress currently matched to this 
                         // and I don't know?

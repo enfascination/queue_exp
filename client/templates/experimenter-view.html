@@ -4,7 +4,7 @@
             <h4> Underlying background state. </h4> 
             {{> experimenterViewState ..}}
             <h4> Underlying subject's data. </h4> 
-            {{> experimenterViewCurrentSubjectData }}
+            {{> experimenterViewCurrentSubjectData ..}}
             <h4> Final payoffs. </h4> 
             {{> experimenterViewPayouts }}
     </div>
@@ -21,7 +21,7 @@
         <tbody>
             <tr>
                 <td>
-                    Current queue: {{cohortId}}
+                    Current cohort: {{cohortId}}
                 </td>
                 <td>
                     Current section: {{subStat.sec_now}}
@@ -33,20 +33,6 @@
                     Max per queue: {{design.maxPlayersInCohort}}
                 </td>
             </tr>
-            <tr>
-                <td>
-                    Current position: {{queuePosition}}
-                </td>
-                <td>
-                    People in A: {{queueCountA}}
-                </td>
-                <td>
-                    People in B: {{queueCountB}}
-                </td>
-                <td>
-                    Defaulted people: {{queueCountNoChoice}}
-                </td>
-            </tr>
         </tbody>
     </table>
 </template>
@@ -56,16 +42,34 @@
                 <thead>
         <tr>
             <td>
-                section
+                Meteor Id:
+                {{subStat.meteorUserId}} 
             </td>
             <td>
-                round
+                Assignment Id:<!--space is here for robustness to dynamic contents-->
+                {{subStat.userId}}
             </td>
             <td>
-                choice
+                Worker Id:
+                {{subStat.mtWorkerId}} 
+            </td>
+            <td>
+                Cohort:
+                {{subStat.cohort_now}} 
+            </td>
+            <td>
+                Treatment:
+                {{subStat.treatment_now}} 
+            </td>
+            <td>
+                Your account:
+                
+                {{subStat.totalEarnings}}&nbsp;
+                
             </td>
         </tr>
                 </thead>
+                <br/>
                 <tbody>
                     {{#each datapoint in data}}
                         {{> experimenterViewCurrentSubjectDataPoint datapoint=datapoint}}
@@ -103,7 +107,7 @@
                             Section
                         </th>
                         <th>
-                            Round
+                            Rnd
                         </th>
                         <th>
                             User ID
@@ -112,7 +116,7 @@
                             Choice done
                         </th>
                         <th>
-                            Experiment done
+                            Exp done
                         </th>
                         <th>
                             Cohort done
@@ -122,6 +126,9 @@
                         </th>
                         <th>
                             Choice outcome
+                        </th>
+                        <th>
+                            Choice pay
                         </th>
                         <th>
                             Total Payoff
@@ -169,6 +176,9 @@
                     </td>
                     <td>
                         {{subject.theDataConsummated.outcome}}
+                    </td>
+                    <td>
+                        {{subject.theDataConsummated.payoffEarnedFocal}}
                     </td>
                     <td>
                         {{earningsTotal subject}}

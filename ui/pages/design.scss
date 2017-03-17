@@ -222,6 +222,10 @@ h2.sectionHeader {
 .experimenter-view table td, .experimenter-view table th {
     /*border: 1px solid black;*/
     padding: 3px;
+    text-align: left;
+        transform-origin: left;
+            transform: scaleX(0.8);
+
 }
 .dropdown__menu {
     background-color: white;

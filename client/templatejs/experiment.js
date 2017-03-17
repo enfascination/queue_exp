@@ -21,7 +21,7 @@ Template.experiment.onCreated( function(){
     // make client side subject available
     let muid = Meteor.userId();
     let templateCurrentData = Template.currentData();
-    //console.log("MUID", muid);
+    console.log("MUID", muid);
     if ( muid ) {
         let subStat = templateCurrentData.subStat;
         // is player refreshing, reconnecting, or somehow already up to date in the system?
