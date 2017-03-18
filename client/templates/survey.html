@@ -3,8 +3,17 @@
 
     <!--{{instructionOptions}}-->
     <section class="expPaneMargin">
-        <p><strong><strong>Before submission, we have a few brief questions about you.</strong></strong>  You are being paid an additional 50&cent; for completing all of the questions in this survey, though there is no penalty for answering that you decline to state (you can do so in any questions by either selecting 'Decline to state' or entering 'xxxxxx').</p>
+        {{#unless subStat.isExperienced }}
+            <p>
+                <strong><strong>Before submission, we have a few brief questions about you.</strong></strong>  You are being paid an additional {{earnings design.surveyReward}} for completing all of the questions in this survey, though there is no penalty for answering that you decline to state (you can do so in any questions by either selecting 'Decline to state' or entering 'xxxxxx').
+            </p>
+        {{else}}
+            <p>
+                Because you have played this game before, we will spare you having to recomplete the survey, though you will not earn the additional {{earnings design.surveyReward}} bonus.
+            </p>
+        {{/unless}}
     </section>
+
     {{> answersForm ..}}
     <br/>
 </template>

@@ -254,8 +254,10 @@ Template.main.events({
                     Meteor.call('initializeSection', sub=updatedSub, lastDesign=Sess.design());
                 });
             } else if (sub.sec_now === "experiment2" ) {
+                if (!sub.isExperienced) {
+                    Meteor.call("addSectionQuestions", sub, "survey", Sess.design() );
+                }
                 Meteor.call('advanceSubjectSection', Meteor.userId(), "survey", "experiment");
-                Meteor.call("addSectionQuestions", sub, "survey", Sess.design() );
             } else {
             }
             // adjust screen 

@@ -352,7 +352,26 @@ Experiment.calculateExperimentEarnings = function(muid, design) {
                 paid : true,
             });
     // determine that all (any?) survey questions were answered
-    let surveyComplete = ( surveyQuestions.count() > 0 ) && surveyQuestions.count() === surveyQuestions.map(function(q){ if (q.answered)  {return(q);} }).length;
+    let surveyComplete = surveyQuestions.count() > 0  && 
+            surveyQuestions.count() === 
+        surveyQuestions.fetch().filter( (q)=>q.answered === true).length;
+    try {
+        console.assert( surveyQuestions.fetch().filter( (q)=>q.answered === true).length ===
+            surveyQuestions.map(function(q){
+                if (q.answered)  { return(q); } 
+            }).length,
+            "can't use cursor.map like filter!");
+    } catch (err) {
+        console.assert( surveyQuestions.fetch().filter( (q)=>q.answered === true).length ,
+            surveyQuestions.map(function(q){
+                if (q.answered)  { return(q); } 
+            }).length,
+            surveyQuestions.fetch(),
+            "can't use cursor.map like filter!"
+        );
+        throw( err );
+    }
+
     let gameEarnings = 0;
     paidQuestions.forEach( function( q ) {
         if ( q.completedGame ) {

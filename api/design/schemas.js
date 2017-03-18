@@ -106,6 +106,10 @@ Schemas.SubjectsStatus = new SimpleSchema({
         label: "Total number of payable games consummated",
         optional: true,
     },
+    isExperienced : {
+        type: Boolean,
+        label: "has played before?",
+    },
 });
 
 Schemas.SubjectsData = new SimpleSchema({

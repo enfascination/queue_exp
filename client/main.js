@@ -179,3 +179,22 @@ Template.registerHelper('nbsp',
         return (v1 ? v1.replace(/ /, "&nbsp;" ) : null );
     }
 );
+Template.registerHelper('earnings',
+    function (earnings, translateFromPoints) {
+        design = Sess.design();
+        //console.log("earningsHelper", this, Template.currentData());
+        //console.log("earnings helper", earnings, translateFromPoints, this);
+        if (earnings) {
+            // in this if statement I need string test followed by exact 
+            // matching of a stirng 
+            // (instead of a boolean value to a named variable), because 
+            // of weirdness about helpers, spacerbars.kw, and template 
+            // arguments being named or not.
+            if (_.isString(translateFromPoints) && translateFromPoints === 'translateFromPoints') {  
+                return( Helper.toCash( earnings * design.pointEarnings ) );
+            } else {
+                return( Helper.toCash( earnings ) );
+            }
+        }
+    }
+);

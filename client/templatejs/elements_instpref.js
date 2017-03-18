@@ -234,21 +234,6 @@ Template.instPrefGame2.helpers({
             return(  _.filter( questionsFeedback, (q)=>q.display ) );
         }
     },
-    earnings: function (earnings, translateFromPoints) {
-        //console.log("earnings helper", earnings, translateFromPoints, this);
-        if (earnings) {
-            // in this if statement I need string test followed by exact 
-            // matching of a stirng 
-            // (instead of a boolean value to a named variable), because 
-            // of weirdness about helpers, spacerbars.kw, and template 
-            // arguments being named or not.
-            if (_.isString(translateFromPoints) && translateFromPoints === 'translateFromPoints') {  
-                return( Helper.toCash( earnings * this.design.pointEarnings ) );
-            } else {
-                return( Helper.toCash( earnings ) );
-            }
-        }
-    },
 });
 Template.earningsReport.inheritsHelpersFrom('instPrefGame2');
 

@@ -99,6 +99,12 @@ Meteor.users.deny({
                 treatments = ['nofeedback','nofeedback'];
             }
            
+            let isExperienced = SubjectsStatus.find(
+                    { 
+                        mtWorkerId : asst.mtWorkerId, 
+                        completedExperiment: true, 
+                    }
+                ).count();
 
             SubjectsStatus.insert( {
                 userId: idObj.assignmentId,
@@ -122,6 +128,7 @@ Meteor.users.deny({
                 treatments : treatments,
                 treatment_now : treatments[0],
                 block_now : 0,  // this is an int version of sec_now
+                isExperienced : isExperienced > 0,
             } );
 
             //ensure uniqueness
@@ -225,7 +232,11 @@ Meteor.users.deny({
                             q.payoffs = [];  // maybe i need to inititlize this key?
                         }
                     } 
+                    // important forq's to know both meteor id and mt id, to 
+                    // avoid matching peope with themselves when they later 
+                    // reaccet the hit
                     q.meteorUserId = sub.meteorUserId;
+                    q.mtWorkerId = sub.mtWorkerId; 
                     /// add the q tot he questions collection
                     idTmp = Questions.insert(q);
                     console.log( "updating matches", idTmp, q.matchingGameId );
