@@ -32,7 +32,7 @@ export let QueueAssigner = class extends TurkServer.Assigners.SimpleAssigner {
                 TurkServer.setExperimentState(asst, this);
                 console.log("in2", asst );// asst.userId is the meteor userid
             } else if ( currentUser.sec_type_now === 'submitHIT' ) { //failed quiz too many times
-                //console.log("in exit survey");
+                console.log("in exit survey");
                 //console.log("in3");
                 this.lobby.pluckUsers([asst.userId]);
                 asst.showExitSurvey();
@@ -40,7 +40,7 @@ export let QueueAssigner = class extends TurkServer.Assigners.SimpleAssigner {
                 console.log("in trouble");
             }
         } else { // after main experiment
-            //console.log("in exit survey 2");
+            console.log("in exit survey 2");
             this.lobby.pluckUsers([asst.userId]);
             asst.showExitSurvey();
         }

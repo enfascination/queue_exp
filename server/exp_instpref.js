@@ -38,7 +38,10 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                     cohortId = sub.cohort_now;
                     console.log("self matching exp 2", cohortId, sub.meteorUserId);
                 }
-            } else if (matching.ensureSubjectMismatchAcrossSections) {
+            } else if (
+                    matching.ensureSubjectMismatchAcrossSections || 
+                    matching.ensureSubjectMismatchAcrossSectionsAndPreferentiallyCloseOutIncompleteCohorts 
+                ) {
                 console.log("main matching");
                 //      if the sub is in a feedback condition
                 //            look for an unfinished cohort
@@ -68,8 +71,13 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                     // should I bail on trying to match this subject?
                     if ( _.isNil( cohortInProgress ) ) {
                         console.log("main matching: no match to make");
+                        let treatmentsNew = sub.subjectTreatments;
+                        treatmentsNew[ sub.block_now ] = "nofeedback";
                         SubjectsStatus.update({meteorUserId : sub.meteorUserId}, { 
-                            $set : { treatment_now : "nofeedback" }});
+                            $set : { 
+                                treatment_now : "nofeedback",
+                                subjectTreatments : treatmentsNew,
+                            }});
                         sub = SubjectsStatus.findOne({meteorUserId : sub.meteorUserId});
                         
                     }

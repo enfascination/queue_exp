@@ -88,23 +88,34 @@ Meteor.users.deny({
         },
         // this will createa a new SubjectsStatus object
         initializeSubject: function( idObj, design ) {
+           
+            // has this turker done my experiment before?
+            let isExperienced = SubjectsStatus.find(
+                    { 
+                        mtWorkerId : idObj.mtWorkerId, 
+                        completedExperiment: true, 
+                    }
+                ).count();
 
             // experiment-specific logic
+            //    assign sub to treatments depending on matching protocol 
+            //    that design is based on
             let treatments;
             if (design.matching.selfMatching) {
                 treatments = design.subjectTreatments;
-            } else if (design.matching.ensureSubjectMismatchAcrossSections ) {
+            } else if (
+                    design.matching.ensureSubjectMismatchAcrossSectionsAndPreferentiallyCloseOutIncompleteCohorts && 
+                    isExperienced 
+                ) {
+                treatments = ['feedback','feedback'];
+            } else if (
+                    design.matching.ensureSubjectMismatchAcrossSections ||
+                    design.matching.ensureSubjectMismatchAcrossSectionsAndPreferentiallyCloseOutIncompleteCohorts 
+                ) {
                 treatments = _.shuffle( design.subjectTreatments );
             } else if (design.matching.noMatching ) {
                 treatments = ['nofeedback','nofeedback'];
             }
-           
-            let isExperienced = SubjectsStatus.find(
-                    { 
-                        mtWorkerId : asst.mtWorkerId, 
-                        completedExperiment: true, 
-                    }
-                ).count();
 
             SubjectsStatus.insert( {
                 userId: idObj.assignmentId,
