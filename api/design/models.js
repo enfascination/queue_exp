@@ -86,7 +86,8 @@ Design = {
     positionCosts : 0.25,
     batchName : "main",
     matching : {
-        ensureSubjectMismatchAcrossSections : true,
+        ensureSubjectMismatchAcrossSections : false,
+        ensureSubjectMismatchAcrossSectionsAndPreferentiallyCloseOutIncompleteCohorts : true,
         ensureSubjectMatchAcrossSections : false,
         selfMatching : false,
         noMatching : false,

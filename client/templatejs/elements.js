@@ -8,27 +8,6 @@ import { TurkServer } from 'meteor/mizzao:turkserver';
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
 
-Template.navButton.events({
-    "click button.navButton" : function( e ) {
-        let val = e.target.value;
-        Helper.activateTab( val );
-        Helper.windowAdjust(Sess.subStat() );
-    },
-});
-Template.navButton.helpers({
-    targetSection : function() {
-        //console.log( "targetSection", this );
-        if ( this.currentTab === this.currentSection.id ) {
-            if (this.currentSection.id === 'instructions') {
-                return(DesignSequence.quiz);
-            } else {
-                return(DesignSequence.instructions);
-            }
-        } else {
-            return( this.currentSection );
-        }
-    },
-});
 let navDisabled = function( ){
         let sub = Sess.subStat();
         if( sub && sub.readyToProceed ) {

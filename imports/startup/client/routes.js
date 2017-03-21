@@ -38,16 +38,29 @@ Router.route('/', function() {
     this.render('home');
 });
 
-Router.route('/start', function() {
-    this.render('quizSectionTabPane');
-    this.render( 'expGeneralInfoBox', { to : 'infoBox' } );
+Router.route('start', function() {
+    var stage = _.toInteger( this.params.stage );
+        console.log("in instructions rendering", this.params);
+    this.render( 'expGeneralInfoBox', { to : 'infoBox'} );
+    if (stage < 1) { stage = 1; }
+    if (stage >= 8) { stage = 1; }
+    if (stage === 1) {
+        this.render( 'instPrefInstructions', { to : 'instructions', data: stage } );
+    } else if (stage === 7) {
+        this.render('quiz', { to : 'instructions', data: stage });
+    } else {
+        this.render( 'instructions' + _.toString( stage ), { to : 'instructions', data: stage } );
+    }
 }, {
+    path: '/start/:stage',
     data : function() { // enrich the global data object in this section
         let data = Router.options.data();
+        console.log("in instructions data rendering", this.params, this.params.query);
         if ( data ) {
             let sub = data.subStat;
             let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: sub.sec_now, sec_rnd : sub.sec_rnd_now }, {$sort : { order : 1 }});
             data.questionsColl = qs;
+            data.stage = this.params.stage;
         }
         return( data );
     },
@@ -73,15 +86,16 @@ Router.route('/experiment', function() {
         this.render( 'experimentInfo', { to : 'infoBox' } );
     }
 
-    if (data && data.subStat.sec_rnd_now === 0 ) {
+    let rnd = data.subStat.sec_rnd_now 
+    if (data && rnd === 0 ) {
         this.render( 'instPrefGame0', { to : 'instPrefGame' } );
-    } else if (data && data.subStat.sec_rnd_now === 1 ) {
+    } else if (data && rnd === 1 ) {
         this.render( 'instPrefGame1', { to : 'instPrefGame' } );
-    } else if (data && data.subStat.sec_rnd_now === 2 ) {
+    } else if (data && rnd === 2 ) {
         this.render( 'instPrefGame2', { to : 'instPrefGame' } );
-    } else if (data && data.subStat.sec_rnd_now === 3 ) {
+    } else if (data && rnd === 3 ) {
         this.render( 'instPrefGame3', { to : 'instPrefGame' } );
-    } else if (data && data.subStat.sec_rnd_now === 4 ) {
+    } else if (data && rnd === 4 ) {
         this.render( 'instPrefGame4', { to : 'instPrefGame' } );
     }
 },{

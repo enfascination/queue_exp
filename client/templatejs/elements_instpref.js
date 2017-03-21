@@ -32,6 +32,15 @@ Template.instPrefInstructions.helpers({
         return(q);
     },
 });
+Template.instructions1.inheritsHelpersFrom('instPrefInstructions');
+Template.instructions2.inheritsHelpersFrom('instPrefInstructions');
+Template.instructions3.inheritsHelpersFrom('instPrefInstructions');
+Template.instructions4.inheritsHelpersFrom('instPrefInstructions');
+Template.instructions5.inheritsHelpersFrom('instPrefInstructions');
+Template.instructions6.inheritsHelpersFrom('instPrefInstructions');
+Template.instructions7.inheritsHelpersFrom('instPrefInstructions');
+Template.instructions8.inheritsHelpersFrom('instPrefInstructions');
+
 Template.gameNormalForm.onCreated( function(){
     UserElements.choiceConsidered = new ReactiveDict();
 });

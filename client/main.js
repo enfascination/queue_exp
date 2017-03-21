@@ -15,13 +15,20 @@ import { Sess } from '../imports/lib/quick-session.js';
 
 Tracker.autorun(function() {
     //console.log("routing", Meteor.users.findOne(asst.userId).turkserver.state );
-    console.log("routing", TurkServer.inQuiz(), TurkServer.inExperiment(), TurkServer.inExitSurvey());
+    console.log("routing", TurkServer.inQuiz(), TurkServer.inExperiment(), TurkServer.inExitSurvey(), this.location.pathname, this.location.pathname.match(/\d*$/) , this.location.pathname.match(/\d*$/)[0], _.toInteger( this.location.pathname.match(/\d*$/)[0] ));
     if (TurkServer.inExperiment()) {
-        Router.go('/experiment');
+        Router.go('experiment');
     } else if (TurkServer.inQuiz()) {
-        Router.go('/start');
+        // stage of instructions
+        let stage = this.location.pathname.match(/\d*$/)[0];
+        if (stage === '') {
+            stage = 1;
+        } else {
+            stage = _.toInteger( stage );
+        }
+        Router.go('start', { stage:stage });
     } else if (TurkServer.inExitSurvey()) {
-        Router.go('/submitHIT');
+        Router.go('submitHIT');
     } else {
         //Router.go('/home');
         console.log("failed into lobby");
@@ -171,7 +178,12 @@ Template.registerHelper('equals',
 );
 Template.registerHelper('inc',
     function(v1) {
-        return ( !_.isNil(v1) ? v1+1 : null);
+        return ( !_.isNil(v1) ? _.toInteger( v1 ) + 1 : null);
+    }
+);
+Template.registerHelper('dec',
+    function(v1) {
+        return ( !_.isNil(v1) ? _.toInteger( v1 ) - 1 : null);
     }
 );
 Template.registerHelper('nbsp',

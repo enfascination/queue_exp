@@ -74,8 +74,8 @@ Template.answersForm.events({
         //// IF INPUTS OK, SUBMIT ANSWERS AND ....
         /////////////////////
         console.log(answeredCount ,qs.length, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
-        //if ( true || answeredCount === qs.length ) {
-        if ( answeredCount === qs.length ) {
+        if ( true || answeredCount === qs.length ) {
+        //if ( answeredCount === qs.length ) {
             qs.forEach( function( q ) {
                 Meteor.call("insertQuestionToSubData", Meteor.userId(), q );
             });

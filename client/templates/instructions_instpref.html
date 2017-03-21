@@ -3,6 +3,12 @@
         <section class="expPaneMargin">
             <p><strong>Please review these instructions carefully.</strong>  Participation in this experiment is based on your passing a comprehension test. If you fail the test you will pass the HIT and earn <strong>10&cent;</strong>, but you will be ineligible to participate in the main experiment, which offers a theoretical maximum of <strong>$6.50</strong> in bonus earnings, and a minimum of <strong>$1.75</strong>. This experiment takes about 15 minutes to complete. After completion, it will take us minutes to hours to calculate and distribute your earnings. It will not take longer than 12 hours. You will be provided with a link from which you can check on the status of your earnings. </p>
         </section>
+</template>
+
+<template name="instructions1">
+</template>
+<template name="instructions2">
+    PAGE 2 {{stage}}
         <section class="expPaneMargin">
             <h3>Game description</h3>
             <p>
@@ -19,6 +25,9 @@
                 Because the outcome depends both on your choice and the other player's, <strong>you should always think about what the other player might choose while making your own choice.</strong>
             </p>
         </section>
+</template>
+<template name="instructions3">
+    PAGE 3 {{stage}}
         <section class="expPaneMargin">
             <h3>Game Interface</h3>
             <p>
@@ -43,6 +52,10 @@
             <p><strong><strong>You will play three sections of three games each.</strong></strong> For each game, you will have to answer two questions, one in which you chose a strategy and one in which you select your ideal outcome. After completing the first two games in a section, you will be asked which game you would like to play a second time, and you will have a chance to play that game a second time, for the same reward. In one of the sections you will get to see the results of the two games before choosing, while in the other you will not get this feedback. </p> 
             <p><strong>You will repeat this procedure two times, for a total of six games.</strong> Afterwards, you will complete the Survey for an additional <span class="earnings">50&cent;</span>, before submitting this HIT.</p> 
         </section>
+</template>
+
+<template name="instructions4">
+    PAGE 4 {{stage}}
         <section class="expPaneMargin">
             <h3>Other player</h3>
             <p><strong><strong>You will be rematched with a different Turker in each section of the experiment.</strong></strong>  You will both play blind; neither player will have a chance to see the other's choice before choosing. You can assume that the other Turker is about as motivated as you to maximize the number of points they earn.  </p>
@@ -55,6 +68,8 @@
                 </figure>
                 -->
         </section>
+</template>
+<template name="instructions5">
         <section class="expPaneMargin">
             <h3>Next</h3>
             <p><strong><strong>Next you will take a comprehension quiz.</strong></strong> If you want to review these instructions at any point in the experiment, just click the <strong><strong>Instructions</strong></strong> tab in the upper left. On the upper right you will see information about your current choices and earnings.</p> 
@@ -63,8 +78,14 @@
             </p>
             <p style="text-align: right;"><strong><strong>Click NEXT to begin the quiz.</strong></strong></p>
         </section>
+    PAGE 5 {{stage}}
 </template>
-
+<template name="instructions6">
+    PAGE 6 {{stage}}
+</template>
+<template name="instructions7">
+    PAGE 7 {{stage}}
+</template>
 <template name="instPrefQuiz">
     <br/>
         <section class="expPaneMargin">
@@ -77,6 +98,8 @@
             <p>When you have answered all of the questions as carefully as you can, click <strong>SUBMIT</strong>.</p>
     </section>
 </template>
+
+
 <template name="instPrefGame0">
     Debugging 1, {{currentSection.id}}, Round {{subStat.sec_rnd_now}}
         <p>You will begin by playing the game below.</p>
@@ -257,4 +280,6 @@
             </div>
             {{/each}}
     </div>
+</template>
+<template name="instructions8">
 </template>

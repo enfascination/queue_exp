@@ -4,6 +4,7 @@ var _ = require('lodash');
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TurkServer } from 'meteor/mizzao:turkserver';
+import { Router } from 'meteor/iron:router';
 
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
@@ -84,4 +85,26 @@ Template.main.events({
         }
         Helper.windowAdjust(sub );
     }
+});
+Template.navButton.events({
+    "click button.navButton" : function( e ) {
+        let stage = _.toInteger( e.target.value );
+        if (stage < 1) { stage = 1; }
+        if (stage >= 8) { stage = 1; }
+        Router.go('start', {stage:stage});
+    },
+});
+Template.navButton.helpers({
+    targetSection : function() {
+        //console.log( "targetSection", this );
+        if ( this.currentTab === this.currentSection.id ) {
+            if (this.currentSection.id === 'instructions') {
+                return(DesignSequence.quiz);
+            } else {
+                return(DesignSequence.instructions);
+            }
+        } else {
+            return( this.currentSection );
+        }
+    },
 });
