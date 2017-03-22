@@ -129,12 +129,9 @@
 
 <template name="proceedButton">
     <div> 
-        {{#if equals id "instructions"}}
-            <button type=button id="{{id}}" class="btn btn-sm generalNavButton proceedButton pull-right" autofocus >Next</button>
-        {{else}} {{#if equals id "submitHIT"}}
+        {{#if equals id "submitHIT"}}
         {{else}}
             <button type=button id="{{id}}" class="btn btn-sm generalNavButton proceedButton pull-right {{disabled}}" autofocus >Next</button>
-        {{/if}}
         {{/if}}
     </div> 
 </template>

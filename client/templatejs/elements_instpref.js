@@ -236,7 +236,7 @@ Template.instPrefGame2.helpers({
                 } else if ( q.type === "chooseGame" ){
                     r = true;
                 }
-                console.log("feedback questions per q", r, q.type, q);
+                //console.log("feedback questions per q", r, q.type, q);
                 q.display = r;
                 return(q);
             });

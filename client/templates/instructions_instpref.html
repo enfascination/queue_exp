@@ -141,17 +141,17 @@
 </template>
 <template name="instPrefGame4">
     Debugging 5, {{currentSection.id}}, Round {{subStat.sec_rnd_now}}
-        <p>This is the last round of this section, and the last game is below.</p>
-        {{#if equals subStat.treatment_now "nofeedback"}}
-        You will learn the outcome of this game, and the others' choices, later,
-        along with the outcomes of all previous games you have played.
-        {{else}} {{#if equals subStat.treatment_now "feedback"}}
-        You will learn the outcome of this game, and the others' choices, in 
-        the Earnings section, after the final survey.
-        {{else}}
-            <p>Something is wrong. Code ()DSJLKJLKJ(((.</p>
-        {{/if}}
-        {{/if}}
+        <p>This is the last round and last game of this section.</p>
+            {{#each question in questionsColl}}
+                {{#if question.gameWasPreferred}}
+                    <strong>Your choice succeeded; below is the game that you preferred in the previous round.</strong>
+                {{else}}
+                    <strong>Your choice did not succeed; below is the game that you did not prefer in the previous round.</strong>
+                {{/if}}
+            {{/each}}
+            Please play it one more time. 
+            You will get information about the outcome of this game in 
+            the Earnings section, after the final survey.
 </template>
 
 <template name="gameNormalFormChoiceFeedback">
@@ -262,7 +262,7 @@
                     {{/if}}
                 {{else}} {{#if equals question.type "chooseGame" }}
                     {{> gameCompareFeedback question=question}}
-                    {{#if question.outcomeMatchesChoice}}
+                    {{#if question.gotPreferredGame}}
                         <div class="alert alert-info gameOutcomeFeedback">
                             <strong>You preferred this game, and it was 
                                 selected for you to play at the end of 

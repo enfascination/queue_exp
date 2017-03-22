@@ -127,14 +127,12 @@ export const Helper = {
         //let allTabs = [ 'instructions', 'quiz', 'experiment1', 'experiment2', 'survey', 'submitHIT' ]; ///XXX
         //let page = this.data.page;
         //console.log("Helper.updateNavBar. section and sections:", sec, secs);
-        if (sec === "instructions") {
-            toInclude = [ 'instructions'];
-        } else if (sec === "quiz") {
-            toInclude = [ 'instructions', 'quiz' ];
+        if (sec === "quiz") {
+            toInclude = [ 'quiz'];
         } else if (sec === "experiment1") {
-            toInclude = [ 'instructions', 'experiment1' ];
+            toInclude = [ 'quiz', 'experiment1' ];
         } else if (sec === "experiment2") {
-            toInclude = [ 'instructions', 'experiment2' ];
+            toInclude = [ 'quiz', 'experiment2' ];
         } else if (sec === "survey") {
             toInclude = [ 'survey']; ///XXX
         } else if (sec === "earningsReport") {

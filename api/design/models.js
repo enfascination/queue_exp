@@ -6,15 +6,6 @@ import { QuestionData } from '../../imports/startup/experiment_prep_instpref.js'
 //import { Questions } from '../../imports/startup/server/server_prep.js';
 
 DesignSequence = {
-        "instructions" : { 
-            "name" : "instructions", 
-            "type" : "quiz" , 
-            "id" : "instructions" , 
-            "label" : "Instructions" , 
-            "roundCount" : 0, 
-            "rounds" : { "0" : {id:"round0", label:"Round 0"}, },
-            "stages" : 1,
-        }, 
         "quiz" : { 
             "name" : "quiz", 
             "type" : "quiz" , 
@@ -23,7 +14,7 @@ DesignSequence = {
             "roundCount" : 1, 
             "rounds" : { "0" : {id:"round0", label:"Round 0"}, },
             "stages" : 1 ,
-            "shuffledQuestions" : true,
+            "shuffledQuestions" : false,
         }, 
         "experiment1" : { 
             "name" : "experiment1" , 
@@ -92,7 +83,10 @@ Design = {
         selfMatching : false,
         noMatching : false,
     },
-    subjectTreatments : ["nofeedback", "feedback"], // think of these as subject level, not cohort level. in a cohort, you get both within a cohort
+    // think of these as subject level, not cohort level. 
+    //     in a cohort, you get both within a cohort
+    subjectTreatments : ["nofeedback", "feedback"], 
+    tutorialEnabled : false,
 };
 UserElements = {
     experimenterView : true,

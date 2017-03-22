@@ -130,7 +130,7 @@ Meteor.users.deny({
                 mtWorkerId: idObj.workerId,
                 cohort_now : 0,
                 cohortIds : [],
-                sec_now: 'instructions',
+                sec_now: 'quiz',
                 sec_type_now: 'quiz',
                 sec_rnd_now: 0,
                 sec_rnd_stg_now: 0,
@@ -442,7 +442,7 @@ Meteor.users.deny({
                 cohortId: theData.cohortId,
                 theData: theData,
                 completedChoice : true,
-                "timestampschoiceAdded" : Date.now(),
+                timestamps : {choiceAdded : Date.now() },
             } );
         //ensure uniqueness XXXuncomment me eventually
                 //SubjectsData._ensureIndex({userId : 1, meteorUserId : 1, sec : 1, sec_rnd : 1}, { unique : true } );

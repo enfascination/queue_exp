@@ -78,33 +78,7 @@ Template.main.events({
         let muid = Meteor.userId();
         let sub = Sess.subStat();
         //console.log("button#proceedButton#instructions and quiz", sub, Template.currentData());
-        if (sub.sec_now === "instructions") {
-            Meteor.call("advanceSubjectSection", muid, "quiz", "quiz");
-        } else {
-            Helper.activateTab( Template.currentData().currentSection.id );
-        }
+        Helper.activateTab( Template.currentData().currentSection.id );
         Helper.windowAdjust(sub );
     }
-});
-Template.navButton.events({
-    "click button.navButton" : function( e ) {
-        let stage = _.toInteger( e.target.value );
-        if (stage < 1) { stage = 1; }
-        if (stage >= 8) { stage = 1; }
-        Router.go('start', {stage:stage});
-    },
-});
-Template.navButton.helpers({
-    targetSection : function() {
-        //console.log( "targetSection", this );
-        if ( this.currentTab === this.currentSection.id ) {
-            if (this.currentSection.id === 'instructions') {
-                return(DesignSequence.quiz);
-            } else {
-                return(DesignSequence.instructions);
-            }
-        } else {
-            return( this.currentSection );
-        }
-    },
 });

@@ -162,12 +162,12 @@ Schemas.SubjectsData = new SimpleSchema({
     }, 
     "timestamps.choiceAdded": {
         type: Date,
-        label: "Timestamps",
+        label: "ts on add",
     },
     "timestamps.gameConsummated": {
         type: Date,
-        label: "Timestamps",
-        optional: true
+        label: "ts on consumamte",
+        optional: true,
     },
 });
 

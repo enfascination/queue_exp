@@ -338,13 +338,14 @@ Experiment.completeGameCompare = function(compareGamesId, chosenGameId, nextGame
     chosenGame = Questions.findOne(chosenGameId);
     nextGame = Questions.findOne(nextGameId);
     //console.log("completeGameCompare, after setChosenGameForRound1", compareGamesId, chosenGameId, nextGameId, chosenGame, nextGame );
-    console.log("completeGameCompare, after setChosenGameForRound2", chosenGame.payoffs, nextGame.payoffs, Helper.comparePayoffs( chosenGame, nextGame ));
+    console.log("completeGameCompare, after setChosenGameForRound2", compareGamesId, chosenGame.payoffs, nextGame.payoffs, Helper.comparePayoffs( chosenGame, nextGame ));
     if ( Helper.comparePayoffs( chosenGame, nextGame ) ) {
-        updateToCompare = { outcomeMatchesChoice : true };
+        Questions.update( compareGamesId, { $set : { gotPreferredGame : true } } );
+        Questions.update( nextGameId, { $set : {gameWasPreferred : true } } );
     } else {
-        updateToCompare = { outcomeMatchesChoice : false };
+        Questions.update( compareGamesId, { $set : { gotPreferredGame : false } } );
+        Questions.update( nextGameId, { $set : {gameWasPreferred : false } } );
     }
-    Questions.update( compareGamesId, { $set : updateToCompare } );
 };
 Experiment.calculateExperimentEarnings = function(muid, design) {
     // start with subject

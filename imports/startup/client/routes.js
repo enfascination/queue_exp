@@ -39,17 +39,20 @@ Router.route('/', function() {
 });
 
 Router.route('start', function() {
-    var stage = _.toInteger( this.params.stage );
+    let stage = _.toInteger( this.params.stage );
         console.log("in instructions rendering", this.params);
     this.render( 'expGeneralInfoBox', { to : 'infoBox'} );
-    if (stage < 1) { stage = 1; }
-    if (stage >= 8) { stage = 1; }
-    if (stage === 1) {
-        this.render( 'instPrefInstructions', { to : 'instructions', data: stage } );
-    } else if (stage === 7) {
-        this.render('quiz', { to : 'instructions', data: stage });
-    } else {
-        this.render( 'instructions' + _.toString( stage ), { to : 'instructions', data: stage } );
+    let data = Router.options.data();
+    //if (data.currentSection.id === 'quiz') {
+        //stage = 1;
+    //}
+    if (stage <= 1) {
+        stage = 1; 
+        this.render( 'instPrefInstructions', { to : 'instructions'} );
+    } else if (stage > 6) {
+        this.render('quiz', { to : 'instructions'});
+    } else { //numbers between 1 and 6
+        this.render( 'instructions' + _.toString( stage ), { to : 'instructions' } );
     }
 }, {
     path: '/start/:stage',

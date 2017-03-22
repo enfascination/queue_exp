@@ -98,7 +98,7 @@ Tracker.autorun(function() {
 //""" takes javascript element referring to a Bootstrap navigation tab and disables it"""
 Template.main.helpers({
     testTest : function() {
-        //console.log( Template.instance(), Template.currentData(), 'lllll' );
+        console.log( "main", Template.instance(), Template.currentData(), 'lllll' );
     },
     showExperimenterView: function() {
         //console.log("showExperimenterView", UserElements.experimenterView, Sess.subStat() );
@@ -125,7 +125,7 @@ Template.main.helpers({
 Template.expSectionTab.onCreated( function() {
 });
 let currentSectionExperiment = function( ) {
-    console.log("currentSectionExperiment ", this, Template.currentData());
+    //console.log("currentSectionExperiment ", this, Template.currentData());
     if (this &&
         this.subStat && 
         this.subStat.sec_now === this.currentTab) {

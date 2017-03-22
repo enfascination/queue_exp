@@ -31,6 +31,11 @@ Template.quiz.onCreated( function(){
         }
     });
 });
+Template.quizSectionTabPane.helpers({
+    testTest : function() {
+        console.log( "quizSectionTabPane", Template.instance(), Template.currentData(), 'lllll' );
+    },
+});
 
 Template.answersForm.events({
     'submit form.answersForm#quiz': function(e) {
@@ -198,3 +203,13 @@ Template.questionQuad.events({
 	'click div.expQuestion': questionFloatToExpQuestion,
 });
 
+Template.navButton.events({
+    "click button.navButton" : function( e ) {
+        let stage = _.toInteger( e.target.value );
+        console.log("navButton", stage, e.target.value, this, e.target);
+        if (stage < 1) { stage = 1; }
+        if (stage >= 8) { stage = 1; }
+        Helper.activateTab( 'quiz' );
+        Router.go('start', {stage:stage});
+    },
+});

@@ -25,7 +25,6 @@
                         <h1>Social Lab</h1>
                     </div>
                     <ul class="nav nav-tabs nav-stacked" role="tab-list">
-                        <li><a data-target="#instructions" href="#instructions" aria-controls="instructions" data-toggle="tab">Instructions</a></li>
                         <li><a data-target="#quiz" href="#quiz" aria-controls="quiz" data-toggle="tab">Start</a></li>
                         {{#each section in expSectionTabs }}
                             {{> expSectionTab section=section }}
@@ -46,12 +45,19 @@
             <div class="col-md-8 col-md-offset-1 expMainWindow">
                 <div class="col-md-12 row expWindow expMainPanel">
                     <div class="tab-content" id="tabs" data-tabs="tabs">
-                        <div role="tabpanel" class="tab-pane expPane" id="instructions">
-                            <h2 class="sectionHeader" >Instructions</h2>
-                            {{> mainInstructions}}
+                        <div role="tabpanel" class="tab-pane expPane" id="quiz">
+                            {{> quizSectionTabPane }}
+                            {{#if equals currentSection.id "quiz"}}
+                                <div class="row">
+                                    {{> proceedButton id=currentSection.id }}
+                                </div>
+                            {{/if}}
                         </div>
                         <div role="tabpanel" class="tab-pane expPane" id="{{currentSection.id}}">
                         {{> yield }}
+                        <div class="row">
+                            {{> proceedButton id=currentSection.id }}
+                        </div>
                         </div>
                         {{#if showExperimenterView}}
                         <div role="tabpanel" class="tab-pane expPane" id="experimenterView">
@@ -61,9 +67,6 @@
                         {{/if}}
                         <div class="container"></div><!--no idea why I need this, but i do or widths on differnte section  is wierd-->
                     </div>
-                </div>
-                <div class="row">
-                    {{> proceedButton id=currentSection.id }}
                 </div>
             </div>
         </div>
@@ -87,11 +90,31 @@
     <li role="presentation" class="{{round.HTMLDisabled}}"><a class="expSubTab {{round.HTMLClasses}}" id={{round.id}} data-state="{{round.state}}" value="{{round.number}}">{{{ nbsp round.label }}}</a></li>
 </template>
 
-
 <template name="quizSectionTabPane">
-                <h2 class="sectionHeader" >Quiz</h2>
-                    {{> quiz ..}}
+    <h2 class="sectionHeader" >Instructions</h2>
+    {{#if equals currentSection.id "quiz"}}
+    <div class="center-block"> 
+        {{> navButton stage=stage fn="Backward"}} {{> navButton stage=stage fn="Forward"}}
+        {{! {{> instPrefInstructions context=..}}
+        {{! {{> queueingInstructions}}
+
+        {{> yield "instructions"}}
+        {{> navButton stage=stage fn="Backward"}} {{> navButton stage=stage fn="Forward"}}
+        {{#if design.tutorialEnabled}}
+            {{> tutorial options}}
+        {{/if}}
+    </div>
+    {{else}} {{! instructions have multiple pages durig quiz, but one page after }}
+        {{> instPrefInstructions}}
+        {{> instructions2}}
+        {{> instructions3}}
+        {{> instructions4}}
+        {{! {{> instructions5}}
+        {{! {{> instructions6}}
+    {{/if}}
 </template>
+
+
 <template name="expSectionTabPane">
     {{#if currentSectionExperiment }}
             {{#if isSection "survey"}}

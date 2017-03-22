@@ -4,3 +4,8 @@
     <br/>
 </template>
 
+<template name="navButton">
+    <button type="button" class = "btn-link navButton" aria-label="Left Align" style="margin-left:auto; margin-right:auto; display:block" value={{#if equals fn "Forward"}}{{inc stage}}{{/if}}{{#if equals fn "Backward"}}{{dec stage}}{{/if}} autofocus >
+        {{fn}}{{stage}}{{inc stage}}{{dec stage}}
+    </button>
+</template>
