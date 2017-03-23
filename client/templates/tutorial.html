@@ -1,0 +1,186 @@
+<template name="tutorial_step1">
+    <h3>Welcome</h3>
+    <ul class='dash'>
+        <li>
+            This experiment takes about 15 minutes to complete.  
+        </li>
+        <li>
+            After completion, it may take hours to calculate your 
+            bonus. 
+            <ul><li>Contact us if it is more than 24 hours.</li></ul>
+        </li>
+    </ul>
+    {{> tutorialBullets 1}}
+</template>
+
+<template name="tutorial_step2">
+    <h3>Welcome</h3>
+    <ul class='dash'>
+        <li>
+        You must pass a quiz to participate.
+        </li>
+        <li>
+        If you fail the quiz you will earn only 10¢ and no bonuses.
+        </li>
+        <li>
+        The experiment offers a theoretical maximum bonus of $6.50, and a minimum of $1.75. 
+        </li>
+    </ul>
+        {{> tutorialBullets 1}}
+</template>
+
+<template name="tutorial_step3">
+    <h3>Interface</h3>
+    <ul class='dash'>
+        <li>
+            This section will show your progress through the experiemnt.
+        </li>
+        <li>
+            After completing the two sections of the experiment, 
+            you will complete a survey and recieve feedback on your bonus earnings.
+        </li>
+        <li>
+            Click here to return to the instructions during the experiment.
+        </li>
+    </ul>
+    {{> tutorialBullets 1}}
+</template>
+
+<template name="tutorial_step4">
+    <h3>Interface</h3>
+    <ul class='dash'>
+        <li>
+            This section gives basic information about you, like your ID# and current bonuses.  
+        </li>
+        <li>
+            Please include your ID# in any correspondence with us.
+        </li>
+    </ul>
+        {{> tutorialBullets 1}}
+</template>
+
+<template name="tutorial_step5">
+    <h3>Experiment</h3>
+    <ul class='dash'>
+        <li>
+In the main window, you are going to play a series of strategic games in which you are matched with another player, who will also be a Turker.            
+        </li>
+        <li>
+   Your bonuses from these games will depend on both your choices and those of the other player.         
+        </li>
+        <li>
+   You can assume that the other Turker is about as motivated as you to maximize the number of points they earn.
+        </li>
+    </ul>
+        {{> tutorialBullets 1}}
+</template>
+
+<template name="tutorial_step6">
+    <h3>Game Interface</h3>
+This is what the basic game interface looks like.  
+In each game, you have two choices.
+        {{> tutorialBullets 2}}
+</template>
+
+<template name="tutorial_step7">
+    <h3>Game Interface</h3>
+ Your decision will always be between choice Top ...
+        {{> tutorialBullets 2}}
+</template>
+
+<template name="tutorial_step8">
+... or choice Bottom. 
+Hover the mouse over your two choices to see feedback about the possible game outcomes.
+        {{> tutorialBullets 2}}
+</template>
+
+<template name="tutorial_step9">
+    <h3>Game Interface</h3>
+The other player also has two choices: choice Left ... 
+        {{> tutorialBullets 2}}
+</template>
+
+<template name="tutorial_step10">
+... and choice Right.
+        {{> tutorialBullets 2}}
+</template>
+
+<template name="tutorial_step11">
+    <h3>Game Interface</h3>
+    Depending on your choice and the other player's, each game has four possible outcomes.
+The outcome determines the amounts of points you and the other player earn toward your bonuses.
+{{> tutorialBullets 2}}
+</template>
+
+<template name="tutorial_step12">
+    <h3>Game Interface</h3>
+    <ul class='dash'>
+        <li>
+    In this outcome, both players earn 3 points.
+        </li>
+        <li>
+The blue triangle in each outcome contains the number of points that will be due to you. 
+            <ul><li>
+In general, information related to You will be in blue. 
+            </li></ul>
+        </li>
+        <li>
+The grey upper triangles show the other player's potential earnings from each outcome.
+            <ul><li>
+  Information related to the other player is usually in grey. 
+            </li></ul>
+        </li>
+    </ul>
+        {{> tutorialBullets 2}}
+</template>
+
+<template name="tutorial_step13">
+    <h3>Earnings</h3>
+Because the outcome depends both on your choice and the other player's, you should always think about what the other player might choose while making your own choice. 
+        {{> tutorialBullets 2}}
+</template>
+
+<template name="tutorial_step14">
+    <h3>Earnings</h3>
+    <ul class='dash'>
+        <li>
+Your bonus for this HIT will be calculated from the points you earn in each game. 
+        </li>
+        <li>
+            Each point is worth ${{design.pointEarnings}}. 
+            <ul><li>
+For example, if you or the other player recieve the maximum payoff of 4 points, we will add $1.00 USD to your bonus earnings.
+            </li></ul>
+        </li>
+    </ul>
+{{> tutorialBullets 2}}
+</template>
+
+<template name="tutorial_step15">
+    <h3>Experiment Structure</h3>
+The experiment is divided into two sections of three games each. After completing the first two games in a section, you will be asked which game you would like to play a second time, and you will have a chance to play that game a second time, for the same reward. You may not always get feedback about the outcomes of previous games before being asked to choose between them.
+After completing both sections, you may complete the Survey, for an additional 50¢, before submitting this HIT.
+        {{> tutorialBullets 2}}
+</template>
+
+<template name="tutorial_step16">
+    <h3>Experiment Structure</h3>
+Keep in mind that you will be playing the same turker within each section, but you will be  rematched with a different Turker between sections. You will both play blind; neither player will have a chance to see the other's choice before choosing. 
+Once again, because the outcome depends both on your choice and the other player's, you should always think about what the other player might choose while making your own choice.
+        {{> tutorialBullets 2}}
+</template>
+
+
+
+<template name="tutorialBullets">
+    <div class="introjs-bullets">
+        <ul>
+    {{#each bullet in bullets this}}
+        <li>
+            <!-- <a href="javascript:void(0);" class={{bullet}}>&nbsp;</a> -->
+            <a href="#" class={{bullet}}>&nbsp; </a>
+        </li>
+    {{/each}}
+        </ul>
+    </div>
+</template>

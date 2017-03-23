@@ -28,18 +28,6 @@
 </template>
 <template name="instructions3">
     PAGE 3 {{stage}}
-        <section class="expPaneMargin">
-            <h3>Game Interface</h3>
-            <p>
-            <strong><strong>Below is a version of the interface we will use to show you games in this experiment.</strong></strong> The grid shows four squares. These are the four game outcomes. <span class="you blue">Information related to <strong>You</strong> will be in blue</span>.  For example, in each square the <span class="you blue">blue</span> triangle shows the number of points that that outcome pays to you, while the <span class="other grey">grey triangle shows payoffs to the Other Player</span>.  In the game interface, you can hover over your two choices for a description of how it will influence your payoffs. 
-            </p>
-            <p>
-            The other games in this experiment will have the same interface.  The only difference is that the other games will show different payoffs that cause you to prefer different outcomes.
-            </p>
-            <p>
-                <strong>In this example,</strong> if you choose <span class="you blue">Top</span> and the other player chooses <span class="other grey">Left</span> you will both earn <span class="earnings">3</span> points.  On the other hand, if you choose <span class="you blue">Bottom</span> and the other player chooses <span class="other grey">Right</span>, you will both earn <span class="earnings">2</span> points. With some outcomes you each earn different numbers of points: if you choose <span class="you blue">Top</span> and the other player chooses <span class="other grey">Right</span>, you will earn <span class="earnings">1</span> point while the other player earns <span class="earnings">4</span> points. And the opposite outcome results when you choose <span class="you blue">Bottom</span> and the other player chooses <span class="other grey">Left</span>.
-            </p>
-        </section>
         <hr class="expPaneMargin"/>
                     <p><strong><strong>EXAMPLE GAME INTERFACE:</strong></strong></p>
                     <div class="expQuestion chooseStrategy">
@@ -47,15 +35,40 @@
                     </div>
                     <p class="expPaneMargin" style="display:center;"><em>This is a sample of the game interface that will be used through the experiment. Clicking an option will select it. Your points are in <span class="you blue">blue</span>.</em></p>
         <hr class="expPaneMargin"/>
+            {{> gameNormalFormGame id="tutorial" gameId="tutorial" choiceType="chooseStrategy" payoffs=aQuestion.payoffs question=aQuestion context=..}}
+        <hr class="expPaneMargin"/>
+                                    {{> visualGame payoffIdPrefix="outcomeTL" payoffs=aQuestion.payoffs payoffPlayerTop="otl" payoffPlayerSide="ytl"}}
+        <hr class="expPaneMargin"/>
+    <table class="demo4"><tr><td>
+                    <svg width="130px" height="130px" viewBox="0 0 100 100" 
+                            xmlns="http://www.w3.org/2000/svg" version="1.1">
+                        <!--<line x1="0" y1="0" x2="100" y2="100" stroke="#000000" stroke-width="0px" /> width is 5 (half 10) because viewbox is zoomed in to give me a uniform coordinate system in boxes -->
+                        <g class="gameNormalFormPayoff gamePlayerTop gamePlayerOther" id="outcomeTLT" data-value="ytl" >
+                            <polygon fill="none" pointer-events="all" stroke="#80D8FF" stroke-width="0px" points="0,0 100,0 100,100 0,0" />
+                            <text x="75" y="30" text-anchor="middle" dominant-baseline="middle" >
+                             3
+                            </text>
+                        </g>
+                        <g class="gameNormalFormPayoff gamePlayerSide gamePlayerYou" id="outcomeTLS" data-value="ytl" >
+                            <polygon fill="none" pointer-events="all" stroke="#80D8FF" stroke-width="0px" points="0,0 0,100 100,100 0,0" />
+                            <text x="25" y="75" text-anchor="middle" dominant-baseline="middle" >
+                             4
+                            </text>
+                        </g>
+                    </svg>
+    </td></tr></table>
+</template>
+
+<template name="instructions4">
+    PAGE 4 {{stage}}
         <section class="expPaneMargin">
             <h3>Experiment flow</h3>
             <p><strong><strong>You will play three sections of three games each.</strong></strong> For each game, you will have to answer two questions, one in which you chose a strategy and one in which you select your ideal outcome. After completing the first two games in a section, you will be asked which game you would like to play a second time, and you will have a chance to play that game a second time, for the same reward. In one of the sections you will get to see the results of the two games before choosing, while in the other you will not get this feedback. </p> 
             <p><strong>You will repeat this procedure two times, for a total of six games.</strong> Afterwards, you will complete the Survey for an additional <span class="earnings">50&cent;</span>, before submitting this HIT.</p> 
         </section>
 </template>
-
-<template name="instructions4">
-    PAGE 4 {{stage}}
+<template name="instructions5">
+    PAGE 5 {{stage}}
         <section class="expPaneMargin">
             <h3>Other player</h3>
             <p><strong><strong>You will be rematched with a different Turker in each section of the experiment.</strong></strong>  You will both play blind; neither player will have a chance to see the other's choice before choosing. You can assume that the other Turker is about as motivated as you to maximize the number of points they earn.  </p>
@@ -69,7 +82,8 @@
                 -->
         </section>
 </template>
-<template name="instructions5">
+<template name="instructions6">
+    PAGE 6 {{stage}}
         <section class="expPaneMargin">
             <h3>Next</h3>
             <p><strong><strong>Next you will take a comprehension quiz.</strong></strong> If you want to review these instructions at any point in the experiment, just click the <strong><strong>Instructions</strong></strong> tab in the upper left. On the upper right you will see information about your current choices and earnings.</p> 
@@ -78,10 +92,6 @@
             </p>
             <p style="text-align: right;"><strong><strong>Click NEXT to begin the quiz.</strong></strong></p>
         </section>
-    PAGE 5 {{stage}}
-</template>
-<template name="instructions6">
-    PAGE 6 {{stage}}
 </template>
 <template name="instructions7">
     PAGE 7 {{stage}}
@@ -136,8 +146,8 @@
         <p>The round after this one is the final round. In it you will play 
         one of the previous two games a second time, for additional earnings.  
         You may select below which of the games you would like to play a 
-        second time with the same person. Next round's game is most likely to 
-        be the one you chose, but it is not guaranteed to be.</p>
+        second time with the same person. <strong>Next round's game is most likely to 
+            be the one you chose, but it is not guaranteed to be.</strong></p>
 </template>
 <template name="instPrefGame4">
     Debugging 5, {{currentSection.id}}, Round {{subStat.sec_rnd_now}}

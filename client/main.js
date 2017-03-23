@@ -171,26 +171,28 @@ Template.expSectionTabPane.helpers({
 });
 
 /// http://stackoverflow.com/questions/24650658/check-for-equality-in-spacebars
-Template.registerHelper('equals',
-    function(v1, v2) {
+Template.registerHelper('equals', function(v1, v2) {
         return (v1 === v2);
-    }
-);
-Template.registerHelper('inc',
-    function(v1) {
+    });
+Template.registerHelper( 'notEquals', ( a1, a2 ) => {
+      return a1 !== a2;
+});
+// http://stackoverflow.com/questions/36499595/blaze-logic-not-or-and-in-if-statementj
+Template.registerHelper('and',(a,b)=>{
+      return a && b;
+});
+Template.registerHelper('or',(a,b)=>{
+      return a || b;
+});
+Template.registerHelper('inc', function(v1) {
         return ( !_.isNil(v1) ? _.toInteger( v1 ) + 1 : null);
-    }
-);
-Template.registerHelper('dec',
-    function(v1) {
+    });
+Template.registerHelper('dec', function(v1) {
         return ( !_.isNil(v1) ? _.toInteger( v1 ) - 1 : null);
-    }
-);
-Template.registerHelper('nbsp',
-    function(v1) {
+    });
+Template.registerHelper('nbsp', function(v1) {
         return (v1 ? v1.replace(/ /, "&nbsp;" ) : null );
-    }
-);
+    });
 Template.registerHelper('earnings',
     function (earnings, translateFromPoints) {
         design = Sess.design();

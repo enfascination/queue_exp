@@ -17,6 +17,10 @@
 </template>
 
 <template name="main">
+            {{#if tutorialEnabled }}
+                {{> tutorial options}}
+            {{/if}}
+
         <div class="expMTWindow bg">
         <div class="row">
             <div class="col-md-2 pull-left hidden-xs hidden-sm">
@@ -46,7 +50,7 @@
                 <div class="col-md-12 row expWindow expMainPanel">
                     <div class="tab-content" id="tabs" data-tabs="tabs">
                         <div role="tabpanel" class="tab-pane expPane" id="quiz">
-                            {{> quizSectionTabPane }}
+                            {{> introSectionTabPane }}
                             {{#if equals currentSection.id "quiz"}}
                                 <div class="row">
                                     {{> proceedButton id=currentSection.id }}
@@ -90,7 +94,7 @@
     <li role="presentation" class="{{round.HTMLDisabled}}"><a class="expSubTab {{round.HTMLClasses}}" id={{round.id}} data-state="{{round.state}}" value="{{round.number}}">{{{ nbsp round.label }}}</a></li>
 </template>
 
-<template name="quizSectionTabPane">
+<template name="introSectionTabPane">
     <h2 class="sectionHeader" >Instructions</h2>
     {{#if equals currentSection.id "quiz"}}
     <div class="center-block"> 
@@ -100,9 +104,7 @@
 
         {{> yield "instructions"}}
         {{> navButton stage=stage fn="Backward"}} {{> navButton stage=stage fn="Forward"}}
-        {{#if design.tutorialEnabled}}
-            {{> tutorial options}}
-        {{/if}}
+
     </div>
     {{else}} {{! instructions have multiple pages durig quiz, but one page after }}
         {{> instPrefInstructions}}
@@ -116,6 +118,7 @@
 
 
 <template name="expSectionTabPane">
+
     {{#if currentSectionExperiment }}
             {{#if isSection "survey"}}
                 <h2 class="sectionHeader" >Survey</h2>

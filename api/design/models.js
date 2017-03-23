@@ -86,7 +86,7 @@ Design = {
     // think of these as subject level, not cohort level. 
     //     in a cohort, you get both within a cohort
     subjectTreatments : ["nofeedback", "feedback"], 
-    tutorialEnabled : false,
+    tutorialEnabled : true,
 };
 UserElements = {
     experimenterView : true,

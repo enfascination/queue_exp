@@ -148,7 +148,6 @@ Template.cohortSelection.events({
         designs.forEach( function(design) {
             //Meteor.call('tryToCompleteCohort', design );
         } );
-            console.log("PROBLEM iN cohort reporting", designs, cohortToCalculate, template);
         try {
             console.assert(designs.count() === 1 || cohortToCalculate === 0, "problem in cohort creation");
         } catch (err) {

@@ -31,9 +31,9 @@ Template.quiz.onCreated( function(){
         }
     });
 });
-Template.quizSectionTabPane.helpers({
+Template.introSectionTabPane.helpers({
     testTest : function() {
-        console.log( "quizSectionTabPane", Template.instance(), Template.currentData(), 'lllll' );
+        console.log( "introSectionTabPane", Template.instance(), Template.currentData(), 'lllll' );
     },
 });
 

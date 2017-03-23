@@ -347,3 +347,46 @@ button {
 }
 
 
+ul.dash, ul.dash ul {
+    list-style-type: none;
+      text-indent: -15px;
+}
+ul.dash > li:before,
+ul.dash ul > li:before { //for nested lists
+    content: '\2014';
+    text-indent: -15px;
+}
+
+// from https://github.com/aramix/intro.js/blob/7ae951ef146665ee8bf1e8db1fbb0b568467f20d/introjs.css
+.introjs-bullets {
+    text-align: center;
+}
+.introjs-bullets ul {
+    clear: both;
+    margin: 15px auto 0;
+    padding: 0;
+    display: inline-block;
+}
+.introjs-bullets ul li {
+    list-style: none;
+    float: left;
+    margin: 0 2px;
+    text-align: -webkit-match-parent;
+
+}
+.introjs-bullets ul li a {
+    display: block;
+    width: 8px;
+    height: 8px;
+    background: #ccc;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    text-decoration: none;
+}
+.introjs-bullets ul li a:hover {
+    background: #999;
+}
+.introjs-bullets ul li a.active {
+    background: #999;
+}
