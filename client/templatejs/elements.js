@@ -63,6 +63,11 @@ Template.answersForm.helpers({
         } else { 
             shuffled = false;
         }
+        this.questionsColl.forEach( function( q ) {
+            if ( _.isNil( UserElements.choiceChecked.get( q._id + "_choiceLoadedTime" ) ) ) {
+                UserElements.choiceChecked.set( q._id + "_choiceLoadedTime", Date.now() );
+            }
+        });
         if (dataContext.currentSection && this.questionsColl) {
             //console.log("elements questions", this.questionsColl.fetch());
             return( Helper.questions( this.questionsColl, sub, dataContext.currentSection.id, dataContext, shuffled) );

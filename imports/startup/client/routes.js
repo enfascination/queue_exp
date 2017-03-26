@@ -40,14 +40,13 @@ Router.route('/', function() {
 
 Router.route('start', function() {
     let stage = _.toInteger( this.params.stage );
-        console.log("in instructions rendering", this.params);
+        //console.log("in instructions rendering", this.params);
     this.render( 'expGeneralInfoBox', { to : 'infoBox'} );
     let data = Router.options.data();
     //if (data.currentSection.id === 'quiz') {
         //stage = 1;
     //}
     if (stage <= 1) {
-        stage = 1; 
         this.render( 'instPrefInstructions', { to : 'instructions'} );
     } else if (stage > 6) {
         this.render('quiz', { to : 'instructions'});
@@ -58,7 +57,7 @@ Router.route('start', function() {
     path: '/start/:stage',
     data : function() { // enrich the global data object in this section
         let data = Router.options.data();
-        console.log("in instructions data rendering", this.params, this.params.query);
+        //console.log("in instructions data rendering", this.params, this.params.query);
         if ( data ) {
             let sub = data.subStat;
             let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: sub.sec_now, sec_rnd : sub.sec_rnd_now }, {$sort : { order : 1 }});
@@ -89,17 +88,19 @@ Router.route('/experiment', function() {
         this.render( 'experimentInfo', { to : 'infoBox' } );
     }
 
-    let rnd = data.subStat.sec_rnd_now 
-    if (data && rnd === 0 ) {
-        this.render( 'instPrefGame0', { to : 'instPrefGame' } );
-    } else if (data && rnd === 1 ) {
-        this.render( 'instPrefGame1', { to : 'instPrefGame' } );
-    } else if (data && rnd === 2 ) {
-        this.render( 'instPrefGame2', { to : 'instPrefGame' } );
-    } else if (data && rnd === 3 ) {
-        this.render( 'instPrefGame3', { to : 'instPrefGame' } );
-    } else if (data && rnd === 4 ) {
-        this.render( 'instPrefGame4', { to : 'instPrefGame' } );
+    if (data && data.subStat) {
+        let rnd = data.subStat.sec_rnd_now;
+        if (rnd === 0 ) {
+            this.render( 'instPrefGame0', { to : 'instPrefGame' } );
+        } else if (rnd === 1 ) {
+            this.render( 'instPrefGame1', { to : 'instPrefGame' } );
+        } else if (rnd === 2 ) {
+            this.render( 'instPrefGame2', { to : 'instPrefGame' } );
+        } else if (rnd === 3 ) {
+            this.render( 'instPrefGame3', { to : 'instPrefGame' } );
+        } else if (rnd === 4 ) {
+            this.render( 'instPrefGame4', { to : 'instPrefGame' } );
+        }
     }
 },{
     data : function() { // enrich the global data object in this section

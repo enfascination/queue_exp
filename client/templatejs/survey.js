@@ -52,30 +52,30 @@ Template.answersForm.events({
             // require all answers
             // data validation for better check of answered
             let theData = {
-                questionType: q.type,
-                text: q.text,
+                type: q.type,
                 label: q.label,
                 choice: choice,
                 answered: answered,
                 hasError : hasError,
             };
-            if (!answered || !Match.test(theData, Schemas.SurveyAnswers) ) {
-                console.log("survey fail", theData, Schemas.SurveyAnswers);
+            _.assign(q, theData); // client side update: assign is a mutator of q
+            if (!answered || !Match.test(q, Schemas.SurveyAnswers) ) {
+                console.log("survey fail", q, Schemas.SurveyAnswers);
+                Schemas.SurveyAnswers.validate( q );
                 theData.hasError = true;
                 UserElements.questionsIncomplete.set(true);
             } else {
                 answeredCount += 1;
             }
-            _.assign(q, theData); // client side update: assign is a mutator of q
             Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData ); //optional?
-            console.log("grading survey", q);
+            //console.log("grading survey", q);
         });
         /////////////////////
         //// IF INPUTS OK, SUBMIT ANSWERS AND ....
         /////////////////////
         console.log(answeredCount ,qs.length, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
-        if ( true || answeredCount === qs.length ) {
-        //if ( answeredCount === qs.length ) {
+        //if ( true || answeredCount === qs.length ) {
+        if ( answeredCount === qs.length ) {
             qs.forEach( function( q ) {
                 Meteor.call("insertQuestionToSubData", Meteor.userId(), q );
             });

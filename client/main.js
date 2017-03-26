@@ -38,6 +38,7 @@ Tracker.autorun(function() {
 Template.main.onCreated( function(){
     //initialize ui state
     UserElements.choiceChecked = new ReactiveDict(); // this is so there can be mulplie of these buttons on a page
+    //Meteor.call('testErrors');
 });
 
 Template.main.onRendered( function(){ 

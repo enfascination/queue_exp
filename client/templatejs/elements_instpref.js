@@ -28,7 +28,8 @@ let getPayoff = function(payoffs, loc) {
 Template.instPrefInstructions.helpers({
     aQuestion : function() {
         let q = {};
-        q.payoffs = [3,1,4,2,3,4,1,2];
+        //q.payoffs = [3,1,4,2,3,1,4,2];
+        q.payoffs = [1,-1,2,0,1,-1,2,0];
         return(q);
     },
 });
@@ -41,8 +42,10 @@ Template.instructions6.inheritsHelpersFrom('instPrefInstructions');
 Template.instructions7.inheritsHelpersFrom('instPrefInstructions');
 Template.instructions8.inheritsHelpersFrom('instPrefInstructions');
 
-Template.gameNormalForm.onCreated( function(){
-    UserElements.choiceConsidered = new ReactiveDict();
+Template.main.onCreated( function(){
+    // makes visualtext meaningful during hover, 
+    //   also does other things
+    UserElements.choiceConsidered = new ReactiveDict(); 
 });
 Template.gameNormalForm.helpers({
     textGameFeedback : function( feedbackType) {
@@ -172,6 +175,7 @@ Template.gameNormalFormGame.events({
                 choiceStrategyEl.attr("choice", choiceStrategy); // for data handling within form
                 UserElements.choiceChecked.set( gameId, true );
                 UserElements.choiceChecked.set( gameId+"_strategy", choiceStrategy );
+                UserElements.choiceChecked.set( gameId+"_choiceMadeTime", Date.now() );
                 if (c.hasClass("chooseStrategyTop")) {
                     // this is because cells aren't children of their colgroup
                     c.find('tr').children().removeClass("colactive");

@@ -4,11 +4,12 @@ var _ = require('lodash');
 import { Meteor } from 'meteor/meteor';
 import { Schemas } from '../api/design/schemas.js';
 import { Helper } from '../imports/lib/helper.js';
+import { Sess } from '../imports/lib/quick-session.js';
 
 export let Experiment = {};
 Experiment.findSubsCohort= function(sub, lastDesign, matching) {
             //get a cohortId, not know much, under different matching conditions
-            let probeDesign, cohortId;
+            let probeDesign, cohortId, treatment = sub.treatment_now;
 
             // if this is here, then I've seen anyone at all make it to this part of the experiment before.
             probeDesign = CohortSettings.findOne( { sec_type : "experiment" }, 
@@ -53,7 +54,7 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                 //            start them a new cohort
                 //
                 // (try to) match this person to an existing cohort  
-                if (sub.treatment_now === "feedback" ) {
+                if ( treatment === "feedback" ) {
                     let cohortInProgress = CohortSettings.findOne( { 
                         sec_type : "experiment", 
                         completed : false, 
@@ -65,31 +66,24 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                         // playerTwo test is to prevent collisions (is 
                         // someone-in-progress currently matched to this 
                         // and I don't know?
-                        playerTwo : false, 
+                        playerTwo : null, 
                     }, { sort : { cohortId : 1} });
 
                     // should I bail on trying to match this subject?
                     if ( _.isNil( cohortInProgress ) ) {
                         console.log("main matching: no match to make");
-                        let treatmentsNew = sub.subjectTreatments;
-                        treatmentsNew[ sub.block_now ] = "nofeedback";
-                        SubjectsStatus.update({meteorUserId : sub.meteorUserId}, { 
-                            $set : { 
-                                treatment_now : "nofeedback",
-                                subjectTreatments : treatmentsNew,
-                            }});
-                        sub = SubjectsStatus.findOne({meteorUserId : sub.meteorUserId});
-                        
+                        treatment = "nofeedback";
                     }
 
                     // match this subject
                     //// must double check: is this still the right thing for this subject?
-                    if (sub.treatment_now === "feedback") {  
+                    if ( treatment === "feedback" ) {
                         // make sure everything is sanitary
+                        // player two should be null is matchable is true
                         try {
                             console.assert( _.isString( cohortInProgress.playerOne ) &&
                                 cohortInProgress.playerOne.length > 1 &&
-                                !cohortInProgress.playerTwo &&
+                                _.isNil( cohortInProgress.playerTwo ) &&
                                 cohortInProgress.filledCohort === 1 &&
                                 true,
                                 "cohort that was foudn is well formed"
@@ -98,7 +92,7 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                             console.log("problem in real matching" , cohortInProgress);
                             console.log( _.isString( cohortInProgress.playerOne ) ,
                                 cohortInProgress.playerOne.length > 1 ,
-                                !cohortInProgress.playerTwo ,
+                                _.isNil( cohortInProgress.playerTwo ),
                                 cohortInProgress.filledCohort === 1 ,
                                 cohortInProgress,
                                 "cohort that was foudn is well formed"
@@ -113,13 +107,13 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                 }
 
                 // get this subject a new cohort
-                if (sub.treatment_now === "nofeedback" ) {  // create a new cohort for this person
+                if ( treatment === "nofeedback" ) {  // create a new cohort for this person
                     cohortId = probeDesign.cohortId + 1;
                     console.log("real matching, no feedback", cohortId, sub.meteorUserId );
                 }
             } else if (matching.ensureSubjectMatchAcrossSections) {
             } 
-            return( cohortId );
+            return( {"cohortId" : cohortId, "treatment" : treatment } );
         };
 // either for new or continuation of existing cohorts, to update them with player and status information
 Experiment.initializeCohort = function(cohortId, playerToAdd, newSectionType="experiment") {
@@ -127,7 +121,6 @@ Experiment.initializeCohort = function(cohortId, playerToAdd, newSectionType="ex
     //if (this.connection === null) { /// to make method private to server
     let design;
     if ( _.isNil( CohortSettings.findOne({ cohortId : cohortId }) ) ) { // new cohort 
-        console.log("initializeCohort new", cohortId, playerToAdd);
         let newDesign = _.clone(Design);
         newDesign.completed = false;
         newDesign.matchable = false;
@@ -136,9 +129,16 @@ Experiment.initializeCohort = function(cohortId, playerToAdd, newSectionType="ex
         newDesign.sec_type = newSectionType;
         //newDesign.sec_rnd = newRound;
         newDesign.playerOne = playerToAdd;
-        newDesign.playerTwo = false;
+        newDesign.playerTwo = null;
         newDesign.filledCohort = 1;  //incl currently considered player
-        CohortSettings.insert( newDesign );
+        try {
+            let idtmp = CohortSettings.insert( newDesign );
+            Schemas.CohortSettings.validate( newDesign );
+            console.assert( Match.test( newDesign, Schemas.CohortSettings) );
+        } catch (err) {
+            console.log("ERROR 56JFKADF: Schema violation adding cohort", idtmp, newDesign, Match.test( newDesign, Schemas.CohortSettings), err);
+            throw(err);
+        }
         // uniqueness check
         try {
             CohortSettings._ensureIndex({cohortId : 1}, { unique : true } );
@@ -149,7 +149,6 @@ Experiment.initializeCohort = function(cohortId, playerToAdd, newSectionType="ex
         design = newDesign;
     } else { // existing design
 
-        console.log("initializeCohort cont", cohortId, playerToAdd);
         // two updates:
         //set playerTwo in cohortInProgress to this player
         //increment filled in cohortinProgress?
@@ -165,13 +164,7 @@ Experiment.initializeCohort = function(cohortId, playerToAdd, newSectionType="ex
         design = CohortSettings.findOne({cohortId : cohortId});
     }
 
-    //set subjects cohort_now to this cohortId;
-    SubjectsStatus.update({meteorUserId : playerToAdd},{$set : {
-        cohort_now : cohortId,
-    } });
-    let sub = SubjectsStatus.findOne({meteorUserId : playerToAdd});
-
-    return( { design, sub } );
+    return( design );
     //} else {
     //throw(new Meteor.Error(500, 'Permission denied!'));
     //}
@@ -206,7 +199,7 @@ Experiment.tryToCompleteUncompletedQuestions = function(sub, design) {
         // if question involves another matchable question, and that question is know, and if this question has been answered, but hasn't yet been consummated with the other question, then consummate by calculating outcomes and corersponding payoffs.
         if (
             q.strategic && 
-            _.isString( q.matchingGameId ) && 
+            !_.isNil( q.matchingGameId ) && 
             !_.isNil(q.choice) && 
             !q.completedGame
         ) {
@@ -314,22 +307,22 @@ Experiment.tryToCompleteCohort = function(design) {
             try {
                 console.assert(design.maxPlayersInCohort === design.filledCohort, "sanity6: do i really only have two subjects?", design );
                 console.assert( answeredQs.count() === answeredQs.map( function(q) { if( q.payoffs ) { return( q ); } }).length );
-                console.assert( answeredQs.count() === answeredQs.map( function(q) { if( q.matchingGameId ) { return( q ); } }).length );
+                console.assert( answeredQs.count() === answeredQs.map( function(q) { if( !_.isNil( q.matchingGameId ) ) { return( q ); } }).length );
             } catch(err) { 
                 console.log(err, completed, unansweredQs, answeredQs);
                 throw(err);
             }
             console.log("COHORT COMPLETED", cohortId);
             return(true);
-        } else if ( !design.playerTwo && design.filledCohort < 2) {
+        } else if ( _.isNil( design.playerTwo ) && design.filledCohort < 2) {
             // cohort still in progress
             CohortSettings.update({ cohortId: cohortId}, {
                 $set: { matchable: true, },
             });//, {multi: true}  //d ont' want to need this.
-            console.log("COHORT MATCHABLE", cohortId,  design.matchable , design.filledCohort , design.filledCohort === 2   , design);
+            console.log("COHORT MATCHABLE", cohortId,  design.matchable , design.filledCohort , design.filledCohort === 2 );
             return(false);
         } else {
-            console.log("ERROR &Q#$TREJGAFGK: Matched cohort in progress: cohort is matched but not complete, but actually this must be a bug because in this loop there remain no unasnwered questions", design, Questions.find( { cohortId : cohortId, strategic : true}));
+            console.log("ERROR &Q#$TREJGAFGK: Matched cohort in progress: cohort is matched but not complete, but actually this must be a bug because in this loop there remain no unasnwered questions", design, Questions.find( { cohortId : cohortId, strategic : true}).fetch() );
         }
     }
 };
@@ -387,7 +380,14 @@ Experiment.calculateExperimentEarnings = function(muid, design) {
             gameEarnings += q.payoffEarnedFocal * design.pointEarnings;
         }
     });
-    let HITearnings = { total : design.endowment + gameEarnings + ( surveyComplete ? design.surveyReward : 0 ), breakdown : { endowment: design.endowment, games : gameEarnings, survey : surveyComplete ? design.surveyReward : 0 }};
+    let HITearnings = { 
+        total : design.endowment + gameEarnings + ( surveyComplete ? design.surveyEarnings : 0 ), 
+        breakdown : { 
+            endowment: design.endowment, 
+            games : gameEarnings,
+            survey : surveyComplete ? design.surveyEarnings : 0 
+        }
+    };
     console.log("calculateExperimentEarnings", HITearnings, paidQuestions.count(), surveyQuestions.count(), paidQuestions.map( (q) => q.payoffEarnedFocal ) );
 
     return( HITearnings );
@@ -420,3 +420,12 @@ Experiment.updateStatusInHIT = function(muid, design) {
         $set: { HITStatus: HITStatus, },
     });
 };
+Experiment.testErrors = function() {
+            try {
+                let tt;
+                tt.under.over = 5;
+            } catch(err) {
+                console.log("probl");
+                throw(err);
+            }
+        };

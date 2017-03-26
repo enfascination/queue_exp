@@ -102,7 +102,7 @@ Meteor.users.deny({
             //    that design is based on
             let treatments;
             if (design.matching.selfMatching) {
-                treatments = design.subjectTreatments;
+                treatments = design.subjectTreatmentsTemplate;
             } else if (
                     design.matching.ensureSubjectMismatchAcrossSectionsAndPreferentiallyCloseOutIncompleteCohorts && 
                     isExperienced 
@@ -112,7 +112,7 @@ Meteor.users.deny({
                     design.matching.ensureSubjectMismatchAcrossSections ||
                     design.matching.ensureSubjectMismatchAcrossSectionsAndPreferentiallyCloseOutIncompleteCohorts 
                 ) {
-                treatments = _.shuffle( design.subjectTreatments );
+                treatments = _.shuffle( design.subjectTreatmentsTemplate );
             } else if (design.matching.noMatching ) {
                 treatments = ['nofeedback','nofeedback'];
             }
@@ -149,8 +149,8 @@ Meteor.users.deny({
             //import { QuestionData } from '../../imports/startup/experiment_prep_instpref.js';
             //let idxs = _.shuffle( _.range( questions.length ) );
             //console.log("addQuestions", sec, matching, sub.cohort_now, sub.sec_now, sub.sec_rnd_now, sub);
+            //console.log("addQuestions", sec, sub.cohort_now, sub.sec_now, sub.sec_rnd_now);
             let initializeGame = function initializeGame(sub, sec) {
-                console.log("addQuestions", sec, sub.cohort_now, sub.sec_now, sub.sec_rnd_now);
                 let payoffsGame1, payoffsGame2, payoffsDiff = _.times(8,()=>0);
                 let payoffOrder = ['Top,Left', 'Top,Right', 'Bottom,Left', 'Bottom,Right'];
                 let payoffOrderPlayers = ['You', 'Other'];
@@ -159,11 +159,11 @@ Meteor.users.deny({
                     if ( sub.treatment_now === "nofeedback" ) {
                         /// game 1
                         // strictly ordinal games (without replacement)
-                        payoffsGame1 = Helper.generateGame();
+                        payoffsGame1 = Helper.generateGame( maxPayoff = 2);
                         // loosely ordinal games (with replacement)
                         //let payoffs = _.concat( _.times(4, ()=>_.sample([1, 2, 3, 4]) ), _.times(4, ()=>_.sample([1, 2, 3, 4]) ) );
                         /// game 2
-                        payoffsGame2 = Helper.tweakGame( payoffsGame1, switchOnly=true );
+                        payoffsGame2 = Helper.tweakGame( payoffsGame1, switchOnly=true, maxPayoff = 2 );
                         if( _.random() === 0 ) { // another shuffle that is important to make sure doubles happen in both blocks
                             let tmp = _.clone( payoffsGame1 );
                             payoffsGame1 = _.clone( payoffsGame2 );
@@ -200,14 +200,23 @@ Meteor.users.deny({
             // questionsdata object is a client side collection whose 
             //    questions get initialized, added to serverside, and 
             //    integrated into experiment flow in this loop 
+            //console.log("addQuestions, really", sec, design);
+            //console.log("addQuestions, really", sec, design['sequence']);
+            //console.log("addQuestions, really", sec, Object.values( design ) );
+            //console.log("addQuestions, really", sec, Object.keys( design.sequence ));
             QuestionData.questions.forEach( function(q) {
                 if ( q.sec === sec && 
                     q.sec_rnd < design.sequence[sec].roundCount ) {
                     console.log("addQuestions q", sec, q.sec, q.sec_rnd, sub.cohort_now);
+                    q.meteorUserId = sub.meteorUserId;
                     if (q.sec === 'experiment1' || q.sec === 'experiment2' ) {
                         //q._id doesn't exist yet here.  insert happens below
                         q.sec = sec; // overwrite the input section (from experiment to experiment1)
                         q.cohortId = sub.cohort_now;
+                        // important forq's to know both meteor id and mt id, to 
+                        // avoid matching peope with themselves when they later 
+                        // reaccet the hit
+                        q.mtWorkerId = sub.mtWorkerId; 
                         q.treatment = sub.treatment_now;
                         q.payoffOrder = payoffOrder;
                         q.payoffOrderPlayers = payoffOrderPlayers;
@@ -228,7 +237,7 @@ Meteor.users.deny({
                             q.matchingGameId = matchingQuestion._id;
                             console.log( "create matched game: matching question", q._id, matchingQuestion._id );
                         } else {
-                            q.matchingGameId = false;
+                            q.matchingGameId = null;
                         }
                         if (q.sec_rnd === 0) {
                             q.payoffs = payoffsGame1;
@@ -239,19 +248,28 @@ Meteor.users.deny({
                         } else if (q.sec_rnd === 3) {
                             q.idGameQ1 = idGameQ1;
                             q.idGameQ2 = idGameQ2;
+                            q.payoffs = null;
                         } else if (q.sec_rnd === 4) {
-                            q.payoffs = [];  // maybe i need to inititlize this key?
+                            q.payoffs = null;  // maybe i need to inititlize this key?
                         }
                     } 
-                    // important forq's to know both meteor id and mt id, to 
-                    // avoid matching peope with themselves when they later 
-                    // reaccet the hit
-                    q.meteorUserId = sub.meteorUserId;
-                    q.mtWorkerId = sub.mtWorkerId; 
+
                     /// add the q tot he questions collection
+                    try {
+                        if ( sec === 'quiz' ) {
+                            Schemas.QuizAnswers.validate( q );
+                        } else if ( sec === 'survey' ) {
+                            Schemas.SurveyAnswers.validate( q );
+                        } else if ( sec === 'experiment1' || sec === 'experiment2' ) {
+                            Schemas.ExperimentAnswers.validate( q );
+                        }
+                    } catch (err) {
+                        console.log("ERROR 90DFUSIJK: Schema violation adding question", q, err);
+                        throw(err);
+                    }
                     idTmp = Questions.insert(q);
-                    console.log( "updating matches", idTmp, q.matchingGameId );
-                    if (!_.isNil( idTmp ) && q.matchingGameId) {
+                    //console.log( "updating matches", idTmp, q.matchingGameId );
+                    if (!_.isNil( idTmp ) && !_.isNil( q.matchingGameId ) ) {
                         Questions.update( q.matchingGameId, {$set : {matchingGameId : idTmp }});
                     }
                     // pass id to the neighboring 2afc game so I can choose between them
@@ -267,8 +285,10 @@ Meteor.users.deny({
                         console.log("Problem adding Questions", q);
                         throw(err);
                     }
+                    //console.log("addQuestions q out");
                 }
             });
+            //console.log("addQuestions out");
         },
         // initialize cohort should always have been called before this function initializeRound
         // this will create a new SubjectsData object
@@ -286,17 +306,30 @@ Meteor.users.deny({
 
             //  experiment specific
             // retrieve the appropriiate design for the subject in this state
-            cohortId = Meteor.call("findSubsCohort", sub, lastDesign, Design.matching );
+            let tmpObj = Meteor.call("findSubsCohort", sub, lastDesign, Design.matching );
+            cohortId = tmpObj.cohortId;
+            treatment = tmpObj.treatment;
             console.log("initRound found cohortId");
 
             // init or update the cohort object that we're going to match this subject to
             //   then get updated version of the changed objects
-            let initObj = Meteor.call("initializeCohort", cohortId=cohortId, sub.meteorUserId);
+            design = Meteor.call("initializeCohort", cohortId=cohortId, sub.meteorUserId);
             console.log("initRound init cohort");
-            design = initObj.design;
-            sub = initObj.sub;
 
-            // init this section by creating and adding all of its component questions, for all rounds;
+            //set subjects cohort_now to this cohortId and update from any 
+            //changes to the treatment that happened while tryig to find a good cohort
+            let treatmentsNew = sub.treatments;
+            treatmentsNew[ sub.block_now ] = treatment;
+            SubjectsStatus.update({meteorUserId : sub.meteorUserId},{$set : {
+                cohort_now : cohortId,
+                treatment_now : treatment,
+                treatments : treatmentsNew,
+            } });
+            sub = SubjectsStatus.findOne({meteorUserId : sub.meteorUserId});
+            console.log("reinit subject object");
+
+            // init this section by creating and adding all of its component 
+            // questions, for all rounds;
             Meteor.call("addSectionQuestions", sub, sub.sec_now, design );
             console.log("initRound added questions");
 
@@ -442,7 +475,12 @@ Meteor.users.deny({
                 cohortId: theData.cohortId,
                 theData: theData,
                 completedChoice : true,
-                timestamps : {choiceAdded : Date.now() },
+                timestamps : {
+                    choiceLoaded : theData.choiceLoadedTime,
+                    choiceMade : theData.choiceMadeTime,
+                    choiceSubmitted : theData.choiceSubmittedTime,
+                    choiceAdded : Date.now(),
+                },
             } );
         //ensure uniqueness XXXuncomment me eventually
                 //SubjectsData._ensureIndex({userId : 1, meteorUserId : 1, sec : 1, sec_rnd : 1}, { unique : true } );
@@ -450,8 +488,25 @@ Meteor.users.deny({
         },
         // server side helper
         updateSubjectQuestion : function(muid, id, theData) {
+            // with this try block, updateSubjectQuestion can only update 
+            // all fo the field, not just a few fields like it was 
+            // originally intended to do. 
+            // But I like validation being server side
+                    try {
+                        if ( theData.sec === 'quiz' ) {
+                            Schemas.QuizAnswers.validate( theData );
+                        } else if ( theData.sec === 'survey' ) {
+                            Schemas.SurveyAnswers.validate( theData );
+                        } else if ( theData.sec === 'experiment1' || theData.sec === 'experiment2' ) {
+                            Schemas.ExperimentAnswers.validate( theData );
+                        }
+                    } catch (err) {
+                        console.log("ERROR 90DFUSIJK: Schema violation adding question", theData, err);
+                        throw(err);
+                    }
                 let output = Questions.update({_id : id, meteorUserId : muid}, {$set : theData});
         },
+        testErrors : Experiment.testErrors,
         disableQuestions : function(ids, reset) {
             ids.forEach( function(id) {
                 let theUpdate = {disabled : true,};
@@ -483,12 +538,12 @@ Meteor.users.deny({
             try {
                 console.assert( (
                     treatment === 'nofeedback' && 
-                    !_.isString( chosenQuestion.matchingGameId ) && 
-                    !_.isString( nextQuestion.matchingGameId )
+                    _.isNil( chosenQuestion.matchingGameId ) && 
+                    _.isNil( nextQuestion.matchingGameId )
                 ) || (
                     treatment === 'feedback' && 
-                    _.isString( chosenQuestion.matchingGameId ) && 
-                    _.isString( nextQuestion.matchingGameId )
+                    !_.isNil( chosenQuestion.matchingGameId ) && 
+                    !_.isNil( nextQuestion.matchingGameId )
                 ), "Error PSDFGKSDFG: No match?" );
             } catch(err) {
                 console.log(err, muid, treatment, chosenQuestion, nextQuestion, sec, sec_rnd);
@@ -497,7 +552,7 @@ Meteor.users.deny({
                 //console.log("setChosenGameForRound 9");
                 tmp = Questions.update(nextQuestion._id, {$set : { 
                     payoffs : chosenQuestion.payoffs,
-                    matchingGameId : false,
+                    matchingGameId : null,
                 }});
             } else {
                 let matchingQuestion;

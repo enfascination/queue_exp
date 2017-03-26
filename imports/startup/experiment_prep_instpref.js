@@ -82,7 +82,7 @@ QuestionData.questions = [
     sec_rnd: 0,
     type: 'chooseOutcome',
 	title: 'Question 7',
-	text: 'Which outcome confers the greatest number of points to both players, in total?',
+	text: 'Which outcome confers the greatest number of points to both players, considered together?',
 	label: 'Select one of the four game outcomes.',
     options: ["Top,Left", "Top,Right", "Bottom,Left", "Bottom,Right"],
 	correctAnswer: ["Top,Left"],
@@ -153,7 +153,6 @@ QuestionData.questions = [
     type: 'dropdown',
 	label: 'What country are you from?',
     options: countryCodes,
-    paid: true,
 },
 {
     sec: 'survey',
@@ -162,7 +161,6 @@ QuestionData.questions = [
 	label: 'Enter your postal code. If you are in the USA, enter your 5-digit zip code.',
     pattern: "([0-9]+)|(xxxxxx)",
     fieldName: "Postal code",
-    paid: true,
 },// regex: ^(?:\d{5})?$
 {
     sec: 'survey',
@@ -170,7 +168,6 @@ QuestionData.questions = [
     type: 'dropdown',
 	label: 'What is your sex?',
     options: ['Female','Male','Other','Decline to state'],
-    paid: true,
 },
 {
     sec: 'survey',
@@ -179,7 +176,6 @@ QuestionData.questions = [
 	label: 'What is your age?',
     pattern: "([1]?[0-9]{1,2})|(xxxxxx)",
     fieldName: "Your age",
-    paid: true,
 },
 {
     sec: 'survey',
@@ -194,7 +190,6 @@ QuestionData.questions = [
         "Postgraduate degree (Masters or Ph.D.)",
         "Decline to state",
     ],
-    paid: true,
 },
 {
     sec: 'survey',
@@ -202,7 +197,6 @@ QuestionData.questions = [
     type: 'dropdown',
 	label: 'What is the number of people in your household?',
     options: _(1).range(7).map(_.toString).concat( '7+', 'Decline to state').value(),
-    paid: true,
 },
 ];
 /*
@@ -248,11 +242,10 @@ QuestionData.questions.forEach ( function(q) {
         hasError: false,
         order : _.indexOf(QuestionData.questions, q),
     });
-    if( _.isNil(q.paid) || !q.paid ) { q.paid = false; }
-    if( _.isNil(q.strategic) || !q.strategic ) { q.strategic = false; }
     if( q.sec === 'quiz' ) {
         q.correct = false;
-        q.payoffs = [3,1,4,2,3,1,4,2];
+        //q.payoffs = [3,1,4,2,3,1,4,2];
+        q.payoffs = [1,-1,2,0,1,-1,2,0];
         q.sec_label = "Quiz";
     } else if( q.sec === 'experiment' ) {
         console.log("ERROR NMV<KUIOKJHLDF: async mess on q init?");
@@ -262,6 +255,10 @@ QuestionData.questions.forEach ( function(q) {
         q.sec_label = "Section 2";
     } else if( q.sec === 'survey' ) {
         q.sec_label = "Survey";
+    }
+    if( q.sec === 'experiment1' || q.sec === 'experiment2' ) {
+        if( _.isNil(q.paid) || !q.paid ) { q.paid = false; }
+        if( _.isNil(q.strategic) || !q.strategic ) { q.strategic = false; }
     }
     //console.log(q);
     //Meteor.call("addQuestion", questions[q]);

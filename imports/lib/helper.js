@@ -199,11 +199,10 @@ export const Helper = {
         //console.log("experiment.helpers qusetions", questions, this, shuffled);
         if ( sub ) {
             //questions = questions.find({sec: section, sec_rnd : sub.sec_rnd_now }, {$sort : { order : 1 }}).fetch();
-            questions = questions.fetch();
-            _.forEach( questions, function( q ) {
+            //questions.forEach( function( q ) {
                 //q.context = dataContext;// this was a bad idea, better to make sure that the items passed have the right info from thebeginning
                 //console.log("experiment.helpers qusetions per q", q);
-            });
+            //});
             if (shuffled) {
                 return( _.shuffle( questions ) );
             } else {
@@ -222,16 +221,21 @@ export const Helper = {
         if (question.disabled) return("disabled");
 	},
     des : function(design) {
-        return( _.pick(design, ["id", "cohortId", "sec_type", "playerOne", "playerTwo", "filledCohort", "completedCohort"]) );
+        return( _.pick(design, ["id", "cohortId", "sec_type", "playerOne", "playerTwo", "filledCohort", "completed"]) );
     },
-    generateGame : function() {
+    generateGame : function( maxPayoff=4 ) {
         let rIndices = _.concat(_.shuffle(_.range(4)), _.shuffle(_.range(4,8)));
-        let payoffsGame = rIndices.map( (i)=> _.concat(_.range(0,4), _.range(0,4))[i]+1);
+        //  game with (rank) payoffs ranging 1 - 4
+        let payoffsGame = rIndices.map( (i)=> _.concat(_.range(0,4), _.range(0,4))[i] + 1);
+        // now correct for games with max payoff < 4
+        payoffsGame = _.map( payoffsGame, (x)=>x - ( 4 - maxPayoff ) );
         return( payoffsGame );
     },
     // change player's view (which one is "top")
     pivotGame : pivotGame,
-    tweakGame : function(payoffs, switchOnly=false) {
+    tweakGame : function( payoffs, switchOnly=false, maxPayoff=4 ) {
+        // correct for games with max payoff < 4
+        payoffs = _.map( payoffs, (x)=>x + ( 4 - maxPayoff ) );
                         let payoffsBefore = _.clone( payoffs );
                         let payoffsAfter = _.clone( payoffs );
                         // pick two payoffs to flip or otherwise manipulate
@@ -279,6 +283,8 @@ export const Helper = {
                         //let payoffOther = _.slice(payoffsAfter,4,8);
                         payoffsDiff = _.map( _.zip(payoffsBefore, payoffsAfter), (e)=> _.subtract(e[1], e[0]) );
                         //return( { payoffYou, payoffOther, payoffsDiff } );
+        // recorrect for games with max payoff < 4
+        payoffsAfter = _.map( payoffsAfter, (x)=>x - ( 4 - maxPayoff ) );
                         return( payoffsAfter );
                     },
     windowAdjust : function(sub, bottom=false) {

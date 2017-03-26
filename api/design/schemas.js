@@ -1,5 +1,7 @@
 /*jshint esversion: 6 */
 
+var _ = require('lodash');
+
 export let Schemas = {};
 
 Schemas.SubjectsStatus = new SimpleSchema({
@@ -73,8 +75,9 @@ Schemas.SubjectsStatus = new SimpleSchema({
         label: "completed major section?",
     },
     totalEarnings: {
-        type: SimpleSchema.Integer,
+        type: Number,
         label: "experiment earnings",
+        decimal: true,
     },
     cohort_now: {
         type: SimpleSchema.Integer,
@@ -160,13 +163,28 @@ Schemas.SubjectsData = new SimpleSchema({
         label: "game completed?",
         optional: true
     }, 
+    "timestamps.choiceLoaded": {
+        type: Number,
+        label: "choiceLoaded",
+        optional: true,
+    },
+    "timestamps.choiceMade": {
+        type: Number,
+        label: "choiceMade",
+        optional: true,
+    },
+    "timestamps.choiceSubmitted": {
+        type: Number,
+        label: "choiceSubmitted",
+        optional: true,
+    },
     "timestamps.choiceAdded": {
-        type: Date,
-        label: "ts on add",
+        type: Number,
+        label: "choiceAdded",
     },
     "timestamps.gameConsummated": {
-        type: Date,
-        label: "ts on consumamte",
+        type: Number,
+        label: "gameConsummated",
         optional: true,
     },
 });
@@ -176,10 +194,6 @@ Schemas.CohortSettings = new SimpleSchema({
         type: SimpleSchema.Integer,
         label: "group number",
     },
-    filledCohort: {
-        type: Boolean,
-        label: "count people in cohort",
-    }, 
     completed: {
         type: Boolean,
         label: "completed cohort?",
@@ -188,6 +202,30 @@ Schemas.CohortSettings = new SimpleSchema({
         type: Boolean,
         label: "cohort half done?",
     }, 
+    "matching.ensureSubjectMismatchAcrossSectionsAndPreferentiallyCloseOutIncompleteCohorts": { // pass and fail are not opposites during the quiz, but they are for the rest of the experiment
+        type: Boolean,
+        label: "special mismatch flag",
+    },
+    "matching.ensureSubjectMismatchAcrossSections": {
+        type: Boolean,
+        label: "mismatch flag",
+    },
+    "matching.ensureSubjectMatchAcrossSections": {
+        type: Boolean,
+        label: "match flag",
+    },
+    "matching.selfMatching": {
+        type: Boolean,
+        label: "selfMatching flag",
+    },
+    "matching.noMatching": {
+        type: Boolean,
+        label: "nomatching flag",
+    },
+    maxQuizFails: {
+        type: SimpleSchema.Integer,
+        label: "maxQuizFails",
+    },
     maxPlayersInCohort: {
         type: SimpleSchema.Integer,
         label: "Max size of queue",
@@ -197,32 +235,23 @@ Schemas.CohortSettings = new SimpleSchema({
         label: "Initial earnings",
         decimal: true,
     },
-    pot: {
-        type: Number,
-        label: "Max potential queue earnings",
-        decimal: true,
-    },
-    positionCosts: {
-        type: Number,
-        label: "Per person queue earnings penalty",
-        decimal: true,
-    },
-    queueNames: {
-        type: [String],
-        label: "List of queues",
-    },
-    queueCosts: {
-        type: Object,
-        label: "Costs of queues",
-    },
     sequence: {
         type: Object,
         label: "sequence of the experiment",
+        blackbox: true,
+    },
+    batchName: {
+        type: String,
+        label: "batchName",
     },
     sec_type: {
         type: String,
         label: "section type",
     },
+    filledCohort: {
+        type: SimpleSchema.Integer,
+        label: "count people in cohort",
+    }, 
     playerOne : {
         type: String,
         label: "player one",
@@ -231,101 +260,249 @@ Schemas.CohortSettings = new SimpleSchema({
         type: String,
         label: "player two",
         optional : true,
-    }
+    },
+    surveyEarnings : {
+        type: Number,
+        label: "surveyEarnings",
+        decimal: true,
+    },
+    pointEarnings : {
+        type: Number,
+        label: "pointEarnings",
+        decimal: true,
+    },
+    subjectTreatmentsTemplate : {
+        type: [String],
+        label: "experimentTreatmentsTemplate",
+    },
+    tutorialEnabled: {
+        type: Boolean,
+        label: "tutorialEnabled",
+    }, 
 });
 
-
-Schemas.ExperimentAnswers = new SimpleSchema({
-    cohortId: {  
-        type: SimpleSchema.Integer,
-        label: "group number",
-    },
-    queuePosition: {
-        type: SimpleSchema.Integer,
-        label: "Position in queue",
-    },
-    queuePositionFinal: {
-        type: SimpleSchema.Integer,
-        label: "Ultimate order in line",
-    },
-    choice: {
+let questionsCore = {
+    _id : {
         type: String,
-        label: "Choice of queue",
+        label: "q._id",
+        optional: true, ///beause this is sometimes checked before objects have an id
     },
-    earnings1: {
-        type: Number,
-        label: "Experiment earnings from before and during choice",
-        decimal: true,
+    sec : {
+        type: String,
+        label: "section of the experiment",
     },
-    earnings2: {
-        type: Number,
-        label: "Experiment earnings from after experiment",
-        decimal: true,
-    },
-    totalPayment: {
-        type: Number,
-        label: "Total experiment earnings",
-        decimal: true,
-    },
-    queueCountA: {
+    sec_rnd : {
         type: SimpleSchema.Integer,
-        label: "Size of Queue A",
+        label: "round in the section",
     },
-    queueCountB: {
-        type: SimpleSchema.Integer,
-        label: "Size of Queue B",
-    },
-    queueCountNoChoice: {
-        type: SimpleSchema.Integer,
-        label: "Number of null choices",
-    },
-});
-Schemas.SurveyAnswers = new SimpleSchema({
-    questionType: {
+    sec_label : {
         type: String,
-        label: "Type of survey question",
+        label: "html name of section",
     },
-    text: {
+    type : {
         type: String,
-        label: "long question",
-        optional: true,
+        label: "type of question",
     },
-    label: {
+    label : {
         type: String,
-        label: "question",
-    },
-    answered: {
-        type: Boolean,
-        label: "answered",
-    },
-    choice: {
-        type: String,
-        label: "answer",
-        optional: true,
-    },
-    hasError: {
-        type: Boolean,
-        label: "not correct",
-    },
-});
-Schemas.QuizAnswers = new SimpleSchema({
-    answered: {
-        type: Boolean,
-        label: "question answered",
-    },
-    correct: {
-        type: Boolean,
-        label: "answered correct",
+        label: "description of the question",
     },
     choice: {
         type: String,
         label: "answer selected",
+        optional: true,
+    },
+    answered: {
+        type: Boolean,
+        label: "question answered",
     },
     hasError: {
         type: Boolean,
         label: "not correct",
     },
-});
+    disabled: {
+        type: Boolean,
+        label: "disable questions",
+    },
+    order : {
+        type: SimpleSchema.Integer,
+        label: "order of question",
+    },
+    meteorUserId: {
+        type: String,
+        label: "Meteor User",
+    },
+};
+
+Schemas.ExperimentAnswers = new SimpleSchema( 
+    _.concat( questionsCore, {
+    title : {
+        type: String,
+        label: "title of the question",
+    },
+    text : {
+        type: String,
+        label: "text of the question",
+    },
+    strategic: {
+        type: Boolean,
+        label: "did the question integrate another persons choices",
+    },
+    paid: {
+        type: Boolean,
+        label: "does this question pay?",
+    },
+    cohortId: {  
+        type: SimpleSchema.Integer,
+        label: "group number",
+    },
+    mtWorkerId: {
+        type: String,
+        label: "MT Worker Id",
+    },
+    treatment : {
+        type: String,
+        label: "treatment",
+    },
+    payoffOrder: { //['Top,Left', 'Top,Right', 'Bottom,Left', 'Bottom,Right'];
+        type: [String],
+        label: "payoffOrder",
+    },
+    payoffOrderPlayers: { //['You', 'Other'];
+        type: [String],
+        label: "payoffOrderPlayers",
+    },
+    playerPosition: { 
+        type: String,
+        label: "playerPosition",
+    },
+    payoffs: { 
+        type: [SimpleSchema.Integer],
+        label: "payoffs",
+        optional: true,
+        //decimal: true,  change to number if I ever want decimenals in payoffs
+    },
+    payoffsGame1: { 
+        type: [SimpleSchema.Integer],
+        label: "payoffsGame1",
+    },
+    payoffsGame2: { 
+        type: [SimpleSchema.Integer],
+        label: "payoffsGame2",
+    },
+    payoffsDiff: { 
+        type: [SimpleSchema.Integer],
+        label: "payoffsDiff",
+    },
+    matchingGameId: { 
+        type: String,
+        label: "matchingGameId",
+        optional: true,
+    },
+    idGameQ1: { 
+        type: String,
+        label: "idGameQ1",
+        optional: true,
+    },
+    idGameQ2: { 
+        type: String,
+        label: "idGameQ2",
+        optional: true,
+    },
+    // optional values added after consummation
+    outcome : {
+        type: String,
+        label : "outcome",
+        optional: true,
+    },
+    outcomeFocal : {
+        type: String,
+        label : "outcomeFocal",
+        optional: true,
+    },
+    outcomeOther : {
+        type: String,
+        label : "outcomeOther",
+        optional: true,
+    },
+    payoffEarnedFocal: { 
+        type: SimpleSchema.Integer,
+        label: "payoffEarnedFocal",
+        optional: true,
+    },
+    payoffEarnedOther: { 
+        type: SimpleSchema.Integer,
+        label: "payoffEarnedOther",
+        optional: true,
+    },
+    completedGame: {
+        type: Boolean,
+        label: "completedGame",
+        optional: true,
+    }, 
+    choiceLoadedTime: {
+        type: Number,
+        label: "choiceLoadedTime",
+        optional: true,
+    },
+    choiceMadeTime: {
+        type: Number,
+        label: "choiceMadeTime",
+        optional: true,
+    },
+    choiceSubmittedTime: {
+        type: Number,
+        label: "choiceSubmittedTime",
+        optional: true,
+    },
+}) );
+
+Schemas.QuizAnswers = new SimpleSchema(
+    _.concat( questionsCore, {
+    title : {
+        type: String,
+        label: "title of the question",
+    },
+    text : {
+        type: String,
+        label: "text of the question",
+    },
+    payoffs: { 
+        type: [SimpleSchema.Integer],
+        label: "payoffs",
+        //decimal: true,  change to number if I ever want decimenals in payoffs
+    },
+    options: {
+        type: [String],
+        label: "potential answers to the quiz",
+    },
+    correct: {
+        type: Boolean,
+        label: "correct",
+    },
+    correctAnswer: {
+        type: [String],
+        label: "correct answer(s) to the quiz",
+    },
+} ));
+Schemas.SurveyAnswers = new SimpleSchema(
+    _.concat( questionsCore, {
+    options: {
+        type: [String],
+        label: "potential answers to the quiz",
+        optional : true,
+    },
+    pattern: {
+        type: String,
+        label: "pattern",
+        optional : true,
+    },
+    fieldName: {
+        type: String,
+        label: "fieldName",
+        optional : true,
+    },
+} ));
 Schemas.ExitSurveyAnswers = new SimpleSchema({
     feedback: {
         type: String,

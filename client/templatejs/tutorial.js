@@ -99,9 +99,6 @@ Template.main.helpers({
             });
         },
     },
-    tutorialEnabled: function() {
-        return Session.get('tutorialEnabled');
-    },
 });
 //let maxBullets = 5;
 Template.tutorialBullets.helpers({
@@ -123,6 +120,11 @@ Template.tutorialBullets.helpers({
         return( rvals );
     },
 });
+Template.registerHelper('tutorialEnabled', function(v1) {
+    let design = Sess.design();
+        return !_.isNil( design ) && design.tutorialEnabled && Session.get('tutorialEnabled');
+});
+
 Template.tutorial_step1.helpers({
     design : function() { return( Sess.design() ); }, 
 });

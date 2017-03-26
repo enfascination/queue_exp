@@ -71,8 +71,14 @@ Template.answersForm.events({
             let choice = element.attr("choice");
             let answered = !_.isNil( choice );
             let hasError = false;
-            let theData = {answered: answered, choice : choice, hasError : hasError };
-            //if (!answered || !Match.test(theData, Schemas.ExperimentAnswers) ) {
+            let theData = {
+                answered: answered, 
+                choice : choice, 
+                hasError : hasError,
+                choiceMadeTime : UserElements.choiceChecked.get( q._id + "_choiceMadeTime" ),
+                choiceLoadedTime : UserElements.choiceChecked.get( q._id + "_choiceLoadedTime" ),
+                choiceSubmittedTime : Date.now(),
+            };
             if (!answered) {
                 theData.hasError = true;
                 UserElements.questionsIncomplete.set(true);
@@ -80,9 +86,10 @@ Template.answersForm.events({
                 answeredCount += 1;
             }
             _.assign(q, theData); // client side update: assign is a mutator of q 
+            console.log("on submit", element.attr("id"), q._id, q.choiceLoadedTime, q.choiceMadeTime, q.choiceSubmittedTime, q);
             Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData); //server side update (async) //optional?
         });
-        console.log("experimentSubmit", qs.length, answeredCount, sub.sec_rnd_now, qs );
+        console.log("experimentSubmit", qs.length, answeredCount, sub.sec_now, sub.sec_rnd_now, Sess.design(), qs );
         if ( answeredCount === qs.length ) {
             UserElements.questionsIncomplete.set(false);
             let design = Sess.design();

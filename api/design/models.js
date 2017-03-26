@@ -68,13 +68,11 @@ DesignSequence = {
 Design = {
     maxPlayersInCohort : 2,
     endowment : 1.00,
-    surveyReward : 0.50,
+    surveyEarnings : 0.50,
     pointEarnings : 0.25,
-    queueNames : [ 'A', 'B' ],
-    queueCosts : { "A": 0.50, 'B': 0.00 },
     maxQuizFails : 3,
     sequence : DesignSequence,
-    positionCosts : 0.25,
+    //sampleGame : [1,-1,2,0,1,-1,2,0], //not actulaly being used anywhere
     batchName : "main",
     matching : {
         ensureSubjectMismatchAcrossSections : false,
@@ -85,11 +83,13 @@ Design = {
     },
     // think of these as subject level, not cohort level. 
     //     in a cohort, you get both within a cohort
-    subjectTreatments : ["nofeedback", "feedback"], 
-    tutorialEnabled : true,
+    subjectTreatmentsTemplate : ["nofeedback", "feedback"], 
+    tutorialEnabled : false,
 };
+SimpleSchema.debug = true;
+
 UserElements = {
-    experimenterView : true,
+    experimenterView : false,
 };
 
 SubjectsData = new Mongo.Collection('s_data');
@@ -97,6 +97,6 @@ SubjectsStatus = new Mongo.Collection('s_status');
 SubjectsData.attachSchema(Schemas.SubjectsData);
 SubjectsStatus.attachSchema(Schemas.SubjectsStatus);
 CohortSettings = new Mongo.Collection('designs');
+CohortSettings.attachSchema(Schemas.CohortSettings);
 Questions = new Mongo.Collection( 'questions' );
-//CohortSettings.attachSchema(Schemas.CohortSettings);
 //TurkServer.partitionCollection(CohortSettings);

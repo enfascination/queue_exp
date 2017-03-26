@@ -44,7 +44,7 @@ Template.answersForm.events({
         let muid = Meteor.userId();
         let sub = Sess.subStat();
 
-        console.log("quiz event submit", Sess.design(), Sess.subStat(), Template.currentData() );
+        //console.log("quiz event submit", Sess.design(), Sess.subStat(), Template.currentData() );
         // if state is still in instructions, change that
 
 
@@ -73,10 +73,12 @@ Template.answersForm.events({
             let hasError = false;
             // double check correctness before udpating
             let theData = {correct: correct, answered: answered, choice : choice, hasError : hasError };
-            if ( !answered || !correct || !Match.test(theData, Schemas.QuizAnswers) ) {
+            _.assign(q, theData); // client side update: assign is a mutator of q
+            if ( !answered || !correct || !Match.test(q, Schemas.QuizAnswers) ) {
                 theData.correct = false;
                 theData.hasError = true;
-                console.log("Quiz Failure", q._id, element_raw);
+                Schemas.QuizAnswers.validate( q );
+                console.log("Quiz Failure", answered, correct, Match.test(theData, Schemas.QuizAnswers),  q);
             } else {
                 answeredCount += 1;
                 resultsCount += correct ? 1 : 0;
@@ -91,7 +93,7 @@ Template.answersForm.events({
             if ( resultsCount === qs.length ) {
                 passed = true;
             }
-            let sub = Sess.subStat();
+            //let sub = Sess.subStat();
             let failed = false; // this is not the opposite of passing
             let triesLeft = sub.quiz.triesLeft;
             if ( !passed || sub.quiz.failed) {// have I alrady failed this person?
@@ -114,8 +116,8 @@ Template.answersForm.events({
             /////////////////////
             //// ... SEPARATELY, ADVANCE STATE 
             /////////////////////
-            if ( true || passed || failed ) {
-            //if ( passed || failed ) {
+            //if ( true || passed || failed ) {
+            if ( passed || failed ) {
                 Meteor.call( "disableQuestions", qs.map( (q) => q._id ), reset=failed ? true : false );
                 if ( failed ) {
                     Helper.buttonsReset( e.currentTarget );
@@ -206,9 +208,9 @@ Template.questionQuad.events({
 Template.navButton.events({
     "click button.navButton" : function( e ) {
         let stage = _.toInteger( e.target.value );
-        console.log("navButton", stage, e.target.value, this, e.target);
+        //console.log("navButton", stage, e.target.value, this, e.target);
         if (stage < 1) { stage = 1; }
-        if (stage >= 8) { stage = 1; }
+        if (stage >= 7) { stage = 7; }
         Helper.activateTab( 'quiz' );
         Router.go('start', {stage:stage});
     },
