@@ -16,22 +16,6 @@ Template.experimenterViewState.helpers({
     cohortId: function () {
         return this.design.cohortId;
     },
-    queuePosition: function () {
-        return( "" );
-        //return( this.subData ? this.subData[0].theData.queuePosition : "" );
-    },
-    queueCountA: function () {
-        return( "" );
-        //return( this.subData ? this.subData[0].theData.queueCountA : "" );
-    },
-    queueCountB: function () {
-        return( "" );
-        //return( this.subData ? this.subData[0].theData.queueCountB : "" );
-    },
-    queueCountNoChoice: function () {
-        return( "" );
-        //return( this.subData ? this.subData[0].theData.queueCountNoChoice : "" );
-    },
 });
 
 Template.experimenterViewCurrentSubjectData.helpers({
@@ -45,7 +29,7 @@ Template.experimenterViewCurrentSubjectDataPoint.helpers({
         let sectionData = dataPoint.theData;
         //console.log(  this, dataPoint );
         if (dataPoint.sec === "experiment1" || dataPoint.sec == "experiment2" ) {
-            return( JSON.stringify( _.pick(sectionData, ["choice", "earnings2"])) );
+            return( JSON.stringify( _.pick(sectionData, ["choice", "payoffs", "outcome"])) );
         } else if (dataPoint.sec === "survey" ) {
             return( JSON.stringify( _.pick(sectionData, ["text", "answered", "choice"])) );
         }
@@ -76,13 +60,12 @@ Template.experimenterViewPayouts.helpers({
             }, { sort: { sec: 1 , sec_rnd : 1} } );
         }
     },
-
     showExperimentCalc: function() {
         // the last queue is complete when the next shows it's first subject.
         return( Session.get('showExperimentCalc') );
     },
-
 });
+
 Template.experimenterViewPayout.helpers({
     completedExperiment: function (subject) {
         let substat = SubjectsStatus.findOne({ meteorUserId : subject.meteorUserId });
@@ -94,9 +77,6 @@ Template.experimenterViewPayout.helpers({
         if (cohort) {
             return(cohort.completed);
         }
-    },
-    earningsChoice: function (subject) {
-        return Helper.toCash( subject.theData.earnings2 );
     },
     earningsTotal: function (subject) {
         let substat = SubjectsStatus.findOne({ meteorUserId : subject.meteorUserId });

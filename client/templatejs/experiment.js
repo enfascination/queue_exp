@@ -200,18 +200,6 @@ Template.experimentInfo.helpers({
             }
         }
     },
-    counterNet: function () {
-        let data = Sess.subData();
-        if( data && !_.isNil( data ) && !_.isNil( data[0] ) && !_.isNil( data[0].theData ) ) {
-            return data[0].theData.queuePosition;
-        }
-    },
-    groupSize: function () {
-        let aDesign = Sess.design();
-        if (aDesign) {
-            return( aDesign.maxPlayersInCohort);
-        }
-    },
 });
 
 Template.questionBinary.events({

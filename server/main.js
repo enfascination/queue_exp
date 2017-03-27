@@ -8,7 +8,7 @@ import '../api/design/models.js';
 import { Schemas } from '../api/design/schemas.js';
 import { Helper } from '../imports/lib/helper.js';
 
-import { QueueAssigner } from './assigners-custom.js';
+import { OverlapAssigner } from './assigners-custom.js';
 
 import { Experiment } from './exp_instpref.js';
 import { QuestionData } from '../imports/startup/experiment_prep_instpref.js';
@@ -25,7 +25,7 @@ Meteor.users.deny({
         Batches.upsert({name: Design.batchName }, {name: Design.batchName , active: true});
         let batch = TurkServer.Batch.getBatchByName( Design.batchName );
         //batch.setAssigner(new TurkServer.Assigners.SimpleAssigner());
-        batch.setAssigner( new QueueAssigner() );
+        batch.setAssigner( new OverlapAssigner() );
     });
 
     TurkServer.initialize( function() {

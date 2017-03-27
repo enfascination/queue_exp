@@ -232,7 +232,7 @@ Schemas.CohortSettings = new SimpleSchema({
     },
     maxPlayersInCohort: {
         type: SimpleSchema.Integer,
-        label: "Max size of queue",
+        label: "Max size of cohort",
     },
     endowment: {
         type: Number,

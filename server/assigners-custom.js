@@ -2,7 +2,7 @@
 
 import { TurkServer } from 'meteor/mizzao:turkserver';
 
-export let QueueAssigner = class extends TurkServer.Assigners.SimpleAssigner {
+export let OverlapAssigner = class extends TurkServer.Assigners.SimpleAssigner {
 
     userJoined(asst) {
         var currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
