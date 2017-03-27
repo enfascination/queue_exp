@@ -265,3 +265,6 @@ QuestionData.questions.forEach ( function(q) {
 });
 
 
+// test experiment flow with zero questions
+//    make sure it still goes through the whole thing
+//QuestionData.questions = [];

@@ -116,11 +116,15 @@ Schemas.SubjectsStatus = new SimpleSchema({
 });
 
 Schemas.SubjectsData = new SimpleSchema({
+    mtWorkerId: {
+        type: String,
+        label: "turkUser",
+    },
     // this is the TurkServer asstId. 
         // it's the finest grain one and the one I shoudl use in data nalayssi.
-    userId: {
+    asstUserId: {
         type: String,
-        label: "User",
+        label: "asst User",
     },
     // this is the Meteor.userId ( and the asst.userId ) for identifying user in-game. 
     meteorUserId: {  // with better hygeine, this wouldn't be in this collection

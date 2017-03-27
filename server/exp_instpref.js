@@ -17,7 +17,8 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
 
             if ( _.isNil( probeDesign ) ) { // server has been reset and there are no design in database
                 console.log("First round of install", sub, Helper.des(lastDesign) );
-                cohortId = 0;
+                cohortId = 1;
+                treatment = "nofeedback";
             } else if (matching.noMatching) { // everyone should start a cohort with each section and no one shoudl complete one
                 console.log("no matching", probeDesign.cohortId + 1);
                 try {
@@ -26,6 +27,7 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                     throw(err);
                 }
                 cohortId = probeDesign.cohortId + 1;
+                treatment = "nofeedback";
             } else if ( matching.selfMatching ) {
                 console.log("self matching");
                 if (sub.cohort_now === 0 ) {  // create a new cohort for this person
@@ -34,10 +36,12 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                         console.assert( sub.sec_now === 'experiment1', "problem in self matching 2" );
                     } catch (err) { throw(err); }
                     cohortId = probeDesign.cohortId + 1;
-                    console.log("self matching exp 1", cohortId, sub.meteorUserId);
+                    treatment = "nofeedback";
+                    console.log("self matching exp 1", cohortId, treatment, sub.meteorUserId);
                 } else {
                     cohortId = sub.cohort_now;
-                    console.log("self matching exp 2", cohortId, sub.meteorUserId);
+                    treatment = "feedback";
+                    console.log("self matching exp 2", cohortId, treatment, sub.meteorUserId);
                 }
             } else if (
                     matching.ensureSubjectMismatchAcrossSections || 
@@ -67,7 +71,10 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                         // someone-in-progress currently matched to this 
                         // and I don't know?
                         playerTwo : null, 
-                    }, { sort : { cohortId : 1} });
+                    }, 
+                    // the sorting here is important: 
+                    //    FIFO for unfinished cohorts
+                    { sort : { cohortId : 1} }); 
 
                     // should I bail on trying to match this subject?
                     if ( _.isNil( cohortInProgress ) ) {
@@ -331,7 +338,7 @@ Experiment.completeGameCompare = function(compareGamesId, chosenGameId, nextGame
     chosenGame = Questions.findOne(chosenGameId);
     nextGame = Questions.findOne(nextGameId);
     //console.log("completeGameCompare, after setChosenGameForRound1", compareGamesId, chosenGameId, nextGameId, chosenGame, nextGame );
-    console.log("completeGameCompare, after setChosenGameForRound2", compareGamesId, chosenGame.payoffs, nextGame.payoffs, Helper.comparePayoffs( chosenGame, nextGame ));
+    //console.log("completeGameCompare, after setChosenGameForRound2", compareGamesId, chosenGame.payoffs, nextGame.payoffs, Helper.comparePayoffs( chosenGame, nextGame ));
     if ( Helper.comparePayoffs( chosenGame, nextGame ) ) {
         Questions.update( compareGamesId, { $set : { gotPreferredGame : true } } );
         Questions.update( nextGameId, { $set : {gameWasPreferred : true } } );
@@ -388,7 +395,7 @@ Experiment.calculateExperimentEarnings = function(muid, design) {
             survey : surveyComplete ? design.surveyEarnings : 0 
         }
     };
-    console.log("calculateExperimentEarnings", HITearnings, paidQuestions.count(), surveyQuestions.count(), paidQuestions.map( (q) => q.payoffEarnedFocal ) );
+    //uconsole.log("calculateExperimentEarnings", HITearnings, paidQuestions.count(), surveyQuestions.count(), paidQuestions.map( (q) => q.payoffEarnedFocal ) );
 
     return( HITearnings );
 };

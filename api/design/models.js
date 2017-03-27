@@ -76,9 +76,9 @@ Design = {
     batchName : "main",
     matching : {
         ensureSubjectMismatchAcrossSections : false,
-        ensureSubjectMismatchAcrossSectionsAndPreferentiallyCloseOutIncompleteCohorts : true,
+        ensureSubjectMismatchAcrossSectionsAndPreferentiallyCloseOutIncompleteCohorts : false,
         ensureSubjectMatchAcrossSections : false,
-        selfMatching : false,
+        selfMatching : true,
         noMatching : false,
     },
     // think of these as subject level, not cohort level. 

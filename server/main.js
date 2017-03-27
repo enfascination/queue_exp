@@ -326,7 +326,7 @@ Meteor.users.deny({
                 treatments : treatmentsNew,
             } });
             sub = SubjectsStatus.findOne({meteorUserId : sub.meteorUserId});
-            console.log("reinit subject object");
+            console.log("initRound reinit subject object");
 
             // init this section by creating and adding all of its component 
             // questions, for all rounds;
@@ -467,9 +467,10 @@ Meteor.users.deny({
             // insert
             let id = SubjectsData.insert( {
                 _id : theData._id,
-                userId: sub.userId,
+                mtWorkerId: sub.mtWorkerId,
+                asstUserId: sub.userId,
                 meteorUserId: sub.meteorUserId,
-                sec: sub.sec_now,
+                sec: theData.sec,
                 sec_type: sub.sec_type_now,
                 sec_rnd: theData.sec_rnd,
                 cohortId: theData.cohortId,
@@ -482,8 +483,15 @@ Meteor.users.deny({
                     choiceAdded : Date.now(),
                 },
             } );
-        //ensure uniqueness XXXuncomment me eventually
-                //SubjectsData._ensureIndex({userId : 1, meteorUserId : 1, sec : 1, sec_rnd : 1}, { unique : true } );
+            SubjectsData._ensureIndex({
+                mtWorkerId : 1,
+                asstUserId : 1, 
+                meteorUserId : 1, 
+                cohortId : 1, 
+                sec : 1, 
+                sec_rnd : 1, 
+                "theData.order" : 1,  //there can be multiple questions per section per round
+            }, { unique : true } );
             return( SubjectsData.findOne( id ) );
         },
         // server side helper
@@ -546,7 +554,8 @@ Meteor.users.deny({
                     !_.isNil( nextQuestion.matchingGameId )
                 ), "Error PSDFGKSDFG: No match?" );
             } catch(err) {
-                console.log(err, muid, treatment, chosenQuestion, nextQuestion, sec, sec_rnd);
+                console.log("Error PSDFGKSDFG: No match?", muid, treatment, chosenQuestion, nextQuestion, sec, sec_rnd, err);
+                throw(err);
             }
             if (treatment === 'nofeedback') {
                 //console.log("setChosenGameForRound 9");
@@ -590,13 +599,16 @@ Meteor.users.deny({
                     try {
                         console.assert( nextQuestion.matchingGameId === tmpMatchingQuestion._id , "Error (OFDUIS99: games aren't connecting" );
                     } catch(err) {
-                        console.log(err, muid, chosenQuestion, nextQuestion, matchingQuestion);
+                        console.log("Error (OFDUIS99: games aren't connecting" , muid, chosenQuestion, nextQuestion, matchingQuestion, err);
+                    throw(err);
                     }
                 }
                 try {
                     console.assert( !_.isNil( matchingQuestion ), "Error IOUFDKJLLLL: No match" );
+                    console.assert( !_.isNil( matchingQuestion.payoffs ), "Error IOUFDKJLLLL2: No match" );
                 } catch(err) {
-                    console.log(err, muid, chosenQuestion, nextQuestion, matchingQuestion);
+                    console.log("Error IOUFDKJLLLL: No match", muid, chosenQuestion, nextQuestion, matchingQuestion, err);
+                    throw(err);
                 }
                 //let b4 =   Questions.find(nextQuestion._id).fetch();
                 tmp = Questions.update(nextQuestion._id, {$set : { 
@@ -612,7 +624,8 @@ Meteor.users.deny({
             try {
                 console.assert( tmp === 1, 'too many matches in setchosengameforround');
             } catch (err) {
-                console.log(err, tmp, nextQuestion, chosenGameId);
+                console.log( 'too many matches in setchosengameforround', tmp, nextQuestion, chosenGameId, err);
+                throw(err);
             }
             //console.log("setChosenGameForRound again", chosenQuestionFocalPlayer.payoffs, nextQuestion, tmp);
             return(nextQuestion._id);

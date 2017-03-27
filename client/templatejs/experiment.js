@@ -15,15 +15,13 @@ import { Schemas } from '../../api/design/schemas.js';
 
 
 Template.experiment.onCreated( function(){
-
     let group = TurkServer.group();
     if (_.isNil(group) ) return;
     // make client side subject available
     let muid = Meteor.userId();
-    let templateCurrentData = Template.currentData();
     console.log("MUID", muid);
     if ( muid ) {
-        let subStat = templateCurrentData.subStat;
+        let subStat = Template.currentData().subStat;
         // is player refreshing, reconnecting, or somehow already up to date in the system?
         console.log("experiment render", Template.currentData());
         if ( !subStat.readyToProceed ) {
@@ -86,10 +84,10 @@ Template.answersForm.events({
                 answeredCount += 1;
             }
             _.assign(q, theData); // client side update: assign is a mutator of q 
-            console.log("on submit", element.attr("id"), q._id, q.choiceLoadedTime, q.choiceMadeTime, q.choiceSubmittedTime, q);
+            //console.log("on submit", element.attr("id"), q._id, q.choiceLoadedTime, q.choiceMadeTime, q.choiceSubmittedTime, q);
             Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData); //server side update (async) //optional?
         });
-        console.log("experimentSubmit", qs.length, answeredCount, sub.sec_now, sub.sec_rnd_now, Sess.design(), qs );
+        //console.log("experimentSubmit", qs.length, answeredCount, sub.sec_now, sub.sec_rnd_now, Sess.design(), qs );
         if ( answeredCount === qs.length ) {
             UserElements.questionsIncomplete.set(false);
             let design = Sess.design();
@@ -140,20 +138,21 @@ Template.answersForm.events({
 
             // submit choices and do clean up on previousness
             qs.forEach( function( q ) {
+                console.log("inserting q", q);
                 Meteor.call("insertQuestionToSubData", Meteor.userId(), q );
             });
 
             // also not affected by async
-            console.log("before q completion", sub);
+            //console.log("before q completion", sub);
             if ( sub.sec_rnd_now >= 1 ) { // don't match first two games or calculate their payoffs until feedback round 2
-                console.log("trying ocomplete questions");
+                //console.log("trying ocomplete questions");
                 Meteor.call('tryToCompleteUncompletedQuestions', sub, design, function(err) {
                     /// calculate payoffs
                     Meteor.call("updateExperimentEarnings", muid, design);
                     Meteor.call("updateStatusInHIT", muid, design);
                 });
             }
-            console.log("after q completion 7");
+            //console.log("after q completion 7");
 
             /////////////////////
             //// ... SEPARATELY, ADVANCE STATE 
@@ -162,7 +161,7 @@ Template.answersForm.events({
                 function(err, updatedSub) {
 
                     // experiment navigation
-                    console.log("disabling q's", qs.map( (q) => q._id ) );
+                    //console.log("disabling q's", qs.map( (q) => q._id ) );
                     Meteor.call( "disableQuestions", qs.map( (q) => q._id ), false );
                     if ( !lastGameRound ) {  // calculate the logic for this out of the callbacks because things get confusing
                         //console.log("continuing");
