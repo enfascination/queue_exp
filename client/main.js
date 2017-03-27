@@ -22,7 +22,7 @@ Tracker.autorun(function() {
         // stage of instructions
         let stage = this.location.pathname.match(/\d*$/)[0];
         if (stage === '') {
-            stage = 1;
+            stage = 7;
         } else {
             stage = _.toInteger( stage );
         }

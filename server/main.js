@@ -422,7 +422,7 @@ Meteor.users.deny({
             }
 
             sub = SubjectsStatus.findOne({ meteorUserId: muid });
-            console.log("end of advancesection", entered, sub.sec_now );
+            console.log("end of advancesection", entered, sub_old.sec_now , sub.sec_now );
             return( sub );
         },
         // updates a CohortSettings object

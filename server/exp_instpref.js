@@ -47,7 +47,7 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                     matching.ensureSubjectMismatchAcrossSections || 
                     matching.ensureSubjectMismatchAcrossSectionsAndPreferentiallyCloseOutIncompleteCohorts 
                 ) {
-                console.log("main matching");
+                console.log("main matching", treatment);
                 //      if the sub is in a feedback condition
                 //            look for an unfinished cohort
                 //            unless there is no unfinished cohort

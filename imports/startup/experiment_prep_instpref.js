@@ -221,6 +221,21 @@ questions[4] = {
 };
 */
 
+// test experiment flow with zero questions
+//    make sure it still goes through the whole thing
+QuestionData.questions = [
+{
+    sec: 'experiment',
+    sec_rnd: 0,
+    type: 'chooseStrategy',
+	title: 'Question 1.1',
+	text: 'You are playing the game below with another person.  They are choosing Left or Right.  You will choose either Top or Bottom.',
+	label: 'Make your choice for this game, either Top or Bottom.',
+    strategic: true,
+    paid: true,
+},
+];
+
 
 //let idxs = _.shuffle( _.range( questions.length ) );
 //  Create multiple sections
@@ -265,6 +280,3 @@ QuestionData.questions.forEach ( function(q) {
 });
 
 
-// test experiment flow with zero questions
-//    make sure it still goes through the whole thing
-//QuestionData.questions = [];

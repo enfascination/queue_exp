@@ -277,7 +277,9 @@ button {
     margin: 15px;
     padding: 15px;
 }
-.generalNavButton:hover {
+.generalNavButton:active,
+.generalNavButton:hover,
+.generalNavButton:hover:active {
     background-color: #03A9F4; //lightblue500//hsl(0, 0, 60);
     opacity: 1.00;
 }

@@ -173,7 +173,7 @@ Template.answersForm.helpers({
     testQuizWrong: function() {
         //console.log("testQuizWrong", UserElements.quizSubmitted.get(), !Sess.subStat().quiz.passed);
         let sub = Sess.subStat();
-        if (sub && UserElements.quizSubmitted.get()) {
+        if (sub && sub.quiz && UserElements.quizSubmitted.get()) {
             return( !sub.quiz.passed );
         }
     },
