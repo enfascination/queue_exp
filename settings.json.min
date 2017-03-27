@@ -7,6 +7,9 @@
             }
         },
         "mturk": {
+            "sandbox": true,
+            "externalUrl": "localhost:3000",
+            "frameHeight": 800
         }
-    },
+    }
 }
