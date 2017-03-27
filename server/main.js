@@ -417,12 +417,13 @@ Meteor.users.deny({
                 entered = 3;
             } else if ( sub_old.sec_now === "earningsReport" ) {
                 // to exit survey/submitHIT
+                console.log("outside goToExitSurvey");
                 Meteor.call('goToExitSurvey', Meteor.userId());
                 entered = 4;
             }
 
             sub = SubjectsStatus.findOne({ meteorUserId: muid });
-            console.log("end of advancesection", entered, sub.sec_now );
+            console.log("end of advancesection", entered, sub_old.sec_now , sub.sec_now );
             return( sub );
         },
         // updates a CohortSettings object
@@ -436,8 +437,11 @@ Meteor.users.deny({
         updateExperimentEarnings : Experiment.updateExperimentEarnings,
         updateStatusInHIT : Experiment.updateStatusInHIT,
         goToExitSurvey: function( muid ) {
+            console.log("goToExitSurvey");
             if (TurkServer.Instance.currentInstance()) {
+                console.log("goToExitSurvey in loop");
                 TurkServer.Instance.currentInstance().teardown(returnToLobby = true);
+                console.log("goToExitSurvey after loop");
             }
         },
         updateQuiz: function ( muid, quizObj) {
