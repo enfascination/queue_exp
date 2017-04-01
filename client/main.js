@@ -22,7 +22,12 @@ Tracker.autorun(function() {
         // stage of instructions
         let stage = this.location.pathname.match(/\d*$/)[0];
         if (stage === '') {
-            stage = 7;
+            if (Debugging) {
+                console.log("DEBUGGING");
+                stage = 7;
+            } else {
+                stage = 1;
+            }
         } else {
             stage = _.toInteger( stage );
         }

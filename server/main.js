@@ -230,12 +230,16 @@ Meteor.users.deny({
                                 q.type === 'chooseStrategy' &&      // which q's to match
                                 q.strategic && 
                                 _.includes([0,1,4], q.sec_rnd )     // which rounds to match in
-                            ) {
+                        ) {
                             let matchingQuestion = Questions.findOne(
                                 { cohortId : q.cohortId, sec_rnd : q.sec_rnd, type : q.type, strategic : true}
                             );
-                            q.matchingGameId = matchingQuestion._id;
-                            console.log( "create matched game: matching question", q._id, matchingQuestion._id );
+                            if( matchingQuestion ) {
+                                q.matchingGameId = matchingQuestion._id;
+                                console.log( "create matched game: matching question", q._id, matchingQuestion._id );
+                            } else {
+                                console.log( "create matched game: no matching question", q._id, q.cohortId, q.sec_rnd, q.type);
+                            }
                         } else {
                             q.matchingGameId = null;
                         }

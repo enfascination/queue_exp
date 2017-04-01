@@ -138,7 +138,7 @@ Template.answersForm.events({
 
             // submit choices and do clean up on previousness
             qs.forEach( function( q ) {
-                console.log("inserting q", q);
+                //console.log("inserting q", q);
                 Meteor.call("insertQuestionToSubData", Meteor.userId(), q );
             });
 

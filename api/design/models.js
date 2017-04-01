@@ -86,11 +86,16 @@ Design = {
     subjectTreatmentsTemplate : ["nofeedback", "feedback"], 
     tutorialEnabled : false,
 };
-SimpleSchema.debug = true;
 
 UserElements = {
     experimenterView : false,
 };
+
+Debugging = false;
+if (Debugging) {
+    SimpleSchema.debug = true;
+    UserElements.experimenterView = true;
+}
 
 SubjectsData = new Mongo.Collection('s_data');
 SubjectsStatus = new Mongo.Collection('s_status');
