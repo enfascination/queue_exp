@@ -7,8 +7,8 @@ import { Helper } from '../../lib/helper.js';
 
 Router.configure({
     layoutTemplate: 'main',
-    layout: 'main',
     loadingTemplate: 'loading',
+    layout: 'main',
     data: function () {
         let sub = Sess.subStat();
         if ( sub ) {
@@ -20,22 +20,11 @@ Router.configure({
                 }); 
         }
     },
-    waitOn : function () {
-        //return([Meteor.subscribe('s_status')]);
-        return([ Meteor.subscribe('s_status'), ]);
-    },
-    onAfterAction : function() {
-        // for some reaosn this code breaks everyting: it stops the right tab from activating on reload
-        //let sub = Sess.subStat();
-        //console.log("onAfterActionmain", this);
-        //if ( sub ) {
-            //Helper.updateNavBar( sub.sec_now, sub.sec_now );
-        //}
-    },
 });
 
 Router.route('/', function() {
     this.render('home');
+}, {
 });
 
 Router.route('start', function() {
@@ -131,4 +120,9 @@ Router.route('/experiment', function() {
 Router.route('/submitHIT', function() {
     this.render('submitHITSectionTabPane');
     this.render( 'expGeneralInfoBox', { to : 'infoBox' } );
+}, {
+    waitOn : function () {
+        //return([Meteor.subscribe('s_status')]);
+        return([ Meteor.subscribe('s_status'), ]);
+    },
 });
