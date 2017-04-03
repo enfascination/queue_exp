@@ -15,7 +15,7 @@ import { Sess } from '../imports/lib/quick-session.js';
 
 Tracker.autorun(function() {
     //console.log("routing", Meteor.users.findOne(asst.userId).turkserver.state );
-    console.log("routing", TurkServer.inQuiz(), TurkServer.inExperiment(), TurkServer.inExitSurvey(), this.location.pathname, this.location.pathname.match(/\d*$/) , this.location.pathname.match(/\d*$/)[0], _.toInteger( this.location.pathname.match(/\d*$/)[0] ));
+    console.log("routing", TurkServer.inQuiz(), TurkServer.inExperiment(), TurkServer.inExitSurvey(), this.location.pathname,"XXX", this.location.pathname.match(/\d*$/) ,"XXX", this.location.pathname.match(/\d*$/)[0], "XXX", _.toInteger( this.location.pathname.match(/\d*$/)[0] ));
     if (TurkServer.inExperiment()) {
         Router.go('experiment');
     } else if (TurkServer.inQuiz()) {
