@@ -258,7 +258,7 @@ Meteor.users.deny({
                         }
                     } 
 
-                    /// add the q tot he questions collection
+                    /// add the q to the questions collection
                     try {
                         if ( sec === 'quiz' ) {
                             Schemas.QuizAnswers.validate( q );

@@ -143,14 +143,14 @@ Experiment.initializeCohort = function(cohortId, playerToAdd, newSectionType="ex
             Schemas.CohortSettings.validate( newDesign );
             console.assert( Match.test( newDesign, Schemas.CohortSettings) );
         } catch (err) {
-            console.log("ERROR 56JFKADF: Schema violation adding cohort", idtmp, newDesign, Match.test( newDesign, Schemas.CohortSettings), err);
+            console.log("ERROR 56JFKADF: Schema violation adding cohort", cohortId, idtmp, newDesign, Match.test( newDesign, Schemas.CohortSettings), err);
             throw(err);
         }
         // uniqueness check
         try {
             CohortSettings._ensureIndex({cohortId : 1}, { unique : true } );
         } catch (err) {
-            console.log("Data failed uniqueness: CohortSettings");
+            console.log("Data failed uniqueness: CohortSettings", cohortId, idtmp, newDesign );
             throw(err);
         }
         design = newDesign;

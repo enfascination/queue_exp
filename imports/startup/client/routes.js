@@ -6,12 +6,11 @@ import { Sess } from '../../lib/quick-session.js';
 import { Helper } from '../../lib/helper.js';
 
 Router.configure({
-    layoutTemplate: 'main',
     loadingTemplate: 'loading',
-    layout: 'main',
     data: function () {
         let sub = Sess.subStat();
         if ( sub ) {
+                console.log("data for all");
                 return({
                     currentTab : sub.sec_now,
                     subStat : sub,
@@ -43,6 +42,7 @@ Router.route('start', function() {
         this.render( 'instructions' + _.toString( stage ), { to : 'instructions' } );
     }
 }, {
+    layoutTemplate: 'main',
     path: '/start/:stage',
     data : function() { // enrich the global data object in this section
         let data = Router.options.data();
@@ -92,6 +92,7 @@ Router.route('/experiment', function() {
         }
     }
 },{
+    layoutTemplate: 'main',
     data : function() { // enrich the global data object in this section
         let data = Router.options.data();
         let subData = Sess.subData();
@@ -121,6 +122,7 @@ Router.route('/submitHIT', function() {
     this.render('submitHITSectionTabPane');
     this.render( 'expGeneralInfoBox', { to : 'infoBox' } );
 }, {
+    layoutTemplate: 'main',
     waitOn : function () {
         //return([Meteor.subscribe('s_status')]);
         return([ Meteor.subscribe('s_status'), ]);
