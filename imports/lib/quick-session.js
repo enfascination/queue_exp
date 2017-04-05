@@ -15,16 +15,6 @@ export const Sess = {
                 //return(amplify.store("s_status") );
             }
     },
-    subData : function () {
-            // there's an assumption hardcoded here, that the data i'll want for a subject is the most recent data.  
-            //   I don't know if that's true, but that's what's here.
-            let sd = SubjectsData.find({meteorUserId: Meteor.userId()}, { sort : { theTimestamp : -1, sec : -1, sec_rnd : -1 } } ).fetch();
-            if ( !_.isNil(sd) ) {
-                return( sd );
-            } else {
-                //return(amplify.store("s_data") );
-            }
-    },
     setClientSub : function ( sub ) {
         if (sub) {
             //console.log("setclientsub", sub["data"], sub.data);

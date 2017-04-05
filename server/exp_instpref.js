@@ -150,7 +150,7 @@ Experiment.initializeCohort = function(cohortId, playerToAdd, newSectionType="ex
         try {
             CohortSettings._ensureIndex({cohortId : 1}, { unique : true } );
         } catch (err) {
-            console.log("Data failed uniqueness: CohortSettings", cohortId, idtmp, newDesign );
+            console.log("Data failed uniqueness: CohortSettings", cohortId, newDesign );
             throw(err);
         }
         design = newDesign;
@@ -349,14 +349,17 @@ Experiment.completeGameCompare = function(compareGamesId, chosenGameId, nextGame
 };
 Experiment.calculateExperimentEarnings = function(muid, design) {
     // start with subject
+    let sub = SubjectsStatus.findOne({ meteorUserId : muid });
     // get all paid complete questions from subject
             let paidQuestions = Questions.find({
                 meteorUserId : muid, 
+                mtAssignmentId : sub.mtAssignmentId, 
                 sec : { $in : ['experiment1', 'experiment2'] },
                 paid : true,
             });
             let surveyQuestions = Questions.find({
                 meteorUserId : muid, 
+                mtAssignmentId : sub.mtAssignmentId, 
                 sec : 'survey',
                 paid : true,
             });
@@ -415,7 +418,12 @@ Experiment.updateExperimentEarnings = function(muid, design) {
 Experiment.updateStatusInHIT = function(muid, design) {
     let sub = SubjectsStatus.findOne({ meteorUserId: muid });
     /// remember that there is not a single other player: i may in each section paly a different player within a different cohortId
-    let ownQs = Questions.find({meteorUserId : muid, strategic : true, paid : true }); // could be across multiple cohorts
+    let ownQs = Questions.find({
+        meteorUserId : muid, 
+        mtAssignmentId : sub.mtAssignmentId, 
+        strategic : true, 
+        paid : true 
+    }); // could be across multiple cohorts
     let nOwnQsAnswered = ownQs.fetch().filter( (q)=>q.answered === true).length;
     let nOwnQsConsummated = ownQs.fetch().filter( (q)=>q.completedGame === true).length;
     console.log("Experiment.updateExperimentEarnings", ownQs.count(), nOwnQsAnswered, nOwnQsConsummated);

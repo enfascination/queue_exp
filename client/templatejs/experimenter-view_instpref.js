@@ -21,7 +21,7 @@ Template.experimenterViewState.helpers({
 Template.experimenterViewCurrentSubjectData.helpers({
     data() {
         let sub = Sess.subStat();
-        return SubjectsData.find( { meteorUserId : sub.meteorUserId }, { sort: { sec: 1 , sec_rnd : 1} } );
+        return SubjectsData.find( { meteorUserId : sub.meteorUserId , mtAssignmentId : sub.mtAssignmentId}, { sort: { sec: 1 , sec_rnd : 1} } );
     },
 });
 Template.experimenterViewCurrentSubjectDataPoint.helpers({

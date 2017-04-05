@@ -5,20 +5,28 @@ import { TurkServer } from 'meteor/mizzao:turkserver';
 export let OverlapAssigner = class extends TurkServer.Assigners.SimpleAssigner {
 
     userJoined(asst) {
-        var currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
         // has to be before the super call.
-        console.log("assigner" );
+        console.log("assigner", asst, asst.getInstances().length);
         //console.log("assigner", Meteor.users.findOne(asst.userId).turkserver.state, currentUser );
         if (asst.getInstances().length === 0) { // before experiment
+            var currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
+            var repeatUser = SubjectsStatus.findOne({ meteorUserId:asst.userId, mtAssignmentId : {$ne : asst.assignmentId } });
             // this will be for the instructions in the lobby before the experiment
-            if(!currentUser){
-                console.log("created new user", asst.userId, asst.assignmentId );
-                Meteor.call("initializeSubject", asst, Design, function(err) {
-                    if (err) { throw( err ); }
-                    currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
-                    Meteor.call("addSectionQuestions", currentUser, "quiz", Design);
-                });
-            }
+                if (!currentUser) {
+                    console.log("created new user", asst.userId, asst.assignmentId );
+                    Meteor.call("initializeSubject", asst, Design, function(err) {
+                        if (err) { throw( err ); }
+                        currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
+                        Meteor.call("addSectionQuestions", currentUser, "quiz", Design);
+                    });
+                } else if ( repeatUser ) {
+                    console.log("created repeat user", asst.userId, asst.assignmentId );
+                    Meteor.call("initializeReturnSubject", asst, Design, function(err) {
+                        if (err) { throw( err ); }
+                        currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
+                        Meteor.call("addSectionQuestions", currentUser, "quiz", Design);
+                    });
+                }
 
             if ( currentUser.sec_type_now === 'quiz' ) {
                 console.log("in quiz");

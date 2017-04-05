@@ -84,7 +84,7 @@ Design = {
     // think of these as subject level, not cohort level. 
     //     in a cohort, you get both within a cohort
     subjectTreatmentsTemplate : ["nofeedback", "feedback"], 
-    tutorialEnabled : false,
+    tutorialEnabled : true,
 };
 
 UserElements = {
@@ -95,12 +95,15 @@ Debugging = false;
 if (Debugging) {
     SimpleSchema.debug = true;
     UserElements.experimenterView = true;
+    Design.tutorialEnabled = false;
 }
 
 SubjectsData = new Mongo.Collection('s_data');
 SubjectsStatus = new Mongo.Collection('s_status');
+SubjectsStatusArchive = new Mongo.Collection('s_status_bak');
 SubjectsData.attachSchema(Schemas.SubjectsData);
 SubjectsStatus.attachSchema(Schemas.SubjectsStatus);
+SubjectsStatusArchive.attachSchema(Schemas.SubjectsStatus);
 CohortSettings = new Mongo.Collection('designs');
 CohortSettings.attachSchema(Schemas.CohortSettings);
 Questions = new Mongo.Collection( 'questions' );

@@ -225,9 +225,9 @@ Template.instPrefGame2.helpers({
         if (sub && dataContext.currentSection && this.questionsColl) {
             /// in which context am I giving feedback (within section or within HIT)?
             if (allQs) {
-                questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, sec : { $in : ['experiment1', 'experiment2']}, choice : { $ne : null } });
+                questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, mtAssignmentId : sub.mtAssignmentId,  sec : { $in : ['experiment1', 'experiment2']}, choice : { $ne : null } });
             } else {
-                questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, sec : sub.sec_now , choice : {$ne : null }});
+                questionsFeedback = Questions.find({meteorUserId : sub.meteorUserId, mtAssignmentId : sub.mtAssignmentId, sec : sub.sec_now , choice : {$ne : null }});
             }
             // pick which questions ot display, and enrich them a bit for the HIT feedback context
             questionsFeedback = questionsFeedback.map( function( q ) {

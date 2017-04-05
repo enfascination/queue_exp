@@ -13,6 +13,12 @@ import { OverlapAssigner } from './assigners-custom.js';
 import { Experiment } from './exp_instpref.js';
 import { QuestionData } from '../imports/startup/experiment_prep_instpref.js';
 
+if ( Debugging && ( (Meteor.absoluteUrl() === 'https://localhost') || (Meteor.absoluteUrl() === 'http://localhost') || (Meteor.absoluteUrl() === 'http://localhost:3000/') ) ) {
+    //SSL('/Users/sfrey/projecto/research_projects/instpref/instpref/private/local/server.key','/Users/sfrey/projecto/research_projects/instpref/instpref/private/local/server.crt', 443);
+}
+
+console.log("Testing", process.env.HOME );
+
 // https://dweldon.silvrback.com/common-mistakes
 //
 Meteor.users.deny({
@@ -38,15 +44,10 @@ Meteor.users.deny({
         return SubjectsStatus.find();
     });
     Meteor.publish('s_data', function() {
-        //if ( UserElements.experimenterView || TurkServer.isAdmin() ) {
-            //return SubjectsData.find();
-        //} else {
-        if (this.userId) {
-            return SubjectsData.find({ meteorUserId: this.userId }, { sort : { sec : -1, sec_rnd : -1 } });
-        } else {
-            //return SubjectsData.find();
+        let sub = SubjectsStatus.findOne({ meteorUserId : this.userId });
+        if (sub) {
+            return SubjectsData.find({ meteorUserId: this.userId, mtAssignmentId : sub.mtAssignmentId }, { sort : { sec : -1, sec_rnd : -1 } });
         }
-        //}
     });
     Meteor.publish('s_status', function() {
         //if ( UserElements.experimenterView || TurkServer.isAdmin() ) {
@@ -63,7 +64,10 @@ Meteor.users.deny({
         return CohortSettings.find( {}, { sort : { cohortId : -1 } } );
     });
     Meteor.publish('questions', function() {
-        return Questions.find({ meteorUserId: this.userId });
+        let sub = SubjectsStatus.findOne({ meteorUserId : this.userId });
+        if (sub) {
+            return Questions.find({ meteorUserId: this.userId, mtAssignmentId : sub.mtAssignmentId  });
+        }
     });
 
     Meteor.methods({
@@ -90,7 +94,7 @@ Meteor.users.deny({
         initializeSubject: function( idObj, design ) {
            
             // has this turker done my experiment before?
-            let isExperienced = SubjectsStatus.find(
+            let isExperienced = SubjectsStatusArchive.find(
                     { 
                         mtWorkerId : idObj.mtWorkerId, 
                         completedExperiment: true, 
@@ -118,7 +122,6 @@ Meteor.users.deny({
             }
 
             SubjectsStatus.insert( {
-                userId: idObj.assignmentId,
                 meteorUserId: idObj.userId,
                 quiz: {"passed" : false, "failed" : false, "triesLeft" : design.maxQuizFails },
                 completedExperiment: false,
@@ -143,7 +146,7 @@ Meteor.users.deny({
             } );
 
             //ensure uniqueness
-            SubjectsStatus._ensureIndex({userId : 1, meteorUserId : 1}, { unique : true } );
+            SubjectsStatus._ensureIndex({ meteorUserId : 1}, { unique : true } );
         },
         addSectionQuestions : function( sub, sec, design) {
             //import { QuestionData } from '../../imports/startup/experiment_prep_instpref.js';
@@ -209,6 +212,7 @@ Meteor.users.deny({
                     q.sec_rnd < design.sequence[sec].roundCount ) {
                     console.log("addQuestions q", sec, q.sec, q.sec_rnd, sub.cohort_now);
                     q.meteorUserId = sub.meteorUserId;
+                    q.mtAssignmentId = sub.mtAssignmentId; 
                     if (q.sec === 'experiment1' || q.sec === 'experiment2' ) {
                         //q._id doesn't exist yet here.  insert happens below
                         q.sec = sec; // overwrite the input section (from experiment to experiment1)
@@ -476,7 +480,7 @@ Meteor.users.deny({
             let id = SubjectsData.insert( {
                 _id : theData._id,
                 mtWorkerId: sub.mtWorkerId,
-                asstUserId: sub.userId,
+                mtAssignmentId: sub.mtAssignmentId,
                 meteorUserId: sub.meteorUserId,
                 sec: theData.sec,
                 sec_type: sub.sec_type_now,
@@ -493,7 +497,7 @@ Meteor.users.deny({
             } );
             SubjectsData._ensureIndex({
                 mtWorkerId : 1,
-                asstUserId : 1, 
+                mtAssignmentId : 1, 
                 meteorUserId : 1, 
                 cohortId : 1, 
                 sec : 1, 
@@ -540,6 +544,7 @@ Meteor.users.deny({
         // this is the function I use to set a game on the fly after it is chosen for the final round of play
         setChosenGameForRound : function(muid, treatment, sec, sec_rnd, chosenGameId ) {
             console.log("setChosenGameForRound", sec_rnd, chosenGameId );
+            let sub = SubjectsStatus.findOne({meteorUserId : Meteor.userId() });
             let chosenQuestion, nextQuestion, focalPlayersChoice = false, firstPlayersChoice = true;
             let tmp, tmp2;
             // first, what is the game object with the id of the choice of the choice between two games?
@@ -547,6 +552,7 @@ Meteor.users.deny({
             // then, what is the following pre-created question object to fill with entries from the game that was chosen above?
             nextQuestion = Questions.findOne({
                 meteorUserId : muid, 
+                mtAssignmentId : sub.mtAssignmentId,
                 sec : sec, 
                 sec_rnd : sec_rnd, 
                 type : chosenQuestion.type,
@@ -637,5 +643,12 @@ Meteor.users.deny({
             }
             //console.log("setChosenGameForRound again", chosenQuestionFocalPlayer.payoffs, nextQuestion, tmp);
             return(nextQuestion._id);
+        },
+        initializeReturnSubject : function(asst, design) {
+            let subPast = SubjectsStatus.findOne({ meteorUserId : asst.userId });
+            SubjectsStatusArchive.insert( subPast );
+            SubjectsStatusArchive._ensureIndex({mtAssignmentId : 1, meteorUserId : 1}, { unique : true } );
+            SubjectsStatus.remove( { meteorUserId : asst.userId } );
+            Meteor.call("initializeSubject", asst, design );
         },
     });

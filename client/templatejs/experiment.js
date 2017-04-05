@@ -193,7 +193,7 @@ Template.experimentInfo.helpers({
         let sub = Sess.subStat();
         if (sub) {
             //console.log("experimentInfo.helpers", this, sub );
-            let q = Questions.findOne({  meteorUserId : sub.meteorUserId, sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now });
+            let q = Questions.findOne({  meteorUserId : sub.meteorUserId, mtAssignmentId : sub.mtAssignmentId, sec: this.currentSection.id, sec_rnd : sub.sec_rnd_now });
             //console.log("experimentInfo.helpers", this, sub, q );
             if (UserElements.choiceChecked && !_.isNil(sub) && !_.isNil( q )) {
                 return UserElements.choiceChecked.get( q._id );

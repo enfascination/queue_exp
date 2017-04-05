@@ -109,7 +109,6 @@ Template.main.helpers({
     showExperimenterView: function() {
         //console.log("showExperimenterView", UserElements.experimenterView, Sess.subStat() );
         return( ( UserElements.experimenterView || TurkServer.isAdmin() ) &&
-              //( Sess.design() && Sess.subData() ) );
               ( Sess.subStat() && Sess.subStat().sec_type_now === "experiment" ) );
     },
     expSectionTabs : function() {

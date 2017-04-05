@@ -5,10 +5,6 @@ var _ = require('lodash');
 export let Schemas = {};
 
 Schemas.SubjectsStatus = new SimpleSchema({
-    userId: {
-        type: String,
-        label: "User",
-    },
     // this is the Meteor.userId for identifying user in-game. 
     meteorUserId: {
         type: String,
@@ -122,9 +118,9 @@ Schemas.SubjectsData = new SimpleSchema({
     },
     // this is the TurkServer asstId. 
         // it's the finest grain one and the one I shoudl use in data nalayssi.
-    asstUserId: {
+    mtAssignmentId: {
         type: String,
-        label: "asst User",
+        label: "mtAssignmentId",
     },
     // this is the Meteor.userId ( and the asst.userId ) for identifying user in-game. 
     meteorUserId: {  // with better hygeine, this wouldn't be in this collection
@@ -335,6 +331,10 @@ let questionsCore = {
     meteorUserId: {
         type: String,
         label: "Meteor User",
+    },
+    mtAssignmentId: {
+        type: String,
+        label: "mtAssignmentId",
     },
 };
 

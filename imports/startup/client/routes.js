@@ -10,7 +10,6 @@ Router.configure({
     data: function () {
         let sub = Sess.subStat();
         if ( sub ) {
-                console.log("data for all");
                 return({
                     currentTab : sub.sec_now,
                     subStat : sub,
@@ -49,7 +48,7 @@ Router.route('start', function() {
         //console.log("in instructions data rendering", this.params, this.params.query);
         if ( data ) {
             let sub = data.subStat;
-            let qs = Questions.find({ meteorUserId : sub.meteorUserId, sec: sub.sec_now, sec_rnd : sub.sec_rnd_now }, {$sort : { order : 1 }});
+            let qs = Questions.find({ meteorUserId : sub.meteorUserId, mtAssignmentId : sub.mtAssignmentId, sec: sub.sec_now, sec_rnd : sub.sec_rnd_now }, {$sort : { order : 1 }});
             data.questionsColl = qs;
             data.stage = this.params.stage;
         }
@@ -95,14 +94,16 @@ Router.route('/experiment', function() {
     layoutTemplate: 'main',
     data : function() { // enrich the global data object in this section
         let data = Router.options.data();
-        let subData = Sess.subData();
         let design = Sess.design();
-        if ( data && subData && design ) {
+        if ( data && design ) {
             let subStat = data.subStat;
-            data.subData = subData;
-            data.design = design;
-            let qs = Questions.find({ meteorUserId : subStat.meteorUserId, sec: subStat.sec_now, sec_rnd : subStat.sec_rnd_now }, {$sort : { order : 1 }});
-            data.questionsColl = qs;
+            let subData = SubjectsData.find({meteorUserId: Meteor.userId(), mtAssignmentId : subStat.mtAssignmentId}, { sort : { theTimestamp : -1, sec : -1, sec_rnd : -1 } } ).fetch();
+            if ( subData && subStat ) {
+                data.subData = subData;
+                data.design = design;
+                let qs = Questions.find({ meteorUserId : subStat.meteorUserId, mtAssignmentId : subStat.mtAssignmentId, sec: subStat.sec_now, sec_rnd : subStat.sec_rnd_now }, {$sort : { order : 1 }});
+                data.questionsColl = qs;
+            }
             //console.log("router, experiment, data inside",qs.fetch());
         }
         //console.log("router, experiment, data",data, subData , design );

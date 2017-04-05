@@ -223,8 +223,10 @@ questions[4] = {
 
 // test experiment flow with zero questions
 //    make sure it still goes through the whole thing
-//  
-/*if (false || Debugging) {
+
+
+
+if ( true ) {
     QuestionData.questions = [
         {
             sec: 'experiment',
@@ -237,7 +239,7 @@ questions[4] = {
             paid: true,
         },
     ];
-}*/
+}
 
 //let idxs = _.shuffle( _.range( questions.length ) );
 //  Create multiple sections
