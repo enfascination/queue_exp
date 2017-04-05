@@ -106,7 +106,7 @@ Schemas.SubjectsStatus = new SimpleSchema({
         optional: true,
     },
     isExperienced : {
-        type: Boolean,
+        type: SimpleSchema.Integer,
         label: "has played before?",
     },
 });

@@ -28,8 +28,9 @@ let getPayoff = function(payoffs, loc) {
 Template.instPrefInstructions.helpers({
     aQuestion : function() {
         let q = {};
+        //q.payoffs = [1,-1,2,0,1,-1,2,0];
+        q.payoffs = [2,0,3,1,2,0,3,1];
         //q.payoffs = [3,1,4,2,3,1,4,2];
-        q.payoffs = [1,-1,2,0,1,-1,2,0];
         return(q);
     },
 });

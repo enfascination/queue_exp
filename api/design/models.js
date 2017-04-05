@@ -72,7 +72,7 @@ Design = {
     pointEarnings : 0.25,
     maxQuizFails : 3,
     sequence : DesignSequence,
-    //sampleGame : [1,-1,2,0,1,-1,2,0], //not actulaly being used anywhere
+    //sampleGame : [2,0,3,1,2,0,3,1], //not actulaly being used anywhere
     batchName : "main",
     matching : {
         ensureSubjectMismatchAcrossSections : false,

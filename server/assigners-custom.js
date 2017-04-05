@@ -20,12 +20,12 @@ export let OverlapAssigner = class extends TurkServer.Assigners.SimpleAssigner {
                         Meteor.call("addSectionQuestions", currentUser, "quiz", Design);
                     });
                 } else if ( repeatUser ) {
-                    console.log("created repeat user", asst.userId, asst.assignmentId );
                     Meteor.call("initializeReturnSubject", asst, Design, function(err) {
                         if (err) { throw( err ); }
                         currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
                         Meteor.call("addSectionQuestions", currentUser, "quiz", Design);
                     });
+                    console.log("created repeat user", asst.userId, asst.assignmentId, currentUser.isExperienced );
                 }
 
             if ( currentUser.sec_type_now === 'quiz' ) {

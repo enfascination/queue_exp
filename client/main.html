@@ -77,6 +77,7 @@
             </div>
         </div>
         </div>
+    {{> contactFooter}}
 </template>
 <template name="expSectionTab">
     <li role="presentation">
@@ -97,14 +98,11 @@
 </template>
 
 <template name="introSectionTabPane">
-    <h2 class="sectionHeader" >Instructions</h2>
     {{#if equals currentSection.id "quiz"}}
     <div class="center-block"> 
-        {{> navButton stage=stage fn="Backward"}} {{> navButton stage=stage fn="Forward"}}
         {{! {{> instPrefInstructions context=..}}
 
         {{> yield "instructions"}}
-        {{> navButton stage=stage fn="Backward"}} {{> navButton stage=stage fn="Forward"}}
 
     </div>
     {{else}} {{! instructions have multiple pages durig quiz, but one page after }}

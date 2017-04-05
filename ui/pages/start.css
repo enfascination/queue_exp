@@ -8,6 +8,12 @@
     text-align: center;
     line-height: 40px;
 }
+.home blockquote {
+    text-align: justify;
+}
+.home .jumbotron {
+    background-color: transparent;
+}
 
 /* Navbar styling */
 .main-banner {
@@ -35,10 +41,11 @@
   width:100%;
   bottom: 0%;
   height: 4%;
-  background-color: #000033;
+  background-color: #CFD8DC;
   z-index: 2;
 }
 .footerText {
+    text-align : center;
   font-size: 14px;
   margin-top: 7px;
   color:#FFFFFF;

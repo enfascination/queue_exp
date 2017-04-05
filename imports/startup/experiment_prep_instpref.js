@@ -226,7 +226,7 @@ questions[4] = {
 
 
 
-if ( true ) {
+if ( false ) {
     QuestionData.questions = [
         {
             sec: 'experiment',
@@ -263,8 +263,9 @@ QuestionData.questions.forEach ( function(q) {
     });
     if( q.sec === 'quiz' ) {
         q.correct = false;
+        //q.payoffs = [1,-1,2,0,1,-1,2,0];
+        q.payoffs = [2,0,3,1,2,0,3,1];
         //q.payoffs = [3,1,4,2,3,1,4,2];
-        q.payoffs = [1,-1,2,0,1,-1,2,0];
         q.sec_label = "Quiz";
     } else if( q.sec === 'experiment' ) {
         console.log("ERROR NMV<KUIOKJHLDF: async mess on q init?");

@@ -361,7 +361,6 @@ Experiment.calculateExperimentEarnings = function(muid, design) {
                 meteorUserId : muid, 
                 mtAssignmentId : sub.mtAssignmentId, 
                 sec : 'survey',
-                paid : true,
             });
     // determine that all (any?) survey questions were answered
     let surveyComplete = surveyQuestions.count() > 0  && 
@@ -398,7 +397,7 @@ Experiment.calculateExperimentEarnings = function(muid, design) {
             survey : surveyComplete ? design.surveyEarnings : 0 
         }
     };
-    //uconsole.log("calculateExperimentEarnings", HITearnings, paidQuestions.count(), surveyQuestions.count(), paidQuestions.map( (q) => q.payoffEarnedFocal ) );
+    console.log("calculateExperimentEarnings", HITearnings, paidQuestions.count(), surveyQuestions.count(), surveyComplete, paidQuestions.map( (q) => q.payoffEarnedFocal ) );
 
     return( HITearnings );
 };

@@ -87,7 +87,7 @@ In each game, you have two choices.
 
 <template name="tutorial_step7">
     <h3>Game Interface</h3>
- Your decision will always be between choice <span class="you"><strong>Top</strong></span>...
+ Your decision will always be between choice <span class="you"><strong>Top</strong></span> ...
         {{> tutorialBullets 2}}
 </template>
 
@@ -112,7 +112,7 @@ The other player also has two choices: choice <span class="other"><strong>Left</
     <h3>Game Interface</h3>
     <ul class="dash">
         <li>
-Both players will chose; neither player will have a chance to see the other's choice before choosing. 
+Both players will chose simultaneously and blindly; neither player will have a chance to see the other's choice before choosing. 
         </li>
         <li>
         Depending on <span class="you">your</span> choice and the <span class="other">other player's</span>, each game has four possible outcomes.
@@ -128,7 +128,7 @@ The outcome determines the amounts of points you and the other player earn towar
     <h3>Game Interface</h3>
     <ul class='dash'>
         <li>
-            In this outcome, both players earn <span class="earnings">0</span> points.
+            In this outcome, <span class="you">you</span> chose <span class="you"><strong>Bottom</strong></span>, the <span class="other">other player</span> chose <span class="other"><strong>Right</strong></span>, and you both earn <span class="earnings">0</span> points.
         </li>
         <li>
 The blue triangle in each outcome contains the number of points that will be due to <span class="you">you</span>. 
@@ -150,7 +150,10 @@ The grey upper triangles show the <span class="other">other player's</span> pote
     <h3>Game Interface</h3>
     <ul class='dash'>
         <li>
-            In this outcome, <span class="you">you</span> earn <span class="earnings">2</span> points and the <span class="other">other player</span> earns <span class="earnings">-1</span> points.  In the symmetrical outcome to this one, the <span class="other">other player</span> earns <span class="earnings">2</span> points and <span class="you">you</span> are the player that loses <span class="earnings">1</span> point.  points.
+                        In this outcome, <span class="you">you</span> chose <span class="you"><strong>Bottom</strong></span> and the <span class="other">other player</span> chose <span class="other"><strong>Left</strong></span>, with the result that <span class="you">you</span> earn <span class="earnings">2</span> points and the <span class="other">other player</span> earns <span class="earnings">-1</span> points.  
+        </li>
+        <li>
+                        In the symmetrical outcome to this one, resulting from choices of <span class="you"><strong>Top</strong></span> and <span class="other"><strong>Right</strong></span>, the <span class="other">other player</span> earns <span class="earnings">2</span> points and <span class="you">you</span> are the player that loses <span class="earnings">1</span> point.  
         </li>
     </ul>
         {{> tutorialBullets 2}}
@@ -163,9 +166,9 @@ The grey upper triangles show the <span class="other">other player's</span> pote
 Your bonus for this HIT will be calculated from the points you earn in each game. 
         </li>
         <li>
-            Each point is worth ${{design.pointEarnings}}. 
+            Each point is worth <span class="earnings">${{design.pointEarnings}}</span>. 
             <ul class="dash"><li>
-                    For example, if you or the other player recieve the maximum payoff of <span class="earnings">4 points</span>, we will add <span class="earnings">$1.00 USD</span> to your bonus earnings.
+                    For example, if you or the other player recieve the maximum payoff of <span class="earnings">4</span> points, we will add <span class="earnings">$1.00 USD</span> to your bonus earnings.
             </li></ul>
         </li>
         <li>

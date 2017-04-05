@@ -250,8 +250,11 @@ button {
     padding: 15px 15px 15px 15px;
     margin: 15px 20px 15px 20px;
     border: 0;
-    background-color: #4FC3F7;//hsl(0, 0, 50);
     outline: 0 none;
+}
+.btn-primary, 
+.btn-primary:focus {
+    background-color: #4FC3F7;//hsl(0, 0, 50);
 }
 .btn[checked], .btn[checked]:focus, .btn[checked]:hover, .btn[checked]:focus:hover {
     background-color: #0277BD; //light blue 800

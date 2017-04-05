@@ -34,8 +34,10 @@ Router.route('start', function() {
         //stage = 1;
     //}
     if (stage <= 1) {
-        this.render( 'instPrefInstructions', { to : 'instructions'} );
-    } else if (stage > 6) {
+        //this.render( 'instPrefInstructions', { to : 'instructions'} );
+        stage = 1;
+        this.render( 'instructions' + _.toString( stage ), { to : 'instructions' } );
+    } else if (stage >= 3) {
         this.render('quiz', { to : 'instructions'});
     } else { //numbers between 1 and 6
         this.render( 'instructions' + _.toString( stage ), { to : 'instructions' } );

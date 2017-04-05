@@ -96,7 +96,7 @@ Meteor.users.deny({
             // has this turker done my experiment before?
             let isExperienced = SubjectsStatusArchive.find(
                     { 
-                        mtWorkerId : idObj.mtWorkerId, 
+                        mtWorkerId : idObj.workerId, 
                         completedExperiment: true, 
                     }
                 ).count();
@@ -109,7 +109,7 @@ Meteor.users.deny({
                 treatments = design.subjectTreatmentsTemplate;
             } else if (
                     design.matching.ensureSubjectMismatchAcrossSectionsAndPreferentiallyCloseOutIncompleteCohorts && 
-                    isExperienced 
+                    ( isExperienced > 0 )
                 ) {
                 treatments = ['feedback','feedback'];
             } else if (
@@ -142,7 +142,7 @@ Meteor.users.deny({
                 treatments : treatments,
                 treatment_now : treatments[0],
                 block_now : 0,  // this is an int version of sec_now
-                isExperienced : isExperienced > 0,
+                isExperienced : isExperienced,
             } );
 
             //ensure uniqueness
@@ -162,11 +162,11 @@ Meteor.users.deny({
                     if ( sub.treatment_now === "nofeedback" ) {
                         /// game 1
                         // strictly ordinal games (without replacement)
-                        payoffsGame1 = Helper.generateGame( maxPayoff = 2);
+                        payoffsGame1 = Helper.generateGame( maxPayoff = 3);
                         // loosely ordinal games (with replacement)
                         //let payoffs = _.concat( _.times(4, ()=>_.sample([1, 2, 3, 4]) ), _.times(4, ()=>_.sample([1, 2, 3, 4]) ) );
                         /// game 2
-                        payoffsGame2 = Helper.tweakGame( payoffsGame1, switchOnly=true, maxPayoff = 2 );
+                        payoffsGame2 = Helper.tweakGame( payoffsGame1, switchOnly=true, maxPayoff = 3 );
                         if( _.random() === 0 ) { // another shuffle that is important to make sure doubles happen in both blocks
                             let tmp = _.clone( payoffsGame1 );
                             payoffsGame1 = _.clone( payoffsGame2 );

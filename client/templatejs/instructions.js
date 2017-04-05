@@ -21,13 +21,22 @@ Template.main.events({
 Template.navButton.events({
     "click button.navButton" : function( e ) {
         let stage = _.toInteger( e.target.value );
-        //console.log("navButton", stage, e.target.value, this, e.target);
+        console.log("navButton", stage, e.target.value, this, e.target);
+        if (e.target.id === "Consent") {
+            stage = 2;
+        } else if (e.target.id === "NoConsent") {
+            Meteor.call("advanceSubjectSection", Meteor.userId(), "submitHIT",  "submitHIT" );
+        }
+
         if (stage < 1) { stage = 1; }
         if (stage === 2) {
             Session.set('tutorialEnabled', true);
+            Session.set('_tutorial_step_myCoolTutorial', 0);
         }
         if (stage >= 7) { stage = 7; }
         Helper.activateTab( 'quiz' );
         Router.go('start', {stage:stage});
+        Helper.windowAdjust( );
     },
 });
+Template.instructions1.inheritsEventsFrom('navButton');

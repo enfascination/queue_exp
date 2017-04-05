@@ -6,11 +6,11 @@
 </template>
 
 <template name="instructions1">
-			<div>
-				<h2 align="center">CONSENT TO PARTICIPATE</h2>
+			<div align="center">
+                <h2 class="sectionHeader"  style="text-align:left;">Consent to Participate</h2>
 				<br>
 				<br>
-				<blockquote>
+				<blockquote style="text-align: justify; width: 600px;">
 					This HIT is part of a project being conducted by researchers from the department of Psychological and Brain Sciences at Dartmouth College, Hanover, NH, USA.  The study broadly aims understand how individuals play games and what games they prefer. 
 					<br><br>
 					Your participation is voluntary. Participation involves making choices in abstract games with other participants for bonus earnings. 
@@ -20,14 +20,14 @@
 					Questions about this project may be directed to the
 					Computational Social and Affective Neuroscience Lab<br>
 					<span align='center'>computational.social.affective.neuroscience.lab@dartmouth.edu</span><br><br>
-					This contact information will appear again at the end of the HIT.
+					This contact information will appear on the banner at the bottom of your screen for the duration of the HIT.
 				</blockquote>
-				<p align='center'><b>Please click Agree below if you consent to take part in this HIT. If you choose not to participate you will be asked to return the HIT.</b></p>
+				<p style='text-align: center;'><b>Please click Agree below if you consent to take part in this HIT. If you choose not to participate you will be asked to return the HIT.</b></p>
 			</div>
-			<div class = "row">
-				<div class="col-xs-4 col-xs-offset-5">
-				<button type="button" class="btn btn-success btn-lg" style=" margin-right:5%" id="Consent" >Agree</button>
-				<button type="button" class="btn btn-danger btn-lg"  aria-label="Left Align" style="margin-left:5%" id="NoConsent" >Do Not Agree</button>
+			<div align="center">
+				<div >
+				<button type="button" class="btn btn-lg btn-success navButton" style=" margin-right:5%" id="Consent" >Agree</button>
+				<button type="button" class="btn btn-lg btn-danger navButton"  aria-label="Left Align" style="margin-left:5%" id="NoConsent" >Do Not Agree</button>
 				</div>
 			</div>
 </template>
@@ -51,7 +51,7 @@
         </section>
 </template>
 <template name="instructions2">
-    PAGE 3 {{stage}}
+    <h2 class="sectionHeader" >Instructions</h2>
         <hr class="expPaneMargin"/>
                     <p><strong><strong>EXAMPLE GAME INTERFACE:</strong></strong></p>
                     <div class="expQuestion chooseStrategy">
@@ -59,6 +59,7 @@
                     </div>
                     <p class="expPaneMargin" style="display:center;"><em>This is a sample of the game interface that will be used through the experiment. Clicking an option will select it. Your points are in <span class="you blue">blue</span>.</em></p>
         <hr class="expPaneMargin"/>
+        {{> navButton stage=stage fn="Forward"}}
 </template>
 
 <template name="instructions4">
@@ -99,10 +100,12 @@
     PAGE 7 {{stage}}
 </template>
 <template name="instPrefQuiz">
+    <h2 class="sectionHeader" >Quiz</h2>
     <br/>
+        {{> navButton stage=3 fn="Backward"}} 
         <section class="expPaneMargin">
             <p><strong><strong>You will now be tested on your comprehension of the instructions on the previous page.</strong></strong> Participation in this experiment is based on your answering these questions correctly. If you fail the quiz you will pass the HIT and earn <strong>10&cent;</strong>, but you will be ineligible to participate in the main experiment, which offers a theoretical maximum of <strong>$6.50</strong> in bonus earnings.</p>
-            <p><strong><strong>You will have three tries to get all of the questions correct.</strong></strong> If you want to review these instructions at any point in the experiment, just click the <strong><strong>Instructions</strong></strong> tab in the upper left.</p> 
+            <p><strong><strong>You will have three tries to get all of the questions correct.</strong></strong> If you want to review these instructions at any point in the experiment, just click the Backwards link<strong><strong>Instructions</strong></strong> tab in the upper left.</p> 
             <h3>Quiz</h3>
             <p>
             Below you will answer questions about the game introduced in the instructions. During the experiment itself you will face different games (games with different numbers in the payoffs), but <strong>practice thinking through the questions about this game will prepare you for the other game you play in this experiment.</strong> 
