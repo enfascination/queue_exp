@@ -8,7 +8,7 @@ import { Router } from 'meteor/iron:router';
 
 import { Sess } from '../../imports/lib/quick-session.js';
 
-Session.set('tutorialEnabled', 1);
+Session.set('tutorialEnabled', false);
 let tutorialSteps1 = [
   {
     template: Template.tutorial_step1,
@@ -65,11 +65,11 @@ let tutorialSteps1 = [
   },
   {
     template: Template.tutorial_step13,
-    spot: ".gameNormalForm .cTopLeft",
+    spot: ".gameNormalForm .cBottomLeft",
   },
   {
     template: Template.tutorial_step14,
-    spot: ".gameNormalForm .cTopLeft",
+    spot: ".gameNormalForm",
   },
   {
     template: Template.tutorial_step15,
@@ -85,18 +85,19 @@ Template.main.helpers({
         steps: tutorialSteps1,
         emitter: new EventEmitter(),
         onFinish: function() {
-            console.log("Finish first section" );
-            let stage = 3;
-            Router.go('start', { stage : stage });
-            Meteor.setTimeout( function () {
-                // Test debouncing
-                Session.set('tutorialEnabled', 2);
+            //console.log("Finish first section" );
+            //let stage = 3;
+            //Router.go('start', { stage : stage });
+            //Meteor.setTimeout( function () {
+                //// Test debouncing
+                //Session.set('tutorialEnabled', true);
+            //});
             console.log("Finish clicked!");
             Meteor.setTimeout( function () {
                 // Test debouncing
                 Session.set('tutorialEnabled', false);
+                Router.go('start', { stage : 3 });
             }, 700);
-            });
         },
     },
 });

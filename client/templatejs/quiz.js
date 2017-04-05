@@ -204,13 +204,3 @@ Template.questionQuad.events({
 	'click div.expQuestion': questionFloatToExpQuestion,
 });
 
-Template.navButton.events({
-    "click button.navButton" : function( e ) {
-        let stage = _.toInteger( e.target.value );
-        //console.log("navButton", stage, e.target.value, this, e.target);
-        if (stage < 1) { stage = 1; }
-        if (stage >= 7) { stage = 7; }
-        Helper.activateTab( 'quiz' );
-        Router.go('start', {stage:stage});
-    },
-});

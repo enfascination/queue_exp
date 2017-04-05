@@ -1,0 +1,45 @@
+.home {
+    margin-top: 50px;
+    padding-top: 50px;
+    padding-bottom: 200px !important;
+    padding-right: 0;
+}
+.home p {
+    text-align: center;
+    line-height: 40px;
+}
+
+/* Navbar styling */
+.main-banner {
+    height: 70px;
+    margin: 0;
+    padding-bottom: -5%;
+    color: #CCFFFF;
+    background-color: #000033 !important;
+    border-color: transparent;
+}
+.navbar-header {
+    height: 80px;
+    width: auto;
+    padding: 0;
+    margin: 0;
+}
+.navbar-brand {
+    padding-left: 0px;
+    padding-top: 0px;
+}
+
+/* Footer styling */
+.footer{
+  position:fixed;
+  width:100%;
+  bottom: 0%;
+  height: 4%;
+  background-color: #000033;
+  z-index: 2;
+}
+.footerText {
+  font-size: 14px;
+  margin-top: 7px;
+  color:#FFFFFF;
+}
