@@ -10,9 +10,9 @@ import { Sess } from '../../imports/lib/quick-session.js';
 
 Session.set('tutorialEnabled', false);
 let tutorialSteps1 = [
-  {
-    template: Template.tutorial_step1,
-  },
+  //{
+    //template: Template.tutorial_step1,
+  //},
   {
     template: Template.tutorial_step2,
   },
@@ -92,7 +92,7 @@ Template.main.helpers({
                 //// Test debouncing
                 //Session.set('tutorialEnabled', true);
             //});
-            console.log("Finish clicked!");
+            //console.log("Finish clicked!");
             Meteor.setTimeout( function () {
                 // Test debouncing
                 Session.set('tutorialEnabled', false);

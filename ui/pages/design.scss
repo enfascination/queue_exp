@@ -73,7 +73,11 @@ strong {
 strong strong {
     font-weight: 700;
 }
-label {display: block;}
+label {
+    display: block;
+    font-weight: 600;
+    font-style: italic;
+}
 
 //////////////////////// ////////////////////////
 // experiment specific elements
@@ -174,6 +178,7 @@ label {display: block;}
 }
 .expQuestionText {
     text-align: left;
+    font-size: 14pt;
     padding: 0px 15px;
     max-width: 560px; 
 }

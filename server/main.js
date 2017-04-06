@@ -17,7 +17,7 @@ if ( Debugging && ( (Meteor.absoluteUrl() === 'https://localhost') || (Meteor.ab
     //SSL('/Users/sfrey/projecto/research_projects/instpref/instpref/private/local/server.key','/Users/sfrey/projecto/research_projects/instpref/instpref/private/local/server.crt', 443);
 }
 
-console.log("Testing", process.env.HOME );
+//console.log("Testing", process.env.HOME );
 
 // https://dweldon.silvrback.com/common-mistakes
 //
@@ -210,7 +210,7 @@ Meteor.users.deny({
             QuestionData.questions.forEach( function(q) {
                 if ( q.sec === sec && 
                     q.sec_rnd < design.sequence[sec].roundCount ) {
-                    console.log("addQuestions q", sec, q.sec, q.sec_rnd, sub.cohort_now);
+                    //console.log("addQuestions q", sec, q.sec, q.sec_rnd, sub.cohort_now);
                     q.meteorUserId = sub.meteorUserId;
                     q.mtAssignmentId = sub.mtAssignmentId; 
                     if (q.sec === 'experiment1' || q.sec === 'experiment2' ) {
@@ -242,6 +242,7 @@ Meteor.users.deny({
                                 q.matchingGameId = matchingQuestion._id;
                                 console.log( "create matched game: matching question", q._id, matchingQuestion._id );
                             } else {
+                                q.matchingGameId = null;
                                 console.log( "create matched game: no matching question", q._id, q.cohortId, q.sec_rnd, q.type);
                             }
                         } else {
@@ -302,7 +303,7 @@ Meteor.users.deny({
         // this will create a new SubjectsData object
         // it will update and may create a new CohortSettings object
         initializeSection: function( sub, lastDesign ) {
-            console.log("initRound beginning");
+            //console.log("initRound beginning");
             let design, cohortId;
 
             if (_.isString(sub)) { 
@@ -310,19 +311,19 @@ Meteor.users.deny({
                 // but it should end up as a collection result
                 sub = SubjectsStatus.findOne({meteorUserId:sub});
             }
-            console.log("initRound found sub");
+            //console.log("initRound found sub");
 
             //  experiment specific
             // retrieve the appropriiate design for the subject in this state
             let tmpObj = Meteor.call("findSubsCohort", sub, lastDesign, Design.matching );
             cohortId = tmpObj.cohortId;
             treatment = tmpObj.treatment;
-            console.log("initRound found cohortId");
+            //console.log("initRound found cohortId");
 
             // init or update the cohort object that we're going to match this subject to
             //   then get updated version of the changed objects
             design = Meteor.call("initializeCohort", cohortId=cohortId, sub.meteorUserId);
-            console.log("initRound init cohort");
+            //console.log("initRound init cohort");
 
             //set subjects cohort_now to this cohortId and update from any 
             //changes to the treatment that happened while tryig to find a good cohort
@@ -334,18 +335,18 @@ Meteor.users.deny({
                 treatments : treatmentsNew,
             } });
             sub = SubjectsStatus.findOne({meteorUserId : sub.meteorUserId});
-            console.log("initRound reinit subject object");
+            //console.log("initRound reinit subject object");
 
             // init this section by creating and adding all of its component 
             // questions, for all rounds;
             Meteor.call("addSectionQuestions", sub, sub.sec_now, design );
-            console.log("initRound added questions");
+            //console.log("initRound added questions");
 
 
             let ss, sd, ct;
             ss = SubjectsStatus.findOne({ meteorUserId: sub.meteorUserId });
             ct = CohortSettings.findOne({ cohortId: design.cohortId});
-            console.log("initRound done");
+            console.log("initRound done", cohortId, treatmentsNew, sub.mtWorkerId, sub.mtAssignmentId, sub.isExperienced);
             return( { "s_status" : ss, "s_data" : sd, "design" : ct } );
         },
         // this modfiies a SubjectsStatus object
@@ -425,13 +426,13 @@ Meteor.users.deny({
                 entered = 3;
             } else if ( sub_old.sec_now === "earningsReport" ) {
                 // to exit survey/submitHIT
-                console.log("outside goToExitSurvey");
+                //console.log("outside goToExitSurvey");
                 Meteor.call('goToExitSurvey', Meteor.userId());
                 entered = 4;
             }
 
             sub = SubjectsStatus.findOne({ meteorUserId: muid });
-            console.log("end of advancesection", entered, sub_old.sec_now , sub.sec_now );
+            //console.log("end of advancesection", entered, sub_old.sec_now , sub.sec_now );
             return( sub );
         },
         // updates a CohortSettings object
@@ -445,11 +446,12 @@ Meteor.users.deny({
         updateExperimentEarnings : Experiment.updateExperimentEarnings,
         updateStatusInHIT : Experiment.updateStatusInHIT,
         goToExitSurvey: function( muid ) {
-            console.log("goToExitSurvey");
+            sub = SubjectsStatus.findOne({meteorUserId : muid});
+            console.log("goToExitSurvey", muid, sub.mtWorkerId, sub.mtAssignmentId);
             if (TurkServer.Instance.currentInstance()) {
-                console.log("goToExitSurvey in loop");
+                //console.log("goToExitSurvey in loop");
                 TurkServer.Instance.currentInstance().teardown(returnToLobby = true);
-                console.log("goToExitSurvey after loop");
+                //console.log("goToExitSurvey after loop");
             }
         },
         updateQuiz: function ( muid, quizObj) {
@@ -543,7 +545,7 @@ Meteor.users.deny({
         },
         // this is the function I use to set a game on the fly after it is chosen for the final round of play
         setChosenGameForRound : function(muid, treatment, sec, sec_rnd, chosenGameId ) {
-            console.log("setChosenGameForRound", sec_rnd, chosenGameId );
+            //console.log("setChosenGameForRound", sec_rnd, chosenGameId );
             let sub = SubjectsStatus.findOne({meteorUserId : Meteor.userId() });
             let chosenQuestion, nextQuestion, focalPlayersChoice = false, firstPlayersChoice = true;
             let tmp, tmp2;

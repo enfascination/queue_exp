@@ -5,7 +5,7 @@
     <section class="expPaneMargin">
         {{#unless subStat.isExperienced }}
             <p>
-                <strong><strong>Before submission, we have a few brief questions about you.</strong></strong>  You are being paid an additional {{earnings design.surveyReward}} for completing all of the questions in this survey, though there is no penalty for answering that you decline to state (you can do so in any questions by either selecting 'Decline to state' or entering 'xxxxxx').
+            <strong><strong>Before you proceed, we have a few brief questions.</strong></strong>  You are being paid an additional {{earnings design.surveyEarnings}} for completing all of the questions in this survey, though there is no penalty for answering that you decline to state <small>(you can do so in any questions by either selecting 'Decline to state' or entering 'xxxxxx')</small>.
             </p>
         {{else}}
             <p>
@@ -23,20 +23,22 @@
     <br/>
     <br/>
     {{#unless testQuizPassed }}
-        <div class="alert alert-info">You failed the test or declined to consent to participate.  You may not participate in the experiment, but you may submit the HIT.</div>
+        <div class="alert alert-info">You failed the quiz or declined to consent to participate.  You may not participate in the experiment. If you declined to participate, please return the HIT. If you failed the quiz, you may submit the HIT.</div>
+        {{else}}
+        Thank you for your participation.  We will most likely apply your bonus in the next few hours. Please contact us if it takes more than 24 hours to recieve your bonus.
     {{/unless}}
-    <p>IF COMPLETED EXPERIMENT: As we informed you in the instructions.  Your earnings cannot be calculated and distributed immediately.  This link will allow you to check up on them: http://XXX. Copy it before you submit. Seth, you should generate it when you init subjects. It will also show you how they were calculated in response to your choices.XXX</p>
+    <br/>
     <br/>
             <form class="answersForm" id="{{currentSection.id}}" >
                 <!--<p>You chose {{userSelection}}</p>
                     <p></p><br>-->
                     <div class="">
                         <label>
+                            <strong><strong>We are still piloting and fine-tuning this experiment.</strong></strong><br/>
                             Do you have any feedback for us? <br/>
                             Did you encounter any confusion, bugs, or ambiguities in the instructions?
                         </label>
-                        <br/>
-                        <textarea name="feedback" rows="3"></textarea>
+                        <textarea name="feedback" rows="10" style="width: 600px; border: 2px solid #000;padding: 10px 7px; box-shadow: inset 0px 1px 10px -4px #ABABAB;" autofocus></textarea>
                     </div>
                     <br/>
                     <button type="submit" class="btn btn-primary generalNavButton" autofocus >Submit the HIT</button>

@@ -19,17 +19,17 @@ Template.experiment.onCreated( function(){
     if (_.isNil(group) ) return;
     // make client side subject available
     let muid = Meteor.userId();
-    console.log("MUID", muid);
+    //console.log("MUID", muid);
     if ( muid ) {
         let subStat = Template.currentData().subStat;
         // is player refreshing, reconnecting, or somehow already up to date in the system?
-        console.log("experiment render", Template.currentData());
+        //console.log("experiment render", Template.currentData());
         if ( !subStat.readyToProceed ) {
             let playerHasConnectedBefore     = (subStat.cohort_now !== 0) ? true : false;
             // player is new to me if they are int he experiment, they have no incomplete data, and they aren't ready to proceeed to a next stage
             if ( !playerHasConnectedBefore ) { 
                 // record groupid, in case I need it one day
-                console.log("new sub");
+                console.log("New participant");
                 Meteor.call("addGroupId", muid, group );
                 Meteor.call('initializeSection', sub=muid, lastDesign=null );
             } 
@@ -238,7 +238,7 @@ Template.main.events({
             Meteor.call('tryToCompleteCohort', Sess.design(), function(err, cohortCompleted) {
                 if (err) { throw( err ); }
                 if (cohortCompleted) {
-                    console.log("COHORTcOMPLETED");
+                    //console.log("COHORTcOMPLETED");
                 }
             });
             /// advance section

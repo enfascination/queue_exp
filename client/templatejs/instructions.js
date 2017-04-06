@@ -21,7 +21,7 @@ Template.main.events({
 Template.navButton.events({
     "click button.navButton" : function( e ) {
         let stage = _.toInteger( e.target.value );
-        console.log("navButton", stage, e.target.value, this, e.target);
+        //console.log("navButton", stage, e.target.value, this, e.target);
         if (e.target.id === "Consent") {
             stage = 2;
         } else if (e.target.id === "NoConsent") {

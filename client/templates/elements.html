@@ -40,9 +40,9 @@
         {{else}}
         {{#if equals currentSection.id "quiz"}}
             <section class="expPaneMargin">
-            {{#if testQuizPassed}}
+            {{#if subStat.quiz.passed}}
                 <div class = "alert alert-success">You have successfully passed the quiz! Click <strong>NEXT</strong>.</div>
-            {{else}} {{#if testQuizFailed}}
+            {{else}} {{#if subStat.quiz.failed}}
             <div class = "alert alert-danger">You have exhausted your attempts to pass the quiz and demonstrate comprehension of the instructions. Click <strong>NEXT</strong>.</div>
             {{else}} {{#if testQuizWrong }}
                 <div class = "alert alert-warning">One or more of your answers is incorrect (in red). Attempts remaining: {{quizTriesLeft}}.</div>
@@ -149,14 +149,17 @@
 <template name="expGeneralInfoBox">
     <div class="expInfoTable">
         <ul class="list-group">
-            <li class="list-group-item">
-                Assignment Id:<!--space is here for robustness to dynamic contents-->
+            <!--
+                <li class="list-group-item">
+                Assignment Id:&nbsp;
                 <p class="extra-condensed">{{subStat.userId}}</p>
             </li>
+            -->
             <li class="list-group-item">
-                Worker Id:
+                MTurk Worker ID:
                 <p class="extra-condensed">{{subStat.mtWorkerId}} </p>
             </li>
+            <!--
             <li class="list-group-item">
                 Meteor Id:
                 <p class="condensed">{{subStat.meteorUserId}} </p>
@@ -169,10 +172,11 @@
                 Treatment:
                 <p>{{subStat.treatment_now}} </p>
             </li>
+            -->
             <li class="list-group-item">
-                Your account:
+                Bonus:
                 <p>
-                {{subStat.totalEarnings}}&nbsp;
+                {{earnings subStat.totalEarnings}}&nbsp;
                 </p>
             </li>
         </ul>

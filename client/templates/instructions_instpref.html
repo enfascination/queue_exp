@@ -11,18 +11,18 @@
 				<br>
 				<br>
 				<blockquote style="text-align: justify; width: 600px;">
-					This HIT is part of a project being conducted by researchers from the department of Psychological and Brain Sciences at Dartmouth College, Hanover, NH, USA.  The study broadly aims understand how individuals play games and what games they prefer. 
+					This HIT is part of a project being conducted by researchers from the department of Psychological and Brain Sciences at Dartmouth College, Hanover, NH, USA.  The study aims broadly to understand how people interact and what types of interactions they seek out. 
 					<br><br>
-					Your participation is voluntary. Participation involves making choices in abstract games with other participants for bonus earnings. 
+					Your participation is voluntary. Participation involves interacting with other participants in abstracted games. 
 					<br><br>
-					The information collected will be anonymous as per Mechnical Turk Guidelines. Any presentations of the larger study will represent the aggregation of data from groups of people.
+					The information collected will be anonymous as per Mechanical Turk guidelines. Any presentations of the larger study will represent the aggregation of data from groups of people.
 					<br><br>
 					Questions about this project may be directed to the
 					Computational Social and Affective Neuroscience Lab<br>
 					<span align='center'>computational.social.affective.neuroscience.lab@dartmouth.edu</span><br><br>
 					This contact information will appear on the banner at the bottom of your screen for the duration of the HIT.
 				</blockquote>
-				<p style='text-align: center;'><b>Please click Agree below if you consent to take part in this HIT. If you choose not to participate you will be asked to return the HIT.</b></p>
+                <p style='text-align: center;'><b>Select <em>Agree</em> below if you consent to participate in this study. If you <em>Do&nbsp;Not&nbsp;Agree</em> to participate you will be asked to return the HIT.</b></p>
 			</div>
 			<div align="center">
 				<div >
@@ -41,7 +41,7 @@
             <p>
                 <strong>For each game you will have two choices and the other player will have two choices.</strong>  The game's outcome &mdash; the amounts of points you and the other player earn &mdash; depends on both of your choices.  
             </p>
-            <p><strong>Each point is worth <span class="earnings">25&cent; USD</span>.</strong> For example, if you or the other player recieve the maximum payoff of <span class="earnings">4</span> points, we will add <span class="earnings">$1.00 USD</span>  to your bonus earnings.</p>
+            <p><strong>Each point is worth <span class="earnings">25&cent; USD</span>.</strong> For example, if you or the other player receive the maximum payoff of <span class="earnings">4</span> points, we will add <span class="earnings">$1.00 USD</span>  to your bonus earnings.</p>
             <p>
             <strong>Your decision will always be between Choice <span class="you"><strong>Top</strong></span> and Choice <span class="you"><strong>Bottom</strong></span>.</strong> The other player can only pick between Choice <span class="other">Right</span> and Choice <span class="other">Left</span>. 
             </p>
@@ -59,14 +59,14 @@
                     </div>
                     <p class="expPaneMargin" style="display:center;"><em>This is a sample of the game interface that will be used through the experiment. Clicking an option will select it. Your points are in <span class="you blue">blue</span>.</em></p>
         <hr class="expPaneMargin"/>
-        {{> navButton stage=stage fn="Forward"}}
+        Proceed to {{> navButton stage=stage fn="Quiz"}}.
 </template>
 
 <template name="instructions4">
     PAGE 4 {{stage}}
         <section class="expPaneMargin">
             <h3>Experiment flow</h3>
-            <p><strong><strong>You will play three sections of three games each.</strong></strong> For each game, you will have to answer two questions, one in which you chose a strategy and one in which you select your ideal outcome. After completing the first two games in a section, you will be asked which game you would like to play a second time, and you will have a chance to play that game a second time, for the same reward. In one of the sections you will get to see the results of the two games before choosing, while in the other you will not get this feedback. </p> 
+            <p><strong><strong>You will play three sections of three games each.</strong></strong> For each game, you will have to answer two questions, one in which you chose a strategy and one in which you select your ideal outcome. After completing the first two games in a section, you will be asked which game you would like to play a second time, and you will have a chance to play that game again for additional earnings. In one of the sections you will get to see the results of the two games before choosing, while in the other you will not get this feedback. </p> 
             <p><strong>You will repeat this procedure two times, for a total of six games.</strong> Afterwards, you will complete the Survey for an additional <span class="earnings">50&cent;</span>, before submitting this HIT.</p> 
         </section>
 </template>
@@ -102,40 +102,44 @@
 <template name="instPrefQuiz">
     <h2 class="sectionHeader" >Quiz</h2>
     <br/>
-        {{> navButton stage=3 fn="Backward"}} 
+    
         <section class="expPaneMargin">
-            <p><strong><strong>You will now be tested on your comprehension of the instructions on the previous page.</strong></strong> Participation in this experiment is based on your answering these questions correctly. If you fail the quiz you will pass the HIT and earn <strong>10&cent;</strong>, but you will be ineligible to participate in the main experiment, which offers a theoretical maximum of <strong>$6.50</strong> in bonus earnings.</p>
-            <p><strong><strong>You will have three tries to get all of the questions correct.</strong></strong> If you want to review these instructions at any point in the experiment, just click the Backwards link<strong><strong>Instructions</strong></strong> tab in the upper left.</p> 
-            <h3>Quiz</h3>
             <p>
-            Below you will answer questions about the game introduced in the instructions. During the experiment itself you will face different games (games with different numbers in the payoffs), but <strong>practice thinking through the questions about this game will prepare you for the other game you play in this experiment.</strong> 
+            <strong><strong>You will now be tested on your comprehension of the instructions.</strong></strong> Participation in this experiment is based on your answering these questions correctly. You may return to the {{> navButton stage=3 fn="Instructions"}} if you need more time. 
             </p>
-            <p>When you have answered all of the questions as carefully as you can, click <strong>SUBMIT</strong>.</p>
+            <p>
+            The questions below are about the game that was introduced in the instructions. During the experiment itself you will play different games (games with different numbers in the payoffs), but <strong>the questions below are useful to keep in mind during any game you play in this experiment.</strong> 
+            </p>
+            <p>
+            When you have answered all of the questions as carefully as you can, click <strong>SUBMIT</strong>.
+            </p>
+            <p>
+            <strong><strong>You have three tries to get all of the questions correct.</strong></strong>
+            </p> 
+            <br/>
     </section>
 </template>
 
 
 <template name="instPrefGame0">
-    Debugging 1, {{currentSection.id}}, Round {{subStat.sec_rnd_now}}
-        <p>You will begin by playing the game below.</p>
+        <p>Begin by making your choice for the game below and answering two questions about it.</p>
 </template>
 <template name="instPrefGame1">
-    Debugging 2, {{currentSection.id}}, Round {{subStat.sec_rnd_now}}
-        <p>You will now play a similar game.</p>
+        <p>You will now make your choice in a similar game, answering the same two questions.</p>
 </template>
 <template name="instPrefGame2">
-    Debugging 3, {{currentSection.id}}, Round {{subStat.sec_rnd_now}}
-        <p>This is an informational round that allows you to see the outcomes of this section's two games.  However, we will only present you with this feedback in one of the two sections.  In one section you are being provided with feedback on payoffs, and in the other you will not. Regardless, you will be paid in full for your earnings in both sections.</p>{{test}}
+    <p>
+    This is an informational round that allows you to review the two games you just played before you decide between them: in the next round we ask you to select the one you most prefer to play again.
         {{#if equals subStat.treatment_now "nofeedback"}}
-            <p><strong>In this section you will not be receiving immediate feedback. However, you will game information about your earnings, and the other player's choices, in the Earnings section. Please submit and proceed.</strong></p>
+        <strong>The feedback below does not include information about what the other player's choices were.</strong>
         {{else}} {{#if equals subStat.treatment_now "feedback"}}
-        <p><strong>In this section you will be receiving feedback.  Your choices have now been matched with those of the other player in order to calculate your payoffs. When you have reviewed your earnings, you may press <strong>Submit</strong> to proceed to the next round.</strong></p>
-            Show this after (each?) game is submitted.{{test}}
-        Nest it in an if statement testing round completion.
+        <strong>The feedback below includes full information about what the other player's choices were.</strong>  
         {{else}}
-            <p>Something is wrong. Code YRAKASDFASDFSHGK.</p>
+            Something is wrong. Code YRAKASDFASDFSHGK.
         {{/if}}
         {{/if}}
+        </p>
+        <p>You may proceed to the next round when you are done reviewing these results.</p>
             {{#each question in questionsFeedback}}
                 {{#if equals question.type "chooseStrategy" }}
                     {{#if question.completedGame}}
@@ -147,26 +151,21 @@
             {{/each}}
 </template>
 <template name="instPrefGame3">
-    Debugging 4, {{currentSection.id}}, Round {{subStat.sec_rnd_now}}
-        <p>The round after this one is the final round. In it you will play 
+        <p>In the next round you will play 
         one of the previous two games a second time, for additional earnings.  
-        You may select below which of the games you would like to play a 
-        second time with the same person. <strong>Next round's game is most likely to 
+        You may select below which of the games you would prefer to play again 
+        (with the same person). <strong>The next round's game is most likely to 
             be the one you chose, but it is not guaranteed to be.</strong></p>
 </template>
 <template name="instPrefGame4">
-    Debugging 5, {{currentSection.id}}, Round {{subStat.sec_rnd_now}}
-        <p>This is the last round and last game of this section.</p>
             {{#each question in questionsColl}}
                 {{#if question.gameWasPreferred}}
-                    <strong>Your choice succeeded; below is the game that you preferred in the previous round.</strong>
+                    <strong>Your choice in round 3 was selected; below is the game that you preferred.</strong>
                 {{else}}
-                    <strong>Your choice did not succeed; below is the game that you did not prefer in the previous round.</strong>
+                    <strong>Your choice in round 3 was not selected; below is the game that you did not prefer.</strong>
                 {{/if}}
             {{/each}}
             Please play it one more time. 
-            You will get information about the outcome of this game in 
-            the Earnings section, after the final survey.
 </template>
 
 <template name="gameNormalFormChoiceFeedback">
@@ -225,34 +224,29 @@
         </p>
         {{#if equals subStat.HITStatus.gamesPlayed subStat.HITStatus.gamesConsummated}}
         <p>
-        <strong>Your session is now complete.</strong>
-            Your earnings are {{earnings subStat.totalEarnings}}, including your 
+        <strong>Your session is now complete, and your bonus fully calculated.</strong>
+            Your bonus is {{earnings subStat.totalEarnings}}, including your 
             {{earnings design.endowment}} endowment and 
-            {{earnings design.surveyReward}} for 
+            {{earnings design.surveyEarnings}} for 
             completing the survey.
         </p>
         {{else}}
         <p>
-            <strong>Your session is not yet complete.</strong>
+            <strong>Your bonus is not yet fully calculable.</strong>
             So far only {{subStat.HITStatus.gamesConsummated}} of the games 
             you played have 
             been played by the other player. Incomplete choices will be 
-            marked as such below.
-            Your current earnings are {{earnings subStat.totalEarnings}}, including 
+            marked as such in the feedback below.
+            Your current bonus is {{earnings subStat.totalEarnings}}, including 
             your {{earnings design.endowment}} endowment and 
-            {{earnings design.surveyReward}} 
+            {{earnings design.surveyEarnings}} 
             for completing the survey.
         </p>
         <p>
-            It will take time for the rest of your choices to be matched. 
-            You will can return to this page here for progress: XXX
-            It should take less than 24 hours.  If it takes more, contact the 
-            <a>experimenters</a>
+            It should not take more than a few hours for the rest of your choices to be matched and for your bonus to be calculated. 
         </p>
         {{/if}}
-        <p>
-        Click NEXT to reach the HIT submission page. we welcome your comments and feedback.
-        </p>
+        <p>You may proceed to the <strong>Submit</strong> page when you are done reviewing these results. We welcome your comments and feedback.</p>
 
         <h2> All questions </h2>
             {{#each question in questionsFeedback allQs=true}}

@@ -4,7 +4,7 @@
 }
 .other {
     font-weight: 600;
-    color:hsla(199, 5%, 34%, 1.0);
+    color:hsla(199, 5%, 60%, 1.0);
 }
 .blue {
     color: hsla(199, 98%, 38%, 1.0);
@@ -48,6 +48,9 @@
     font-family: "Matterhorn";
     font-size: 15pt;
     color: #616161;
+}
+.gameVisualText .other {
+    color:hsla(199, 5%, 34%, 1.0);
 }
 .gameVisualText.big {
     font-size: 22pt;

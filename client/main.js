@@ -15,7 +15,7 @@ import { Sess } from '../imports/lib/quick-session.js';
 
 Tracker.autorun(function() {
     //console.log("routing", Meteor.users.findOne(asst.userId).turkserver.state );
-    console.log("routing", TurkServer.inQuiz(), TurkServer.inExperiment(), TurkServer.inExitSurvey(), this.location.pathname,"XXX", this.location.pathname.match(/\d*$/) ,"XXX", this.location.pathname.match(/\d*$/)[0], "XXX", _.toInteger( this.location.pathname.match(/\d*$/)[0] ));
+    //console.log("routing", TurkServer.inQuiz(), TurkServer.inExperiment(), TurkServer.inExitSurvey() );
     if (TurkServer.inExperiment()) {
         Router.go('experiment');
     } else if (TurkServer.inQuiz()) {
@@ -36,7 +36,7 @@ Tracker.autorun(function() {
         Router.go('submitHIT');
     } else {
         //Router.go('/home');
-        console.log("failed into lobby");
+        //console.log("failed into lobby");
     }
 });
 
@@ -182,6 +182,9 @@ Template.registerHelper('equals', function(v1, v2) {
 Template.registerHelper( 'notEquals', ( a1, a2 ) => {
       return a1 !== a2;
 });
+Template.registerHelper('not',(a)=>{
+      return !a;
+});
 // http://stackoverflow.com/questions/36499595/blaze-logic-not-or-and-in-if-statementj
 Template.registerHelper('and',(a,b)=>{
       return a && b;
@@ -214,6 +217,8 @@ Template.registerHelper('earnings',
             } else {
                 return( Helper.toCash( earnings ) );
             }
+        } else {
+            return( Helper.toCash( 0 ) );
         }
     }
 );

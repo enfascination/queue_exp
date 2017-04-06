@@ -78,17 +78,16 @@ Template.answersForm.events({
                 theData.correct = false;
                 theData.hasError = true;
                 Schemas.QuizAnswers.validate( q );
-                console.log("Quiz Failure", answered, correct, Match.test(theData, Schemas.QuizAnswers),  q);
+                console.log("Quiz Failure", answered, correct, Match.test(theData, Schemas.QuizAnswers));
             } else {
                 answeredCount += 1;
                 resultsCount += correct ? 1 : 0;
             }
             Meteor.call("updateSubjectQuestion", sub.meteorUserId, q._id, theData );
         });
-        console.log("counts", qs.length, answeredCount, resultsCount, qs.map( (q) => q._id ));
+        //console.log("counts", qs.length, answeredCount, resultsCount, qs.map( (q) => q._id ));
         //if ( answeredCount === qs.length ) {
         if ( true ) {
-            UserElements.quizSubmitted.set( true );
             let passed = false;
             if ( resultsCount === qs.length ) {
                 passed = true;
@@ -126,6 +125,9 @@ Template.answersForm.events({
                     Helper.windowAdjust(sub, bottom=true );
                 } );
             }
+
+            // don't be too snappy with the visual update
+            UserElements.quizSubmitted.set( true );
         } else {
         }
     },

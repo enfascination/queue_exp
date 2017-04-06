@@ -9,19 +9,18 @@
 </template>
 
 <template name="tutorial_step2">
-    <h3>Welcome</h3>
+    <h3>Instruction</h3>
     <ul class='dash'>
         <li>
-        You must pass a quiz to participate.
+            <b>Welcome.</b> These instructions will be followed by a quiz that you must pass in order to participate in the main experiment.
         </li>
         <li>
-            If you fail the quiz you will earn only <span class="earnings">10¢</span> and no bonuses.
+            <b>If you fail the quiz</b> you will earn only <span class="earnings">{{earnings design.HITEarnings}}</span> and no bonuses.
         </li>
         <li>
-            The experiment offers a theoretical maximum bonus of <span class="earnings">$6.50</span>, and a minimum of <span class="earnings">$1.75</span>. 
+            <b>The theoretical maximum bonus</b> from this experiment is <span class="earnings">{{earnings design.maxEarnings}}</span>. Given you pass the quiz, the absolute minimum is <span class="earnings">{{earnings design.minEarnings}}</span>. 
             <ul>
-                <li> After completion, it may take hours to calculate your bonus.  </li>
-                <li>Contact us if it is more than 24 hours.</li>
+                <li>After completion, it should take a few hours to calculate your bonus. Contact us if it takes more than 24 hours.</li>
             </ul>
         </li>
     </ul>
@@ -32,14 +31,16 @@
     <h3>Interface</h3>
     <ul class='dash'>
         <li>
-            This section will show your progress through the experiemnt.
+            <b>This window</b> will show your progress.
         </li>
         <li>
-            After completing the two sections of the experiment, 
-            you will complete a survey and recieve feedback on your bonus earnings.
+            <b>After completing the main sections</b> of the experiment, 
+            <em>Section 1</em> and <em>Section 2</em>, 
+            you will reach the <em>Survey</em> and then review your bonus 
+            earnings before submitting.
         </li>
         <li>
-            Click here to return to the instructions during the experiment.
+            <b>To return to these instructions</b> during the experiment, you can select <em>Start</em> from this navigation bar.
         </li>
     </ul>
     {{> tutorialBullets 1}}
@@ -49,10 +50,10 @@
     <h3>Interface</h3>
     <ul class='dash'>
         <li>
-            This section gives basic information about you, like your ID# and current bonuses.  
+            <b>Basic information about you</b>, like your ID and current bonus, is available here.  
         </li>
         <li>
-            Please include your ID# in any correspondence with us.
+            <em>Please include your ID in any correspondence with us.</em>
         </li>
     </ul>
         {{> tutorialBullets 1}}
@@ -62,13 +63,19 @@
     <h3>Experiment</h3>
     <ul class='dash'>
         <li>
-In the main window, you are going to play a series of strategic games in which you are matched with another player, who will also be a Turker.            
+            <b>In the main window,</b> you will play a series of strategic games in which you are matched with another player, who will also be a Turker.            
         </li>
         <li>
-   Your bonuses from these games will depend on both your choices and those of the other player.         
+            <b>Your bonuses</b> from these games will depend on both your choices and those of the other player.         
         </li>
         <li>
-   You can assume that the other player is about as motivated as you to maximize the number of points they earn.
+            <b>The other player is receiving these same instructions.</b> 
+            <ul><li>
+            You can assume that the other player is about as motivated as you to <b>maximize the number of points</b> they earn toward their bonuses. 
+            </li></ul>
+        </li>
+        <li>
+            During each game, we will also ask for your predicted and preferred final outcomes.
         </li>
     </ul>
         {{> tutorialBullets 1}}
@@ -78,8 +85,10 @@ In the main window, you are going to play a series of strategic games in which y
     <h3>Game Interface</h3>
     <ul class="dash">
         <li>
-This is what the basic game interface looks like.  
-In each game, you have two choices.
+            <b>This is the basic game interface.</b>  
+        </li>
+        <li>
+            Even though a game has four possible outcomes, <em>your choice will always be between only two options</em>.
         </li>
     </ul>
         {{> tutorialBullets 2}}
@@ -87,24 +96,33 @@ In each game, you have two choices.
 
 <template name="tutorial_step7">
     <h3>Game Interface</h3>
- Your decision will always be between choice <span class="you"><strong>Top</strong></span> ...
+    <span class="you">Your</span> decision will always be between <span class="you"><strong>Top</strong></span> &hellip;
         {{> tutorialBullets 2}}
 </template>
 
 <template name="tutorial_step8">
-... and choice <span class="you"><strong>Bottom</strong></span>. 
-Hover over your two choices to see feedback about the possible game outcomes.
+<br/>
+<br/>
+<br/>
+&hellip; and <span class="you"><strong>Bottom</strong></span>. 
+<br/>
+<br/>
+<em>Hover over each of your two options to see feedback about how they could affect the final outcome.</em>
+<br/>
         {{> tutorialBullets 2}}
 </template>
 
 <template name="tutorial_step9">
     <h3>Game Interface</h3>
-The other player also has two choices: choice <span class="other"><strong>Left</strong></span> ... 
+    Like you, the <span class="other">other player</span> also has two choices: <span class="other"><strong>Left</strong></span> &hellip; 
         {{> tutorialBullets 2}}
 </template>
 
 <template name="tutorial_step10">
-... and choice <span class="other"><strong>Right</strong></span>.
+<br/>
+<br/>
+<br/>
+&hellip; and <span class="other"><strong>Right</strong></span>.
         {{> tutorialBullets 2}}
 </template>
 
@@ -112,13 +130,13 @@ The other player also has two choices: choice <span class="other"><strong>Left</
     <h3>Game Interface</h3>
     <ul class="dash">
         <li>
-Both players will chose simultaneously and blindly; neither player will have a chance to see the other's choice before choosing. 
+            <b>You and the other player will make your choices simultaneously and blindly;</b> neither player will have a chance to see the other's choice before choosing. 
         </li>
         <li>
-        Depending on <span class="you">your</span> choice and the <span class="other">other player's</span>, each game has four possible outcomes.
+            <b>The game's final outcome,</b> of the four, will be calculated by combining <span class="you">your</span> choice with the <span class="other">other player's</span>.
         </li>
         <li>
-The outcome determines the amounts of points you and the other player earn toward your bonuses.
+            <b>Your points, and bonuses</b> will be calculated from the outcome that <span class="you">you</span> and the <span class="other">other player</span> converged on.
         </li>
     </ul>
 {{> tutorialBullets 2}}
@@ -127,20 +145,20 @@ The outcome determines the amounts of points you and the other player earn towar
 <template name="tutorial_step12">
     <h3>Game Interface</h3>
     <ul class='dash'>
-        <li>
-            In this outcome, <span class="you">you</span> chose <span class="you"><strong>Bottom</strong></span>, the <span class="other">other player</span> chose <span class="other"><strong>Right</strong></span>, and you both earn <span class="earnings">0</span> points.
+    <li>
+        <b>This is the outcome that would result</b> if <span class="you">you</span> chose <span class="you"><strong>Bottom</strong></span> and the <span class="other">other player</span> chose <span class="other"><strong>Right</strong></span>. In this outcome you would each earn <span class="earnings">1</span> point.
         </li>
         <li>
-The blue triangle in each outcome contains the number of points that will be due to <span class="you">you</span>. 
+            <b>Each point is worth <span class="earnings">{{earnings design.pointEarnings}}</span>.</b>
             <ul class="dash"><li>
-In general, information related to <span class="you">You</span> will be in <span class="you">blue</span>.  
+                    For example, if you or the other player receive the maximum payoff of <span class="earnings">3</span> points, we will add <span class="earnings">{{earnings 0.45}}</span> to your bonus.
             </li></ul>
         </li>
         <li>
-The grey upper triangles show the <span class="other">other player's</span> potential earnings from each outcome.
-            <ul class="dash"><li>
-  Information related to the <span class="other">other player</span> is usually in <span class="other">grey</span>. 
-            </li></ul>
+            The <span class="you">blue triangle</span> in each outcome shows <span class="you">your</span> potential points. 
+        </li>
+        <li>
+            The <span class="other">grey upper triangles</span> show the <span class="other">other player's</span> potential point earnings.
         </li>
     </ul>
         {{> tutorialBullets 2}}
@@ -150,10 +168,10 @@ The grey upper triangles show the <span class="other">other player's</span> pote
     <h3>Game Interface</h3>
     <ul class='dash'>
         <li>
-                        In this outcome, <span class="you">you</span> chose <span class="you"><strong>Bottom</strong></span> and the <span class="other">other player</span> chose <span class="other"><strong>Left</strong></span>, with the result that <span class="you">you</span> earn <span class="earnings">2</span> points and the <span class="other">other player</span> earns <span class="earnings">-1</span> points.  
+            <b>In this outcome,</b> <span class="you">you</span> chose <span class="you"><strong>Bottom</strong></span> and the <span class="other">other player</span> chose <span class="other"><strong>Left</strong></span>, with the result that <span class="you">you</span> earned <span class="earnings">3</span> points and the <span class="other">other player</span> earned <span class="earnings">0</span>.  
         </li>
         <li>
-                        In the symmetrical outcome to this one, resulting from choices of <span class="you"><strong>Top</strong></span> and <span class="other"><strong>Right</strong></span>, the <span class="other">other player</span> earns <span class="earnings">2</span> points and <span class="you">you</span> are the player that loses <span class="earnings">1</span> point.  
+            In the outcome opposite to this one, resulting from choices of <span class="you"><strong>Top</strong></span> and <span class="other"><strong>Right</strong></span> (in the upper right), the <span class="other">other player</span> earns <span class="earnings">3</span> points and <span class="you">you</span> are the player that earns <span class="earnings">0</span>.
         </li>
     </ul>
         {{> tutorialBullets 2}}
@@ -163,16 +181,10 @@ The grey upper triangles show the <span class="other">other player's</span> pote
     <h3>Earnings</h3>
     <ul class='dash'>
         <li>
-Your bonus for this HIT will be calculated from the points you earn in each game. 
+            <b>Your bonus for this HIT</b> will be calculated from the points you earn from each game you play. 
         </li>
         <li>
-            Each point is worth <span class="earnings">${{design.pointEarnings}}</span>. 
-            <ul class="dash"><li>
-                    For example, if you or the other player recieve the maximum payoff of <span class="earnings">4</span> points, we will add <span class="earnings">$1.00 USD</span> to your bonus earnings.
-            </li></ul>
-        </li>
-        <li>
-Because the final outcome depends both on your choice and the other player's, you should always think about what the other player might choose while making your own choice. 
+            <b><em>You should always think about what the other player might choose while making your own choice. </em></b>
         </li>
     </ul>
 {{> tutorialBullets 2}}
@@ -182,20 +194,29 @@ Because the final outcome depends both on your choice and the other player's, yo
     <h3>Experiment Structure</h3>
 <ul class="dash">
 <li>
-The experiment is divided into two sections of three games each. 
+    <b>You will play many games</b> within this interface during the rounds and sections of the main experiment. 
 </li>
 <li>
-After completing the first two games in a section, you will be 
-asked which game you would like to play a second time, and you will have a 
-chance to play that game a second time, for the same reward. 
+    <b>The experiment is divided into two sections</b> of five rounds each. 
 </li>
 <li>
-You may not always get feedback about the outcomes of previous games before 
-being asked to choose between them.
+    <b>You will start each section</b> by playing two similar games. 
 </li>
 <li>
-After completing both sections, you may complete the Survey, for an additional
-<span class="earnings">50¢</span>, before submitting this HIT.
+    You will then play one of those games a second time after choosing which of the two you would prefer to play again.
+<ul>
+<li>
+    You are not guaranteed to get your chosen game, but you will most likely get it.
+</li>
+</ul>
+</li>
+<li>
+    <b>The sections have only one difference from each other:</b> in one of them you will get feedback about the final outcomes of the first two games before choosing between them, while in the other you will only see what your own choices were.
+</li>
+<br/>
+<li>
+    After completing the experiment's main sections, you will complete the <em>Survey</em> for an additional
+<span class="earnings">{{earnings design.surveyEarnings}}</span> before submitting this HIT.
 </li>
 </ul>
         {{> tutorialBullets 2}}
@@ -205,13 +226,13 @@ After completing both sections, you may complete the Survey, for an additional
     <h3>Experiment Structure</h3>
     <ul class="dash">
         <li>
-Keep in mind that within each section you will be playing each game with the same person. 
+            Within each section you will stay matched to the same player. 
         </li>
         <li>
-But when you change sections you will be matched with an entirely different player. 
+           You will be matched to a different player when you move across sections.
         </li>
         <li>
-Once again, because the outcome depends both on your choice and the other player's, you should always think about what the other player might choose while making your own choice.
+            Once again, because the outcome depends both on your choice and the other player's, <em>you should always think about what the other player might choose while making your own choice.</em>
         </li>
     </ul>
         {{> tutorialBullets 2}}

@@ -46,7 +46,7 @@ Template.answersForm.events({
             // custom restricted text test
             if (q.type==='text' && q.pattern && !(new RegExp(q.pattern)).test( choice )) { 
                 answered=false;
-                console.log(q.label, q.pattern, (new RegExp(q.pattern)), (new RegExp(q.pattern)).test( choice ));
+                //console.log(q.label, q.pattern, (new RegExp(q.pattern)), (new RegExp(q.pattern)).test( choice ));
             }
 
             // require all answers
@@ -60,7 +60,7 @@ Template.answersForm.events({
             };
             _.assign(q, theData); // client side update: assign is a mutator of q
             if (!answered || !Match.test(q, Schemas.SurveyAnswers) ) {
-                console.log("survey fail", q, Schemas.SurveyAnswers);
+                console.log("Survey fail", q, Schemas.SurveyAnswers);
                 Schemas.SurveyAnswers.validate( q );
                 theData.hasError = true;
                 UserElements.questionsIncomplete.set(true);
@@ -73,7 +73,7 @@ Template.answersForm.events({
         /////////////////////
         //// IF INPUTS OK, SUBMIT ANSWERS AND ....
         /////////////////////
-        console.log(answeredCount ,qs.length, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
+        //console.log(answeredCount ,qs.length, sub.sec_rnd_now, Questions.findOne({sec: this.currentSection.id}));
         if ( Debugging || answeredCount === qs.length ) {
         //if ( answeredCount === qs.length ) {
             qs.forEach( function( q ) {
@@ -116,7 +116,7 @@ Template.main.events({
         e.stopPropagation();
         let muid = Meteor.userId();
         let sub = Sess.subStat();
-        console.log("button.proceedButton#earningsReport", sub);
+        //console.log("button.proceedButton#earningsReport", sub);
         if ( sub.readyToProceed ) {
             Meteor.call("advanceSubjectSection", muid, "submitHIT", "submitHIT");
             Helper.windowAdjust(sub );

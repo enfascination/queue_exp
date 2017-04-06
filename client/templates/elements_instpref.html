@@ -46,8 +46,8 @@
     <br/>
                     When <span class="player you">You</span> choose <span class="strategy you">{{textGameFeedbackStrategy}}</span><br/>
                     the <span class="player other">Other Player</span> will either<br/>
-                    &emsp;earn <span class="payoff other">{{textGamePayoffs question.payoffs "Left" textGameFeedbackStrategy "Other"}}</span> <br/>
-                    &emsp;&emsp;&thinsp;or <span class="payoff other">{{textGamePayoffs question.payoffs "Right" textGameFeedbackStrategy "Other"}}</span> quarters .<br/>
+                    &emsp;&emsp;earn <span class="payoff other">{{textGamePayoffs question.payoffs "Left" textGameFeedbackStrategy "Other"}}</span>
+                    &nbsp;or <span class="payoff other">{{textGamePayoffs question.payoffs "Right" textGameFeedbackStrategy "Other"}}</span>.<br/>
                     Specifically, if they choose <span class="strategy other">Left</span><br/>
                     &emsp;&emsp;they will earn 
                         <span class="payoff other">{{textGamePayoffs question.payoffs "Left" textGameFeedbackStrategy "Other"}}</span><br/>
@@ -58,6 +58,7 @@
                         <span class="payoff other">{{textGamePayoffs question.payoffs "Right" textGameFeedbackStrategy "Other"}}</span><br/>
                         &emsp;&emsp;and <span class="player you">You</span> will earn 
                         <span class="payoff you">{{textGamePayoffs question.payoffs "Right" textGameFeedbackStrategy "You"}}</span>.<br/>
+                        <br/>
                         <br/>
 </template>
 <template name="gameNormalForm">
@@ -96,8 +97,8 @@
         <div class = "expQuestion {{question.type}} form-group {{getHasError question}}" id="{{question._id}}">
             <div class="expQuestionText">
                 <h3 class="questionTitle" >{{question.title}}</h3>
-                <p>{{question.text}}</p>
-                <label for="{{question._id}}" class = "control-label {{disabled question}}">{{question.label}}</label>
+                <p>{{{question.text}}}</p>
+                <label for="{{question._id}}" class = "control-label {{disabled question}}">{{{question.label}}}</label>
             </div>
             {{> gameNormalForm id=question._id gameId=question._id choiceType=question.type payoffs=question.payoffs question=question context=.. }}
         </div>

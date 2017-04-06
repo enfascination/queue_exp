@@ -20,7 +20,7 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                 cohortId = 1;
                 treatment = "nofeedback";
             } else if (matching.noMatching) { // everyone should start a cohort with each section and no one shoudl complete one
-                console.log("no matching", probeDesign.cohortId + 1);
+                ////console.log("no matching", probeDesign.cohortId + 1);
                 try {
                     console.assert( (sub.cohort_now === 0 ) || (sub.sec_now === 'experiment2') , "problem in no matching" );
                 } catch(err) {
@@ -29,7 +29,7 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                 cohortId = probeDesign.cohortId + 1;
                 treatment = "nofeedback";
             } else if ( matching.selfMatching ) {
-                console.log("self matching");
+                //console.log("self matching");
                 if (sub.cohort_now === 0 ) {  // create a new cohort for this person
                     try {
                         console.assert( sub.sec_rnd_now === 0, "problem in self matching" );
@@ -37,11 +37,11 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                     } catch (err) { throw(err); }
                     cohortId = probeDesign.cohortId + 1;
                     treatment = "nofeedback";
-                    console.log("self matching exp 1", cohortId, treatment, sub.meteorUserId);
+                    //console.log("self matching exp 1", cohortId, treatment, sub.meteorUserId);
                 } else {
                     cohortId = sub.cohort_now;
                     treatment = "feedback";
-                    console.log("self matching exp 2", cohortId, treatment, sub.meteorUserId);
+                    //console.log("self matching exp 2", cohortId, treatment, sub.meteorUserId);
                 }
             } else if (
                     matching.ensureSubjectMismatchAcrossSections || 
@@ -107,7 +107,7 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                             throw(err); 
                         }
                         cohortId = cohortInProgress.cohortId;
-                        console.log("real matching feedback", cohortId, sub.meteorUserId );
+                        //console.log("real matching feedback", cohortId, sub.meteorUserId );
                     } else {
                         // fail through to next block
                     }
@@ -116,7 +116,7 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                 // get this subject a new cohort
                 if ( treatment === "nofeedback" ) {  // create a new cohort for this person
                     cohortId = probeDesign.cohortId + 1;
-                    console.log("real matching, no feedback", cohortId, sub.meteorUserId );
+                    //console.log("real matching, no feedback", cohortId, sub.meteorUserId );
                 }
             } else if (matching.ensureSubjectMatchAcrossSections) {
             } 
@@ -217,11 +217,11 @@ Experiment.tryToCompleteUncompletedQuestions = function(sub, design) {
             matches += 2;
         }
     });
-    console.log("completeUncompleted.  matches:", matches, qs.count());
+    //console.log("completeUncompleted.  matches:", matches, qs.count());
 };
 Experiment.completeQuestionPair = function(q1, q2, design) {
     //console.log("Experiment.tryToCompleteQuestion", q1, Helper.des(design));
-    console.log("Experiment.tryToCompleteQuestion", q1, q2);
+    //console.log("Experiment.tryToCompleteQuestion", q1, q2);
     // determine if this is the first or second (ideally without knowing about matching protocol
     let question1 = Questions.findOne({ _id : q1 });
     //let question2 = Questions.find({ type : "chooseStrategy", cohortId : design.cohortId, sec_rnd : question1.sec_rnd, payoffs : Helper.pivotGame(question1.payoffs) });
@@ -250,7 +250,7 @@ Experiment.completeQuestionPair = function(q1, q2, design) {
     let outcomePayoffs = _.sortBy ( _.intersection( c1Poss, c2Poss) );
     let payoffP1 = question1.payoffs[ outcomePayoffs[0] ];
     let payoffP2 = question1.payoffs[ outcomePayoffs[1] ];
-    console.log("tried to complete", outcomePerspectiveP1, outcomePerspectiveP2, outcomePayoffs);
+    //console.log("tried to complete", outcomePerspectiveP1, outcomePerspectiveP2, outcomePayoffs);
     try {
         console.assert( outcomePayoffs.length === 2, "payoff calc 0: got payoffs successfully" );
         console.assert( outcomePayoffs[0] < 4, "payoff calc 1: payoffs ordered right and assigned right" );
@@ -272,7 +272,7 @@ Experiment.completeQuestionPair = function(q1, q2, design) {
     question2.completedGame = true;
     Questions.update( question1._id, {$set : question1});
     Questions.update( question2._id, {$set : question2});
-    console.log("setCompleteion");
+    //console.log("setCompleteion");
     //console.log("setCompleteion", "after", Questions.findOne( question1._id), "\n", Questions.findOne( question2._id));
     return([ Questions.findOne( question1._id ), Questions.findOne(  question2._id ) ]);
 };
@@ -293,9 +293,9 @@ Experiment.tryToCompleteCohort = function(design) {
     let playerCount = _.uniq( answeredQs.map( function(q) {
         return( q.meteorUserId );
     }) ).length;
-    console.log("complete cohort 3", playerCount, unansweredQs.count(), answeredQs.count() );
+    //console.log("complete cohort 3", playerCount, unansweredQs.count(), answeredQs.count() );
 
-    console.log( "cohort completion, matchabilitiy settings:", (unansweredQs.count() === 0 , answeredQs.count() > 0 ));
+    //console.log( "cohort completion, matchabilitiy settings:", (unansweredQs.count() === 0 , answeredQs.count() > 0 ));
     if (unansweredQs.count() === 0 && answeredQs.count() > 0  ) {
         // this test used to be more complicated testing either 
         //playerCount === design.maxPlayersInCohort  or 
@@ -397,7 +397,7 @@ Experiment.calculateExperimentEarnings = function(muid, design) {
             survey : surveyComplete ? design.surveyEarnings : 0 
         }
     };
-    console.log("calculateExperimentEarnings", HITearnings, paidQuestions.count(), surveyQuestions.count(), surveyComplete, paidQuestions.map( (q) => q.payoffEarnedFocal ) );
+    //console.log("calculateExperimentEarnings", HITearnings, paidQuestions.count(), surveyQuestions.count(), surveyComplete, paidQuestions.map( (q) => q.payoffEarnedFocal ) );
 
     return( HITearnings );
 };
@@ -425,7 +425,7 @@ Experiment.updateStatusInHIT = function(muid, design) {
     }); // could be across multiple cohorts
     let nOwnQsAnswered = ownQs.fetch().filter( (q)=>q.answered === true).length;
     let nOwnQsConsummated = ownQs.fetch().filter( (q)=>q.completedGame === true).length;
-    console.log("Experiment.updateExperimentEarnings", ownQs.count(), nOwnQsAnswered, nOwnQsConsummated);
+    //console.log("Experiment.updateExperimentEarnings", ownQs.count(), nOwnQsAnswered, nOwnQsConsummated);
     let HITStatus = {
             gamesPlayed : nOwnQsAnswered,
             gamesConsummated : nOwnQsConsummated,

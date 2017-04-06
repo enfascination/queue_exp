@@ -6,41 +6,45 @@ export let OverlapAssigner = class extends TurkServer.Assigners.SimpleAssigner {
 
     userJoined(asst) {
         // has to be before the super call.
-        console.log("assigner", asst, asst.getInstances().length);
+        //console.log("assigner", asst, asst.getInstances().length);
         //console.log("assigner", Meteor.users.findOne(asst.userId).turkserver.state, currentUser );
         if (asst.getInstances().length === 0) { // before experiment
             var currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
             var repeatUser = SubjectsStatus.findOne({ meteorUserId:asst.userId, mtAssignmentId : {$ne : asst.assignmentId } });
             // this will be for the instructions in the lobby before the experiment
                 if (!currentUser) {
-                    console.log("created new user", asst.userId, asst.assignmentId );
                     Meteor.call("initializeSubject", asst, Design, function(err) {
                         if (err) { throw( err ); }
                         currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
                         Meteor.call("addSectionQuestions", currentUser, "quiz", Design);
                     });
+                    console.log("Created new user", asst.userId, 
+                        asst.assignmentId, asst.workerId, asst.batchId, 
+                        asst.hitId, currentUser.isExperienced );
                 } else if ( repeatUser ) {
                     Meteor.call("initializeReturnSubject", asst, Design, function(err) {
                         if (err) { throw( err ); }
                         currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
                         Meteor.call("addSectionQuestions", currentUser, "quiz", Design);
                     });
-                    console.log("created repeat user", asst.userId, asst.assignmentId, currentUser.isExperienced );
+                    console.log("Created repeat user", asst.userId, 
+                        asst.assignmentId, asst.workerId, asst.batchId, 
+                        asst.hitId, currentUser.isExperienced );
                 }
 
             if ( currentUser.sec_type_now === 'quiz' ) {
-                console.log("in quiz");
+                //console.log("in quiz");
                 this.lobby.pluckUsers([asst.userId]);
                 TurkServer.setQuizState(asst);
             } else if ( currentUser.sec_type_now === 'experiment' ) { // no mention of survey state intentional
                 // if user hasn't yet been sent to experiment, create them an id based on the ids of preceding subjects
-                console.log("in experiment");
+                //console.log("in experiment");
                 const treatments = this.batch.getTreatments() || [];
                 this.assignToNewInstance([asst], treatments);
                 TurkServer.setExperimentState(asst, this);
-                console.log("in2", asst );// asst.userId is the meteor userid
+                //console.log("in2", asst );// asst.userId is the meteor userid
             } else if ( currentUser.sec_type_now === 'submitHIT' ) { //failed quiz too many times
-                console.log("in exit survey");
+                //console.log("in exit survey");
                 //console.log("in3");
                 this.lobby.pluckUsers([asst.userId]);
                 asst.showExitSurvey();
@@ -48,7 +52,7 @@ export let OverlapAssigner = class extends TurkServer.Assigners.SimpleAssigner {
                 console.log("in trouble");
             }
         } else { // after main experiment
-            console.log("in exit survey 2");
+            //console.log("in exit survey 2");
             this.lobby.pluckUsers([asst.userId]);
             asst.showExitSurvey();
         }

@@ -44,16 +44,16 @@ Template.experimenterViewPayouts.helpers({
 
     subjects() {
         if ( Session.get('selectedChoice') > 0 ) {
-            console.log(
-                "expView subjects", 
-                Session.get('selectedChoice'), 
-                SubjectsData.find().count(), 
-                SubjectsData.find({ sec_type : "experiment" }).count(), 
-                SubjectsData.find( { 
-                    "theData.cohortId": Session.get('selectedChoice'), 
-                    sec_type : "experiment" 
-                }, { sort: { sec: 1 , sec_rnd : 1} } ).fetch() 
-            );
+            //console.log(
+                //"expView subjects", 
+                //Session.get('selectedChoice'), 
+                //SubjectsData.find().count(), 
+                //SubjectsData.find({ sec_type : "experiment" }).count(), 
+                //SubjectsData.find( { 
+                    //"theData.cohortId": Session.get('selectedChoice'), 
+                    //sec_type : "experiment" 
+                //}, { sort: { sec: 1 , sec_rnd : 1} } ).fetch() 
+            //);
             return SubjectsData.find( { 
                 "theData.cohortId": Session.get('selectedChoice'), 
                 sec_type : "experiment",
