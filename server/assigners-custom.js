@@ -36,7 +36,11 @@ export let OverlapAssigner = class extends TurkServer.Assigners.SimpleAssigner {
                         asst.hitId, currentUser.isExperienced );
                 }
 
-            if ( currentUser.sec_type_now === 'quiz' ) {
+            if ( currentUser.sec_type_now === 'instructions' ) {
+                //console.log("in quiz");
+                this.lobby.pluckUsers([asst.userId]);
+                TurkServer.setInstructionsState(asst);
+            } else if ( currentUser.sec_type_now === 'quiz' ) { // no mention of survey state intentional
                 //console.log("in quiz");
                 this.lobby.pluckUsers([asst.userId]);
                 TurkServer.setQuizState(asst);

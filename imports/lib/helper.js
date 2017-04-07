@@ -127,16 +127,18 @@ export const Helper = {
         //let allTabs = [ 'instructions', 'quiz', 'experiment1', 'experiment2', 'survey', 'submitHIT' ]; ///XXX
         //let page = this.data.page;
         //console.log("Helper.updateNavBar. section and sections:", sec, secs);
-        if (sec === "quiz") {
-            toInclude = [ 'quiz'];
+        if (sec === "instructions") {
+            toInclude = [ 'instructions'];
+        } else if (sec === "quiz") {
+            toInclude = [ 'instructions', 'quiz'];
         } else if (sec === "experiment1") {
-            toInclude = [ 'quiz', 'experiment1' ];
+            toInclude = [ 'instructions', 'experiment1' ];
         } else if (sec === "experiment2") {
-            toInclude = [ 'quiz', 'experiment2' ];
+            toInclude = [ 'instructions', 'experiment2' ];
         } else if (sec === "survey") {
             toInclude = [ 'survey']; ///XXX
         } else if (sec === "earningsReport") {
-            toInclude = [ 'earningsReport']; 
+            toInclude = [ 'instructions', 'earningsReport']; 
         } else if (sec === "submitHIT") {
             toInclude = [ 'submitHIT' ]; ///XXX
         } else {
@@ -309,8 +311,20 @@ export const Helper = {
 
 
 // I'd like to get these somewhere else.  inQuiz is used client side
+TurkServer.inInstructions = function() {
+  return Session.equals("turkserver.state", "instructions");
+};
 TurkServer.inQuiz = function() {
   return Session.equals("turkserver.state", "quiz");
+};
+TurkServer.setInstructionsState = function(asst) {
+    //console.log("set experiment");
+    // this does not emit an event to lobby, so you'd better already be there
+    Meteor.users.update(asst.userId, {
+      $set: {
+        "turkserver.state": "instructions"
+      }
+    });
 };
 TurkServer.setQuizState = function(asst) {
     //console.log("set quiz");

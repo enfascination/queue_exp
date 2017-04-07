@@ -126,7 +126,7 @@ Template.cohortSelection.events({
         // (re)calculate earnings
         let designs = CohortSettings.find( {cohortId: cohortToCalculate } );
         designs.forEach( function(design) {
-            //Meteor.call('tryToCompleteCohort', design );
+            //Meteor.call('tryToCompleteCohort', design.cohortId );
         } );
         try {
             console.assert(designs.count() === 1 || cohortToCalculate === 0, "problem in cohort creation");

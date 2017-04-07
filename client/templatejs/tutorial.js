@@ -95,6 +95,8 @@ Template.main.helpers({
             //console.log("Finish clicked!");
             Meteor.setTimeout( function () {
                 // Test debouncing
+                Meteor.call("advanceSubjectSection", Meteor.userId(), "quiz",  "quiz" );
+                //Helper.activateTab( 'quiz' );
                 Session.set('tutorialEnabled', false);
                 Router.go('start', { stage : 3 });
             }, 700);
@@ -123,7 +125,9 @@ Template.tutorialBullets.helpers({
 });
 Template.registerHelper('tutorialEnabled', function(v1) {
     let design = Sess.design();
+    if (design) {
         return !_.isNil( design ) && design.tutorialEnabled && Session.get('tutorialEnabled');
+    }
 });
 
 Template.tutorial_step1.helpers({

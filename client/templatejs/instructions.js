@@ -32,10 +32,12 @@ Template.navButton.events({
         if (stage === 2) {
             Session.set('tutorialEnabled', true);
             Session.set('_tutorial_step_myCoolTutorial', 0);
+            Router.go('start', {stage:stage});
         }
-        if (stage >= 7) { stage = 7; }
-        Helper.activateTab( 'quiz' );
-        Router.go('start', {stage:stage});
+        if (stage >= 3) { stage = 3; }
+
+                //let design = Design;
+                //console.log("navButton", stage, Session.get('tutorialEnabled') , !_.isNil( design ), design.tutorialEnabled, ">>>" , Session.get('tutorialEnabled'), "<<<", !_.isNil( design ) && design.tutorialEnabled && Session.get('tutorialEnabled') );
         Helper.windowAdjust( );
     },
 });

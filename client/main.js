@@ -18,7 +18,7 @@ Tracker.autorun(function() {
     //console.log("routing", TurkServer.inQuiz(), TurkServer.inExperiment(), TurkServer.inExitSurvey() );
     if (TurkServer.inExperiment()) {
         Router.go('experiment');
-    } else if (TurkServer.inQuiz()) {
+    } else if (TurkServer.inInstructions() ) {
         // stage of instructions
         let stage = this.location.pathname.match(/\d*$/)[0];
         if (stage === '') {
@@ -32,6 +32,8 @@ Tracker.autorun(function() {
             stage = _.toInteger( stage );
         }
         Router.go('start', { stage:stage });
+    } else if (TurkServer.inInstructions() || TurkServer.inQuiz()) {
+        Router.go('quiz');
     } else if (TurkServer.inExitSurvey()) {
         Router.go('submitHIT');
     } else {
@@ -116,7 +118,7 @@ Template.main.helpers({
         let dataContext = Template.currentData();
         let design = Template.currentData().design;
         //let d = _( design.sequence ).omit( [ "instructions", "quiz", "submitHIT" ] ).toArray().value();
-        let d = _.map( _.omit( design.sequence, [ "instructions", "quiz", "submitHIT" ] ) , (q)=>q);
+        let d = _.map( _.omit( design.sequence, [ ] ) , (q)=>q);
         //console.log( "expSectionTabs", Template.currentData(), d );
         //console.log("expSectionTabs ", d);
         _.forEach( d, function( s ) {
@@ -191,6 +193,9 @@ Template.registerHelper('and',(a,b)=>{
 });
 Template.registerHelper('or',(a,b)=>{
       return a || b;
+});
+Template.registerHelper('gt',(a,b)=>{
+      return a > b;
 });
 Template.registerHelper('inc', function(v1) {
         return ( !_.isNil(v1) ? _.toInteger( v1 ) + 1 : null);

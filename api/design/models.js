@@ -6,13 +6,22 @@ import { QuestionData } from '../../imports/startup/experiment_prep_instpref.js'
 //import { Questions } from '../../imports/startup/server/server_prep.js';
 
 DesignSequence = {
+        "instructions" : {
+            "name" : "instructions", 
+            "type" : "instructions" , 
+            "id" : "instructions" , 
+            "label" : "Instructions" , 
+            "roundCount" : 1, 
+            "rounds" : {},
+            "stages" : 1 ,
+        }, 
         "quiz" : { 
             "name" : "quiz", 
             "type" : "quiz" , 
             "id" : "quiz" , 
-            "label" : "Start" , 
+            "label" : "Quiz" , 
             "roundCount" : 1, 
-            "rounds" : { "0" : {id:"round0", label:"Round 0"}, },
+            "rounds" : {},
             "stages" : 1 ,
             "shuffledQuestions" : false,
         }, 

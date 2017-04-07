@@ -31,13 +31,11 @@
                         <h1>Social Lab</h1>
                     </div>
                     <ul class="nav nav-tabs nav-stacked" role="tab-list">
-                        <li><a data-target="#quiz" href="#quiz" aria-controls="quiz" data-toggle="tab">Start</a></li>
                         {{#each section in expSectionTabs }}
                             {{> expSectionTab section=section }}
                         {{/each}}
-                        <li><a data-target="#submitHIT" href="#submitHIT" aria-controls="submitHIT" data-toggle="tab">Submit</a></li>
                         {{#if showExperimenterView}}
-                        <li role="presentation"><a data-target="#experimenterView" href="#experimenterView" aria-controls="experimenterView" role="tab" data-toggle="tab">Data&nbsp;view</a></li>
+                            <li role="presentation"><a data-target="#experimenterView" href="#experimenterView" aria-controls="experimenterView" role="tab" data-toggle="tab">Data&nbsp;view</a></li>
                         {{/if}}
                     </ul>
                 </div>
@@ -51,13 +49,8 @@
             <div class="col-md-8 col-md-offset-1 expMainWindow">
                 <div class="col-md-12 row expWindow expMainPanel">
                     <div class="tab-content" id="tabs" data-tabs="tabs">
-                        <div role="tabpanel" class="tab-pane expPane" id="quiz">
+                        <div role="tabpanel" class="tab-pane expPane" id="instructions">
                             {{> introSectionTabPane }}
-                            {{#if equals currentSection.id "quiz"}}
-                                <div class="row">
-                                    {{> proceedButton id=currentSection.id }}
-                                </div>
-                            {{/if}}
                         </div>
                         <div role="tabpanel" class="tab-pane expPane" id="{{currentSection.id}}">
                         {{> yield }}
@@ -84,11 +77,13 @@
         <a data-target="#{{section.id}}" href="#{{section.id}}" aria-controls="{{section.id}}" role="tab" data-toggle="tab">
             {{{ nbsp section.label }}}
             {{#if equals section.id section.sec_now}}
+            {{#if gt section.roundCount 1}}
             <ul class="nav nav-pills nav-stacked expSubTabs" role="tab-list">
                 {{#each round in expSectionRoundTabs}}
                     {{> expSectionRoundTab round=round dataContext=..}}
                 {{/each}}
             </ul>
+            {{/if}}
             {{/if}}
         </a>
     </li>
@@ -98,37 +93,25 @@
 </template>
 
 <template name="introSectionTabPane">
-    {{#if equals currentSection.id "quiz"}}
+    {{#if equals currentSection.id "instructions"}}
     <div class="center-block"> 
-        {{! {{> instPrefInstructions context=..}}
-
         {{> yield "instructions"}}
-
     </div>
     {{else}} {{! instructions have multiple pages durig quiz, but one page after }}
-    {{! {{> instPrefInstructions}}
+        {{! {{> instPrefInstructions}}
         {{> instructions2}}
         {{> instructions3}}
         {{> instructions4}}
         {{> instructions5}}
         {{! {{> instructions6}}
-        <br/>
-        {{> tutorial_step1}}
-        {{> tutorial_step2}}
-        {{> tutorial_step3}}
-        {{> tutorial_step4}}
-        {{> tutorial_step5}}
-        {{> tutorial_step6}}
-        {{> tutorial_step7}}
-        {{> tutorial_step8}}
-        {{> tutorial_step9}}
-        {{> tutorial_step10}}
-        {{> tutorial_step11}}
-        {{> tutorial_step12}}
-        {{> tutorial_step13}}
-        {{> tutorial_step14}}
-        {{> tutorial_step15}}
-        {{> tutorial_step16}}
+    {{/if}}
+</template>
+<template name="quizSectionTabPane">
+    {{#if equals currentSection.id "quiz"}}
+    <div class="center-block"> 
+        {{! {{> yield "instructions"}}
+        {{> quiz}}
+    </div>
     {{/if}}
 </template>
 

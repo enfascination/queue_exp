@@ -234,13 +234,6 @@ Template.main.events({
         let sub = Sess.subStat();
         //console.log("proceedButton#experiment", muid, sub, e.target );
         if ( sub.readyToProceed ) {
-            // complete cohort
-            Meteor.call('tryToCompleteCohort', Sess.design(), function(err, cohortCompleted) {
-                if (err) { throw( err ); }
-                if (cohortCompleted) {
-                    //console.log("COHORTcOMPLETED");
-                }
-            });
             /// advance section
             if (sub.sec_now === "experiment1" ) {
                 Meteor.call('advanceSubjectSection', Meteor.userId(), "experiment2", "experiment", asyncCallback=function(err, updatedSub) {
@@ -254,6 +247,14 @@ Template.main.events({
                 Meteor.call('advanceSubjectSection', Meteor.userId(), "survey", "experiment");
             } else {
             }
+
+            // complete cohort
+            Meteor.call('tryToCompleteCohort', sub.cohort_now, function(err, cohortCompleted) {
+                if (err) { throw( err ); }
+                if (cohortCompleted) {
+                    //console.log("COHORTcOMPLETED");
+                }
+            });
             // adjust screen 
             Helper.windowAdjust(sub );
         } else {

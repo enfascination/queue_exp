@@ -276,15 +276,15 @@ Experiment.completeQuestionPair = function(q1, q2, design) {
     //console.log("setCompleteion", "after", Questions.findOne( question1._id), "\n", Questions.findOne( question2._id));
     return([ Questions.findOne( question1._id ), Questions.findOne(  question2._id ) ]);
 };
-Experiment.tryToCompleteCohort = function(design) {
+Experiment.tryToCompleteCohort = function(cohortId) {
     let completed = false;
-    let cohortId = design.cohortId;
+    let design = CohortSettings.findOne(
+        { cohortId: cohortId}
+    );
 
     // make it safe to over-call this function
     //    abort if cohort is already complete
-    if ( CohortSettings.findOne(
-        { cohortId: cohortId}
-    ).completed ) {
+    if ( design.completed ) {
         return;
     }
 

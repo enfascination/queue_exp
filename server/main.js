@@ -133,8 +133,8 @@ Meteor.users.deny({
                 mtWorkerId: idObj.workerId,
                 cohort_now : 0,
                 cohortIds : [],
-                sec_now: 'quiz',
-                sec_type_now: 'quiz',
+                sec_now: 'instructions',
+                sec_type_now: 'instructions',
                 sec_rnd_now: 0,
                 sec_rnd_stg_now: 0,
                 readyToProceed: false,
@@ -390,10 +390,17 @@ Meteor.users.deny({
             //console.log("advanceSubjectSection", "unready", sub.readyToProceed );
             // routing, which can vary by section
             //if ( sub.sec_now != sub.sec_now ) {
-            if ( sub_old.sec_now === "quiz" ) {
+            let asst = TurkServer.Assignment.getAssignment( sub_old.tsAsstId );
+            let batch = TurkServer.Batch.getBatchByName( Design.batchName );
+            if ( sub_old.sec_now === "instructions" ) {
+                if ( nextSection === "quiz" ) {
+                    TurkServer.setQuizState(asst);
+                } else if ( nextSection === "submitHIT" ) {
+                    asst.showExitSurvey();
+                    Meteor.call('goToExitSurvey', Meteor.userId());
+                }
+            } else if ( sub_old.sec_now === "quiz" ) {
                 // to experiment
-                let asst = TurkServer.Assignment.getAssignment( sub_old.tsAsstId );
-                let batch = TurkServer.Batch.getBatchByName( Design.batchName );
                 if ( nextSection === "experiment1" ) {
                     TurkServer.setLobbyState( asst, batch );
                     entered = 1;

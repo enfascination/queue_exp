@@ -45,6 +45,18 @@ Router.route('start', function() {
 }, {
     layoutTemplate: 'main',
     path: '/start/:stage',
+    waitOn : function () {
+        return([
+            Meteor.subscribe('s_status'),
+        ]);
+    },
+});
+
+Router.route('/quiz', function() {
+    this.render( 'quizSectionTabPane' );
+}, {
+    layoutTemplate: 'main',
+    //path: '/quiz',
     data : function() { // enrich the global data object in this section
         let data = Router.options.data();
         //console.log("in instructions data rendering", this.params, this.params.query);
@@ -52,7 +64,6 @@ Router.route('start', function() {
             let sub = data.subStat;
             let qs = Questions.find({ meteorUserId : sub.meteorUserId, mtAssignmentId : sub.mtAssignmentId, sec: sub.sec_now, sec_rnd : sub.sec_rnd_now }, {$sort : { order : 1 }});
             data.questionsColl = qs;
-            data.stage = this.params.stage;
         }
         return( data );
     },
@@ -63,7 +74,6 @@ Router.route('start', function() {
         ]);
     },
 });
-
 Router.route('/experiment', function() {
     // main template
     this.render( 'expSectionTabPane' );
