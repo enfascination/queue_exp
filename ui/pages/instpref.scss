@@ -355,3 +355,18 @@ figure.tutorial figcaption {
     font-size: 11pt;
     line-height: 11pt;
 }
+
+.consent {
+    font-family: "Times";
+    text-align: center;
+    width: 600px;
+    border: 3px solid black;
+}
+.consent h2.sectionHeader {
+    text-align: left;
+    font-family: "Times";
+}
+.consent blockquote {
+    text-align: justify; 
+    border-left: 0;
+}

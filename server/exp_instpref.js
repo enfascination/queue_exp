@@ -322,6 +322,7 @@ Experiment.tryToCompleteCohort = function(cohortId) {
             console.log("COHORT COMPLETED", cohortId);
             return(true);
         } else if ( _.isNil( design.playerTwo ) && design.filledCohort < 2) {
+            // TODO Erros from before can cacade and pollute subsequent cohorts/participants.  they way to prevent that is here, by a QC loop on answeredQs.  One known example is that the payoffs from round 4 questions have beenknown to become not set.  this can be caught here to keep propgating forward.  If it's a thing.  There are likely to be other examples in the future too.
             // cohort still in progress
             CohortSettings.update({ cohortId: cohortId}, {
                 $set: { matchable: true, },

@@ -6,11 +6,10 @@
 </template>
 
 <template name="instructions1">
-			<div align="center">
-                <h2 class="sectionHeader"  style="text-align:left;">Consent to Participate</h2>
+			<div class="consent">
+                <h2 class="sectionHeader" >Consent to Participate</h2>
 				<br>
-				<br>
-				<blockquote style="text-align: justify; width: 600px;">
+				<blockquote>
 					This HIT is part of a project being conducted by researchers from the department of Psychological and Brain Sciences at Dartmouth College, Hanover, NH, USA.  The study aims broadly to understand how people interact and what types of interactions they seek out. 
 					<br><br>
 					Your participation is voluntary. Participation involves interacting with other participants in abstracted games. 
@@ -23,12 +22,12 @@
 					This contact information will appear on the banner at the bottom of your screen for the duration of the HIT.
 				</blockquote>
                 <p style='text-align: center;'><b>Select <em>Agree</em> below if you consent to participate in this study. If you <em>Do&nbsp;Not&nbsp;Agree</em> to participate you will be asked to return the HIT.</b></p>
-			</div>
-			<div align="center">
+			<div >
 				<div >
 				<button type="button" class="btn btn-lg btn-success navButton" style=" margin-right:5%" id="Consent" >Agree</button>
 				<button type="button" class="btn btn-lg btn-danger navButton"  aria-label="Left Align" style="margin-left:5%" id="NoConsent" >Do Not Agree</button>
 				</div>
+			</div>
 			</div>
 </template>
 <template name="instructions2">
@@ -121,7 +120,13 @@
 
 
 <template name="instPrefGame0">
-        <p>Begin by making your choice for the game below and answering two questions about it.</p>
+    <p>
+    {{#if equals subStat.sec_now "experiment1"}}
+    <strong><strong> You have just been matching with a player.</strong></strong>
+    {{else}}
+    <strong><strong> You have just been matching to a different player from the previous section.</strong></strong>
+    {{/if}}
+        Begin by making your choice for the game below and answering two questions about it.</p>
 </template>
 <template name="instPrefGame1">
         <p>You will now make your choice in a similar game, answering the same two questions.</p>
@@ -130,9 +135,9 @@
     <p>
     This is an informational round that allows you to review the two games you just played before you decide between them: in the next round we ask you to select the one you most prefer to play again.
         {{#if equals subStat.treatment_now "nofeedback"}}
-        <strong>The feedback below does not include information about what the other player's choices were.</strong>
+        <strong><strong>The feedback below does not include information about what the other player's choices were.</strong></strong>  
         {{else}} {{#if equals subStat.treatment_now "feedback"}}
-        <strong>The feedback below includes full information about what the other player's choices were.</strong>  
+        <strong><strong>The feedback below includes full information about what the other player's choices were.</strong></strong>  
         {{else}}
             Something is wrong. Code YRAKASDFASDFSHGK.
         {{/if}}
@@ -153,15 +158,15 @@
         <p>In the next round you will play 
         one of the previous two games a second time, for additional earnings.  
         You may select below which of the games you would prefer to play again 
-        (with the same person). <strong>The next round's game is most likely to 
-            be the one you chose, but it is not guaranteed to be.</strong></p>
+        (with the same person). The next round's game is most likely to 
+            be the one you chose, but it is not guaranteed to be.</p>
 </template>
 <template name="instPrefGame4">
             {{#each question in questionsColl}}
                 {{#if question.gameWasPreferred}}
-                    <strong>Your choice in round 3 was selected; below is the game that you preferred.</strong>
+                    <strong><strong>Your choice in round 3 was selected; below is the game that you preferred.</strong></strong>
                 {{else}}
-                    <strong>Your choice in round 3 was not selected; below is the game that you did not prefer.</strong>
+                    <strong><strong>Your choice in round 3 was not selected; below is the game that you did not prefer.</strong></strong>
                 {{/if}}
             {{/each}}
             Please play it one more time. 
