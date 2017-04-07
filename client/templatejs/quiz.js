@@ -138,13 +138,14 @@ Template.main.events({
         let sub = Sess.subStat();
         //console.log("button#proceedButton#quiz", sub);
         if ( sub && sub.readyToProceed ) {
-            let nextSection = "experiment1";
-            let nextSectionType = "experiment";
             if (sub.quiz.failed) {
-                nextSection = "submitHIT";
-                nextSectionType = "submitHIT";
+                Meteor.call("advanceSubjectSection", muid, "submitHIT", "submitHIT");
+            } else {
+                Meteor.call("advanceSubjectSection", muid, "experiment1", "experiment", asyncCallback=function(err, updatedSub) {
+                    if (err) { throw( err ); }
+                    Meteor.call('initializeSection', sub=updatedSub, lastDesign=Sess.design());
+                });
             }
-            Meteor.call("advanceSubjectSection", muid, nextSection, nextSectionType);
             // Meteor.call('goToExitSurvey', Meteor.userId()); redundant
 
             Helper.windowAdjust(sub );

@@ -25,13 +25,13 @@ Template.experiment.onCreated( function(){
         // is player refreshing, reconnecting, or somehow already up to date in the system?
         //console.log("experiment render", Template.currentData());
         if ( !subStat.readyToProceed ) {
-            let playerHasConnectedBefore     = (subStat.cohort_now !== 0) ? true : false;
+            let playerHasConnectedBefore     = (subStat.cohort_now !== 0);
             // player is new to me if they are int he experiment, they have no incomplete data, and they aren't ready to proceeed to a next stage
             if ( !playerHasConnectedBefore ) { 
                 // record groupid, in case I need it one day
-                console.log("New participant");
+                console.log("New participant", "DON'T HAVE TO GO IN HERE ANYMORE");
                 Meteor.call("addGroupId", muid, group );
-                Meteor.call('initializeSection', sub=muid, lastDesign=null );
+                //Meteor.call('initializeSection', sub=muid, lastDesign=null );
             } 
         }
 

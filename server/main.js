@@ -320,11 +320,6 @@ Meteor.users.deny({
             treatment = tmpObj.treatment;
             //console.log("initRound found cohortId");
 
-            // init or update the cohort object that we're going to match this subject to
-            //   then get updated version of the changed objects
-            design = Meteor.call("initializeCohort", cohortId=cohortId, sub.meteorUserId);
-            //console.log("initRound init cohort");
-
             //set subjects cohort_now to this cohortId and update from any 
             //changes to the treatment that happened while tryig to find a good cohort
             let treatmentsNew = sub.treatments;
@@ -336,6 +331,11 @@ Meteor.users.deny({
             } });
             sub = SubjectsStatus.findOne({meteorUserId : sub.meteorUserId});
             //console.log("initRound reinit subject object");
+
+            // init or update the cohort object that we're going to match this subject to
+            //   then get updated version of the changed objects
+            design = Meteor.call("initializeCohort", cohortId=cohortId, sub.meteorUserId);
+            //console.log("initRound init cohort");
 
             // init this section by creating and adding all of its component 
             // questions, for all rounds;
@@ -478,8 +478,7 @@ Meteor.users.deny({
                 theData.cohortId = 0;
             }
 
-            // insert
-            let id = SubjectsData.insert( {
+            let entry = {
                 _id : theData._id,
                 mtWorkerId: sub.mtWorkerId,
                 mtAssignmentId: sub.mtAssignmentId,
@@ -496,17 +495,23 @@ Meteor.users.deny({
                     choiceSubmitted : theData.choiceSubmittedTime,
                     choiceAdded : Date.now(),
                 },
-            } );
-            SubjectsData._ensureIndex({
-                mtWorkerId : 1,
-                mtAssignmentId : 1, 
-                meteorUserId : 1, 
-                cohortId : 1, 
-                sec : 1, 
-                sec_rnd : 1, 
-                "theData.order" : 1,  //there can be multiple questions per section per round
-            }, { unique : true } );
-            return( SubjectsData.findOne( id ) );
+            };
+            // insert
+            let id = SubjectsData.insert( entry );
+            try {
+                SubjectsData._ensureIndex({
+                    mtWorkerId : 1,
+                    mtAssignmentId : 1, 
+                    meteorUserId : 1, 
+                    cohortId : 1, 
+                    sec : 1, 
+                    sec_rnd : 1, 
+                    "theData.order" : 1,  //there can be multiple questions per section per round
+                }, { unique : true } );
+            } catch (err) {
+                console.log("WARNING: Second D for double dose of pimping pleasure", entry, err );
+            }
+            return( entry );
         },
         // server side helper
         updateSubjectQuestion : function(muid, id, theData) {

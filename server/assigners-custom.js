@@ -9,8 +9,8 @@ export let OverlapAssigner = class extends TurkServer.Assigners.SimpleAssigner {
         //console.log("assigner", asst, asst.getInstances().length);
         //console.log("assigner", Meteor.users.findOne(asst.userId).turkserver.state, currentUser );
         if (asst.getInstances().length === 0) { // before experiment
-            var currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
-            var repeatUser = SubjectsStatus.findOne({ meteorUserId:asst.userId, mtAssignmentId : {$ne : asst.assignmentId } });
+            var currentUser = SubjectsStatus.findOne({ mtWorkerId:asst.workerId });
+            var repeatUser = SubjectsStatus.findOne({ mtWorkerId:asst.workerId, mtAssignmentId : {$ne : asst.assignmentId } });
             // this will be for the instructions in the lobby before the experiment
                 if (!currentUser) {
                     Meteor.call("initializeSubject", asst, Design, function(err) {
@@ -18,7 +18,7 @@ export let OverlapAssigner = class extends TurkServer.Assigners.SimpleAssigner {
                         currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
                         Meteor.call("addSectionQuestions", currentUser, "quiz", Design);
                     });
-                    console.log("Created new user", asst.userId, 
+                    console.log("Assigner created new user", asst.userId, 
                         asst.assignmentId, asst.workerId, asst.batchId, 
                         asst.hitId, currentUser.isExperienced );
                 } else if ( repeatUser ) {
@@ -27,7 +27,11 @@ export let OverlapAssigner = class extends TurkServer.Assigners.SimpleAssigner {
                         currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
                         Meteor.call("addSectionQuestions", currentUser, "quiz", Design);
                     });
-                    console.log("Created repeat user", asst.userId, 
+                    console.log("Assigner created repeat user", asst.userId, 
+                        asst.assignmentId, asst.workerId, asst.batchId, 
+                        asst.hitId, currentUser.isExperienced );
+                } else {
+                    console.log("Assigner passing current user", asst.userId, 
                         asst.assignmentId, asst.workerId, asst.batchId, 
                         asst.hitId, currentUser.isExperienced );
                 }

@@ -105,7 +105,7 @@ Template.main.helpers({
 Template.tutorialBullets.helpers({
     bullets : function( tutorialSection ) {
         let maxBullets, sectionId;
-        maxBullets = 16;
+        maxBullets = 16 - 1;
         sectionId =  "_tutorial_step_myCoolTutorial";
 
         let rvals = _.map( 

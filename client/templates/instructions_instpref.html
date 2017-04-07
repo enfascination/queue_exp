@@ -31,25 +31,6 @@
 				</div>
 			</div>
 </template>
-<template name="instructions3">
-    PAGE 2 {{stage}}
-        <section class="expPaneMargin">
-            <h3>Game description</h3>
-            <p>
-                <strong><strong>You are going to play a series of games in which you are matched with others.</strong></strong> 
-            </p>
-            <p>
-                <strong>For each game you will have two choices and the other player will have two choices.</strong>  The game's outcome &mdash; the amounts of points you and the other player earn &mdash; depends on both of your choices.  
-            </p>
-            <p><strong>Each point is worth <span class="earnings">25&cent; USD</span>.</strong> For example, if you or the other player receive the maximum payoff of <span class="earnings">4</span> points, we will add <span class="earnings">$1.00 USD</span>  to your bonus earnings.</p>
-            <p>
-            <strong>Your decision will always be between Choice <span class="you"><strong>Top</strong></span> and Choice <span class="you"><strong>Bottom</strong></span>.</strong> The other player can only pick between Choice <span class="other">Right</span> and Choice <span class="other">Left</span>. 
-            </p>
-            <p>
-                Because the outcome depends both on your choice and the other player's, <strong>you should always think about what the other player might choose while making your own choice.</strong>
-            </p>
-        </section>
-</template>
 <template name="instructions2">
     <h2 class="sectionHeader" >Instructions</h2>
         <hr class="expPaneMargin"/>
@@ -61,21 +42,40 @@
         <hr class="expPaneMargin"/>
         Proceed to {{> navButton stage=stage fn="Quiz"}}.
 </template>
+<template name="instructions3">
+        <section class="expPaneMargin">
+            <h3>Game description</h3>
+            <p>
+                <strong><strong>You are playing a series of games in which you are matched with one other player.</strong></strong> 
+            </p>
+            <p>
+                <strong>Each game provides you with two choices and the other player with two choices.</strong>  Each game's outcome &mdash; the amounts of points you and the other player earn &mdash; depends on both of your choices.  
+            </p>
+            <p><strong>Each point is worth <span class="earnings">{{earnings design.pointEarnings}}</span>.</strong> For example, if you or the other player receive the maximum payoff of <span class="earnings">3</span> points, we will add <span class="earnings">{{earnings 0.45}}</span> to your bonus.</p>
+            <p>
+            <strong>Your decision will always be between Choice <span class="you"><strong>Top</strong></span> and Choice <span class="you"><strong>Bottom</strong></span>.</strong> The other player can only pick between Choice <span class="other"><strong>Right</strong></span> and Choice <span class="other"><strong>Left</strong></span>. 
+            </p>
+            <p>
+            <strong>You will both play blind</strong>; neither player will have a chance to see the other's choice before choosing. The other player is reading the same instructions and sees the same interface and experiment as you. You can assume that the other Turker is about as motivated as you to maximize the number of points they earn.
+            </p>
+            <p>
+                Because the outcome depends both on your choice and the other player's, <strong>you should always think about what the other player might choose while making your own choice.</strong>
+            </p>
+        </section>
+</template>
 
 <template name="instructions4">
-    PAGE 4 {{stage}}
         <section class="expPaneMargin">
             <h3>Experiment flow</h3>
-            <p><strong><strong>You will play three sections of three games each.</strong></strong> For each game, you will have to answer two questions, one in which you chose a strategy and one in which you select your ideal outcome. After completing the first two games in a section, you will be asked which game you would like to play a second time, and you will have a chance to play that game again for additional earnings. In one of the sections you will get to see the results of the two games before choosing, while in the other you will not get this feedback. </p> 
-            <p><strong>You will repeat this procedure two times, for a total of six games.</strong> Afterwards, you will complete the Survey for an additional <span class="earnings">50&cent;</span>, before submitting this HIT.</p> 
+            <p><strong><strong>You will play two sections of three games each.</strong></strong> In addition to making a choice for each game, you will have to answer two questions about it, identifying your preferred and expected outcomes. After completing the first two games in a section, you will be asked which game you would like to play a second time, and you will have a chance to play that game again for additional earnings.  </p> 
+            <p><strong>You will repeat this procedure in each section, for a total of six games.</strong> In one of the sections you will get to see the results of the two games before choosing, while in the other you will not get this feedback. Afterwards, you will complete the <em>Survey</em> for an additional <span class="earnings">50&cent;</span>, before submitting this HIT.</p> 
         </section>
 </template>
 <template name="instructions5">
-    PAGE 5 {{stage}}
         <section class="expPaneMargin">
-            <h3>Other player</h3>
-            <p><strong><strong>You will be rematched with a different Turker in each section of the experiment.</strong></strong>  You will both play blind; neither player will have a chance to see the other's choice before choosing. You can assume that the other Turker is about as motivated as you to maximize the number of points they earn.  </p>
             <!--
+            <h3>Other player</h3>
+            <p><strong><strong>You will be rematched with a different Turker in each section of the experiment.</strong></strong>    </p>
                 <figure class='tutorial'>
                     {{> visualGame payoffIdPrefix="tutorial" payoffPlayerTop=2 payoffPlayerSide=3}}
                     <figcaption>
