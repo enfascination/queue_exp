@@ -10,22 +10,42 @@ import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';
 
 Template.main.events({
-    'click button.proceedButton#instructions, click button.proceedButton#quiz': function ( e ) {
+    //'click button.proceedButton#instructions, click button.proceedButton#quiz': function ( e ) {
+        //let muid = Meteor.userId();
+        //let sub = Sess.subStat();
+        ////console.log("button#proceedButton#instructions and quiz", sub, Template.currentData());
+        //Helper.activateTab( Template.currentData().currentSection.id );
+        //Helper.windowAdjust(sub );
+    //}
+    'click button.proceedButton#instructions': function ( e ) {
         let muid = Meteor.userId();
         let sub = Sess.subStat();
-        //console.log("button#proceedButton#instructions and quiz", sub, Template.currentData());
-        Helper.activateTab( Template.currentData().currentSection.id );
-        Helper.windowAdjust(sub );
-    }
+        //console.log("button#proceedButton#quiz", sub);
+        if ( sub && sub.readyToProceed ) {
+            Meteor.call("advanceSubjectSection", muid, "experiment1", "experiment", asyncCallback=function(err, updatedSub) {
+                if (err) { throw( err ); }
+                Meteor.call('initializeSection', sub=updatedSub, lastDesign=Sess.design());
+            });
+            // Meteor.call('goToExitSurvey', Meteor.userId()); redundant
+
+            Helper.windowAdjust(sub );
+        }
+    },
 });
 Template.navButton.events({
     "click button.navButton" : function( e ) {
         let stage = _.toInteger( e.target.value );
+        let sub = SubjectsStatus.findOne({meteorUserId : Meteor.userId() });
+        let design = Design;
         //console.log("navButton", stage, e.target.value, this, e.target);
-        if (e.target.id === "Consent") {
-            stage = 2;
-        } else if (e.target.id === "NoConsent") {
+        if (e.target.id === "NoConsent" || sub.isExperienced >= design.maxExperimentReps) {
             Meteor.call("advanceSubjectSection", Meteor.userId(), "submitHIT",  "submitHIT" );
+        } else if (e.target.id === "Consent") {
+            if (sub.isExperienced) {
+            stage = 4;
+            } else {
+            stage = 2;
+            }
         }
 
         if (stage < 1) { stage = 1; }

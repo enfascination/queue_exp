@@ -138,7 +138,7 @@ Meteor.users.deny({
                 sec_rnd_now: 0,
                 sec_rnd_stg_now: 0,
                 readyToProceed: false,
-                totalEarnings: 0,
+                bonusEarnings: 0,
                 treatments : treatments,
                 treatment_now : treatments[0],
                 block_now : 0,  // this is an int version of sec_now

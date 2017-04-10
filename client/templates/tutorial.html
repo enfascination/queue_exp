@@ -2,7 +2,7 @@
     <h3>Welcome</h3>
     <ul class='dash'>
         <li>
-            This experiment takes about 10 minutes to complete.  
+            <strong><strong>You are one of the first to attempt this experiment.</strong></strong>  We will be very grateful, and will offer extra bonuses, if you take careful notes and share them when you are done, either to the email listed below or on the submission form.  We are most interested in any aspects of the instructions and experiment that are unclear, confusing, or difficult. Thank you.
         </li>
     </ul>
     {{> tutorialBullets 1}}
@@ -12,13 +12,16 @@
     <h3>Instructions</h3>
     <ul class='dash'>
         <li>
-            <b>Welcome.</b> After reviewing these instructions you will take a comprehension quiz. You must pass it in order to participate in the main experiment.
+            <b>Welcome.</b> 
         </li>
         <li>
-            <b>If you fail the quiz</b> you will earn only <span class="earnings">{{earnings design.HITEarnings}}</span> and no bonuses.
+            After reviewing these instructions you will take a comprehension quiz. You must pass it in order to participate in the main experiment.
         </li>
         <li>
-            <b>The theoretical maximum bonus</b> from this experiment is <span class="earnings">{{earnings design.maxEarnings}}</span>. Given you pass the quiz, the absolute minimum is <span class="earnings">{{earnings design.minEarnings}}</span>. 
+            <b>If you fail the quiz</b> you will earn only <span class="earnings">{{earnings design.HITEarnings}}</span> and no bonuses, and you will not be able to repeat the HIT.
+        </li>
+        <li>
+            <b>The theoretical maximum bonus</b> from this experiment is <span class="earnings">{{earnings design.maxEarnings}}</span>. The minimum possible bonus from the core experiment is <span class="earnings">{{earnings 0}}</span>, not including a guaranteed <span class="earnings">{{earnings design.quizEarnings}}</span> in bonuses for passing the quiz, and <span class="earnings">{{earnings design.surveyEarnings}}</span> for completing the survey.
             <ul>
                 <li>After completion, it should take a few hours to calculate your bonus. Contact us if it takes more than 24 hours.</li>
             </ul>
@@ -66,7 +69,7 @@
             <b>In the main window,</b> you will play a series of strategic games in which you are matched with another player, who will also be a Turker.            
         </li>
         <li>
-            <b>Your bonuses</b> from these games will depend on both your choices and those of the other player.         
+            <b>Your bonuses</b> from this experiment will depend on both your choices and those of the other player.         
         </li>
         <li>
             <b>The other player is receiving these same instructions.</b> 
@@ -107,7 +110,7 @@
 &hellip; and <span class="you"><strong>Bottom</strong></span>. 
 <br/>
 <br/>
-<em>Hover over each of your two options to see feedback about how they could affect the final outcome.</em>
+<em>Hover over each of your two options for a description of how they will influence the final outcome.</em>
 <br/>
         {{> tutorialBullets 2}}
 </template>
@@ -150,9 +153,11 @@
         </li>
         <li>
             <b>Each point is worth <span class="earnings">{{earnings design.pointEarnings}}</span> in bonuses.</b>
-            <ul class="dash"><li>
-                    For example, if you or the other player receive the maximum payoff of <span class="earnings">3</span> points, we will add <span class="earnings">{{earnings 0.45}}</span> to your bonus.
-            </li></ul>
+            <ul class="dash">
+                <li>
+                    For example, if you or the other player receive the maximum payoff of <span class="earnings">3</span> points, we will add <span class="earnings">{{earnings 0.45}}</span> to your bonus, while receiving <span class="earnings">0</span> points is worth <span class="earnings">{{earnings 0}}</span>.
+            </li>
+            </ul>
         </li>
         <li>
             The <span class="you">blue triangle</span> in each outcome shows <span class="you">your</span> potential points. 
@@ -194,7 +199,7 @@
     <h3>Experiment Structure</h3>
 <ul class="dash">
 <li>
-    <b>You will play many games</b> within this interface during the rounds and sections of the main experiment. 
+    <b>You will play multiple games</b> during the rounds and sections of the main experiment. 
 </li>
 <li>
     <b>The experiment is divided into two sections</b> of five rounds each. 
@@ -203,7 +208,7 @@
     <b>You will start each section</b> by playing two similar games. 
 </li>
 <li>
-    You will then be asked which of the two you would prefer to play again, before playing one of them a second time.
+    <b>You will then be asked which of the two you would prefer to play again,</b> before playing one of them a second time.
 <ul>
 <li>
     The game you repeat is not guaranteed to be your chosen game, but it is most likely to be.
@@ -229,7 +234,7 @@
             Within each section you will stay matched to the same player. 
         </li>
         <li>
-           You will be matched to a different player when you move across sections.
+           You will be matched to a different player when you complete the first section.
         </li>
         <li>
             Once again, because the outcome depends both on your choice and the other player's, <em>you should always think about what the other player might choose while making your own choice.</em>

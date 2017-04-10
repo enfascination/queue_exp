@@ -77,13 +77,15 @@ DesignSequence = {
 Design = {
     maxPlayersInCohort : 2,
     HITEarnings : 0.10,
-    endowment : 0.40,
+    quizEarnings : 0.40,
     surveyEarnings : 0.20,
     pointEarnings : 0.15,
+    maxExperimentEarnings : 2.50, //3*0.15*2*2
     maxEarnings : 2.50, //0.10 + 0.40 + 0.20 + 3*0.15*2*2
     minEarnings : 0.70, //0.10 + 0.40 + 0.20
     experimentDuration : "10-15",
     maxQuizFails : 3,
+    maxExperimentReps : 5,
     sequence : DesignSequence,
     //sampleGame : [2,0,3,1,2,0,3,1], //not actulaly being used anywhere
     batchName : "main",

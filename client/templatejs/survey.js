@@ -128,8 +128,10 @@ Template.submitHIT.helpers({
     "testQuizPassed": function() {
         let muid = Meteor.userId();
         let sub = Sess.subStat();
-        if (muid && sub ) {
-            return( sub.quiz.passed );
+        if (muid && sub && (  sub.quiz.passed || sub.isExperienced > 0 ) ) {
+            return( true );
+        } else {
+            return( false );
         }
 	},
 });

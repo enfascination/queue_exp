@@ -78,10 +78,6 @@ Template.experimenterViewPayout.helpers({
             return(cohort.completed);
         }
     },
-    earningsTotal: function (subject) {
-        let substat = SubjectsStatus.findOne({ meteorUserId : subject.meteorUserId });
-        return( substat ? Helper.toCash( substat.totalEarnings ) : 'error' );
-    },
 });
 
 Template.cohortSelection.onCreated( function(){

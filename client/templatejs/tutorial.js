@@ -8,11 +8,10 @@ import { Router } from 'meteor/iron:router';
 
 import { Sess } from '../../imports/lib/quick-session.js';
 
-Session.set('tutorialEnabled', false);
 let tutorialSteps1 = [
-  //{
-    //template: Template.tutorial_step1,
-  //},
+  {
+    template: Template.tutorial_step1,
+  },
   {
     template: Template.tutorial_step2,
   },
@@ -107,7 +106,7 @@ Template.main.helpers({
 Template.tutorialBullets.helpers({
     bullets : function( tutorialSection ) {
         let maxBullets, sectionId;
-        maxBullets = 16 - 1;
+        maxBullets = tutorialSteps1.length;
         sectionId =  "_tutorial_step_myCoolTutorial";
 
         let rvals = _.map( 
@@ -126,6 +125,10 @@ Template.tutorialBullets.helpers({
 Template.registerHelper('tutorialEnabled', function(v1) {
     let design = Sess.design();
     if (design) {
+        //console.log(
+        //!_.isNil( design ) , design.tutorialEnabled , Session.get('tutorialEnabled'),
+        //!_.isNil( design ) && design.tutorialEnabled && Session.get('tutorialEnabled'),
+        //);
         return !_.isNil( design ) && design.tutorialEnabled && Session.get('tutorialEnabled');
     }
 });

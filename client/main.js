@@ -31,6 +31,12 @@ Tracker.autorun(function() {
         } else {
             stage = _.toInteger( stage );
         }
+
+        if (stage === 2) {
+            Session.set('tutorialEnabled', true);
+        } else {
+            Session.set('tutorialEnabled', false);
+        }
         Router.go('start', { stage:stage });
     } else if (TurkServer.inInstructions() || TurkServer.inQuiz()) {
         Router.go('quiz');

@@ -384,17 +384,28 @@ Experiment.calculateExperimentEarnings = function(muid, design) {
         throw( err );
     }
 
-    let gameEarnings = 0;
+    let quizEarnings =  sub.quiz.passed ?  design.quizEarnings : 0;
+
+    let gameEarningsS1 = 0;
+    let gameEarningsS2 = 0;
     paidQuestions.forEach( function( q ) {
         if ( q.completedGame ) {
-            gameEarnings += q.payoffEarnedFocal * design.pointEarnings;
+            if (q.sec === 'experiment1') {
+                gameEarningsS1 += q.payoffEarnedFocal * design.pointEarnings;
+            } else if (q.sec === 'experiment2') {
+                gameEarningsS2 += q.payoffEarnedFocal * design.pointEarnings;
+            }
         }
     });
+    let totalBonus = quizEarnings + gameEarningsS1 + gameEarningsS2 + ( surveyComplete ? design.surveyEarnings : 0 );
     let HITearnings = { 
-        total : design.endowment + gameEarnings + ( surveyComplete ? design.surveyEarnings : 0 ), 
+        total : design.HITEarnings + totalBonus, 
+        bonus : totalBonus, 
         breakdown : { 
-            endowment: design.endowment, 
-            games : gameEarnings,
+            hit: design.HITEarnings, 
+            quiz: quizEarnings, 
+            experiment1 : gameEarningsS1,
+            experiment2 : gameEarningsS2,
             survey : surveyComplete ? design.surveyEarnings : 0 
         }
     };
@@ -405,15 +416,16 @@ Experiment.calculateExperimentEarnings = function(muid, design) {
 // set the subject to have earnings X in the game
 //  and set the subject to have earnings X in MTurk
 Experiment.updateExperimentEarnings = function(muid, design) {
-    let totalEarnings = Meteor.call("calculateExperimentEarnings", muid, design).total;
+    let earnings = Meteor.call("calculateExperimentEarnings", muid, design);
     let subbk = SubjectsStatus.findOne({ meteorUserId: muid });
     let tmpId = SubjectsStatus.update({meteorUserId: muid }, {
         $set: {
-            totalEarnings : totalEarnings,
+            bonusEarnings : earnings.bonus,
+            breakdownEarnings :  earnings.breakdown,
         },
     });
     let asst = TurkServer.Assignment.getAssignment( subbk.tsAsstId );
-    asst.setPayment( totalEarnings );
+    asst.setPayment( earnings.bonus );
 };
 Experiment.updateStatusInHIT = function(muid, design) {
     let sub = SubjectsStatus.findOne({ meteorUserId: muid });

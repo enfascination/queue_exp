@@ -70,10 +70,16 @@ Schemas.SubjectsStatus = new SimpleSchema({
         type: Boolean,
         label: "completed major section?",
     },
-    totalEarnings: {
+    bonusEarnings: {
         type: Number,
-        label: "experiment earnings",
+        label: "bonus earnings",
         decimal: true,
+    },
+    breakdownEarnings: {
+        type: Object,
+        label: "earnings details",
+        blackbox: true,
+        optional: true,
     },
     cohort_now: {
         type: SimpleSchema.Integer,
@@ -230,11 +236,6 @@ Schemas.CohortSettings = new SimpleSchema({
         type: SimpleSchema.Integer,
         label: "Max size of cohort",
     },
-    endowment: {
-        type: Number,
-        label: "Initial earnings",
-        decimal: true,
-    },
     sequence: {
         type: Object,
         label: "sequence of the experiment",
@@ -260,6 +261,11 @@ Schemas.CohortSettings = new SimpleSchema({
         type: String,
         label: "player two",
         optional : true,
+    },
+    quizEarnings: {
+        type: Number,
+        label: "Initial earnings",
+        decimal: true,
     },
     surveyEarnings : {
         type: Number,

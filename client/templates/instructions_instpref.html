@@ -14,7 +14,7 @@
 					<br><br>
 					Your participation is voluntary. Participation involves interacting with other participants in abstracted games. 
 					<br><br>
-					The information collected will be anonymous as per Mechanical Turk guidelines. Any presentations of the larger study will represent the aggregation of data from groups of people.
+					The information collected will be anonymous as per Mechanical Turk guidelines.
 					<br><br>
 					Questions about this project may be directed to the
 					Computational Social and Affective Neuroscience Lab<br>
@@ -66,7 +66,7 @@
         <section class="expPaneMargin">
             <h3>Experiment flow</h3>
             <p><strong><strong>You will play two sections of three games each.</strong></strong> In addition to making a choice for each game, you will have to answer two questions about it, identifying your preferred and expected outcomes. After completing the first two games in a section, you will be asked which game you would like to play a second time, and you will have a chance to play that game again for additional earnings.  </p> 
-            <p><strong>You will repeat this procedure in each section, for a total of six games.</strong> In one of the sections you will get to see the results of the two games before choosing, while in the other you will not get this feedback. Afterwards, you will complete the <em>Survey</em> for an additional <span class="earnings">50&cent;</span>, before submitting this HIT.</p> 
+            <p><strong>You will repeat this procedure in each section, for a total of six games.</strong> During a section, you may get to see the results of the two games before choosing, or you may not get this result information. Afterwards, you will complete the <em>Survey</em> for an additional <span class="earnings">50&cent;</span>, before submitting this HIT.</p> 
         </section>
 </template>
 <template name="instructions5">
@@ -122,28 +122,30 @@
 <template name="instPrefGame0">
     <p>
     {{#if equals subStat.sec_now "experiment1"}}
-    <strong><strong> You have just been matching with a player.</strong></strong>
+    <strong><strong> You have just been matched with a player.</strong></strong>
     {{else}}
-    <strong><strong> You have just been matching to a different player from the previous section.</strong></strong>
+    <strong><strong> You have just been matched with a different player.</strong></strong>
     {{/if}}
         Begin by making your choice for the game below and answering two questions about it.</p>
 </template>
 <template name="instPrefGame1">
-        <p>You will now make your choice in a similar game, answering the same two questions.</p>
+        <p>You will now play a similar game with the same player.</p>
 </template>
 <template name="instPrefGame2">
     <p>
-    This is an informational round that allows you to review the two games you just played before you decide between them: in the next round we ask you to select the one you most prefer to play again.
-        {{#if equals subStat.treatment_now "nofeedback"}}
+    This is an informational round that allows you to review the two games you just played.
+    {{#if equals subStat.treatment_now "nofeedback"}}
         <strong><strong>The feedback below does not include information about what the other player's choices were.</strong></strong>  
-        {{else}} {{#if equals subStat.treatment_now "feedback"}}
+    {{else}} {{#if equals subStat.treatment_now "feedback"}}
         <strong><strong>The feedback below includes full information about what the other player's choices were.</strong></strong>  
-        {{else}}
+    {{else}}
             Something is wrong. Code YRAKASDFASDFSHGK.
-        {{/if}}
-        {{/if}}
-        </p>
-        <p>You may proceed to the next round when you are done reviewing these results.</p>
+    {{/if}} {{/if}}
+    </p>
+    <p>
+    In the next round we will ask you which of these two games you most prefer to play again.
+    </p>
+        <p>When you are done reviewing these results, proceed.</p>
             {{#each question in questionsFeedback}}
                 {{#if equals question.type "chooseStrategy" }}
                     {{#if question.completedGame}}
@@ -155,11 +157,13 @@
             {{/each}}
 </template>
 <template name="instPrefGame3">
-        <p>In the next round you will play 
-        one of the previous two games a second time, for additional earnings.  
-        You may select below which of the games you would prefer to play again 
-        (with the same person). The next round's game is most likely to 
-            be the one you chose, but it is not guaranteed to be.</p>
+    <p>
+        <strong><strong>In the next round you will play 
+        one of the games below a second time</strong></strong>, for 
+        additional earnings.  
+        The next round's game is most likely to 
+        be the one you chose, but it is not guaranteed to be.
+    </p>
 </template>
 <template name="instPrefGame4">
             {{#each question in questionsColl}}
@@ -223,34 +227,45 @@
 <template name="earningsReport">
     <div class="center-block"> 
         <p>
-        You played {{subStat.HITStatus.gamesPlayed}} games for money. Their 
-        statuses are reported below.
-        </p>
-        {{#if equals subStat.HITStatus.gamesPlayed subStat.HITStatus.gamesConsummated}}
-        <p>
-        <strong>Your session is now complete, and your bonus fully calculated.</strong>
-            Your bonus is {{earnings subStat.totalEarnings}}, including your 
-            {{earnings design.endowment}} endowment and 
-            {{earnings design.surveyEarnings}} for 
-            completing the survey.
-        </p>
-        {{else}}
-        <p>
-            <strong>Your bonus is not yet fully calculable.</strong>
-            So far only {{subStat.HITStatus.gamesConsummated}} of the games 
-            you played have 
-            been played by the other player. Incomplete choices will be 
-            marked as such in the feedback below.
-            Your current bonus is {{earnings subStat.totalEarnings}}, including 
-            your {{earnings design.endowment}} endowment and 
-            {{earnings design.surveyEarnings}} 
-            for completing the survey.
+            You played {{subStat.HITStatus.gamesPlayed}} games for money. Their 
+            statuses are reported below.
         </p>
         <p>
-            It should not take more than a few hours for the rest of your choices to be matched and for your bonus to be calculated. 
+            {{#if equals subStat.HITStatus.gamesPlayed subStat.HITStatus.gamesConsummated}}
+                <strong>Your session is now complete, and your bonus fully calculated.</strong>
+            {{else}}
+                <strong>Your bonus is not yet fully calculable.</strong>
+                So far only {{subStat.HITStatus.gamesConsummated}} of the games 
+                you played have 
+                been played by the other player. It should not take more than 
+                a few hours for the rest of your choices to be matched and 
+                for your bonus to be calculated.  Incomplete choices will be 
+                marked as such in the feedback below.
+            {{/if}}
         </p>
-        {{/if}}
-        <p>You may proceed to the <strong>Submit</strong> page when you are done reviewing these results. We welcome your comments and feedback.</p>
+        <p>
+            {{#if equals subStat.HITStatus.gamesPlayed subStat.HITStatus.gamesConsummated}}
+                Your bonus 
+            {{else}}
+                Your current bonus 
+            {{/if}}
+            is {{earnings subStat.bonusEarnings}}
+            {{#unless gt subStat.isExperienced 0}}, including 
+                {{earnings design.quizEarnings}} for passing the quiz and 
+                {{earnings design.surveyEarnings}} 
+                for completing the survey
+            {{/unless}}
+            .
+        </p>
+        <p>
+            It should not take more than a few hours for the rest of your 
+            choices to be matched and for your bonus to be calculated. 
+        </p>
+        <p>
+            You may proceed to the <strong>Submit</strong> page when you 
+            are done reviewing these results. We welcome your comments and 
+            feedback.
+        </p>
 
         <h2> All questions </h2>
             {{#each question in questionsFeedback allQs=true}}
@@ -295,4 +310,13 @@
     </div>
 </template>
 <template name="instructions8">
+</template>
+<template name="repeatUser">
+        <section class="expPaneMargin">
+        <p>
+    Welcome back to the experiment. You have repeated this experiment {{subStat.isExperienced}} times, out of a maximum of {{design.maxExperimentReps}}. You will not have to repeat the instructions, quiz, or survey. Instead, you will proceed straight to the main experiment, in which you can earning a maximum bonus of <span class="earnings">{{earnings design.maxExperimentEarnings}}</span> and minimum bonus of <span class="earnings">{{earnings 0}}</span>. As before, you will play two sections, and be rematched to different players for each section. Select <strong>Next</strong> to begin the experiment. 
+        </p>
+        <br/>
+        {{> submitButton}}
+        </section>
 </template>
