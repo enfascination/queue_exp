@@ -228,13 +228,16 @@ tr.hover {
 }
 
 //changing game size, for choice between games
+.gameNormalFormGame.chooseStrategyTop,
 .gameNormalFormGame.chooseOutcome {
     border: 3px solid hsl(202, 98%, 0%);
     border-radius: 3px;
 }
+.gameNormalFormGame.chooseStrategyTop tr.gameNormalFormChoice ,
 .gameNormalFormGame.chooseOutcome tr.gameNormalFormChoice {
     border-top: 3px solid hsl(202, 98%, 0%);
 }
+.gameNormalFormGame.chooseStrategyTop th,
 .gameNormalFormGame.chooseOutcome th{
     font-size: 14pt;
 }

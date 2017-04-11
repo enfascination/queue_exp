@@ -5,11 +5,11 @@
     <section class="expPaneMargin">
         {{#unless subStat.isExperienced }}
             <p>
-            <strong><strong>Before you proceed, we have a few brief questions.</strong></strong>  You are being paid an additional {{earnings design.surveyEarnings}} for completing all of the questions in this survey, though there is no penalty for answering that you decline to state <small>(you can do so in any questions by either selecting 'Decline to state' or entering "xxxxxx" in the field)</small>.
+            <strong><strong>Before you proceed, we have a few brief questions.</strong></strong>  You are being paid an additional {{earnings design.earnings.survey}} for completing all of the questions in this survey, though there is no penalty for answering that you decline to state <small>(you can do so in any questions by either selecting 'Decline to state' or entering "xxxxxx" in the field)</small>.
             </p>
         {{else}}
             <p>
-                Because you have played this game before, you will not be asked to complete the survey again.
+            <strong><strong>Because you have played this game before,</strong></strong> you will not be asked to complete the survey again.
             </p>
         {{/unless}}
     </section>
@@ -22,14 +22,29 @@
     <section class="expPaneMargin">
     <br/>
     <br/>
+    <div class="alert alert-info">
     {{#unless testQuizPassed }}
-        <div class="alert alert-info">You are not eligible to participate in this experiment. If you declined to participate or have participated too many times, please return the HIT.  If this is your first time failing the quiz, you may submit the HIT.</div>
+        You are not eligible to participate in this experiment. If you declined to participate or have participated too many times, please return the HIT.  If this is your first time failing the quiz, you may submit the HIT.
         {{else}}
         Thank you for your participation.  
         
-        You may continue to perform HITs from this experiment, up to a maximum of {{design.maxExperimentReps}} times.  Those who repeat the experiment will be able to skip the instructions, quiz, and survey.
-        We will most likely apply your bonus in the next few hours. Please contact us if it takes more than 24 hours to recieve your bonus.
+        {{#unless lastRepeat}}
+            You may continue to perform HITs from this experiment, up to a 
+            maximum of {{design.maxExperimentReps}} times.  Those who repeat 
+            the experiment will be able to skip the <em>Instructions</em>, 
+            <em>Quiz</em>, and <em>Survey</em>.
+        {{else}}
+            <strong><strong>
+                You have repeated this experiment the maximum of 
+                {{inc subStat.isExperienced}} times.
+            </strong></strong>  
+            You may submit, but you may not repeat the HIT after this.
+       
+        {{/unless}}
+        We will most likely apply your bonus in the next few hours. Please 
+        contact us if it takes more than 24 hours to recieve your bonus.
     {{/unless}}
+    </div>
     <br/>
     <br/>
             <form class="answersForm" id="{{currentSection.id}}" >

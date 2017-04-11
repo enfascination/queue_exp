@@ -2,7 +2,7 @@
     <h3>Welcome</h3>
     <ul class='dash'>
         <li>
-            <strong><strong>You are one of the first to attempt this experiment.</strong></strong>  We will be very grateful, and will offer extra bonuses, if you take careful notes and share them when you are done, either to the email listed below or on the submission form.  We are most interested in any aspects of the instructions and experiment that are unclear, confusing, or difficult. Thank you.
+            <strong><strong>You are one of the first to attempt this experiment.</strong></strong>  We will be very grateful, and will offer extra bonuses, if you take careful notes and share them when you are done, either to the email listed at the bottom of the screen or on the submission form.  We are most interested in any aspects of the instructions and experiment that are unclear, confusing, or otherwise difficult to understand. You are unlikely to experience bugs, but if you do, we will show our gratitude for any descriptions or screenshots you can provide. Thank you.
         </li>
     </ul>
     {{> tutorialBullets 1}}
@@ -12,16 +12,13 @@
     <h3>Instructions</h3>
     <ul class='dash'>
         <li>
-            <b>Welcome.</b> 
+            <b>Welcome.</b> After reviewing these instructions you will take a comprehension quiz. You must pass it in order to participate in the main experiment.
         </li>
         <li>
-            After reviewing these instructions you will take a comprehension quiz. You must pass it in order to participate in the main experiment.
+            <b>If you fail the quiz</b> you will earn only <span class="earnings">{{earnings design.earnings.HIT}}</span> and no bonuses, and you will not be able to repeat the HIT.
         </li>
         <li>
-            <b>If you fail the quiz</b> you will earn only <span class="earnings">{{earnings design.HITEarnings}}</span> and no bonuses, and you will not be able to repeat the HIT.
-        </li>
-        <li>
-            <b>The theoretical maximum bonus</b> from this experiment is <span class="earnings">{{earnings design.maxEarnings}}</span>. The minimum possible bonus from the core experiment is <span class="earnings">{{earnings 0}}</span>, not including a guaranteed <span class="earnings">{{earnings design.quizEarnings}}</span> in bonuses for passing the quiz, and <span class="earnings">{{earnings design.surveyEarnings}}</span> for completing the survey.
+            <b>The theoretical maximum bonus</b> from this experiment is <span class="earnings">{{earnings design.earnings.maxBonus}}</span>. The minimum possible bonus from the core experiment is <span class="earnings">{{earnings 0}}</span>, not including a guaranteed <span class="earnings">{{earnings design.earnings.quiz}}</span> in bonuses for passing the quiz, and <span class="earnings">{{earnings design.earnings.survey}}</span> for completing the short survey.
             <ul>
                 <li>After completion, it should take a few hours to calculate your bonus. Contact us if it takes more than 24 hours.</li>
             </ul>
@@ -139,7 +136,7 @@
             <b>The game's final outcome,</b> of the four, will be the one at the intersection of <span class="you">your</span> choice and the <span class="other">other player's</span>.
         </li>
         <li>
-            <b>Your points, and bonuses</b> will be calculated from the outcome that <span class="you">you</span> and the <span class="other">other player</span> converged on.
+            <b>Your points, and bonuses,</b> will be calculated from the outcome that <span class="you">you</span> and the <span class="other">other player</span> converged on.
         </li>
     </ul>
 {{> tutorialBullets 2}}
@@ -152,7 +149,7 @@
         <b>This is the outcome that would result</b> if <span class="you">you</span> chose <span class="you"><strong>Bottom</strong></span> and the <span class="other">other player</span> chose <span class="other"><strong>Right</strong></span>. In this outcome you would each earn <span class="earnings">1</span> point.
         </li>
         <li>
-            <b>Each point is worth <span class="earnings">{{earnings design.pointEarnings}}</span> in bonuses.</b>
+            <b>Each point is worth <span class="earnings">{{earnings design.earnings.point}}</span> in bonuses.</b>
             <ul class="dash">
                 <li>
                     For example, if you or the other player receive the maximum payoff of <span class="earnings">3</span> points, we will add <span class="earnings">{{earnings 0.45}}</span> to your bonus, while receiving <span class="earnings">0</span> points is worth <span class="earnings">{{earnings 0}}</span>.
@@ -221,7 +218,7 @@
 <br/>
 <li>
     After completing the experiment's main sections, you will complete the <em>Survey</em> for an additional
-<span class="earnings">{{earnings design.surveyEarnings}}</span> before submitting this HIT.
+<span class="earnings">{{earnings design.earnings.survey}}</span> before submitting this HIT.
 </li>
 </ul>
         {{> tutorialBullets 2}}

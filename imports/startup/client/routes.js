@@ -37,9 +37,10 @@ Router.route('start', function() {
         //this.render( 'instPrefInstructions', { to : 'instructions'} );
         stage = 1;
         this.render( 'instructions' + _.toString( stage ), { to : 'instructions' } );
-    } else if (stage === 4) {
-        this.render('repeatUser', { to : 'instructions'});
-    } else if (stage === 3 || stage > 4) {
+    //} else if (stage === 4) {
+        //this.render('repeatUser', { to : 'instructions'});
+    //} else if (stage === 3 || stage > 4) {
+    } else if (stage === 3 || stage > 3) {
         //this.render('quiz', { to : 'instructions'});
         this.render('repeatUser', { to : 'instructions'});
     } else { //numbers between 1 and 6

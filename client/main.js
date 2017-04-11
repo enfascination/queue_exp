@@ -22,18 +22,17 @@ Tracker.autorun(function() {
         // stage of instructions
         let stage = this.location.pathname.match(/\d*$/)[0];
         if (stage === '') {
-            if (Debugging) {
-                console.log("DEBUGGING");
-                stage = 7;
-            } else {
-                stage = 1;
-            }
+            stage = 1;
         } else {
             stage = _.toInteger( stage );
         }
 
         if (stage === 2) {
-            Session.set('tutorialEnabled', true);
+            if (!Debugging) {
+                Session.set('tutorialEnabled', true);
+            } else {
+                Session.set('tutorialEnabled', false);
+            }
         } else {
             Session.set('tutorialEnabled', false);
         }
@@ -46,6 +45,14 @@ Tracker.autorun(function() {
         //Router.go('/home');
         //console.log("failed into lobby");
     }
+});
+
+// http://www.curtismlarson.com/blog/2015/11/11/iron-router-scroll-to-top/
+Tracker.autorun(function () {
+  var current = Router.current();
+  Tracker.afterFlush(function () {
+    $(window).scrollTop(0);
+  });
 });
 
 Template.main.onCreated( function(){
@@ -224,7 +231,7 @@ Template.registerHelper('earnings',
             // of weirdness about helpers, spacerbars.kw, and template 
             // arguments being named or not.
             if (_.isString(translateFromPoints) && translateFromPoints === 'translateFromPoints') {  
-                return( Helper.toCash( earnings * design.pointEarnings ) );
+                return( Helper.toCash( earnings * design.earnings.point ) );
             } else {
                 return( Helper.toCash( earnings ) );
             }

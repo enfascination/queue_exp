@@ -240,10 +240,10 @@ Meteor.users.deny({
                             );
                             if( matchingQuestion ) {
                                 q.matchingGameId = matchingQuestion._id;
-                                console.log( "create matched game: matching question", q._id, matchingQuestion._id );
+                                //console.log( "create matched game: matching question", q._id, matchingQuestion._id );
                             } else {
                                 q.matchingGameId = null;
-                                console.log( "create matched game: no matching question", q._id, q.cohortId, q.sec_rnd, q.type);
+                                //console.log( "create matched game: no matching question", q._id, q.cohortId, q.sec_rnd, q.type);
                             }
                         } else {
                             q.matchingGameId = null;
@@ -392,16 +392,10 @@ Meteor.users.deny({
             //if ( sub.sec_now != sub.sec_now ) {
             let asst = TurkServer.Assignment.getAssignment( sub_old.tsAsstId );
             let batch = TurkServer.Batch.getBatchByName( Design.batchName );
-            if ( sub_old.sec_now === "instructions" ) {
+            if ( sub_old.sec_now === "instructions" || sub_old.sec_now === "quiz" ) {
                 if ( nextSection === "quiz" ) {
                     TurkServer.setQuizState(asst);
-                } else if ( nextSection === "submitHIT" ) {
-                    asst.showExitSurvey();
-                    Meteor.call('goToExitSurvey', Meteor.userId());
-                }
-            } else if ( sub_old.sec_now === "quiz" ) {
-                // to experiment
-                if ( nextSection === "experiment1" ) {
+                } else if ( nextSection === "experiment1" ) {
                     TurkServer.setLobbyState( asst, batch );
                     entered = 1;
                 } else if ( nextSection === "submitHIT" ) {
@@ -660,9 +654,14 @@ Meteor.users.deny({
         },
         initializeReturnSubject : function(asst, design) {
             let subPast = SubjectsStatus.findOne({ meteorUserId : asst.userId });
-            SubjectsStatusArchive.insert( subPast );
-            SubjectsStatusArchive._ensureIndex({mtAssignmentId : 1, meteorUserId : 1}, { unique : true } );
+            try {
+                SubjectsStatusArchive.insert( subPast );
+                SubjectsStatusArchive._ensureIndex({mtAssignmentId : 1, meteorUserId : 1}, { unique : true } );
+            } catch (err) {
+                console.log("trouble archiving repeat sub", subPast, err);
+            }
             SubjectsStatus.remove( { meteorUserId : asst.userId } );
+            // have to add to archive before calling this (because this calls the archive for the old subject)
             Meteor.call("initializeSubject", asst, design );
         },
     });

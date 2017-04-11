@@ -148,8 +148,10 @@ Template.main.events({
             }
             // Meteor.call('goToExitSurvey', Meteor.userId()); redundant
 
-            Helper.windowAdjust(sub );
+        //console.log("button#proceedButton#quiz", "scrolling to top");
         }
+        //Helper.windowAdjust(sub, bottom=false );
+        //window.scrollTo(0, 0);
     },
 });
 

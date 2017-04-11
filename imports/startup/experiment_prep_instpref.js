@@ -114,10 +114,10 @@ QuestionData.questions = [
 {
     sec: 'experiment',
     sec_rnd: 0,
-    type: 'chooseOutcome',
+    type: 'chooseStrategyTop',
 	title: 'Question 1.3',
-	text: 'Which outcome do you think is most likely to occur?',
-	label: 'Select one of the four game outcomes.',
+	text: 'What choice do you think the other player is going to make?',
+	label: 'Select either <strong>Left</strong> or <strong>Right</strong>.',
 },
 {
     sec: 'experiment',
@@ -140,10 +140,10 @@ QuestionData.questions = [
 {
     sec: 'experiment',
     sec_rnd: 1,
-    type: 'chooseOutcome',
+    type: 'chooseStrategyTop',
 	title: 'Question 2.3',
-	text: 'Which outcome do you think is most likely to occur?',
-	label: 'Select one of the game outcomes.',
+	text: 'What choice do you think the other player is going to make?',
+	label: 'Select either <strong>Left</strong> or <strong>Right</strong>.',
 },
 {
     sec: 'experiment',

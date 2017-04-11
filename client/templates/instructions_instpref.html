@@ -1,7 +1,7 @@
 <template name="instPrefInstructions">
     <br/>
         <section class="expPaneMargin">
-            <p><strong>Please review these instructions carefully.</strong>  Participation in this experiment is based on your passing a comprehension test. If you fail the test you will pass the HIT and earn <strong>10&cent;</strong>, but you will be ineligible to participate in the main experiment, which offers a theoretical maximum of <strong>$6.50</strong> in bonus earnings, and a minimum of <strong>$1.75</strong>. This experiment takes about 15 minutes to complete. After completion, it will take us minutes to hours to calculate and distribute your earnings. It will not take longer than 12 hours. You will be provided with a link from which you can check on the status of your earnings. </p>
+            <p><strong>Please review these instructions carefully.</strong>  Participation in this experiment is based on your passing a comprehension test. If you fail the test you will pass the HIT and earn <span class="earnings">{{earnings design.earnings.HIT}}</span>, but you will be ineligible to participate in the main experiment, which offers a theoretical maximum of <span class="earnings">{{earnings design.earnings.maxBonus}}</span> in bonus earnings, and a minimum of <span class="earnings">{{earnings design.earnings.minBonus}}</span>. This experiment takes about 15 minutes to complete. After completion, it will take us minutes to hours to calculate and distribute your earnings. It will not take longer than 12 hours. You will be provided with a link from which you can check on the status of your earnings. </p>
         </section>
 </template>
 
@@ -49,7 +49,7 @@
             <p>
                 <strong>Each game provides you with two choices and the other player with two choices.</strong>  Each game's outcome &mdash; the amounts of points you and the other player earn &mdash; depends on both of your choices.  
             </p>
-            <p><strong>Each point is worth <span class="earnings">{{earnings design.pointEarnings}}</span>.</strong> For example, if you or the other player receive the maximum payoff of <span class="earnings">3</span> points, we will add <span class="earnings">{{earnings 0.45}}</span> to your bonus.</p>
+            <p><strong>Each point is worth <span class="earnings">{{earnings design.earnings.point}}</span>.</strong> For example, if you or the other player receive the maximum payoff of <span class="earnings">3</span> points, we will add <span class="earnings">{{earnings 0.45}}</span> to your bonus.</p>
             <p>
             <strong>Your decision will always be between Choice <span class="you"><strong>Top</strong></span> and Choice <span class="you"><strong>Bottom</strong></span>.</strong> The other player can only pick between Choice <span class="other"><strong>Right</strong></span> and Choice <span class="other"><strong>Left</strong></span>. 
             </p>
@@ -66,7 +66,7 @@
         <section class="expPaneMargin">
             <h3>Experiment flow</h3>
             <p><strong><strong>You will play two sections of three games each.</strong></strong> In addition to making a choice for each game, you will have to answer two questions about it, identifying your preferred and expected outcomes. After completing the first two games in a section, you will be asked which game you would like to play a second time, and you will have a chance to play that game again for additional earnings.  </p> 
-            <p><strong>You will repeat this procedure in each section, for a total of six games.</strong> During a section, you may get to see the results of the two games before choosing, or you may not get this result information. Afterwards, you will complete the <em>Survey</em> for an additional <span class="earnings">50&cent;</span>, before submitting this HIT.</p> 
+            <p><strong>You will repeat this procedure in each section, for a total of six games.</strong> During a section, you may get to see the results of the two games before choosing, or you may not get this result information. Afterwards, you will complete the <em>Survey</em> for an additional <span class="earnings">{{earnings design.earnings.survey}}</span>, before submitting this HIT.</p> 
         </section>
 </template>
 <template name="instructions5">
@@ -121,11 +121,7 @@
 
 <template name="instPrefGame0">
     <p>
-    {{#if equals subStat.sec_now "experiment1"}}
-    <strong><strong> You have just been matched with a player.</strong></strong>
-    {{else}}
-    <strong><strong> You have just been matched with a different player.</strong></strong>
-    {{/if}}
+    <strong><strong> You have just been matched with another player.</strong></strong>
         Begin by making your choice for the game below and answering two questions about it.</p>
 </template>
 <template name="instPrefGame1">
@@ -168,9 +164,9 @@
 <template name="instPrefGame4">
             {{#each question in questionsColl}}
                 {{#if question.gameWasPreferred}}
-                    <strong><strong>Your choice in round 3 was selected; below is the game that you preferred.</strong></strong>
+                    <strong><strong>Your choice in the previous round was selected; below is the game that you preferred.</strong></strong>
                 {{else}}
-                    <strong><strong>Your choice in round 3 was not selected; below is the game that you did not prefer.</strong></strong>
+                    <strong><strong>Your choice in the previous round was not selected; below is the game that you did not prefer.</strong></strong>
                 {{/if}}
             {{/each}}
             Please play it one more time. 
@@ -232,15 +228,17 @@
         </p>
         <p>
             {{#if equals subStat.HITStatus.gamesPlayed subStat.HITStatus.gamesConsummated}}
-                <strong>Your session is now complete, and your bonus fully calculated.</strong>
+                <strong><strong>Your session is now complete, and your bonus fully calculated.</strong></strong>
             {{else}}
-                <strong>Your bonus is not yet fully calculable.</strong>
-                So far only {{subStat.HITStatus.gamesConsummated}} of the games 
-                you played have 
-                been played by the other player. It should not take more than 
-                a few hours for the rest of your choices to be matched and 
-                for your bonus to be calculated.  Incomplete choices will be 
-                marked as such in the feedback below.
+                <strong><strong>Your bonus is not yet fully calculable.</strong></strong>
+                So far, 
+                {{#if gt subStat.HITStatus.gamesConsummated 0 }}
+                    the other players have completed only {{subStat.HITStatus.gamesConsummated}}
+                {{else}}
+                    the other players have not completed any
+                {{/if}}
+                of the games you played.  These incomplete 
+                games are marked as such in the feedback below.
             {{/if}}
         </p>
         <p>
@@ -251,8 +249,8 @@
             {{/if}}
             is {{earnings subStat.bonusEarnings}}
             {{#unless gt subStat.isExperienced 0}}, including 
-                {{earnings design.quizEarnings}} for passing the quiz and 
-                {{earnings design.surveyEarnings}} 
+                {{earnings design.earnings.quiz}} for passing the quiz and 
+                {{earnings design.earnings.survey}} 
                 for completing the survey
             {{/unless}}
             .
@@ -313,10 +311,19 @@
 </template>
 <template name="repeatUser">
         <section class="expPaneMargin">
+                <h2 class="sectionHeader" >Welcome Back</h2>
         <p>
-    Welcome back to the experiment. You have repeated this experiment {{subStat.isExperienced}} times, out of a maximum of {{design.maxExperimentReps}}. You will not have to repeat the instructions, quiz, or survey. Instead, you will proceed straight to the main experiment, in which you can earning a maximum bonus of <span class="earnings">{{earnings design.maxExperimentEarnings}}</span> and minimum bonus of <span class="earnings">{{earnings 0}}</span>. As before, you will play two sections, and be rematched to different players for each section. Select <strong>Next</strong> to begin the experiment. 
+        <strong><strong>Welcome back to the experiment.</strong></strong>  You will not have to repeat the <em>Instructions</em>, <em>Quiz</em>, or <em>Survey</em>. Instead, you will proceed straight to the main experiment, in which you can earning a maximum bonus of <span class="earnings">{{earnings design.earnings.maxExperiment}}</span> and minimum bonus of <span class="earnings">{{earnings 0}}</span>. As before, you will play two sections, and be rematched to different players for each section. 
+        </p>
+        <p>
+        <strong><strong>You have repeated this experiment {{inc subStat.isExperienced}} times, out of a maximum of {{design.maxExperimentReps}}.</strong></strong>
+        </p>
+        <p>
+        Select <strong>Next</strong> to begin the experiment. 
         </p>
         <br/>
-        {{> submitButton}}
+                        <div class="row">
+                            {{> proceedButton id=currentSection.id }}
+                        </div>
         </section>
 </template>

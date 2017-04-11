@@ -256,7 +256,7 @@ Template.main.events({
                 }
             });
             // adjust screen 
-            Helper.windowAdjust(sub );
+            //Helper.windowAdjust(sub );
         } else {
         }
     },

@@ -7,8 +7,9 @@ export let OverlapAssigner = class extends TurkServer.Assigners.SimpleAssigner {
     userJoined(asst) {
         // has to be before the super call.
         //console.log("assigner", asst, asst.getInstances().length);
-        //console.log("assigner", Meteor.users.findOne(asst.userId).turkserver.state, currentUser );
-        if (asst.getInstances().length === 0) { // before experiment
+        //console.log("assigner", Meteor.users.findOne(asst.userId).turkserver.state);
+        // before experiment
+        if (asst.getInstances().length === 0) {
             var currentUser = SubjectsStatus.findOne({ mtWorkerId:asst.workerId });
             var repeatUser = SubjectsStatus.findOne({ mtWorkerId:asst.workerId, mtAssignmentId : {$ne : asst.assignmentId } });
             // this will be for the instructions in the lobby before the experiment
@@ -37,7 +38,7 @@ export let OverlapAssigner = class extends TurkServer.Assigners.SimpleAssigner {
                 }
 
             if ( currentUser.sec_type_now === 'instructions' ) {
-                //console.log("in quiz");
+                //console.log("in instructions");
                 this.lobby.pluckUsers([asst.userId]);
                 TurkServer.setInstructionsState(asst);
             } else if ( currentUser.sec_type_now === 'quiz' ) { // no mention of survey state intentional

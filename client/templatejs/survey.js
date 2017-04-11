@@ -126,14 +126,15 @@ Template.main.events({
 
 Template.submitHIT.helpers({
     "testQuizPassed": function() {
-        let muid = Meteor.userId();
         let sub = Sess.subStat();
-        if (muid && sub && (  sub.quiz.passed || sub.isExperienced > 0 ) ) {
-            return( true );
-        } else {
-            return( false );
-        }
+        let design = Sess.design();
+        return( sub && (  sub.quiz.passed || ( sub.isExperienced > 0 && sub.isExperienced < design.maxExperimentReps ) ) );
 	},
+    "lastRepeat" : function() {
+        let sub = Sess.subStat();
+        let design = Sess.design();
+        return( sub && ( (sub.isExperienced + 1) === design.maxExperimentReps ) );
+    },
 });
 Template.submitHIT.events({
     //'submit form.submitHIT': function (e) {

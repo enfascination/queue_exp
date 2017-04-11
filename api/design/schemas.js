@@ -262,21 +262,6 @@ Schemas.CohortSettings = new SimpleSchema({
         label: "player two",
         optional : true,
     },
-    quizEarnings: {
-        type: Number,
-        label: "Initial earnings",
-        decimal: true,
-    },
-    surveyEarnings : {
-        type: Number,
-        label: "surveyEarnings",
-        decimal: true,
-    },
-    pointEarnings : {
-        type: Number,
-        label: "pointEarnings",
-        decimal: true,
-    },
     subjectTreatmentsTemplate : {
         type: [String],
         label: "experimentTreatmentsTemplate",
@@ -285,6 +270,45 @@ Schemas.CohortSettings = new SimpleSchema({
         type: Boolean,
         label: "tutorialEnabled",
     }, 
+    maxExperimentReps : {
+        type: SimpleSchema.Integer,
+        label: "maxExperimentReps",
+    },
+    "earnings.HIT" : {
+        type: Number,
+        label: "HIT value",
+        decimal: true,
+    },
+    "earnings.quiz": {
+        type: Number,
+        label: "quiz earnings",
+        decimal: true,
+    },
+    "earnings.survey" : {
+        type: Number,
+        label: "surveyEarnings",
+        decimal: true,
+    },
+    "earnings.point" : {
+        type: Number,
+        label: "pointEarnings",
+        decimal: true,
+    },
+    "earnings.maxExperiment" : {
+        type: Number,
+        label: "earnings.maxExperiment",
+        decimal: true,
+    },
+    "earnings.maxBonus" : {
+        type: Number,
+        label: "earnings.maxBonus",
+        decimal: true,
+    },
+    "earnings.minBonus" : {
+        type: Number,
+        label: "earnings.minBonus",
+        decimal: true,
+    },
 });
 
 let questionsCore = {

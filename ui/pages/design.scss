@@ -398,3 +398,7 @@ ul.dash ul > li:before { //for nested lists
 .introjs-bullets ul li a.active {
     background: #999;
 }
+// workaround on safari bug impacting mizzao's meteor-tutorials
+.spotlight {
+    border-radius : 0;
+}

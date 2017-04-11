@@ -76,16 +76,18 @@ DesignSequence = {
     };
 Design = {
     maxPlayersInCohort : 2,
-    HITEarnings : 0.10,
-    quizEarnings : 0.40,
-    surveyEarnings : 0.20,
-    pointEarnings : 0.15,
-    maxExperimentEarnings : 2.50, //3*0.15*2*2
-    maxEarnings : 2.50, //0.10 + 0.40 + 0.20 + 3*0.15*2*2
-    minEarnings : 0.70, //0.10 + 0.40 + 0.20
-    experimentDuration : "10-15",
+    earnings : {
+        HIT : 0.10,
+        quiz : 0.40,
+        survey : 0.20,
+        point : 0.15,
+        maxExperiment : 2.70, //3*0.15*3*2 (max of three points, in three games, in each of two sections)
+        minBonus : 0.60, // 0.40 + 0.20
+        maxBonus : 3.30, // 0.40 + 0.20 + 3*0.15*3*2
+    },
+    //experimentDuration : "10-15",
     maxQuizFails : 3,
-    maxExperimentReps : 5,
+    maxExperimentReps : 10,
     sequence : DesignSequence,
     //sampleGame : [2,0,3,1,2,0,3,1], //not actulaly being used anywhere
     batchName : "main",
@@ -99,7 +101,7 @@ Design = {
     // think of these as subject level, not cohort level. 
     //     in a cohort, you get both within a cohort
     subjectTreatmentsTemplate : ["nofeedback", "feedback"], 
-    tutorialEnabled : true,
+    tutorialEnabled : false,
 };
 
 UserElements = {
@@ -107,7 +109,8 @@ UserElements = {
 };
 
 Debugging = false;
-if (Debugging) {
+if (false) {
+    Debugging = true;
     SimpleSchema.debug = true;
     UserElements.experimenterView = true;
     Design.tutorialEnabled = false;

@@ -47,7 +47,7 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
                     matching.ensureSubjectMismatchAcrossSections || 
                     matching.ensureSubjectMismatchAcrossSectionsAndPreferentiallyCloseOutIncompleteCohorts 
                 ) {
-                console.log("main matching", treatment);
+                //console.log("main matching", treatment);
                 //      if the sub is in a feedback condition
                 //            look for an unfinished cohort
                 //            unless there is no unfinished cohort
@@ -78,7 +78,7 @@ Experiment.findSubsCohort= function(sub, lastDesign, matching) {
 
                     // should I bail on trying to match this subject?
                     if ( _.isNil( cohortInProgress ) ) {
-                        console.log("main matching: no match to make");
+                        //console.log("main matching: no match to make");
                         treatment = "nofeedback";
                     }
 
@@ -384,29 +384,29 @@ Experiment.calculateExperimentEarnings = function(muid, design) {
         throw( err );
     }
 
-    let quizEarnings =  sub.quiz.passed ?  design.quizEarnings : 0;
+    let quizEarnings =  sub.quiz.passed ?  design.earnings.quiz : 0;
 
     let gameEarningsS1 = 0;
     let gameEarningsS2 = 0;
     paidQuestions.forEach( function( q ) {
         if ( q.completedGame ) {
             if (q.sec === 'experiment1') {
-                gameEarningsS1 += q.payoffEarnedFocal * design.pointEarnings;
+                gameEarningsS1 += q.payoffEarnedFocal * design.earnings.point;
             } else if (q.sec === 'experiment2') {
-                gameEarningsS2 += q.payoffEarnedFocal * design.pointEarnings;
+                gameEarningsS2 += q.payoffEarnedFocal * design.earnings.point;
             }
         }
     });
-    let totalBonus = quizEarnings + gameEarningsS1 + gameEarningsS2 + ( surveyComplete ? design.surveyEarnings : 0 );
+    let totalBonus = quizEarnings + gameEarningsS1 + gameEarningsS2 + ( surveyComplete ? design.earnings.survey : 0 );
     let HITearnings = { 
-        total : design.HITEarnings + totalBonus, 
+        total : design.earnings.HIT + totalBonus, 
         bonus : totalBonus, 
         breakdown : { 
-            hit: design.HITEarnings, 
+            hit: design.earnings.HIT, 
             quiz: quizEarnings, 
             experiment1 : gameEarningsS1,
             experiment2 : gameEarningsS2,
-            survey : surveyComplete ? design.surveyEarnings : 0 
+            survey : surveyComplete ? design.earnings.survey : 0 
         }
     };
     //console.log("calculateExperimentEarnings", HITearnings, paidQuestions.count(), surveyQuestions.count(), surveyComplete, paidQuestions.map( (q) => q.payoffEarnedFocal ) );
