@@ -31,9 +31,8 @@ DesignSequence = {
             "id" : "experiment1" , 
             "label" : "Section 1" , 
             //"roundCount" : 3, 
-            //"rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Feedback"}, },
             "roundCount" : 5, 
-            "rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Feedback"},  "3" : {id:"round3", label:"Compare"},  "4" : {id:"round4", label:"Round 3"}, },
+            "rounds" : { "0" : {id:"round0", label:"Game 1"},  "1" : {id:"round1", label:"Game 2"},  "2" : {id:"round2", label:"Feedback"},  "3" : {id:"round3", label:"Compare"},  "4" : {id:"round4", label:"Game 3"}, },
             "stages" : 1 ,
         }, 
         "experiment2" : {
@@ -42,9 +41,8 @@ DesignSequence = {
             "id" : "experiment2" , 
             "label" : "Section 2" , 
             //"roundCount" : 3, 
-            //"rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Feedback"}, },
             "roundCount" : 5, 
-            "rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Feedback"},  "3" : {id:"round3", label:"Compare"},  "4" : {id:"round4", label:"Round 3"}, },
+            "rounds" : { "0" : {id:"round0", label:"Game 1"},  "1" : {id:"round1", label:"Game 2"},  "2" : {id:"round2", label:"Feedback"},  "3" : {id:"round3", label:"Compare"},  "4" : {id:"round4", label:"Game 3"}, },
             "stages" : 1 ,
         }, 
         "survey" : { 

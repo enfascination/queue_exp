@@ -542,6 +542,11 @@ Schemas.SurveyAnswers = new SimpleSchema(
         label: "fieldName",
         optional : true,
     },
+    default: { 
+        type: SimpleSchema.Integer,
+        label: "default choice",
+        optional : true,
+    },
 } ));
 Schemas.ExitSurveyAnswers = new SimpleSchema({
     feedback: {

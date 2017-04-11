@@ -223,6 +223,9 @@ tr.hover {
 .gameNormalFormGame.disabled tr, .gameNormalFormGame.disabled:hover tr, .gameNormalFormGame.disabled:focus tr {
     pointer-events : none; //http://stackoverflow.com/questions/7833854/jquery-detect-click-on-disabled-submit-button;
 }
+.gameNormalFormFeedback {
+    padding: 0px 5px 0px 10px;
+}
 .gameNormalFormFeedback .gameNormalFormGame.disabled {
     opacity: 0.70;
 }

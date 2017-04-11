@@ -97,4 +97,6 @@ Template.questionDropdown.inheritsHelpersFrom('questionQuad');
 Template.questionDropdown.inheritsEventsFrom('questionQuad');
 Template.questionText.inheritsHelpersFrom('questionBinary');
 Template.questionText.inheritsEventsFrom('questionBinary');
+Template.questionCheckbox.inheritsHelpersFrom('questionQuad');
+Template.questionCheckbox.inheritsEventsFrom('questionQuad');
 

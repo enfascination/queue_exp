@@ -456,9 +456,17 @@ Meteor.users.deny({
             }
         },
         updateQuiz: function ( muid, quizObj) {
-            //console.log("updateQuiz", sub);
             SubjectsStatus.update({ meteorUserId: muid }, 
-                { $set: { quiz: quizObj } });
+                { $set: { quiz: quizObj } }
+            );
+            let sub = SubjectsStatus.findOne({meteorUserId : muid});
+            if (!quizObj.passed) {
+                if (quizObj.failed) {
+                    console.log("FAILED OUT:", sub.mtWorkerId );
+                } else {
+                    console.log("Failed quiz:", sub.mtWorkerId, quizObj  );
+                }
+            }
             return( quizObj );
         }, 
         setReadyToProceed: function (muid) {

@@ -32,7 +32,7 @@ Template.answersForm.events({
             let element_raw = $(e.target).find(".expQuestion#"+q._id)[0];
             let element = $( element_raw );
             let choice;
-            if (q.type === 'dropdown') {
+            if (q.type === 'dropdown' || q.type === 'checkbox') {
                 // http://stackoverflow.com/questions/1085801/get-selected-value-in-dropdown-list-using-javascript#1085810
                 choice = element.find("select option:selected:not([hidden])").val();
             } else if (q.type === 'text') {

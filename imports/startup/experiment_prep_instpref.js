@@ -149,7 +149,7 @@ QuestionData.questions = [
     sec: 'experiment',
     sec_rnd: 3,
     type: 'chooseGame',
-	title: 'Question 3',
+	title: 'Question',
 	text: 'Which game would you prefer to play again?',
 	label: 'Select one of the games below.',
 },
@@ -157,7 +157,7 @@ QuestionData.questions = [
     sec: 'experiment',
     sec_rnd: 4,
     type: 'chooseStrategy',
-	title: 'Question 4',
+	title: 'Question',
 	text: 'You are playing this game with the other player.',
 	label: 'Make your choice for this game, either Top or Bottom.',
     strategic: true,
@@ -213,6 +213,18 @@ QuestionData.questions = [
     type: 'dropdown',
 	label: 'What is the number of people in your household?',
     options: _(1).range(7).map(_.toString).concat( '7+', 'Decline to state').value(),
+},
+{
+    sec: 'survey',
+    sec_rnd: 0,
+    type: 'dropdown',
+	label: 'Would you like to be notified about future experiments from our lab?',
+    options:[
+        "Yes",
+        "No",
+        "Decline to state",
+    ],
+    default: 0,
 },
 ];
 /*

@@ -24,6 +24,10 @@
                                                 {{else}} 
                                                     {{#if equals type "chooseGame"}}
                                                         {{> questionGameCompare question=this }}
+                                                    {{else}} 
+                                                        {{#if equals type "checkbox"}}
+                                                            {{> questionCheckbox question=this }}
+                                                        {{/if}}
                                                     {{/if}}
                                                 {{/if}}
                                             {{/if}}
@@ -107,6 +111,23 @@
     </section> 
 </template>
 <template name = "questionDropdown">
+    <section class="expPaneNoMargin experiment"> 
+        <div class = "expQuestion {{question.type}} form-group {{getHasError question }}" id="{{question._id}}">
+            <div class = "expQuestionText">
+                <label for="{{question._id}}" class = "control-label {{disabled question }}">{{question.label}}</label>
+            </div>
+            <div id={{question._id}} name={{question._id}} class="expChoices" role="group">
+                <select class="" id="" {{disabled question }}>
+                    <option hidden="hidden" value='' {{disabled question }} >Please Select</option>
+                    {{#each option in options question=question}}
+                    <option class='expChoice' choice="{{option.name}}" value="{{option.name}}" {{disabled question }} >{{option.name}}</option>
+                    {{/each}}
+                </select>
+            </div>
+        </div>
+    </section> 
+</template>
+<template name = "questionCheckbox">
     <section class="expPaneNoMargin experiment"> 
         <div class = "expQuestion {{question.type}} form-group {{getHasError question }}" id="{{question._id}}">
             <div class = "expQuestionText">
