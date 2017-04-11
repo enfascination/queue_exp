@@ -9,9 +9,9 @@ import { Router } from 'meteor/iron:router';
 import { Sess } from '../../imports/lib/quick-session.js';
 
 let tutorialSteps1 = [
-  {
-    template: Template.tutorial_step1,
-  },
+  //{
+    //template: Template.tutorial_step1,   //this asks for feedback. useful on very first launch.
+  //},
   {
     template: Template.tutorial_step2,
   },

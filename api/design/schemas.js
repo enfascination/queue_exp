@@ -294,6 +294,12 @@ Schemas.CohortSettings = new SimpleSchema({
         label: "pointEarnings",
         decimal: true,
     },
+    "earnings.maxPoint" : {
+        type: Number,
+        label: "maxPointEarnings",
+        decimal: true,
+        optional: true,
+    },
     "earnings.maxExperiment" : {
         type: Number,
         label: "earnings.maxExperiment",

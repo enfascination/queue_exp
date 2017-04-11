@@ -148,8 +148,21 @@ Template.answersForm.events({
                 //console.log("trying ocomplete questions");
                 Meteor.call('tryToCompleteUncompletedQuestions', sub, design, function(err) {
                     /// calculate payoffs
-                    Meteor.call("updateExperimentEarnings", muid, design);
-                    Meteor.call("updateStatusInHIT", muid, design);
+                    if (design.playerOne) {
+                        Meteor.call("updateExperimentEarnings", design.playerOne, design);
+                        Meteor.call("updateStatusInHIT", design.playerOne, design);
+                    } 
+                    // ... and for the other player
+                    if (design.playerTwo) {
+                        Meteor.call("updateExperimentEarnings", design.playerTwo, design);
+                        Meteor.call("updateStatusInHIT", design.playerTwo, design);
+                    } else {
+                        try {
+                            console.assert( design.playerOne === muid, "Sanity check on updating of earnings" );
+                        } catch (error) {
+                            console.log( "Sanity check on updating of earnings", muid, design.playerOne, design, error );
+                        }
+                    }
                 });
             }
             //console.log("after q completion 7");

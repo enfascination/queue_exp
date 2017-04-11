@@ -346,7 +346,7 @@ Meteor.users.deny({
             let ss, sd, ct;
             ss = SubjectsStatus.findOne({ meteorUserId: sub.meteorUserId });
             ct = CohortSettings.findOne({ cohortId: design.cohortId});
-            console.log("initRound done", cohortId, treatmentsNew, sub.mtWorkerId, sub.mtAssignmentId, sub.isExperienced);
+            console.log("initRound done", cohortId, sub.mtWorkerId, sub.isExperienced, treatmentsNew);
             return( { "s_status" : ss, "s_data" : sd, "design" : ct } );
         },
         // this modfiies a SubjectsStatus object
@@ -448,7 +448,7 @@ Meteor.users.deny({
         updateStatusInHIT : Experiment.updateStatusInHIT,
         goToExitSurvey: function( muid ) {
             sub = SubjectsStatus.findOne({meteorUserId : muid});
-            console.log("goToExitSurvey", muid, sub.mtWorkerId, sub.mtAssignmentId);
+            console.log("goToExitSurvey", sub.mtWorkerId );
             if (TurkServer.Instance.currentInstance()) {
                 //console.log("goToExitSurvey in loop");
                 TurkServer.Instance.currentInstance().teardown(returnToLobby = true);

@@ -19,22 +19,19 @@ export let OverlapAssigner = class extends TurkServer.Assigners.SimpleAssigner {
                         currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
                         Meteor.call("addSectionQuestions", currentUser, "quiz", Design);
                     });
-                    console.log("Assigner created new user", asst.userId, 
-                        asst.assignmentId, asst.workerId, asst.batchId, 
-                        asst.hitId, currentUser.isExperienced );
+                    console.log("Assigner created new user", asst.workerId,
+                        asst.assignmentId, currentUser.isExperienced );
                 } else if ( repeatUser ) {
                     Meteor.call("initializeReturnSubject", asst, Design, function(err) {
                         if (err) { throw( err ); }
                         currentUser = SubjectsStatus.findOne({ meteorUserId:asst.userId });
                         Meteor.call("addSectionQuestions", currentUser, "quiz", Design);
                     });
-                    console.log("Assigner created repeat user", asst.userId, 
-                        asst.assignmentId, asst.workerId, asst.batchId, 
-                        asst.hitId, currentUser.isExperienced );
+                    console.log("Assigner created repeat user", asst.workerId,
+                        asst.assignmentId, currentUser.isExperienced );
                 } else {
-                    console.log("Assigner passing current user", asst.userId, 
-                        asst.assignmentId, asst.workerId, asst.batchId, 
-                        asst.hitId, currentUser.isExperienced );
+                    console.log("Assigner passing current user", asst.workerId, 
+                        asst.assignmentId, currentUser.isExperienced );
                 }
 
             if ( currentUser.sec_type_now === 'instructions' ) {

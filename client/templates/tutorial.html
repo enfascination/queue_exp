@@ -15,12 +15,12 @@
             <b>Welcome.</b> After reviewing these instructions you will take a comprehension quiz. You must pass it in order to participate in the main experiment.
         </li>
         <li>
-            <b>If you fail the quiz</b> you will earn only <span class="earnings">{{earnings design.earnings.HIT}}</span> and no bonuses, and you will not be able to repeat the HIT.
+            <b>If you fail the quiz</b> you will earn only the <span class="earnings">{{earnings design.earnings.HIT}}</span> reward and no bonuses, and you will not be able to repeat the HIT.
         </li>
         <li>
             <b>The theoretical maximum bonus</b> from this experiment is <span class="earnings">{{earnings design.earnings.maxBonus}}</span>. The minimum possible bonus from the core experiment is <span class="earnings">{{earnings 0}}</span>, not including a guaranteed <span class="earnings">{{earnings design.earnings.quiz}}</span> in bonuses for passing the quiz, and <span class="earnings">{{earnings design.earnings.survey}}</span> for completing the short survey.
             <ul>
-                <li>After completion, it should take a few hours to calculate your bonus. Contact us if it takes more than 24 hours.</li>
+                <li>After completion, please allow about a day to apply your bonus. Contact us if it takes more than 36 hours.</li>
             </ul>
         </li>
     </ul>
@@ -40,7 +40,7 @@
             earnings before submitting.
         </li>
         <li>
-            <b>To return to these instructions</b> at any time during the experiment, you can select <em>Instructions</em> from this navigation bar.
+            <b>To return to these instructions</b> during the experiment, select <em>Instructions</em> from this navigation bar.
         </li>
     </ul>
     {{> tutorialBullets 1}}
@@ -107,7 +107,14 @@
 &hellip; and <span class="you"><strong>Bottom</strong></span>. 
 <br/>
 <br/>
-<em>Hover over each of your two options for a description of how they will influence the final outcome.</em>
+<ul class="dash">
+    <li>
+<strong><strong>Hover over each of your two options</strong></strong> for a description of how they will influence the final outcome.
+    </li>
+    <li>
+        <strong><strong>Click on an option</strong></strong> to select it as your choice.
+    </li>
+</ul>
 <br/>
         {{> tutorialBullets 2}}
 </template>
@@ -152,7 +159,7 @@
             <b>Each point is worth <span class="earnings">{{earnings design.earnings.point}}</span> in bonuses.</b>
             <ul class="dash">
                 <li>
-                    For example, if you or the other player receive the maximum payoff of <span class="earnings">3</span> points, we will add <span class="earnings">{{earnings 0.45}}</span> to your bonus, while receiving <span class="earnings">0</span> points is worth <span class="earnings">{{earnings 0}}</span>.
+                    For example, if you or the other player receive the maximum payoff of <span class="earnings">3</span> points, we will add <span class="earnings">{{earnings design.earnings.maxPoint}}</span> to your bonus, while receiving <span class="earnings">0</span> points is worth <span class="earnings">{{earnings 0}}</span>.
             </li>
             </ul>
         </li>

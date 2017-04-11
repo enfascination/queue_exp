@@ -33,7 +33,7 @@ DesignSequence = {
             //"roundCount" : 3, 
             //"rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Feedback"}, },
             "roundCount" : 5, 
-            "rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Feedback"},  "3" : {id:"round3", label:"Round 3"},  "4" : {id:"round4", label:"Round 4"}, },
+            "rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Feedback"},  "3" : {id:"round3", label:"Compare"},  "4" : {id:"round4", label:"Round 3"}, },
             "stages" : 1 ,
         }, 
         "experiment2" : {
@@ -44,7 +44,7 @@ DesignSequence = {
             //"roundCount" : 3, 
             //"rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Feedback"}, },
             "roundCount" : 5, 
-            "rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Feedback"},  "3" : {id:"round3", label:"Round 3"},  "4" : {id:"round4", label:"Round 4"}, },
+            "rounds" : { "0" : {id:"round0", label:"Round 1"},  "1" : {id:"round1", label:"Round 2"},  "2" : {id:"round2", label:"Feedback"},  "3" : {id:"round3", label:"Compare"},  "4" : {id:"round4", label:"Round 3"}, },
             "stages" : 1 ,
         }, 
         "survey" : { 
@@ -80,10 +80,11 @@ Design = {
         HIT : 0.10,
         quiz : 0.40,
         survey : 0.20,
-        point : 0.15,
-        maxExperiment : 2.70, //3*0.15*3*2 (max of three points, in three games, in each of two sections)
+        point : 0.10,
+        maxPoint : 0.30,
+        maxExperiment : 1.80, //3*0.10*3*2 (max of three points, in three games, in each of two sections)
         minBonus : 0.60, // 0.40 + 0.20
-        maxBonus : 3.30, // 0.40 + 0.20 + 3*0.15*3*2
+        maxBonus : 2.40, // 0.40 + 0.20 + 3*0.15*3*2
     },
     //experimentDuration : "10-15",
     maxQuizFails : 3,
