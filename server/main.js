@@ -375,6 +375,7 @@ Meteor.users.deny({
         },
         advanceSubjectSection : function(muid, nextSection, nextSectionType) {
             let sub_old = SubjectsStatus.findOne({ meteorUserId: muid });
+			console.log("BJM",this,muid, nextSection, nextSectionType);// BJM debugging
 
             let entered = 0;
 
@@ -395,6 +396,8 @@ Meteor.users.deny({
             if ( sub_old.sec_now === "instructions" || sub_old.sec_now === "quiz" ) {
                 if ( nextSection === "quiz" ) {
                     TurkServer.setQuizState(asst);
+                } else if ( nextSection === "training" ) { // BJM
+                    TurkServer.setTrainingState(asst);
                 } else if ( nextSection === "experiment1" ) {
                     TurkServer.setLobbyState( asst, batch );
                     entered = 1;

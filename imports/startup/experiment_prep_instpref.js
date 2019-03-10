@@ -87,6 +87,36 @@ QuestionData.questions = [
     options: ["Top,Left", "Top,Right", "Bottom,Left", "Bottom,Right"],
 	correctAnswer: ["Top,Left"],
 },
+{ // BJM
+    sec: 'training',
+    sec_rnd: 0,
+    type: 'chooseOutcome',
+	title: 'Training Q 1',
+	text: 'Ask not what...?',
+	label: 'Select one of the four game outcomes.',
+    options: ["Top,Left", "Top,Right", "Bottom,Left", "Bottom,Right"],
+	correctAnswer: ["Top,Left"],
+}, 
+{ // BJM
+    sec: 'training',
+    sec_rnd: 0,
+    type: 'chooseOutcome',
+	title: 'Training Q 2',
+	text: 'Ask not what...?',
+	label: 'Select one of the four game outcomes.',
+    options: ["Top,Left", "Top,Right", "Bottom,Left", "Bottom,Right"],
+	correctAnswer: ["Top,Left"],
+},
+{ // BJM
+    sec: 'training',
+    sec_rnd: 0,
+    type: 'chooseOutcome',
+	title: 'Training Q 2',
+	text: 'Ask not what...?',
+	label: 'Select one of the four game outcomes.',
+    options: ["Top,Left", "Top,Right", "Bottom,Left", "Bottom,Right"],
+	correctAnswer: ["Top,Left"],
+},// BJM
 /*{
     sec: 'experiment',
     sec_rnd: 0,
@@ -295,7 +325,13 @@ QuestionData.questions.forEach ( function(q) {
         q.payoffs = [2,0,3,1,2,0,3,1];
         //q.payoffs = [3,1,4,2,3,1,4,2];
         q.sec_label = "Quiz";
-    } else if( q.sec === 'experiment' ) {
+    } else if( q.sec === 'training' ){ // BJM
+		q.correct = false;
+        //q.payoffs = [1,-1,2,0,1,-1,2,0];
+        q.payoffs = [1,3,5,7,2,6,4,8];
+        //q.payoffs = [3,1,4,2,3,1,4,2];
+        q.sec_label = "Training";
+	} else if( q.sec === 'experiment' ) {
         console.log("ERROR NMV<KUIOKJHLDF: async mess on q init?");
     } else if( q.sec === 'experiment1' ) {
         q.sec_label = "Section 1";

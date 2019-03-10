@@ -131,6 +131,8 @@ export const Helper = {
             toInclude = [ 'instructions'];
         } else if (sec === "quiz") {
             toInclude = [ 'instructions', 'quiz'];
+        } else if (sec === "training") { // BJM
+            toInclude = [ 'instructions', 'training'];
         } else if (sec === "experiment1") {
             toInclude = [ 'instructions', 'experiment1' ];
         } else if (sec === "experiment2") {
@@ -317,6 +319,13 @@ TurkServer.inInstructions = function() {
 TurkServer.inQuiz = function() {
   return Session.equals("turkserver.state", "quiz");
 };
+
+//BJM
+TurkServer.inTraining = function() {
+  return Session.equals("turkserver.state", "training");
+};
+//BJM
+
 TurkServer.setInstructionsState = function(asst) {
     //console.log("set experiment");
     // this does not emit an event to lobby, so you'd better already be there
@@ -337,6 +346,19 @@ TurkServer.setQuizState = function(asst) {
       }
     });
 };
+//BJM
+TurkServer.setTrainingState = function(asst) {
+    //console.log("set quiz");
+    // This does not emit an event to lobby, so you'd better already be there if you 
+    //   want something to happen.  Otherwise, if you're on the client, 
+    //   you can call router explicitly
+    Meteor.users.update(asst.userId, {
+      $set: {
+        "turkserver.state": "training"
+      }
+    });
+};
+//BJM
 TurkServer.setExperimentState = function(asst) {
     //console.log("set experiment");
     // this does not emit an event to lobby, so you'd better already be there

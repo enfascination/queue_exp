@@ -42,6 +42,10 @@ export let OverlapAssigner = class extends TurkServer.Assigners.SimpleAssigner {
                 //console.log("in quiz");
                 this.lobby.pluckUsers([asst.userId]);
                 TurkServer.setQuizState(asst);
+            } else if ( currentUser.sec_type_now === 'training' ) { // no mention of survey state intentional // BJM
+                //console.log("in quiz");
+                this.lobby.pluckUsers([asst.userId]);
+                TurkServer.setTrainingState(asst);
             } else if ( currentUser.sec_type_now === 'experiment' ) { // no mention of survey state intentional
                 // if user hasn't yet been sent to experiment, create them an id based on the ids of preceding subjects
                 //console.log("in experiment");

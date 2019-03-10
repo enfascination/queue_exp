@@ -39,6 +39,8 @@ Tracker.autorun(function() {
         Router.go('start', { stage:stage });
     } else if (TurkServer.inInstructions() || TurkServer.inQuiz()) {
         Router.go('quiz');
+    } else if (TurkServer.inInstructions() || TurkServer.inTraining()) { // BJM
+        Router.go('training');
     } else if (TurkServer.inExitSurvey()) {
         Router.go('submitHIT');
     } else {

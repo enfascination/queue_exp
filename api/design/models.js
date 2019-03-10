@@ -24,7 +24,19 @@ DesignSequence = {
             "rounds" : {},
             "stages" : 1 ,
             "shuffledQuestions" : false,
+        },
+		// BJM
+		"training" : { 
+            "name" : "training", 
+            "type" : "training" , 
+            "id" : "training" , 
+            "label" : "Training" , 
+            "roundCount" : 2, 
+            "rounds" : { "0" : {id:"round0", label:"Practice"},  "1" : {id:"round1", label:"Feedback"}},
+            "stages" : 1 ,
+            "shuffledQuestions" : false,
         }, 
+		//BJM
         "experiment1" : { 
             "name" : "experiment1" , 
             "type" : "experiment" , 

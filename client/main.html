@@ -115,6 +115,16 @@
     {{/if}}
 </template>
 
+<!-- BJM -->
+<template name="trainingSectionTabPane">
+    {{#if equals currentSection.id "training"}}
+    <div class="center-block"> 
+        {{! {{> yield "instructions"}}
+        {{> training}}
+    </div>
+    {{/if}}
+</template>
+<!-- BJM -->
 
 <template name="expSectionTabPane">
 

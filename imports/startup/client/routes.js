@@ -78,6 +78,32 @@ Router.route('/quiz', function() {
         ]);
     },
 });
+
+// BJM
+Router.route('/training', function() {
+    this.render( 'trainingSectionTabPane' );
+}, {
+    layoutTemplate: 'main',
+    //path: '/quiz',
+    data : function() { // enrich the global data object in this section
+        let data = Router.options.data();
+        //console.log("in instructions data rendering", this.params, this.params.query);
+        if ( data ) {
+            let sub = data.subStat;
+            let qs = Questions.find({ meteorUserId : sub.meteorUserId, mtAssignmentId : sub.mtAssignmentId, sec: sub.sec_now, sec_rnd : sub.sec_rnd_now }, {$sort : { order : 1 }});
+            data.questionsColl = qs;
+        }
+        return( data );
+    },
+    waitOn : function () {
+        return([
+            Meteor.subscribe('s_status'),
+            Meteor.subscribe('questions'),
+        ]);
+    },
+});
+// BJM
+
 Router.route('/experiment', function() {
     // main template
     this.render( 'expSectionTabPane' );

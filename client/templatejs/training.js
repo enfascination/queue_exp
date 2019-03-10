@@ -133,7 +133,7 @@ Template.answersForm.events({
     },
 });
 Template.main.events({
-    'click button.proceedButton#quiz': function ( e ) {
+    'click button.proceedButton#training': function ( e ) {
         let muid = Meteor.userId();
         let sub = Sess.subStat();
         //console.log("button#proceedButton#quiz", sub);
@@ -141,7 +141,7 @@ Template.main.events({
             if (sub.quiz.failed) {
                 Meteor.call("advanceSubjectSection", muid, "submitHIT", "submitHIT");
             } else {
-                Meteor.call("advanceSubjectSection", muid, "training", "training", asyncCallback=function(err, updatedSub) { // BJM old line: Meteor.call("advanceSubjectSection", muid, "experiment1", "experiment", asyncCallback=function(err, updatedSub) {
+                Meteor.call("advanceSubjectSection", muid, "experiment1", "experiment", asyncCallback=function(err, updatedSub) {
                     if (err) { throw( err ); }
                     Meteor.call('initializeSection', sub=updatedSub, lastDesign=Sess.design());
                 });
