@@ -1,11 +1,8 @@
+ <!-- BJM -->
  <template name="training">
-    {{> instPrefTraining context=..}}
+	<section class="expPaneNoMargin">
+	{{> yield "instPrefTrain" }}
+	</section>
     {{> answersForm }}
-    <br/><h1>test</h1>
+    <br/>
 </template>
-
-<!-- BJM the navButton below breaks the app, so commenting out for now -->
-
-<!--<template name="navButton">
-    <button type="button" class = "btn btn-link navButton" aria-label="Left Align" style="margin-left:auto; margin-right:auto; display:inline;margin:0;padding:0;" value={{#if equals fn "Quiz"}}{{inc stage}}{{/if}}{{#if equals fn "Instructions"}}{{dec stage}}{{/if}} autofocus > {{fn}} </button>
-</template>-->

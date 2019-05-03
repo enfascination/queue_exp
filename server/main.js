@@ -267,11 +267,15 @@ Meteor.users.deny({
                     try {
                         if ( sec === 'quiz' ) {
                             Schemas.QuizAnswers.validate( q );
+                        } else if ( sec === 'training' ) { // BJM
+                            Schemas.TrainingAnswers.validate( q );
                         } else if ( sec === 'survey' ) {
                             Schemas.SurveyAnswers.validate( q );
                         } else if ( sec === 'experiment1' || sec === 'experiment2' ) {
                             Schemas.ExperimentAnswers.validate( q );
-                        }
+                        } else if ( sec === 'posttraining' ) { // BJM
+                            Schemas.TrainingAnswers.validate( q );
+                        } 
                     } catch (err) {
                         console.log("ERROR 90DFUSIJK: Schema violation adding question", q, err);
                         throw(err);
@@ -375,7 +379,6 @@ Meteor.users.deny({
         },
         advanceSubjectSection : function(muid, nextSection, nextSectionType) {
             let sub_old = SubjectsStatus.findOne({ meteorUserId: muid });
-			console.log("BJM",this,muid, nextSection, nextSectionType);// BJM debugging
 
             let entered = 0;
 
@@ -393,10 +396,11 @@ Meteor.users.deny({
             //if ( sub.sec_now != sub.sec_now ) {
             let asst = TurkServer.Assignment.getAssignment( sub_old.tsAsstId );
             let batch = TurkServer.Batch.getBatchByName( Design.batchName );
-            if ( sub_old.sec_now === "instructions" || sub_old.sec_now === "quiz" ) {
+			//BJM YELLOWALERT I added "training" to this first condition
+            if ( sub_old.sec_now === "instructions" || sub_old.sec_now === "quiz" || sub_old.sec_now === "training" ) {
                 if ( nextSection === "quiz" ) {
                     TurkServer.setQuizState(asst);
-                } else if ( nextSection === "training" ) { // BJM
+                } else if ( nextSection === "training" ) { // BJM REDALERT I'm patterning after the quiz, I don't fully understand the utility of custom Turk Server states
                     TurkServer.setTrainingState(asst);
                 } else if ( nextSection === "experiment1" ) {
                     TurkServer.setLobbyState( asst, batch );
@@ -418,7 +422,7 @@ Meteor.users.deny({
                             treatment_now: sub_old.treatments[ sub_old.block_now + 1 ],
                         },
                     });
-                }
+				}
             } else if ( sub_old.sec_now === "survey" ) {
                 SubjectsStatus.update({ meteorUserId: muid }, {
                     $set: {
@@ -536,6 +540,8 @@ Meteor.users.deny({
                             Schemas.QuizAnswers.validate( theData );
                         } else if ( theData.sec === 'survey' ) {
                             Schemas.SurveyAnswers.validate( theData );
+                        } else if ( theData.sec === 'training' || theData.sec === 'posttraining' ) { // BJM
+                            Schemas.TrainingAnswers.validate( theData );
                         } else if ( theData.sec === 'experiment1' || theData.sec === 'experiment2' ) {
                             Schemas.ExperimentAnswers.validate( theData );
                         }

@@ -39,7 +39,8 @@ Template.introSectionTabPane.helpers({
 
 Template.answersForm.events({
     'submit form.answersForm#quiz': function(e) {
-        e.stopPropagation();
+		
+		e.stopPropagation();
         e.preventDefault();
         let muid = Meteor.userId();
         let sub = Sess.subStat();
@@ -134,7 +135,8 @@ Template.answersForm.events({
 });
 Template.main.events({
     'click button.proceedButton#quiz': function ( e ) {
-        let muid = Meteor.userId();
+		
+		let muid = Meteor.userId();
         let sub = Sess.subStat();
         //console.log("button#proceedButton#quiz", sub);
         if ( sub && sub.readyToProceed ) {

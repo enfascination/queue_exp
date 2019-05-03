@@ -342,6 +342,38 @@ table.gameChoiceFeedback, table.gameChoiceFeedback td, table.gameChoiceFeedback 
     border: 1px solid;
 }
 
+// BJM START Training CSS
+
+///////////////////////
+///Training
+///////////////////////
+
+.trainFeedbackText {
+	padding: 0px 15px;
+    max-width: 560px;
+}
+
+.trainFeedbackText .gameVisualText {
+	background-color: white;
+	padding: 15px 15px;
+	border-left: 5px solid green; // default is correct
+}
+
+.trainFeedbackText.not-correct .gameVisualText {
+	border-left: 5px solid red;
+}
+
+.trainFeedbackText .trainingCorrect {
+	color: green;
+}
+
+.trainFeedbackText .trainingNotCorrect {
+	color: red;
+}
+
+// BJM END Training CSS
+
+
 
 ///////////////////////
 ///Instructions

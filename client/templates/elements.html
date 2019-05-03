@@ -37,9 +37,14 @@
                             {{/if}}
                         {{/if}}
 		{{/each}}
+		{{#if equals currentSection.type "training"}} <!-- BJM adding for "training' section -->
+                    {{#if testQuizIncomplete}}
+                    <div class = "alert alert-warning">You did not answer all of the questions. Please see the questions in red above.</div>
+                    {{/if}}
+        {{else}}
         {{#if equals currentSection.type "experiment"}}
                     {{#if testQuizIncomplete}}
-                    <div class = "alert alert-warning">You did not answer all of the questions.</div>
+                    <div class = "alert alert-warning">You did not answer all of the questions. Please see the questions in red above.</div> <!-- BJM adding mention of red -->
                     {{/if}}
         {{else}}
         {{#if equals currentSection.id "quiz"}}
@@ -65,7 +70,8 @@
             {{/if}}
             {{/if}}
             </section>
-        {{/if}}
+			{{/if}}
+		{{/if}}
         {{/if}}
         <br/>
         <section class="expPaneMargin">

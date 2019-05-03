@@ -352,7 +352,13 @@ Experiment.calculateExperimentEarnings = function(muid, design) {
     // start with subject
     let sub = SubjectsStatus.findOne({ meteorUserId : muid });
     // get all paid complete questions from subject
-            let paidQuestions = Questions.find({
+            let trainingQuestions = Questions.find({ // BJM
+                meteorUserId : muid, 
+                mtAssignmentId : sub.mtAssignmentId, 
+                sec : { $in : ['training', 'posttraining'] },
+				isATrainingQuestion : true, // redundant, only Qs in above sections should have true
+            });
+			let paidQuestions = Questions.find({
                 meteorUserId : muid, 
                 mtAssignmentId : sub.mtAssignmentId, 
                 sec : { $in : ['experiment1', 'experiment2'] },
@@ -385,7 +391,16 @@ Experiment.calculateExperimentEarnings = function(muid, design) {
     }
 
     let quizEarnings =  sub.quiz.passed ?  design.earnings.quiz : 0;
-
+	
+	// BJM START calculate training question earnings
+	let trainingQuestionEarnings = 0;
+	trainingQuestions.forEach( function( q ) {
+        if ( q.correct ) {
+            trainingQuestionEarnings += design.earnings.training;
+        }   
+    });
+	// BJM END calculate training question earnings
+	
     let gameEarningsS1 = 0;
     let gameEarningsS2 = 0;
     paidQuestions.forEach( function( q ) {
@@ -397,13 +412,15 @@ Experiment.calculateExperimentEarnings = function(muid, design) {
             }
         }
     });
-    let totalBonus = quizEarnings + gameEarningsS1 + gameEarningsS2 + ( surveyComplete ? design.earnings.survey : 0 );
+	// BJM adding trainingQuestionEarnings to totalBonus
+    let totalBonus = quizEarnings + trainingQuestionEarnings + gameEarningsS1 + gameEarningsS2 + ( surveyComplete ? design.earnings.survey : 0 );
     let HITearnings = { 
         total : design.earnings.HIT + totalBonus, 
         bonus : totalBonus, 
         breakdown : { 
             hit: design.earnings.HIT, 
             quiz: quizEarnings, 
+			training: trainingQuestionEarnings, // BJM
             experiment1 : gameEarningsS1,
             experiment2 : gameEarningsS2,
             survey : surveyComplete ? design.earnings.survey : 0 

@@ -251,6 +251,39 @@ Template.instPrefGame2.helpers({
 });
 Template.earningsReport.inheritsHelpersFrom('instPrefGame2');
 
+// BJM adding helper for training feedback pages, copied/modded from Template.instPrefGame2.helpers
+Template.instPrefTrain1.helpers({
+	questionsFeedback : function(){
+        let questionsFeedback, sub = Sess.subStat();
+        let dataContext = this;
+        if (sub && dataContext.currentSection && this.questionsColl) {
+                questionsFeedback = Questions.find({
+					meteorUserId : sub.meteorUserId,
+					mtAssignmentId : sub.mtAssignmentId,
+					sec : sub.sec_now,
+					// show only this round's questions (prev round, technically)
+					sec_rnd : sub.sec_rnd_now - 1,
+					choice : {$ne : null }});
+            // pick which questions ot display, and enrich them a bit for the HIT feedback context
+            questionsFeedback = questionsFeedback.map( function( q ) {
+                let r = true; //BJM this used to be let r = false, but here we don't care about q.type, inelegant but I'm leaving this code in tact
+                if (q.type === "chooseStrategy" && q.paid ) {
+                    r = true;
+                    if (q.completedGame) {
+                        q.choice = q.outcome;  // temporarily overwrite for display pursposes
+                    }
+                } else if ( q.type === "chooseGame" ){
+                    r = true;
+                }
+                //console.log("feedback questions per q", r, q.type, q);
+                q.display = r;
+                return(q);
+            });
+            return(  _.filter( questionsFeedback, (q)=>q.display ) );
+        }
+    },
+});
+
 // for demoing
 Template.questionGameCompareReshuffle.inheritsHelpersFrom('questionGame');
 Template.questionGameCompareReshuffle.inheritsEventsFrom('questionGame');

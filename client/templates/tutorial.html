@@ -34,11 +34,17 @@
             <b>This window</b> will show your progress.
         </li>
         <li>
+            <b>After completing the sections</b> <em>Practice 1</em>,   
+            <em>Section 1</em>, <em>Section 2</em>, and <em>Practice 2</em>,
+            you will reach the <em>Survey</em> and then review your bonus 
+            earnings before submitting.
+        </li>
+		<!-- BJM new version above to incorporate Practice sections <li>
             <b>After completing the main sections</b> of the experiment, 
             <em>Section 1</em> and <em>Section 2</em>, 
             you will reach the <em>Survey</em> and then review your bonus 
             earnings before submitting.
-        </li>
+        </li> -->
         <li>
             <b>To return to these instructions</b> during the experiment, select <em>Instructions</em> from this navigation bar.
         </li>
@@ -202,6 +208,9 @@
 <template name="tutorial_step15">
     <h3>Experiment Structure</h3>
 <ul class="dash">
+<!-- BJM adding to account for Practice sections -->
+<li><b>Before the main experiment</b> you will answer three rounds of <em>Practice</em> questions. Similar to the <em>Quiz</em> questions, these questions will test your understanding of the game and help prepare you for the experiment. You will earn <span class="earnings">{{earnings design.earnings.training}}</span> for each correct answer on the Practice questions.</li>
+<br/>
 <li>
     <b>You will play multiple games</b> during the rounds and sections of the main experiment. 
 </li>
@@ -223,8 +232,9 @@
     <b>The sections have only one difference from each other:</b> in one of them you will get feedback about the final outcomes of the first two games before choosing between them, while in the other you will only see what your own choices were.
 </li>
 <br/>
+<!-- BJM adding clause to account for Practice sections -->
 <li>
-    After completing the experiment's main sections, you will complete the <em>Survey</em> for an additional
+    After completing the experiment's main sections, you will complete one more round of <em>Practice</em> questions, and then you will complete the <em>Survey</em> for an additional
 <span class="earnings">{{earnings design.earnings.survey}}</span> before submitting this HIT.
 </li>
 </ul>
@@ -234,8 +244,8 @@
 <template name="tutorial_step16">
     <h3>Experiment Structure</h3>
     <ul class="dash">
-        <li>
-            Within each section you will stay matched to the same player. 
+		<li>
+            Within each experiment <!-- BJM added to disambiguate Practice vs Experiment sections -->section you will stay matched to the same player. 
         </li>
         <li>
            You will be matched to a different player when you complete the first section.

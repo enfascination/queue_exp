@@ -4,6 +4,10 @@
   "scripts": {
     "start": "meteor run"
   },
+  "BJM_comment_______________": {
+	"comment on dependencies below": "To build on Windows I had to bump the bcrypt version to 1.0.0 due to a Visual C++ bug with 0.8.7, the original bcrypt version value follows",
+	"bcrypt": "^0.8.7"
+  },
   "dependencies": {
     "bcrypt": "^1.0.0",
     "bootstrap": "^3.3.7",

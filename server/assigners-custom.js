@@ -42,7 +42,7 @@ export let OverlapAssigner = class extends TurkServer.Assigners.SimpleAssigner {
                 //console.log("in quiz");
                 this.lobby.pluckUsers([asst.userId]);
                 TurkServer.setQuizState(asst);
-            } else if ( currentUser.sec_type_now === 'training' ) { // no mention of survey state intentional // BJM
+            } else if ( currentUser.sec_type_now === 'training' ) { // no mention of survey state intentional // BJM REDALERT patterning after quiz, I don't fully understand
                 //console.log("in quiz");
                 this.lobby.pluckUsers([asst.userId]);
                 TurkServer.setTrainingState(asst);

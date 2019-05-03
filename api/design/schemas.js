@@ -274,6 +274,15 @@ Schemas.CohortSettings = new SimpleSchema({
         type: SimpleSchema.Integer,
         label: "maxExperimentReps",
     },
+	//BJM
+	"trainingQuestionsRandomSettings.randomizePageOrder": {
+        type: Boolean,
+        label: "order of training question pages was randomized",
+    },
+	/* REMOVED "trainingQuestionsRandomSettings.randomizeOrderWithinPages": {
+        type: Boolean,
+        label: "order of questions in a single page/round was randomized",
+    },*/
     "earnings.HIT" : {
         type: Number,
         label: "HIT value",
@@ -282,6 +291,11 @@ Schemas.CohortSettings = new SimpleSchema({
     "earnings.quiz": {
         type: Number,
         label: "quiz earnings",
+        decimal: true,
+    },
+	"earnings.training": { // BJM
+        type: Number,
+        label: "training earnings per correct answer",
         decimal: true,
     },
     "earnings.survey" : {
@@ -363,6 +377,10 @@ let questionsCore = {
     order : {
         type: SimpleSchema.Integer,
         label: "order of question",
+    },
+	isATrainingQuestion : { // BJM
+        type: Boolean,
+        label: "training question flag",
     },
     meteorUserId: {
         type: String,
@@ -525,6 +543,60 @@ Schemas.QuizAnswers = new SimpleSchema(
         label: "correct answer(s) to the quiz",
     },
 } ));
+
+// BJM adding schema for training questions data
+Schemas.TrainingAnswers = new SimpleSchema(
+    _.concat( questionsCore, {
+    title : {
+        type: String,
+        label: "title of the question",
+    },
+    text : {
+        type: String,
+        label: "text of the question",
+    },
+	trainingFeedback: {
+        type: String,
+        label: "training feedback message teaching the game's principle",
+    },
+    payoffs: { 
+        type: [SimpleSchema.Integer],
+        label: "payoffs",
+        //decimal: true,  change to number if I ever want decimenals in payoffs
+    },
+    options: {
+        type: [String],
+        label: "potential answers to the training question",
+    },
+    correct: {
+        type: Boolean,
+        label: "correct",
+    },
+    correctAnswer: {
+        type: [String],
+        label: "correct answer(s) to the training question",
+    },
+	trainingQuestionId: { 
+        type: SimpleSchema.Integer,
+        label: "training question unique id",
+    },
+	choiceLoadedTime: { //BJM I added these next three here from the experiment schema, because I added them to the training.js theData to match experiment.js
+        type: Number,
+        label: "choiceLoadedTime",
+        optional: true,
+    },
+    choiceMadeTime: {
+        type: Number,
+        label: "choiceMadeTime",
+        optional: true,
+    },
+    choiceSubmittedTime: {
+        type: Number,
+        label: "choiceSubmittedTime",
+        optional: true,
+    },
+} ));
+
 Schemas.SurveyAnswers = new SimpleSchema(
     _.concat( questionsCore, {
     options: {

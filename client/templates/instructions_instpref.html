@@ -65,8 +65,10 @@
 <template name="instructions4">
         <section class="expPaneMargin">
             <h3>Experiment flow</h3>
-            <p><strong><strong>You will play two sections of three games each.</strong></strong> In addition to making a choice for each game, you will have to answer two questions about it, identifying your preferred and expected outcomes. After completing the first two games in a section, you will be asked which game you would like to play a second time, and you will have a chance to play that game again for additional earnings.  </p> 
-            <p><strong>You will repeat this procedure in each section, for a total of six games.</strong> During a section, you may get to see the results of the two games before choosing, or you may not get this result information. Afterwards, you will complete the <em>Survey</em> for an additional <span class="earnings">{{earnings design.earnings.survey}}</span>, before submitting this HIT.</p> 
+			<!-- BJM making additions to account for Practice sections-->
+			<p><strong>Before the main experiment</strong> you will answer three rounds of <em>Practice</em> questions. Similar to the <em>Quiz</em> questions, these questions will test your understanding of the game and help prepare you for the experiment. You will earn <span class="earnings">{{earnings design.earnings.training}}</span> for each correct answer on the Practice questions.</p>
+            <p><strong><strong>In the main experiment you will play two sections of three games each.</strong></strong> In addition to making a choice for each game, you will have to answer two questions about it, identifying your preferred and expected outcomes. After completing the first two games in a section, you will be asked which game you would like to play a second time, and you will have a chance to play that game again for additional earnings.  </p> 
+            <p><strong>You will repeat this procedure in each section, for a total of six games.</strong> During a section, you may get to see the results of the two games before choosing, or you may not get this result information. Afterwards, you will complete one more round of <em>Practice</em> questions, and then you will complete the <em>Survey</em> for an additional <span class="earnings">{{earnings design.earnings.survey}}</span>, before submitting this HIT.</p> 
         </section>
 </template>
 <template name="instructions5">
@@ -118,17 +120,127 @@
     </section>
 </template>
 
-<template name="instPrefTraining">
-    <h2 class="sectionHeader" >Training</h2>
+<!-- BJM START training round templates -->
+<!-- Questions template -->
+<template name="instPrefTrain0">
+    
     <br/>
     
-        <section class="expPaneMargin">
+        
             <p>
-            Instructions...
+            You will earn <span class="earnings">{{earnings design.earnings.training}}</span> for each correct answer on the Practice questions below. These Practice questions will help prepare you for the experiment, so please read and answer them carefully.
             </p> 
+			
+			<p>After you submit your answers you will see a Feedback page showing you which questions you answered correctly.
+			</p>
             <br/>
-    </section>
+    
 </template>
+
+<!-- Feedback template -->
+<template name="instPrefTrain1">
+    
+    <br/>
+    
+        
+           <p>This page gives you feedback on the Practice questions you answered, please read the feedback carefully.</p>
+            
+			{{#each question in questionsFeedback}}
+			
+                {{#if equals question.type "chooseOutcome" }}                    
+                     {{> trainingNormalFormOutcomeFeedback question=question}}
+                {{/if}}
+				{{#if equals question.type "chooseStrategy" }} 
+					{{> trainingNormalFormChoiceFeedback question=question}}
+                {{/if}}
+				{{#if equals question.type "chooseStrategyTop" }} 
+					{{> trainingNormalFormChoiceFeedback question=question}}
+                {{/if}} 				
+            {{/each}}
+			
+            <br/>
+    
+</template>
+
+<!-- Feedback text template e.g. "For this quesiton, you answered ______, however [correct answer and feedback explanation]"  -->
+<template name="trainingFeedbackText"> <!-- feedback structure the same for all question types -->
+	<div class="trainFeedbackText {{getIsCorrect question}}">
+		<span class="gameVisualText" style="float:left;">
+			{{#if question.correct}}
+				<span class="trainingCorrect">Correct:</span>
+			{{else}}
+				<span class="trainingNotCorrect">Incorrect:</span>
+			{{/if}}
+			
+			For this question,
+			
+			<!-- in case we want to word by question type -->
+			{{#if equals question.type 'chooseStrategy'}}
+				you answered {{question.choice}} &ndash;
+			{{/if}}
+			
+			{{#if equals question.type 'chooseStrategyTop'}}
+				you answered {{question.choice}} &ndash;
+			{{/if}}
+			
+			{{#if equals question.type 'chooseOutcome'}}
+				you answered {{question.choice}} &ndash;
+			{{/if}}
+			
+			
+			{{#unless question.correct}}
+				however 
+			{{/unless}}
+
+			{{question.trainingFeedback}}
+			
+		</span>
+	</div>
+</template>
+
+<!-- Feedback Question template 'Choice'  -->
+<template name="trainingNormalFormChoiceFeedback">
+    <div class="expPaneNoMargin gameNormalFormFeedback experiment">
+		<!-- <div class = "expQuestion {{question.type}} form-group {{getHasError question}}" id="{{question._id}}"> -->
+		<div class = "expQuestion {{question.type}} form-group" id="{{question._id}}">
+            <div class="expQuestionText">
+                <h3 class="questionTitle" >{{question.title}}</h3>
+                <p>{{{question.text}}}</p>
+                <label for="{{question._id}}" class = "control-label">{{{question.label}}}</label>
+            </div>
+			{{> trainingFeedbackText question=question}}
+			<div class="gameNormalForm">
+			<span style="float:left;">
+				{{> gameNormalFormGame id=question._id gameId=question._id choiceType=question.type payoffs=question.payoffs question=question context=..}}
+			</span>
+			</div>
+        </div>
+    <span class="clearfix"></span>
+    </div>
+</template>
+
+<!-- Feedback Question template 'Outcome'  -->
+<template name="trainingNormalFormOutcomeFeedback">
+    <div class="expPaneNoMargin gameNormalFormFeedback experiment">
+		<!-- <div class = "expQuestion {{question.type}} form-group {{getHasError question}}" id="{{question._id}}"> -->
+		<div class = "expQuestion {{question.type}} form-group" id="{{question._id}}">
+            <div class="expQuestionText">
+                <h3 class="questionTitle" >{{question.title}}</h3>
+                <p>{{{question.text}}}</p>
+                <label for="{{question._id}}" class = "control-label">{{{question.label}}}</label>
+			</div>
+			{{> trainingFeedbackText question=question}}
+			<div class="gameNormalForm">
+			<span style="float:left;">
+				{{> gameNormalFormGame id=question._id gameId=question._id choiceType="chooseOutcome" payoffs=question.payoffs question=question context=..}}
+			</span>
+			</div>
+        </div>
+        <span class="clearfix"></span>
+    </div>
+</template>
+
+<!-- END training round templates BJM -->
 
 <template name="instPrefGame0">
     <p>
@@ -233,7 +345,7 @@
 </template>
 <template name="earningsReport">
     <div class="center-block"> 
-        <p>
+		<p>
             You played {{subStat.HITStatus.gamesPlayed}} games for money. Their 
             statuses are reported below.
         </p>
@@ -259,8 +371,9 @@
                 Your current bonus 
             {{/if}}
             is {{earnings subStat.bonusEarnings}}
+			<!-- BJM adding reference to training earnings -->
             {{#unless gt subStat.isExperienced 0}}, including 
-                {{earnings design.earnings.quiz}} for passing the quiz and 
+                {{earnings design.earnings.quiz}} for passing the quiz, {{earnings subStat.breakdownEarnings.training}} from correct answers to the Practice questions, and 
                 {{earnings design.earnings.survey}} 
                 for completing the survey
             {{/unless}}
@@ -276,7 +389,7 @@
             feedback.
         </p>
 
-        <h2> All questions </h2>
+        <h2>All Experiment Questions</h2> <!-- BJM original: <h2> All questions </h2> -->
             {{#each question in questionsFeedback allQs=true}}
             <div class="experiment">
                 <h3>

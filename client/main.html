@@ -115,16 +115,33 @@
     {{/if}}
 </template>
 
-<!-- BJM -->
+<!-- BJM START trainingSectionTabPane template -->
 <template name="trainingSectionTabPane">
-    {{#if equals currentSection.id "training"}}
-    <div class="center-block"> 
+    
+	{{#if equals currentSection.id "training"}}
+    <h2 class="sectionHeader" >
+        {{currentRound.label}}		
+    </h2>
+	<div class="center-block"> 
         {{! {{> yield "instructions"}}
         {{> training}}
     </div>
     {{/if}}
+	
+	<!-- BJM repeating above for posttraining section, I didn't find any quick "OR" logic for spacebars -->
+	
+	{{#if equals currentSection.id "posttraining"}}
+    <h2 class="sectionHeader" >
+        {{currentSection.label}} 
+    </h2>
+	<div class="center-block"> 
+        {{! {{> yield "instructions"}}
+        {{> training}}
+    </div>
+    {{/if}}
+	
 </template>
-<!-- BJM -->
+<!-- BJM END trainingSectionTabPane template -->
 
 <template name="expSectionTabPane">
 
@@ -135,14 +152,18 @@
             {{else}} {{#if isSection "earningsReport"}}
                 <h2 class="sectionHeader" >Earnings report</h2>
                     {{> earningsReport ..}}
-                {{else}}
-                    <h2 class="sectionHeader" >
-                        {{currentSection.label}} 
-                        <!-- <small>Part {{inc subStat.sec_rnd_now}}/{{currentSection.roundCount}}</small> -->
-                    </h2>
-                    <br/>
-                {{> experiment ..}}
-                {{/if}}
+                {{else}} {{#if isSection "posttraining"}} <!-- BJM posttraining section is of type "experiment" and part of the /experiment route -->
+					<h2 class="sectionHeader" >{{currentRound.label}}</h2>
+					{{> training ..}}
+					{{else}}
+							<h2 class="sectionHeader" >
+								{{currentSection.label}} 
+								<!-- <small>Part {{inc subStat.sec_rnd_now}}/{{currentSection.roundCount}}</small> -->
+							</h2>
+							<br/>
+						{{> experiment ..}}
+					{{/if}}
+				{{/if}}
             {{/if}}
     {{/if}}
 </template>

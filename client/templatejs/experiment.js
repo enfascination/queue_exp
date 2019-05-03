@@ -255,9 +255,15 @@ Template.main.events({
                 });
             } else if (sub.sec_now === "experiment2" ) {
                 if (!sub.isExperienced) {
-                    Meteor.call("addSectionQuestions", sub, "survey", Sess.design() );
+                    //Meteor.call("addSectionQuestions", sub, "survey", Sess.design() ); BJM this is original, new follows
+					Meteor.call("addSectionQuestions", sub, "posttraining", Sess.design() );
+					// BJM we're going to the post-training section now, vs survey
+					Meteor.call('advanceSubjectSection', Meteor.userId(), "posttraining", "experiment"); 
+                } else {
+				Meteor.call('advanceSubjectSection', Meteor.userId(), "survey", "experiment");
+				// BJM REDALERT - the above needs testing in deployment, or in an environment where we can simulate repeat subjects; before adding the posttraining Practice section, the logic was if(!sub.isExperienced) then add the survey training questions and advance the subject section to "survey", otherwise just advance them to section "survey".
+				// Now, if(!sub.isExperienced) we send them to the posttraining section (after posttraining they'll be directed to the survey via logic in training.js's proceedButton#posttraining); if (sub.isExperienced) then we send them to the survey.
                 }
-                Meteor.call('advanceSubjectSection', Meteor.userId(), "survey", "experiment");
             } else {
             }
 

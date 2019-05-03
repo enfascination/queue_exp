@@ -137,6 +137,8 @@ export const Helper = {
             toInclude = [ 'instructions', 'experiment1' ];
         } else if (sec === "experiment2") {
             toInclude = [ 'instructions', 'experiment2' ];
+        } else if (sec === "posttraining") { // BJM
+            toInclude = [ 'instructions', 'posttraining'];
         } else if (sec === "survey") {
             toInclude = [ 'survey']; ///XXX
         } else if (sec === "earningsReport") {
@@ -324,7 +326,6 @@ TurkServer.inQuiz = function() {
 TurkServer.inTraining = function() {
   return Session.equals("turkserver.state", "training");
 };
-//BJM
 
 TurkServer.setInstructionsState = function(asst) {
     //console.log("set experiment");
@@ -348,7 +349,8 @@ TurkServer.setQuizState = function(asst) {
 };
 //BJM
 TurkServer.setTrainingState = function(asst) {
-    //console.log("set quiz");
+    // BJM, Seth's original comments copied from above, patterning after Quiz:
+	//console.log("set quiz");
     // This does not emit an event to lobby, so you'd better already be there if you 
     //   want something to happen.  Otherwise, if you're on the client, 
     //   you can call router explicitly
@@ -358,7 +360,6 @@ TurkServer.setTrainingState = function(asst) {
       }
     });
 };
-//BJM
 TurkServer.setExperimentState = function(asst) {
     //console.log("set experiment");
     // this does not emit an event to lobby, so you'd better already be there
