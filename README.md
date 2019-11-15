@@ -12,10 +12,10 @@ meteor npm install\
 meteor run --settings=settings.json\
 (note: in 2019 to build on Windows Windows I had to bump the bcrypt version to 1.0.0 due to a Visual C++ bug with 0.8.7; see comment in package.json file)\
 
-go to http://localhost:3000/turkserver/
-at http://localhost:3000/turkserver/ filter for allConds
-at http://localhost:3000/turkserver/ click Manage
-at http://localhost:3000/turkserver/ add a treatment and press plus
+go to http://localhost:3000/turkserver/ \
+at http://localhost:3000/turkserver/ filter for allConds\
+at http://localhost:3000/turkserver/ click Manage\
+at http://localhost:3000/turkserver/ add a treatment and press plus\
 in a browser with separate cookies visit http://localhost:3000/ to simulate user
 
 ## `training` branch review notes
