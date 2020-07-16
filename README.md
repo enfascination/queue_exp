@@ -22,14 +22,14 @@ meteor run --settings=settings.json
 ---------------- step 3a. not required to view/run app as user ----------------  
 3a. As the experimenter/admin:
 
-In browser go to http://localhost:3000/turkserver/ 
-(default pw in settings.json)
-at http://localhost:3000/turkserver/ filter for allConds
-at http://localhost:3000/turkserver/ click Manage
-at http://localhost:3000/turkserver/ add a treatment and press plus  
+In browser go to http://localhost:3000/turkserver/  
+(default pw in settings.json)  
+at http://localhost:3000/turkserver/ filter for allConds  
+at http://localhost:3000/turkserver/ click Manage  
+at http://localhost:3000/turkserver/ add a treatment and press plus    
 ---------------- step 3a. not required to view/run app as user ----------------
 
-3b. Then as a user:
+3b. Then as a user:  
 In a browser *with separate cookies* visit http://localhost:3000/ to simulate a user
 
 ## `training` branch review notes
