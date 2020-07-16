@@ -26,7 +26,7 @@ In browser go to http://localhost:3000/turkserver/
 (default pw in settings.json)
 at http://localhost:3000/turkserver/ filter for allConds
 at http://localhost:3000/turkserver/ click Manage
-at http://localhost:3000/turkserver/ add a treatment and press plus
+at http://localhost:3000/turkserver/ add a treatment and press plus  
 ---------------- step 3a. not required to view/run app as user ----------------
 
 3b. Then as a user:
