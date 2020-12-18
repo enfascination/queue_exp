@@ -6,7 +6,7 @@
 2. Clone this repository and setup the Meteor build environment:
 
 (From a prompt run:)
-
+```
 git clone https://github.com/enfascination/queue_exp.git
 cd queue_exp
 cp settings.json.min settings.json (copies a settings template for local config, vs publicly on GitHub)  
@@ -15,9 +15,12 @@ meteor add mizzao:turkserver
 meteor npm install
 meteor run --settings=settings.json
 (note: in 2019 to build on Windows @benmillam had to bump the bcrypt version to 1.0.0 due to a Visual C++ bug with 0.8.7; see comment in package.json file)
-
+```
 3. Visit the app:
 (if you're running the app on the cloud, you'll need to SSH tunnel from your local machine to the remote box, to view the app in your local browser)
+`ssh -L 3001:localhost:3000 sub.remote.com`
+or build the app
+`sudo meteor build /var/www/html/instpref --directory --server-only --server=sub.remote.com/instpref`
 
 ---------------- step 3a. not required to view/run app as user ----------------  
 3a. As the experimenter/admin:
