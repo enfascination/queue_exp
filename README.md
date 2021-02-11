@@ -1,5 +1,5 @@
 # instpref installation
-
+```
 git clone git@github.com:enfascination/queue_exp.git -b instpref
 mv instpref queue_exp
 cd instpref
@@ -12,4 +12,4 @@ meteor run --settings=settings.json
 <at http://localhost:3000/turkserver/ filter for allConds>
 <at http://localhost:3000/turkserver/ click Manage>
 <at http://localhost:3000/turkserver/ add a treatment and press plus>
-
+```
