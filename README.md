@@ -44,4 +44,11 @@ In a browser *with separate cookies* visit http://localhost:3000/ to simulate a 
 	- others include changes I was patterning but don't entirely understand
 - 8 changes tagged "YELLOWALERT" likely do not need review; e.g. more minor changes I understand less than fully, or a note where I've made a programming decision that may not be flexible
 
-
+To turn the tedious instructions off, go to server/main.js and set line 145 from
+```
+                isExperienced : isExperienced,
+```
+to
+```
+                isExperienced : isExperienced || true,
+```
