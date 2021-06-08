@@ -1,0 +1,198 @@
+<template name="tsBatchSelector">
+    <label>Filter Batch:</label>
+    <select class="form-control">
+        <option disabled selected={{noBatchSelection}}></option>
+        {{#each batches}}
+        <option value="{{_id}}" selected={{selected}}>{{name}}</option>
+        {{/each}}
+    </select>
+    <p class="text-muted">{{viewingBatchId}}</p>
+</template>
+
+<template name="tsBatchMessage">
+    {{#with _tsViewingBatch}}
+    <div class="alert alert-info">
+        {{> UI.contentBlock this}}
+    </div>
+    {{else}}
+    <div class="alert alert-warning">
+        No batch selected. Choose one above.
+    </div>
+    {{/with}}
+</template>
+
+<template name="tsAdminGroupInfo">
+    <dl class="dl-horizontal ts-compact">
+        <dt>Group:</dt>
+        <dd>{{_id}} {{> tsAdminExpButtons}}</dd>
+        <dt>Treatments:</dt>
+        <dd>
+            {{#each treatments}}
+            <span class="badge badge-inverse">{{this}}</span>
+            {{/each}}
+        </dd>
+        <dt>Users:</dt>
+        <dd>
+            {{#each users}}
+            {{> tsUserPill userId=this}}
+            {{/each}}
+        </dd>
+    </dl>
+</template>
+
+<!-- Helper template for subscribing to and rendering instance data -->
+<template name="tsAdminInstance">
+    {{> tsAdminGroupInfo instance}}
+</template>
+
+<template name="tsAdminAssignmentInstanceInfo">
+    <dl class="dl-horizontal ts-compact">
+        <dt>Active Time</dt><dd><b class="text-success">{{tsActiveTime this}}</b></dd>
+        <dt>Idle Time</dt><dd><b class="text-warning">{{tsIdleTime this}}</b></dd>
+        <dt>Disc. Time</dt><dd><b class="text-danger">{{tsDisconnectedTime this}}</b></dd>
+        <dt>Total Time</dt><dd><b>{{tsJoinedTime this}}</b></dd>
+    </dl>
+</template>
+
+<template name="tsAdminAssignmentInstance">
+    <div class="ts-instance-pill-container">
+        <span class="label label-primary">
+            <span class="glyphicon glyphicon-tasks"></span>
+        </span>
+    </div>
+</template>
+
+<template name="tsAdminPayBonus">
+    <div class="modal-body">
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">WorkerId</label>
+            <div class="col-sm-9">
+                <p class="form-control-static">{{workerId}}</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">AssignmentId</label>
+            <div class="col-sm-9">
+                <p class="form-control-static">{{assignmentId}}</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">Amount</label>
+            <div class="col-sm-9">
+                <input class="form-control" name="amount" type="number" min="0.01" max="99.99" step="0.01" value="1.00" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">Reason</label>
+            <div class="col-sm-9">
+                <textarea class="form-control" name="reason" rows="8" required></textarea>
+            </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Pay Bonus</button>
+    </form>
+    </div>
+</template>
+
+<template name="tsAdminEmailWorker">
+    <div class="modal-body">
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">WorkerId</label>
+            <div class="col-sm-9">
+                <p class="form-control-static">{{workerId}}</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">Subject</label>
+            <div class="col-sm-9">
+	        <input class="form-control" type="text" name="subject" required>
+            </div>
+        </div>
+	    <div class="form-group">
+            <label class="col-sm-3 control-label">Message</label>
+            <div class="col-sm-9">
+	        <textarea class="form-control" name="message" rows="10" required></textarea>
+            </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Send Message</button>
+    </form>
+    </div>
+</template>
+
+<!-- Template for displaying a worker in a dropdown list -->
+<template name="tsAdminWorkerItem">
+    {{workerId}} <span class="label {{labelClass}}">{{identifier}}</span>
+</template>
+
+<template name="tsUserPill">
+    {{#with user}}
+    <div class="ts-user-pill-container">
+        <a href="{{pathFor 'tsWorkers' workerId=workerId}}"><span class="label {{labelClass}}">{{identifier}}</span></a>
+    </div>
+    {{/with}}
+</template>
+
+<template name="tsUserPillPopover">
+    <b class="text-info">{{_id}}</b>
+    <dl class="ts-compact">
+        <dt>Username:</dt>
+        <dd>{{#if username}}
+            {{username}}
+            {{else}}
+            <i class="muted">(none)</i>
+            {{/if}}
+        </dd>
+        <dt>WorkerId:</dt>
+        <dd>{{#if workerId}}
+            {{workerId}}
+            {{else}}
+            <i class="muted">(none)</i>
+            {{/if}}
+        </dd>
+        <dt>Last login:</dt>
+        <dd>{{#if status.lastLogin.date}}
+            {{_tsRenderTime status.lastLogin.date}} <i>from</i>
+            {{status.lastLogin.ipAddr}};
+            <span class="small">{{status.lastLogin.userAgent}}</span>
+            {{else}}
+            {{_tsRenderTime status.lastLogin}}
+            {{/if}}</dd>
+        <dt>State:</dt>
+        <dd>{{turkserver.state}}</dd>
+        <dt>Contact:</dt>
+        <dd><button class="btn btn-xs btn-info ts-admin-email-worker">
+            <span class="glyphicon glyphicon-envelope"></span>
+            </button>
+        </dd>
+    </dl>
+
+    {{#if status.online}}
+        {{#unless status.idle}}
+        <b class="text-success">Connected</b>
+        {{else}}
+        <b class="text-warning">Connected - Idle</b>
+        {{/unless}}
+    {{else}}
+    <b class="text-danger">Disconnected</b>
+    {{/if}}
+</template>
+
+<template name="tsTreatmentPill">
+    <span class="badge badge-inverse">{{name}}</span>
+</template>
+
+<template name="tsTreatmentDeletePill">
+    <span class="badge badge-inverse">{{name}}
+        <span class="glyphicon glyphicon-remove -ts-remove-batch-treatment"></span>
+    </span>
+</template>
+
+<template name="tsDescList">
+    <dl class="dl-horizontal ts-compact">
+        {{#each properties}}
+        <dt>{{key}}</dt>
+        <dd>{{{value}}}</dd>
+        {{/each}}
+    </dl>
+</template>

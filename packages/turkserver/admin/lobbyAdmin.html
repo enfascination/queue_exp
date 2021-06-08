@@ -1,0 +1,44 @@
+<template name="tsAdminLobby">
+    <h3>Current Lobby</h3>
+
+    {{#tsBatchMessage}}
+        Viewing lobby users in batch <b>{{name}}</b>.
+    {{/tsBatchMessage}}
+
+    {{> tsAdminLobbyHeader}}
+
+    <table class="table table-striped ts-admin-table">
+        <thead>
+        <tr>
+            <th>User</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each lobbyUsers}}
+        <tr>
+            <td>{{> tsUserPill userId=_id }}</td>
+            <td>
+                <strong>
+                    {{#if status}}
+                    <span class="text-success">READY</span>
+                    {{else}}
+                    <span class="text-danger">NOT READY</span>
+                    {{/if}}
+                </strong>
+            </td>
+        </tr>
+        {{/each}}
+        </tbody>
+    </table>
+</template>
+
+<template name="tsAdminLobbyHeader">
+    <p>{{count}} users currently in lobby.</p>
+    <p>{{readyCount}} <strong><span class="text-success">ready</span></strong> users currently in lobby.</p>
+
+    <form class="form-inline pull-right">
+        <input class="form-control" name="lobby-event">
+        <button class="btn btn-warning">Trigger Lobby Event</button>
+    </form>
+</template>

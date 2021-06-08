@@ -1,6 +1,6 @@
 /*jshint esversion: 6 */
 
-import { TurkServer } from 'meteor/mizzao:turkserver';
+import { TurkServer } from 'meteor/turkserver-updates';
 import { Schemas } from './schemas.js';
 // BJM also importing trainingQuestionsRandomSettings experiment_prep_instpref.js so we can store them in the Design below; I can't get experiment_prep_instpref.js to access the Design object from this file, I think it may be due to Meteor file load order
 import { QuestionData, trainingQuestionsRandomSettings } from '../../imports/startup/experiment_prep_instpref.js';

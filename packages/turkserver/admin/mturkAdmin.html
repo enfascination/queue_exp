@@ -1,0 +1,628 @@
+<template name="tsAdminMTurk">
+    <div class="row">
+	<div class="col-md-5">
+	    <h3>HIT Types<button class="btn btn-primary pull-right -ts-new-hittype">New HIT Type</button></h3>
+	</div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            {{> tsAdminHitTypes}}
+        </div>
+        <div class="col-md-7">
+	    <div class="well clearfix">
+		{{#with selectedHITType}}
+		{{> tsAdminViewHitType }}
+		{{else}}
+		{{> tsAdminNewHitType }}
+		{{/with}}
+	    </div>
+        </div>
+    </div>
+
+    {{> tsAdminQuals}}
+</template>
+
+<template name="tsAdminMaintenance">
+    <div class="row">
+	<div class="col-md-12">
+	    <div class="well">
+		<h3>Maintenance</h3>
+		{{> Template.dynamic template=template}}
+	    </div>
+	</div>
+    </div>
+</template>
+
+<template name="tsAdminHitTypes">
+    <table class="table table-condensed table-striped ts-admin-table">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>HITTypeId</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each hitTypes}}
+        <tr class="{{selectedClass}}">
+            <td>{{Title}}</td>
+            <td>
+                {{#if HITTypeId}}
+                {{HITTypeId}}
+                {{else}}
+                <i>Not registered</i>
+                {{/if}}
+            </td>
+        </tr>
+        {{/each}}
+        </tbody>
+    </table>
+</template>
+
+<template name="tsAdminViewHitType">
+    <dl class="dl-horizontal ts-compact">
+        <dt><i>Batch</i></dt>
+        <dd>{{batchName}}</dd>
+        <dt>Title</dt>
+        <dd>{{Title}}</dd>
+        <dt>Description</dt>
+        <dd>{{Description}}</dd>
+        <dt>Keywords</dt>
+        <dd>{{Keywords}}</dd>
+        <dt>Reward</dt>
+        <dd>{{renderReward}}</dd>
+        <dt>Qualifications</dt>
+        <dd>
+            {{#each QualificationRequirements}}
+            <span class="badge badge-info">{{qualName}}</span>
+            {{/each}}
+            {{#unless QualificationRequirements}}
+            <i>(none)</i>
+            {{/unless}}
+        </dd>
+        <dt>Asst. Duration (Secs)</dt>
+        <dd>{{AssignmentDurationInSeconds}}</dd>
+        <dt>Auto Approval (Secs)</dt>
+        <dd>{{AutoApprovalDelayInSeconds}}</dd>
+        <dt>HITTypeId</dt>
+        <dd>
+            {{#if HITTypeId}}
+            {{HITTypeId}}
+            {{else}}
+            <button class="btn btn-primary -ts-register-hittype">
+                <span class="glyphicon glyphicon-briefcase"></span> Register
+            </button>
+            {{/if}}
+        </dd>
+    </dl>
+    <button class="btn btn-danger pull-right -ts-delete-hittype">
+        <span class="glyphicon glyphicon-trash"></span> Delete
+    </button>
+</template>
+
+<template name="tsAdminNewHitType">
+    <form class="form-horizontal">
+        <legend>New HIT Type</legend>
+        <div class="form-group">
+            <label class="col-sm-4">Batch</label>
+            <div class="col-sm-8">
+                <select class="form-control" name="batch" required>
+                    <option value="" selected disabled></option>
+                    {{#each batches}}
+                    <option value="{{_id}}">{{name}} ({{_id}})</option>
+                    {{/each}}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-4">Title</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" name="title" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-4">Description</label>
+            <div class="col-sm-8">
+                <textarea class="form-control" name="desc" required></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-4">Keywords</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" name="keywords" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-4">Reward</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="number" min="0" step="0.01" value="0.10" name="reward" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-4">Qualification Requirements</label>
+            <div class="col-sm-8">
+                <select class="form-control" name="quals" multiple>
+                    {{#each quals}}
+                    <option value="{{_id}}">{{name}}</option>
+                    {{/each}}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-4">Assignment Duration in Seconds</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="number" min="30" max="3153600" value="86400" name="duration" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-4">Auto Approval Delay in Seconds</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="number" min="0" max="2592000" value="604800" name="delay" required>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary pull-right">Create</button>
+    </form>
+</template>
+
+<template name="tsAdminQuals">
+    <h3>Qualifications</h3>
+    <table class="table table-condensed table-striped ts-admin-table">
+        <thead>
+        <tr>
+            <th>Nickname</th>
+            <th>QualificationType ID</th>
+            <th>Comparator</th>
+            <th>Value</th>
+            <th>RequiredToPreview</th>
+            <th style="width: 50px"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each quals}}
+        <tr>
+            <td><span class="badge badge-info">{{name}}</span></td>
+            <td>{{QualificationTypeId}}</td>
+            <td>{{Comparator}}</td>
+            <td>{{value}}</td>
+            <td>{{RequiredToPreview}}</td>
+            <td>
+                <button class="btn btn-xs btn-danger -ts-delete-qual">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </button>
+            </td>
+        </tr>
+        {{/each}}
+        {{> tsAdminNewQual}}
+        </tbody>
+    </table>
+</template>
+
+<template name="tsAdminNewQual">
+    <tr>
+        <td><input class="form-control" type="text" name="name"></td>
+        <td><input class="form-control" type="text" name="type"></td>
+        <td>
+            <select class="form-control" name="comp">
+                <option value="LessThan">LessThan</option>
+                <option value="LessThanOrEqualTo">LessThanOrEqualTo</option>
+                <option value="GreaterThan">GreaterThan</option>
+                <option value="GreaterThanOrEqualTo">GreaterThanOrEqualTo</option>
+                <option value="EqualTo">EqualTo</option>
+                <option value="NotEqualTo">NotEqualTo</option>
+                <option value="Exists">Exists</option>
+                <option value="DoesNotExist">DoesNotExist</option>
+                <option value="In">In</option>
+                <option value="NotIn">NotIn</option>
+            </select>
+        </td>
+        <td><input class="form-control" type="text" name="value"></td>
+        <td><input type="checkbox" name="preview"></td>
+        <td>
+            <button class="btn btn-xs btn-primary -ts-create-qual">
+                <span class="glyphicon glyphicon-plus"></span>
+            </button>
+        </td>
+    </tr>
+</template>
+
+<template name="tsAdminHits">
+    <div class="alert alert-info">Only HITs created by TurkServer are shown here. Other HITs in your account are not included.</div>
+
+    <div class="row">
+	<div class="col-md-6">
+	    <h3>Outstanding HITs
+		<button class="btn btn-primary pull-right -ts-new-hit">New HIT</button>
+	    </h3>
+	</div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table table-condensed table-striped ts-admin-table">
+                <thead>
+                <tr>
+                    <th>HIT ID</th>
+                    <th>HITTypeId</th>
+                    <th>Assignments</th>
+                    <th>Expiration</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each hits}}
+                <tr>
+                    <td>{{HITId}}</td>
+                    <td>{{HITTypeId}}</td>
+                    <td>{{MaxAssignments}}</td>
+                    <td>{{_tsRenderISOTime Expiration}}</td>
+                </tr>
+                {{/each}}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+	    <div class="well clearfix">
+		{{#with selectedHIT}}
+		{{> tsAdminViewHit}}
+		{{else}}
+		{{> tsAdminNewHit}}
+		{{/with}}
+	    </div>
+        </div>
+    </div>
+</template>
+
+<template name="tsAdminViewHit">
+    <button class="btn btn-success -ts-refresh-hit">
+        <span class="glyphicon glyphicon-retweet"></span> Refresh HIT data
+    </button>
+    <button class="btn btn-danger -ts-expire-hit">
+        Force Expire
+    </button>
+    <hr>
+    <dl class="ts-compact">
+        <dt>HITId</dt>
+        <dd>{{HITId}}</dd>
+        <dt>HITTypeId</dt>
+        <dd>{{HITTypeId}}
+        <form class="form-inline -ts-change-hittype">
+        <select class="form-control" name="hittype" required>
+            <option value="" selected disabled></option>
+            {{#each hitTypes}}
+            <option value="{{_id}}">{{Title}}</option>
+            {{/each}}
+        </select>
+        <button class="btn btn-primary" type="submit">Change HIT Type</button>
+        </form>
+        </dd>
+        <dt>MaxAssignments</dt>
+        <dd>{{MaxAssignments}}
+        <form class="form-inline -ts-extend-assignments">
+        <input class="form-control" name="assts" type="number" min="1" max="1000000" required>
+        <button class="btn btn-primary" type="submit">Increase Assignments</button>
+        </form>
+        </dd>
+        <dt>Expiration</dt>
+        <dd>{{_tsRenderISOTime Expiration}}
+        <form class="form-inline -ts-extend-expiration">
+        <input class="form-control" name="secs" type="number" min="3600" max="31536000" required>
+        <button class="btn btn-primary" type="submit">Extend Time</button>
+        </form>
+        </dd>
+    </dl>
+</template>
+
+<template name="tsAdminNewHit">
+    <form class="form-horizontal">
+        <legend>Create New HIT</legend>
+        <div class="form-group">
+            <label class="col-sm-3">HIT Type</label>
+            <div class="col-sm-9">
+                <select class="form-control" name="hittype" required>
+                    <option value="" selected disabled></option>
+                    {{#each hitTypes}}
+                    <option value="{{HITTypeId}}">{{Title}} ({{HITTypeId}})</option>
+                    {{/each}}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3">Max Assignments</label>
+            <div class="col-sm-9">
+                <input class="form-control" name="maxAssts" type="number" min="1" max="1000000" value="1">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3">Lifetime in Seconds</label>
+            <div class="col-sm-9">
+                <input class="form-control" name="lifetime" type="number" min="30" max="31536000" value="86400">
+            </div>
+        </div>
+        <button class="btn btn-primary pull-right" type="submit">Create</button>
+    </form>
+</template>
+
+<template name="tsAdminWorkers">
+    <form class="form-inline">
+        <h3>Search Workers:</h3>
+        {{> inputAutocomplete settings=settings class="form-control" placeholder="Enter WorkerId..."}}
+    </form>
+
+    {{#if workerId}}
+    <p>Found worker: {{> tsUserPill workerId=workerId}}</p>
+
+    <h3>Panel Status</h3>
+
+    {{> tsDescList workerData}}
+
+    <h3>Active/Returned Assignments</h3>
+
+    {{> tsAdminActiveAssignmentsTable cursor=workerActiveAssts }}
+
+    <h3>Completed Assignments ({{numCompletedAssts}})</h3>
+
+    {{> tsAdminCompletedAssignmentsTable cursor=workerCompletedAssts }}
+
+    {{/if}}
+</template>
+
+<template name="tsAdminPanel">
+    <h3>Panel</h3>
+
+    <p>Contact: {{workerContact}} / {{workerTotal}}</p>
+
+    <svg width="100%" height="300">
+
+    </svg>
+
+    {{> tsAdminEmail}}
+</template>
+
+<template name="tsAdminEmail">
+    <h3>E-mail workers</h3>
+
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table table-condensed table-striped ts-admin-table">
+                <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Recipients</th>
+                    <th>Sent</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each messages}}
+                <tr>
+                    <td>{{subject}}</td>
+                    <td>{{recipientsHelper recipients}}</td>
+                    <td>{{#with sentTime}}
+                        {{_tsRenderTime this}}
+                        {{else}}
+                        <i>not sent</i>
+                        {{/with}}
+                    </td>
+                </tr>
+                {{/each}}
+                </tbody>
+            </table>
+        </div>
+        {{> tsAdminEmailMessage }}
+    </div>
+</template>
+
+<template name="tsAdminEmailMessage">
+    <div class="col-md-6 well">
+        {{#with selectedMessage}}
+
+        <p class="text-muted">Message {{_id}}</p>
+        <dl>
+            <dt>Subject</dt>
+            <dd>{{subject}}</dd>
+            <dt>Message</dt>
+            <dd>{{{_tsnl2br message}}}</dd>
+            <dt>Recipients</dt>
+            <dd>{{recipientsHelper recipients}}</dd>
+        </dl>
+
+        {{#unless sentTime}}
+        <button class="btn btn-primary ts-admin-send-message">Send</button>
+        <button class="btn btn-danger ts-admin-delete-message">Delete</button>
+        {{else}}
+        <button class="btn btn-warning ts-admin-resend-message">Resend</button>
+	<button class="btn btn-primary ts-admin-copy-message">Copy</button>
+        {{/unless}}
+
+        {{else}}
+        {{> tsAdminNewEmail}}
+        {{/with}}
+    </div>
+</template>
+
+<template name="tsAdminNewEmail">
+    <form class="ts-admin-new-message">
+        <div class="form-group">
+            <label>Subject:</label>
+            <input class="form-control" name="subject" type="text" required>
+        </div>
+        <div class="form-group">
+            <label>Message:</label>
+            <textarea class="form-control" name="message" rows="10" required></textarea>
+        </div>
+        <fieldset>Recipients</fieldset>
+        <div class="radio">
+            <label>
+                <input type="radio" name="recipients" value="" checked>Add later
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="recipients" value="copy">Copy from:
+            </label>
+            <select class="form-control inline width-long" name="copyFrom">
+                <option value="" disabled selected>Select e-mail...</option>
+                {{#each messages}}
+                <option value="{{_id}}">{{subject}}</option>
+                {{/each}}
+            </select>
+        </div>
+        <button class="btn btn-primary" type="submit">Create Message</button>
+    </form>
+</template>
+
+<template name="tsAdminAssignmentMaintenance">
+    <button class="btn btn-danger -ts-cancel-assignments">Cancel Disconnected Assignments</button>
+</template>
+
+<template name="tsAdminActiveAssignments">
+    {{#tsBatchMessage}}
+    Viewing active assignments in batch <b>{{name}}</b>.
+    {{/tsBatchMessage}}
+
+    {{> tsAdminMaintenance template="tsAdminAssignmentMaintenance"}}
+
+    <p><b>{{numAssignments}} active assignments.</b></p>
+
+    {{> tsAdminActiveAssignmentsTable cursor=activeAssts }}
+</template>
+
+<template name="tsAdminCompletedMaintenance">
+    <div class="btn-group" role="group">
+	<button class="btn btn-default -ts-refresh-assignments">
+	    <span class="glyphicon glyphicon-refresh"></span>
+	    Refresh Assignment States
+	</button>
+	<button class="btn btn-default -ts-approve-all">
+	    <span class="glyphicon glyphicon-check"></span>
+	    Approve All Assignments
+	</button>
+	<button class="btn btn-default -ts-pay-bonuses">
+	    <span class="glyphicon glyphicon-usd"></span>
+	    Pay All Bonuses
+	</button>
+    </div>
+</template>
+
+<template name="tsAdminCompletedAssignments">
+    {{#tsBatchMessage}}
+    Viewing completed assignments in batch <b>{{name}}</b>.
+    {{/tsBatchMessage}}
+
+    {{> tsAdminMaintenance template="tsAdminCompletedMaintenance"}}
+
+    <form class="form-inline ts-admin-assignment-filter">
+        Showing up to
+        <input class="form-control" name="filter_limit" type="number" value="{{limit}}">
+        completed assignments from the last
+        <input class="form-control" name="filter_days" type="number" value="{{days}}">
+        days.
+        <button class="btn btn-primary" type="submit">Update</button>
+        <b>{{numAssignments}} assignments found.</b>
+    </form>
+
+    {{> tsAdminCompletedAssignmentsTable cursor=completedAssts }}
+</template>
+
+<template name="tsAdminActiveAssignmentsTable">
+    <table class="table table-condensed table-striped ts-admin-table">
+        <thead>
+        <tr>
+            <th style="width: 100px">Worker ID</th>
+            <th style="width: 90px">Experiment Instances</th>
+            <th style="width: 90px">IP Address</th>
+            <th style="width: 170px">Acceptance Time</th>
+            <th style="width: 100px">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each cursor}}
+        <tr>
+            <td>{{> tsUserPill workerId=workerId }}</td>
+            <td>
+                {{#each instances}}
+                {{> tsAdminAssignmentInstance }}
+                {{/each}}
+            </td>
+            <td>{{ipAddr}}</td>
+            <td>{{_tsRenderTime acceptTime}}</td>
+            <td>{{status}}</td>
+        </tr>
+        {{/each}}
+        </tbody>
+    </table>
+</template>
+
+<template name="tsAdminCompletedAssignmentsTable">
+    <table class="table table-condensed table-striped ts-admin-table">
+        <thead>
+        <tr>
+            <th style="width: 260px">Assignment</th>
+            <th>Exit Data</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each cursor}}
+        {{> tsAdminCompletedAssignmentRow }}
+        {{/each}}
+        </tbody>
+    </table>
+</template>
+
+<template name="tsAdminCompletedAssignmentRow">
+    <tr>
+        <td>
+            <dl class="dl-horizontal ts-compact">
+                <dt>Worker</dt>
+                <dd>{{> tsUserPill workerId=workerId }}</dd>
+                <dt>IPs</dt>
+                <dd>{{ipAddr}}</dd>
+                <dt>Instances</dt>
+                <dd>
+                    {{#each instances}}
+                    {{> tsAdminAssignmentInstance }}
+                    {{/each}}
+                </dd>
+                <dt>Accepted</dt>
+                <dd>{{_tsRenderTime acceptTime}}</dd>
+                <dt>Submitted</dt>
+                <dd>{{_tsRenderTime submitTime}}</dd>
+                <dt>Status</dt>
+                <dd>{{#if mturkStatus}}
+                    <span class="label {{labelStatus}}">{{mturkStatus}}</span>
+                    {{#if submitted}}
+                    <button class="btn btn-xs btn-success ts-admin-approve-assignment">
+                        <span class="glyphicon glyphicon-ok"></span>
+                    </button>
+                    <button class="btn btn-xs btn-danger ts-admin-reject-assignment">
+                        <span class="glyphicon glyphicon-ban-circle"></span>
+                    </button>
+                    {{/if}}
+                    {{else}}
+                    <span class="label label-default">Unknown</span>
+                    <button class="btn btn-xs btn-info ts-admin-refresh-assignment">
+                        <span class="glyphicon glyphicon-refresh"></span>
+                    </button>
+                    {{/if}}
+                </dd>
+                <dt>Bonus</dt>
+                <dd>
+                    {{#if bonusPayment}}
+                    {{bonusPayment}}
+                    {{#if bonusPaid}}
+                        <span class="label label-success"
+                              title="{{bonusPaid}}&#xA;{{bonusMessage}}">Paid</span>
+                    {{else}}
+                    <span class="label label-danger">Unpaid</span>
+                    <button class="btn btn-xs btn-warning ts-admin-unset-bonus">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+                    {{/if}}
+                    {{else}}
+                    <i>not set</i>
+                    <button class="btn btn-xs btn-info ts-admin-pay-bonus">
+                        <span class="glyphicon glyphicon-usd"></span>
+                    </button>
+                    {{/if}}
+                </dd>
+            </dl>
+        </td>
+        <td>{{> tsDescList exitdata}}</td>
+    </tr>
+</template>

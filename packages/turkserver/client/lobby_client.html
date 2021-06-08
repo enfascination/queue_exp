@@ -1,0 +1,64 @@
+<template name="tsBasicLobby">
+    <div class="jumbotron">
+        <h3>Waiting for enough users to start the task. Sit tight for a few minutes!</h3>
+
+        <p>There are {{count}} user(s) currently waiting:</p>
+
+        <table class="table table-striped">
+            <tbody>
+            {{#each lobbyInfo}}
+            <tr>
+                <td>
+                    {{{ identifier }}}
+                </td>
+            </tr>
+            {{/each}}
+            </tbody>
+        </table>
+    </div>
+</template>
+
+<template name="tsLobby">
+    <h3>Waiting for users to start.</h3>
+
+    <p>When you see the ready button, click it to start the task.</p>
+
+    <table class="table table-striped">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Status</th>
+            <th style="width: 120px"></th>
+        </tr>
+    </thead>
+    <tbody>
+    {{#each lobbyInfo}}
+        <tr>
+            <td>
+                {{{ identifier }}}
+            </td>
+            <td>
+                <strong>
+                    {{#if status}}
+                    <span class="text-success">READY</span>
+                    {{else}}
+                    <span class="text-error">NOT READY</span>
+                    {{/if}}
+                </strong>
+            </td>
+            <td>
+            {{#if readyEnabled}}
+                <a href="#" class="changeStatus btn btn-primary">
+                    {{#if status}}
+                        I'm not ready.
+                    {{else}}
+                        I'm ready!
+                    {{/if}}
+                </a>
+            {{/if}}
+            </td>
+        </tr>
+    {{/each}}
+    </tbody>
+    </table>
+</template>

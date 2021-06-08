@@ -1,0 +1,17 @@
+sudo: required
+language: node_js
+node_js:
+  - "0.10"
+
+before_install:
+  - "curl -L https://git.io/ejPSng | /bin/sh"
+
+# Later stuff for Meteor 1.4: see https://github.com/arunoda/travis-ci-meteor-packages/pull/45
+env:
+  - CXX=g++-4.8 METEOR_RELEASE=1.4.4.3
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8

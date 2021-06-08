@@ -3,7 +3,7 @@ var _ = require('lodash');
 
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { TurkServer } from 'meteor/mizzao:turkserver';
+import { TurkServer } from 'meteor/turkserver-updates';
 
 import { Helper } from '../../imports/lib/helper.js';
 import { Sess } from '../../imports/lib/quick-session.js';

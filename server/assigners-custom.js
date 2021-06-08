@@ -1,6 +1,6 @@
 /*jshint esversion: 6 */
 
-import { TurkServer } from 'meteor/mizzao:turkserver';
+import { TurkServer } from 'meteor/turkserver-updates';
 
 export let OverlapAssigner = class extends TurkServer.Assigners.SimpleAssigner {
 

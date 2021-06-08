@@ -1,0 +1,341 @@
+<template name="tsAdminExperiments">
+    {{#tsBatchMessage}}
+        Viewing experiment instances in batch <b>{{name}}</b>.
+    {{/tsBatchMessage}}
+
+    {{> tsAdminMaintenance template="tsAdminExperimentMaintenance"}}
+
+    <form class="form-inline -ts-admin-experiment-filter">
+        Showing active, and up to
+        <input class="form-control" name="filter_limit" type="number" value="{{limit}}">
+        completed instances from the last
+        <input class="form-control" name="filter_days" type="number" value="{{days}}">
+        days.
+        <button class="btn btn-primary" type="submit">Update</button>
+        <b>{{numExperiments}} experiment instances found.</b>
+    </form>
+
+    {{> tsAdminExperimentTimeline }}
+
+    {{> tsAdminActiveExperiments }}
+    {{> tsAdminCompletedExperiments }}
+</template>
+
+<template name="tsAdminExperimentMaintenance">
+    <button class="btn btn-danger -ts-stop-all-experiments">Stop All Experiments</button>
+</template>
+
+<template name="tsAdminExperimentTimeline">
+    <svg width="100%" height="600">
+        <g class="x axis"></g>
+        <g class="x grid"></g>
+        <g class="chart">
+            {{#each experiments}}
+            {{> tsAdminExperimentTimelineBar}}
+            {{/each}}
+        </g>
+    </svg>
+</template>
+
+<template name="tsAdminExperimentTimelineBar">
+    <rect class="bar"></rect>
+</template>
+
+<template name="tsAdminActiveExperiments">
+    <h3>Ongoing Experiments</h3>
+
+    <table class="table table-condensed table-striped">
+        <thead>
+        <tr>
+            <th style="width: 160px">Start Time</th>
+            <th>Duration</th>
+            <th>Treatments</th>
+            <th style="width: 50px">Size</th>
+            <th>Users</th>
+            <th style="width: 190px"></th>
+        </tr>
+        </thead>
+        {{#each experiments}}
+        <tbody>
+        <tr>
+            <td>{{_tsRenderTime startTime}}</td>
+            <td>{{_tsRenderTimeSince startTime}}</td>
+            <td>
+                {{#each treatments}}
+                <span class="badge badge-inverse">{{this}}</span>
+                {{/each}}
+            </td>
+            <td><b>{{numUsers}}</b></td>
+            <td>{{#each users}}
+                {{> tsUserPill userId=this}}
+                {{/each}}
+            </td>
+            <td>
+		{{> tsAdminExpButtons}}
+                <button class="btn btn-xs btn-danger -ts-stop-experiment">
+                    <span class="glyphicon glyphicon-ban-circle"></span> Stop
+                </button>
+            </td>
+        </tr>
+        </tbody>
+        {{/each}}
+    </table>
+
+</template>
+
+<template name="tsAdminCompletedExperiments">
+    <h3>Completed Experiments</h3>
+
+    <table class="table table-condensed table-striped">
+        <thead>
+        <tr>
+            <th style="width: 160px">Start Time</th>
+            <th>Duration</th>
+            <th>Treatments</th>
+            <th style="width: 50px">Size</th>
+            <th>Users</th>
+            <th style="width: 132px"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each experiments}}
+        <tr>
+            <td>{{_tsRenderTime startTime}}</td>
+            <td>{{ duration }}</td>
+            <td>
+                {{#each treatments}}
+                <span class="badge badge-inverse">{{this}}</span>
+                {{/each}}
+            </td>
+            <td><b>{{numUsers}}</b></td>
+            <td>{{#each this.users}}
+                {{> tsUserPill userId=this}}
+                {{/each}}
+            </td>
+            <td>
+	        {{> tsAdminExpButtons}}
+            </td>
+        </tr>
+        {{/each}}
+        </tbody>
+    </table>
+
+</template>
+
+<template name="tsAdminExpButtons">
+    {{#if dataRoute}}
+    <a class="btn btn-xs btn-primary"
+       href='{{pathFor dataRoute groupId=_id}}'>
+	<span class="glyphicon glyphicon-list-alt"></span> Data
+    </a>
+    {{/if}}
+    <a class="btn btn-xs btn-success"
+       href='{{pathFor "tsLogs" groupId=_id count=100}}'>
+        <span class="glyphicon glyphicon-list-alt"></span> Logs
+    </a>
+</template>
+
+<template name="tsAdminLogs">
+    <div class="well">
+        {{> tsAdminGroupInfo experiment}}
+    </div>
+
+    <form class="form-inline ts-admin-log-filter">
+        Showing up to
+        <input class="form-control" name="count" type="number" min="1" value="{{count}}">
+        log entries.
+        <button class="btn btn-primary" type="submit">Update</button>
+    </form>
+
+    <table class="table table-condensed table-striped ts-admin-table">
+        <thead>
+        <tr>
+            <th style="width: 200px">Timestamp</th>
+            <th style="width: 120px">User</th>
+            <th>Data</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each logEntries}}
+        <tr>
+            <td>{{_tsRenderTimeMillis _timestamp}}</td>
+            <td>{{> tsUserPill userId=_userId}}</td>
+            <td>{{> tsDescList entryData}}</td>
+        </tr>
+        {{/each}}
+        </tbody>
+    </table>
+
+</template>
+
+<template name="tsAdminManage">
+    <h3>Manage Treatments</h3>
+    <div class="row">
+        <div class="col-md-6">
+        {{> tsAdminNewTreatment}}
+        {{> tsAdminTreatments }}
+        </div>
+        <div class="col-md-6">
+        {{> tsAdminTreatmentConfig }}
+        </div>
+    </div>
+
+    <h3>Manage Batches</h3>
+    <div class="row">
+        <div class="col-md-6">
+        {{> tsAdminBatchList }}
+        </div>
+        <div class="col-md-6">
+        {{> tsAdminConfigureBatch }}
+        </div>
+    </div>
+
+</template>
+
+<template name="tsAdminTreatments">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Treatments</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each treatments}}
+        <tr>
+            <td>{{> tsTreatmentPill}}</td>
+            <td><button class="btn btn-xs btn-danger -ts-delete-treatment">
+                <span class="glyphicon glyphicon-trash"></span>
+            </button></td>
+        </tr>
+        {{/each}}
+        {{#if zeroTreatments}}
+        <tr>
+            <td colspan="2"><i>No treatments configured yet.</i></td>
+        </tr>
+        {{/if}}
+        </tbody>
+    </table>
+</template>
+
+<template name="tsAdminNewTreatment">
+    <form class="form-inline">
+        <input class="form-control" type="text" name="name" placeholder="New treatment name...">
+        <button class="btn btn-primary" type="submit">Add treatment</button>
+    </form>
+</template>
+
+<template name="tsAdminTreatmentConfig">
+    <div class="well">
+    {{#with selectedTreatment}}
+    {{> tsDescList}}
+    {{else}}
+    <i>Select a treatment to the left to view properties.</i>
+    {{/with}}
+    </div>
+</template>
+
+<template name="tsAdminConfigureBatch">
+    <div class="well">
+    {{#with selectedBatch}}
+        <dl class="ts-compact">
+            <dt><b>Batch Name</b></dt>
+            <dd><h4>{{name}}</h4></dd>
+            <dt>Description</dt>
+            <dd>{{> tsAdminBatchEditDesc }}</dd>
+            <dt>Treatments</dt>
+            <dd>{{> tsAdminBatchEditTreatments}}</dd>
+        </dl>
+
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" name="allowReturns" checked={{allowReturns}}>
+                Allow re-attempts from workers who have returned HITs
+            </label>
+        </div>
+
+        {{#if active}}
+        <button class="btn btn-danger -ts-deactivate-batch">Make Inactive</button>
+        {{else}}
+        <button class="btn btn-success -ts-activate-batch">Make Active</button>
+        {{/if}}
+
+    {{else}}
+    <i>Select a batch to the left to view properties.</i>
+    {{/with}}
+    </div>
+</template>
+
+<template name="tsAdminBatchEditDesc">
+    <p>
+        <div class="editable" data-type="text" data-original-title="Enter Description" data-inputclass="form-control" data-autotext="never">
+            {{desc}}
+        </div>
+    </p>
+</template>
+
+<template name="tsAdminBatchEditTreatments">
+    <p>
+    {{#each treatments}}
+    {{> tsTreatmentDeletePill _tsLookupTreatment}}
+    {{/each}}
+    </p>
+
+    <div class="input-group">
+        <select class="form-control">
+            <option value="" disabled selected>Add treatment</option>
+            {{#each allTreatments}}
+            <option>{{name}}</option>
+            {{/each}}
+        </select>
+        <span class="input-group-btn">
+        <button class="btn btn-primary -ts-add-batch-treatment"><span class="glyphicon glyphicon-plus"></span></button>
+        </span>
+    </div>
+</template>
+
+<template name="tsAdminBatchList">
+    <table class="table table-striped table-hover ts-admin-table">
+        <thead>
+        <tr>
+            <th>Batch</th>
+            <th>Note</th>
+            <th>Active</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each batches}}
+        <tr class="{{selectedClass}}">
+            <td><b>{{name}}</b></td>
+            <td>{{desc}}</td>
+            <td>
+                {{#if active}}
+                <span class="badge badge-inverse">
+                <span class="glyphicon glyphicon-ok"></span>
+                </span>
+                {{/if}}
+            </td>
+        </tr>
+        {{/each}}
+        {{#if zeroBatches}}
+        <tr>
+            <td colspan="3">
+                <i>No experiment batches yet.</i>
+            </td>
+        </tr>
+        {{/if}}
+        {{> tsAdminAddBatch}}
+        </tbody>
+    </table>
+</template>
+
+<template name="tsAdminAddBatch">
+    <tr>
+        <td colspan="3">
+            <form class="form-inline">
+                <input class="form-control" type="text" placeholder="New batch...">
+                <button class="btn btn-primary -ts-new-batch" type="submit"><span class="glyphicon glyphicon-plus"></span></button>
+            </form>
+        </td>
+    </tr>
+</template>

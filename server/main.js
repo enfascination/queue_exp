@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 import { Meteor } from 'meteor/meteor';
-import { Batches, TurkServer } from 'meteor/mizzao:turkserver';
+import { Batches, TurkServer } from 'meteor/turkserver-updates';
 
 import '../api/design/models.js';
 import { Schemas } from '../api/design/schemas.js';

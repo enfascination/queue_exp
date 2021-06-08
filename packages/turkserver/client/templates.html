@@ -1,0 +1,65 @@
+<template name="mturkSubmit">
+    <form action="{{hitParams.turkSubmitTo}}/mturk/externalSubmit" method="POST">
+        <input type="hidden" name="hitId" value="{{hitParams.hitId}}">
+        <input type="hidden" name="assignmentId" value="{{hitParams.assignmentId}}">
+        <input type="hidden" name="workerId" value="{{hitParams.workerId}}">
+    </form>
+</template>
+
+<template name="tsUserAccessDenied">
+    <div class="alert alert-danger">
+        There was a problem authenticating with the server. Please reload the HIT from your dashboard.
+    </div>
+</template>
+
+<template name="tsContainer">
+    <div class="container">
+    {{> yield}}
+    </div>
+</template>
+
+<template name="tsRequestUsername">
+    <div class="modal-dialog">
+    <div class="modal-content">
+    <div class="modal-header">
+        <h3>Please enter a username.</h3>
+    </div>
+    <div class="modal-body">
+        <p>This username will be automatically linked with your Worker ID in our HITs.</p>
+        <form class="form-inline">
+        {{! We use the pattern below because it matches \w in in autocomplete for user names}}
+        <input class="form-control" type="text" name="username" required
+            pattern="^[a-zA-Z][a-zA-Z0-9_]{5,12}$"
+            placeholder="Username..."
+            title="6-13 numbers or characters.">
+        <button class="btn btn-primary" type="submit">Continue</button>
+        </form>
+
+        {{#with usernameError}}
+        <div class="alert alert-danger">
+            {{this}}
+        </div>
+        {{/with}}
+    </div>
+    </div>
+    </div>
+</template>
+
+<template name="tsTimePicker">
+    <label>Your timezone seems to be <b>UTC {{zone}}</b>. Please pick up to three different times (on a typical weekday) when you can be present for an hour:</label>
+
+    <div class="clearfix">
+    <select class="form-control inline width-medium" name="pickTime1">{{> tsTimeOptions}}</select>
+    <select class="form-control inline width-medium" name="pickTime2">{{> tsTimeOptions}}</select>
+    <select class="form-control inline width-medium" name="pickTime3">{{> tsTimeOptions}}</select>
+    </div>
+
+    <span class="help-block">We will use this information to select a time where the most workers are available.</span>
+</template>
+
+<template name="tsTimeOptions">
+    <option value="" disabled selected>Select a time</option>
+    {{#each momentList}}
+        <option value="{{valueFormatted}}">{{displayFormatted}}</option>
+    {{/each}}
+</template>
