@@ -9,12 +9,10 @@
 ```
 git clone https://github.com/enfascination/queue_exp.git
 cd queue_exp
+git checkout v2_training
 cp settings.json.min settings.json (copies a settings template for local config, vs publicly on GitHub)  
-git clone https://github.com/TurkServer/turkserver-meteor.git packages/turkserver  
-meteor add mizzao:turkserver  
 meteor npm install
 meteor run --settings=settings.json
-(note: in 2019 to build on Windows @benmillam had to bump the bcrypt version to 1.0.0 due to a Visual C++ bug with 0.8.7; see comment in package.json file)
 ```
 3. Visit the app:
 (if you're running the app on the cloud, you'll need to SSH tunnel from your local machine to the remote box, to view the app in your local browser)
